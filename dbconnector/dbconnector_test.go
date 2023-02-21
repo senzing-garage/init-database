@@ -1,14 +1,12 @@
-package sqlfiler
+package dbconnector
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"testing"
 
-	"github.com/senzing/go-logging/logger"
 	"github.com/senzing/go-logging/messagelogger"
-	"github.com/senzing/initdatabase/dbconnector"
+	"golang.org/x/net/context"
 )
 
 var (
@@ -49,15 +47,9 @@ func teardown() error {
 
 func TestInitializerImpl_Initialize(test *testing.T) {
 	ctx := context.TODO()
-
-	databaseConnector := &dbconnector.Sqlite{
+	databaseConnector := &Sqlite{
 		Name:     "bob",
 		Filename: "/tmp/sqlite/G2C.db",
 	}
-
-	testObject := &SqlfilerImpl{
-		LogLevel:          logger.LevelTrace,
-		DatabaseConnector: databaseConnector,
-	}
-	testObject.ProcessFileName(ctx, "/opt/senzing/g2/resources/schema/g2core-schema-sqlite-create.sql")
+	databaseConnector.Connect(ctx)
 }
