@@ -1,4 +1,4 @@
-package sqlfiler
+package senzingconfig
 
 import (
 	"context"

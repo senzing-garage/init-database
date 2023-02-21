@@ -1,6 +1,7 @@
 package sqlfiler
 
 import (
+	"bufio"
 	"context"
 
 	"github.com/senzing/go-logging/logger"
@@ -12,7 +13,8 @@ import (
 // ----------------------------------------------------------------------------
 
 type SqlFiler interface {
-	ProcessFile(ctx context.Context) error
+	ProcessFileName(ctx context.Context, filename string) error
+	ProcessScanner(ctx context.Context, scanner *bufio.Scanner)
 	RegisterObserver(ctx context.Context, observer observer.Observer) error
 	SetLogLevel(ctx context.Context, logLevel logger.Level) error
 	UnregisterObserver(ctx context.Context, observer observer.Observer) error
@@ -22,8 +24,8 @@ type SqlFiler interface {
 // Constants
 // ----------------------------------------------------------------------------
 
-// Identfier of the  package found messages having the format "senzing-6999xxxx".
-const ProductId = 6999
+// Identfier of the  package found messages having the format "senzing-6206xxxx".
+const ProductId = 6206
 
 // ----------------------------------------------------------------------------
 // Variables
@@ -31,11 +33,24 @@ const ProductId = 6999
 
 // Message templates for sqlfiler implementation.
 var IdMessages = map[int]string{
-	1:    "Enter InitializeSenzingConfiguration().",
-	2:    "Exit  InitializeSenzingConfiguration() returned (%v).",
+	1:    "Enter ProcessFileName(%s).",
+	2:    "Exit  ProcessFileName(%s) returned (%v).",
+	3:    "Enter ProcessScanner().",
+	4:    "Exit  ProcessScanner() returned (%v).",
+	5:    "Enter RegisterObserver(%s).",
+	6:    "Exit  RegisterObserver(%s) returned (%v).",
+	7:    "Enter SetLogLevel(%s).",
+	8:    "Exit  SetLogLevel(%s) returned (%v).",
+	9:    "Enter UnregisterObserver(%s).",
+	10:   "Exit  UnregisterObserver(%s) returned (%v).",
 	2000: "Entry: %+v",
-	4001: "Call to net.Listen(tcp, %s) failed.",
-	5001: "Failed to serve.",
+	4001: "SQL.Exec error: %v",
+	8001: "ProcessFileName",
+	8002: "ProcessScanner.Exec",
+	8003: "ProcessScanner",
+	8004: "RegisterObserver",
+	8005: "SetLogLevel",
+	8006: "UnregisterObserver",
 }
 
 // Status strings for specific messages.

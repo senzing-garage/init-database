@@ -1,16 +1,10 @@
 package dbconnector
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"testing"
-
-	"github.com/senzing/go-logging/messagelogger"
-	"golang.org/x/net/context"
-)
-
-var (
-	localLogger messagelogger.MessageLoggerInterface
 )
 
 // ----------------------------------------------------------------------------
@@ -48,7 +42,6 @@ func teardown() error {
 func TestInitializerImpl_Initialize(test *testing.T) {
 	ctx := context.TODO()
 	databaseConnector := &Sqlite{
-		Name:     "bob",
 		Filename: "/tmp/sqlite/G2C.db",
 	}
 	databaseConnector.Connect(ctx)
