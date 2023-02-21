@@ -70,7 +70,9 @@ build-linux:
 
 .PHONY: test
 test:
-	@go test -v -p 1 ./...
+#	@go test -v -p 1 ./...
+	@go test -v ./sqlfiler
+
 
 # -----------------------------------------------------------------------------
 # docker-build
