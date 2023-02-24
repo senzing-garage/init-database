@@ -206,6 +206,8 @@ github.com/senzing/go-common v0.1.1 h1:JRKS3ZfChXa1XjesBIHYxTeISwcu0ksFMULaVQfZ+
 github.com/senzing/go-common v0.1.1/go.mod h1:hjYQNbBxwbnGYOFRUyFBEt6hx9X0ypffwAzqE1Olndc=
 github.com/senzing/go-databasing v0.2.0 h1:HTu6+oSYL9tYaNb86+/Ur6V3sKdhSq8JxQ373JXmw5Y=
 github.com/senzing/go-databasing v0.2.0/go.mod h1:XKyF8aCUuU8ZOLGxmQ2Ht2jYHN1kF9UAIKI9NvpUa7U=
+github.com/senzing/go-databasing v0.2.1 h1:cXM/ocMHmmhcxz7tSuz8qwCMghYPGWOrT3cxxJnwtZc=
+github.com/senzing/go-databasing v0.2.1/go.mod h1:XKyF8aCUuU8ZOLGxmQ2Ht2jYHN1kF9UAIKI9NvpUa7U=
 github.com/senzing/go-logging v1.1.3 h1:eTWuEgI+4bwyS0gSpYKNbz8gL8ATAqByA3q1sbRJCu4=
 github.com/senzing/go-logging v1.1.3/go.mod h1:FarStyY/kYd7+ymtawOXvOk48j/6fHRZ8unSwpi4FzI=
 github.com/senzing/go-observing v0.1.1 h1:nTvzLS+LOEcW+YWXvGeGn5Zayhg6h3SVCC37xF4vHEg=

@@ -32,7 +32,7 @@ require (
 	github.com/senzing/g2-sdk-go-base v0.1.0 // indirect
 	github.com/senzing/g2-sdk-go-grpc v0.2.0 // indirect
 	github.com/senzing/g2-sdk-proto/go v0.0.0-20230126140313-273e96bc7dbd // indirect
-	github.com/senzing/go-databasing v0.2.0 // indirect
+	github.com/senzing/go-databasing v0.2.1 // indirect
 	github.com/spf13/afero v1.9.3 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
