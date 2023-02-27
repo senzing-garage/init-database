@@ -83,11 +83,7 @@ func (initializer *InitializerImpl) getG2config(ctx context.Context) g2api.G2con
 		if err != nil {
 			errorExit("", err)
 		}
-		sdkId, err := initializer.g2configSingleton.GetSdkId(ctx)
-		if err != nil {
-			errorExit("", err)
-		}
-		if sdkId == "base" {
+		if initializer.g2configSingleton.GetSdkId(ctx) == "base" {
 			moduleName := initializer.SenzingModuleName
 			if len(moduleName) == 0 {
 				moduleName = defaultModuleName
@@ -108,11 +104,7 @@ func (initializer *InitializerImpl) getG2configmgr(ctx context.Context) g2api.G2
 		if err != nil {
 			errorExit("", err)
 		}
-		sdkId, err := initializer.g2configmgrSingleton.GetSdkId(ctx)
-		if err != nil {
-			errorExit("", err)
-		}
-		if sdkId == "base" {
+		if initializer.g2configmgrSingleton.GetSdkId(ctx) == "base" {
 			moduleName := initializer.SenzingModuleName
 			if len(moduleName) == 0 {
 				moduleName = defaultModuleName
