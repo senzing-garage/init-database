@@ -14,6 +14,7 @@ import (
 type Initializer interface {
 	Initialize(ctx context.Context) error
 	InitializeSenzingConfiguration(ctx context.Context) error
+	InitializeSenzingSchema(ctx context.Context) error
 	RegisterObserver(ctx context.Context, observer observer.Observer) error
 	SetLogLevel(ctx context.Context, logLevel logger.Level) error
 	UnregisterObserver(ctx context.Context, observer observer.Observer) error
@@ -23,8 +24,8 @@ type Initializer interface {
 // Constants
 // ----------------------------------------------------------------------------
 
-// Identfier of the  package found messages having the format "senzing-6205xxxx".
-const ProductId = 6205
+// Identfier of the  package found messages having the format "senzing-6210xxxx".
+const ProductId = 6210
 
 // ----------------------------------------------------------------------------
 // Variables

@@ -70,8 +70,9 @@ build-linux:
 
 .PHONY: test
 test:
-#	@go test -v -p 1 ./...
-	@go test -v ./sqlfiler
+	@go test -v -p 1 ./...
+#	@go test -v ./initializer
+#	@go test -v ./senzingconfig
 
 
 # -----------------------------------------------------------------------------
@@ -161,7 +162,6 @@ clean:
 	@rm -f $(GOPATH)/bin/$(PROGRAM_NAME) || true
 	@rm -rf /tmp/sqlite
 	@mkdir  /tmp/sqlite
-# 	@cp testdata/sqlite/G2C.db /tmp/sqlite/G2C.db
 	@touch /tmp/sqlite/G2C.db
 
 

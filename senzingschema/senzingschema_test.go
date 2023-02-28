@@ -1,4 +1,4 @@
-package initializer
+package senzingschema
 
 import (
 	"context"
