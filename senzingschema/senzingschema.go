@@ -25,7 +25,7 @@ import (
 type SenzingSchemaImpl struct {
 	isTrace                        bool
 	messageLogger                  messagelogger.MessageLoggerInterface
-	LogLevel                       logger.Level
+	logLevel                       logger.Level
 	observers                      subject.Subject
 	SenzingEngineConfigurationJson string
 }
@@ -44,18 +44,20 @@ func (senzingSchema *SenzingSchemaImpl) getLogger() messagelogger.MessageLoggerI
 
 // Notify registered observers.
 func (senzingSchema *SenzingSchemaImpl) notify(ctx context.Context, messageId int, err error, details map[string]string) {
-	now := time.Now()
-	details["subjectId"] = strconv.Itoa(ProductId)
-	details["messageId"] = strconv.Itoa(messageId)
-	details["messageTime"] = strconv.FormatInt(now.UnixNano(), 10)
-	if err != nil {
-		details["error"] = err.Error()
-	}
-	message, err := json.Marshal(details)
-	if err != nil {
-		fmt.Printf("Error: %s", err.Error())
-	} else {
-		senzingSchema.observers.NotifyObservers(ctx, string(message))
+	if senzingSchema.observers != nil {
+		now := time.Now()
+		details["subjectId"] = strconv.Itoa(ProductId)
+		details["messageId"] = strconv.Itoa(messageId)
+		details["messageTime"] = strconv.FormatInt(now.UnixNano(), 10)
+		if err != nil {
+			details["error"] = err.Error()
+		}
+		message, err := json.Marshal(details)
+		if err != nil {
+			fmt.Printf("Error: %s", err.Error())
+		} else {
+			senzingSchema.observers.NotifyObservers(ctx, string(message))
+		}
 	}
 }
 
@@ -87,16 +89,15 @@ func (senzingSchema *SenzingSchemaImpl) Initialize(ctx context.Context) error {
 
 	// Log entry parameters.
 
-	logger, _ := messagelogger.NewSenzingApiLogger(ProductId, IdMessages, IdStatuses, senzingSchema.LogLevel)
+	logger, _ := messagelogger.NewSenzingApiLogger(ProductId, IdMessages, IdStatuses, senzingSchema.logLevel)
 	logger.Log(2000, senzingSchema)
+
+	// Pull values out of SENZING_ENGINE_CONFIGURATION_JSON.
 
 	parser, err := engineconfigurationjsonparser.New(senzingSchema.SenzingEngineConfigurationJson)
 	if err != nil {
 		return err
 	}
-
-	// Pull values out of SENZING_ENGINE_CONFIGURATION_JSON.
-
 	resourcePath, err := parser.GetResourcePath(ctx)
 	if err != nil {
 		return err
@@ -137,19 +138,33 @@ func (senzingSchema *SenzingSchemaImpl) Initialize(ctx context.Context) error {
 			return fmt.Errorf("unknown database scheme: %s", parsedUrl.Scheme)
 		}
 
-		// Process file of SQL.
+		// Create sqlExecutor to process file of SQL.
 
 		sqlExecutor := &sqlexecutor.SqlExecutorImpl{
 			DatabaseConnector: databaseConnector,
 		}
-		// FIXME: sqlExecutor.SetLogLevel(ctx, (logger.LogLevel)initializer.messageLogger.GetLogLevel())
-		// FIXME: When available, use initializer.observers.RegisterObservers()
+		sqlExecutor.SetLogLevel(ctx, senzingSchema.logLevel)
+
+		// Add observers to sqlExecutor.
+
+		if senzingSchema.observers != nil {
+			for _, observer := range senzingSchema.observers.GetObservers(ctx) {
+				err = sqlExecutor.RegisterObserver(ctx, observer)
+				if err != nil {
+					return err
+				}
+			}
+		}
+
+		// Process file of SQL
 
 		err = sqlExecutor.ProcessFileName(ctx, sqlFilename)
 		if err != nil {
 			return err
 		}
 	}
+
+	// Epilog.
 
 	if senzingSchema.observers != nil {
 		go func() {
@@ -179,14 +194,10 @@ func (senzingSchema *SenzingSchemaImpl) RegisterObserver(ctx context.Context, ob
 		senzingSchema.observers = &subject.SubjectImpl{}
 	}
 	err := senzingSchema.observers.RegisterObserver(ctx, observer)
-	if senzingSchema.observers != nil {
-		go func() {
-			details := map[string]string{
-				"observerID": observer.GetObserverId(ctx),
-			}
-			senzingSchema.notify(ctx, 8002, err, details)
-		}()
+	details := map[string]string{
+		"observerID": observer.GetObserverId(ctx),
 	}
+	senzingSchema.notify(ctx, 8002, err, details)
 	if senzingSchema.isTrace {
 		defer senzingSchema.traceExit(4, observer.GetObserverId(ctx), err, time.Since(entryTime))
 	}
@@ -206,6 +217,7 @@ func (senzingSchema *SenzingSchemaImpl) SetLogLevel(ctx context.Context, logLeve
 	}
 	entryTime := time.Now()
 	var err error = nil
+	senzingSchema.logLevel = logLevel
 	senzingSchema.getLogger().SetLogLevel(messagelogger.Level(logLevel))
 	senzingSchema.isTrace = (senzingSchema.getLogger().GetLogLevel() == messagelogger.LevelTrace)
 	if senzingSchema.observers != nil {

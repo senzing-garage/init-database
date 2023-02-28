@@ -50,9 +50,9 @@ func TestSenzingSchemaImpl_Initialize(test *testing.T) {
 		fmt.Print(err)
 	}
 	testObject := &SenzingSchemaImpl{
-		LogLevel:                       logger.LevelTrace,
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
+	testObject.SetLogLevel(ctx, logger.LevelTrace)
 	testObject.Initialize(ctx)
 }
 
@@ -82,9 +82,9 @@ func TestSenzingSchemaImpl_RegisterObserver(test *testing.T) {
 		fmt.Print(err)
 	}
 	testObject := &SenzingSchemaImpl{
-		LogLevel:                       logger.LevelInfo,
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
+	testObject.SetLogLevel(ctx, logger.LevelTrace)
 	testObject.RegisterObserver(ctx, observer1)
 	testObject.Initialize(ctx)
 }
@@ -102,9 +102,9 @@ func TestSenzingSchemaImpl_UnregisterObserver(test *testing.T) {
 		fmt.Print(err)
 	}
 	testObject := &SenzingSchemaImpl{
-		LogLevel:                       logger.LevelInfo,
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
+	testObject.SetLogLevel(ctx, logger.LevelTrace)
 	testObject.RegisterObserver(ctx, observer1)
 	testObject.Initialize(ctx)
 	testObject.UnregisterObserver(ctx, observer1)

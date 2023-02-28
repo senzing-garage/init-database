@@ -50,24 +50,11 @@ func TestInitializerImpl_Initialize(test *testing.T) {
 		fmt.Print(err)
 	}
 	testObject := &InitializerImpl{
-		LogLevel:                       logger.LevelTrace,
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
+	testObject.SetLogLevel(ctx, logger.LevelTrace)
 	testObject.Initialize(ctx)
 }
-
-// func TestInitializerImpl_InitializeSenzingConfiguration(test *testing.T) {
-// 	ctx := context.TODO()
-// 	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
-// 	if err != nil {
-// 		fmt.Print(err)
-// 	}
-// 	testObject := &InitializerImpl{
-// 		LogLevel:                       logger.LevelInfo,
-// 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
-// 	}
-// 	testObject.InitializeSenzingConfiguration(ctx)
-// }
 
 func TestInitializerImpl_RegisterObserver(test *testing.T) {
 	ctx := context.TODO()
@@ -82,9 +69,9 @@ func TestInitializerImpl_RegisterObserver(test *testing.T) {
 		fmt.Print(err)
 	}
 	testObject := &InitializerImpl{
-		LogLevel:                       logger.LevelInfo,
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
+	testObject.SetLogLevel(ctx, logger.LevelInfo)
 	testObject.RegisterObserver(ctx, observer1)
 	testObject.Initialize(ctx)
 }
@@ -102,10 +89,31 @@ func TestInitializerImpl_UnregisterObserver(test *testing.T) {
 		fmt.Print(err)
 	}
 	testObject := &InitializerImpl{
-		LogLevel:                       logger.LevelInfo,
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
+	testObject.SetLogLevel(ctx, logger.LevelInfo)
 	testObject.RegisterObserver(ctx, observer1)
 	testObject.Initialize(ctx)
 	testObject.UnregisterObserver(ctx, observer1)
+}
+
+// ----------------------------------------------------------------------------
+// Examples for godoc documentation
+// ----------------------------------------------------------------------------
+
+func ExampleInitializerImpl_Initialize() {
+	// For more information, visit https://github.com/Senzing/initdatabase/blob/main/initializer/initializer_test.go
+	ctx := context.TODO()
+	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	if err != nil {
+		fmt.Print(err)
+	}
+	anInitializer := &InitializerImpl{
+		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
+	}
+	err = anInitializer.Initialize(ctx)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// Output:
 }

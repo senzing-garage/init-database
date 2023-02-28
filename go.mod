@@ -48,4 +48,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/senzing/go-common v0.1.1 => /home/senzing/senzing.git/go-common
+replace (
+	github.com/senzing/go-common v0.1.1 => /home/senzing/senzing.git/go-common
+	github.com/senzing/go-observing v0.1.2 => /home/senzing/senzing.git/go-observing
+)

@@ -20,13 +20,13 @@ import (
 // Types
 // ----------------------------------------------------------------------------
 
-// InitializerImpl is the default implementation of the GrpcServer interface.
+// InitializerImpl is the default implementation of the Initializer interface.
 type InitializerImpl struct {
 	GrpcAddress                    string
 	GrpcOptions                    []grpc.DialOption
 	isTrace                        bool
+	logLevel                       logger.Level
 	messageLogger                  messagelogger.MessageLoggerInterface
-	LogLevel                       logger.Level
 	observers                      subject.Subject
 	SenzingEngineConfigurationJson string
 	SenzingModuleName              string
@@ -38,38 +38,40 @@ type InitializerImpl struct {
 // ----------------------------------------------------------------------------
 
 // Get the Logger singleton.
-func (initializer *InitializerImpl) getLogger() messagelogger.MessageLoggerInterface {
-	if initializer.messageLogger == nil {
-		initializer.messageLogger, _ = messagelogger.NewSenzingApiLogger(ProductId, IdMessages, IdStatuses, messagelogger.LevelInfo)
+func (initializerImpl *InitializerImpl) getLogger() messagelogger.MessageLoggerInterface {
+	if initializerImpl.messageLogger == nil {
+		initializerImpl.messageLogger, _ = messagelogger.NewSenzingApiLogger(ProductId, IdMessages, IdStatuses, initializerImpl.logLevel)
 	}
-	return initializer.messageLogger
+	return initializerImpl.messageLogger
 }
 
 // Notify registered observers.
-func (initializer *InitializerImpl) notify(ctx context.Context, messageId int, err error, details map[string]string) {
-	now := time.Now()
-	details["subjectId"] = strconv.Itoa(ProductId)
-	details["messageId"] = strconv.Itoa(messageId)
-	details["messageTime"] = strconv.FormatInt(now.UnixNano(), 10)
-	if err != nil {
-		details["error"] = err.Error()
-	}
-	message, err := json.Marshal(details)
-	if err != nil {
-		fmt.Printf("Error: %s", err.Error())
-	} else {
-		initializer.observers.NotifyObservers(ctx, string(message))
+func (initializerImpl *InitializerImpl) notify(ctx context.Context, messageId int, err error, details map[string]string) {
+	if initializerImpl.observers != nil {
+		now := time.Now()
+		details["subjectId"] = strconv.Itoa(ProductId)
+		details["messageId"] = strconv.Itoa(messageId)
+		details["messageTime"] = strconv.FormatInt(now.UnixNano(), 10)
+		if err != nil {
+			details["error"] = err.Error()
+		}
+		message, err := json.Marshal(details)
+		if err != nil {
+			fmt.Printf("Error: %s", err.Error())
+		} else {
+			initializerImpl.observers.NotifyObservers(ctx, string(message))
+		}
 	}
 }
 
 // Trace method entry.
-func (initializer *InitializerImpl) traceEntry(errorNumber int, details ...interface{}) {
-	initializer.getLogger().Log(errorNumber, details...)
+func (initializerImpl *InitializerImpl) traceEntry(errorNumber int, details ...interface{}) {
+	initializerImpl.getLogger().Log(errorNumber, details...)
 }
 
 // Trace method exit.
-func (initializer *InitializerImpl) traceExit(errorNumber int, details ...interface{}) {
-	initializer.getLogger().Log(errorNumber, details...)
+func (initializerImpl *InitializerImpl) traceExit(errorNumber int, details ...interface{}) {
+	initializerImpl.getLogger().Log(errorNumber, details...)
 }
 
 // ----------------------------------------------------------------------------
@@ -78,58 +80,72 @@ func (initializer *InitializerImpl) traceExit(errorNumber int, details ...interf
 
 /*
 The Initialize method adds the Senzing database schema and Senzing default configuration to databases.
-Essentially it calls InitializeSenzingConfiguration() and InitializeSenzingSchema().
+Essentially it calls senzingSchema.Initialize() and senzingConfig.Initialize(ctx).
 
 Input
   - ctx: A context to control lifecycle.
 */
-func (initializer *InitializerImpl) Initialize(ctx context.Context) error {
+func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 	var err error = nil
-	if initializer.isTrace {
-		initializer.traceEntry(5)
+	if initializerImpl.isTrace {
+		initializerImpl.traceEntry(5)
 	}
 	entryTime := time.Now()
 
-	// Initialize Senzing schema.
+	// Create senzingSchema for initializing Senzing schema.
 
 	senzingSchema := &senzingschema.SenzingSchemaImpl{
-		LogLevel:                       logger.LevelInfo,
-		SenzingEngineConfigurationJson: initializer.SenzingEngineConfigurationJson,
+		SenzingEngineConfigurationJson: initializerImpl.SenzingEngineConfigurationJson,
 	}
+	senzingSchema.SetLogLevel(ctx, initializerImpl.logLevel)
 
-	// FIXME:
-	// for _, observer := range initializer.observers.GetObservers(ctx) {
-	// 	senzingSchema.RegisterObserver(observer)
-	// }
-	senzingSchema.Initialize(ctx)
-
-	// Initialize Senzing configuration.
+	// Create senzingConfig for initializing Senzing configuration.
 
 	senzingConfig := &senzingconfig.SenzingConfigImpl{
-		GrpcAddress:                    initializer.GrpcAddress,
-		GrpcOptions:                    initializer.GrpcOptions,
-		LogLevel:                       logger.LevelInfo,
-		SenzingEngineConfigurationJson: initializer.SenzingEngineConfigurationJson,
-		SenzingModuleName:              initializer.SenzingModuleName,
-		SenzingVerboseLogging:          initializer.SenzingVerboseLogging,
+		GrpcAddress:                    initializerImpl.GrpcAddress,
+		GrpcOptions:                    initializerImpl.GrpcOptions,
+		SenzingEngineConfigurationJson: initializerImpl.SenzingEngineConfigurationJson,
+		SenzingModuleName:              initializerImpl.SenzingModuleName,
+		SenzingVerboseLogging:          initializerImpl.SenzingVerboseLogging,
+	}
+	senzingConfig.SetLogLevel(ctx, initializerImpl.logLevel)
+
+	// Add observers to structs.
+
+	if initializerImpl.observers != nil {
+		for _, observer := range initializerImpl.observers.GetObservers(ctx) {
+			err = senzingConfig.RegisterObserver(ctx, observer)
+			if err != nil {
+				return err
+			}
+			err = senzingSchema.RegisterObserver(ctx, observer)
+			if err != nil {
+				return err
+			}
+		}
 	}
 
-	// FIXME:
-	// for _, observer := range initializer.observers.GetObservers(ctx) {
-	// 	senzingSchema.RegisterObserver(observer)
-	// }
-	senzingConfig.Initialize(ctx)
+	// Perform initialization.
+
+	err = senzingSchema.Initialize(ctx)
+	if err != nil {
+		return err
+	}
+	err = senzingConfig.Initialize(ctx)
+	if err != nil {
+		return err
+	}
 
 	// Epilog.
 
-	if initializer.observers != nil {
+	if initializerImpl.observers != nil {
 		go func() {
 			details := map[string]string{}
-			initializer.notify(ctx, 8004, err, details)
+			initializerImpl.notify(ctx, 8004, err, details)
 		}()
 	}
-	if initializer.isTrace {
-		defer initializer.traceExit(6, err, time.Since(entryTime))
+	if initializerImpl.isTrace {
+		defer initializerImpl.traceExit(6, err, time.Since(entryTime))
 	}
 	return err
 }
@@ -141,25 +157,21 @@ Input
   - ctx: A context to control lifecycle.
   - observer: The observer to be added.
 */
-func (initializer *InitializerImpl) RegisterObserver(ctx context.Context, observer observer.Observer) error {
-	if initializer.isTrace {
-		initializer.traceEntry(7, observer.GetObserverId(ctx))
+func (initializerImpl *InitializerImpl) RegisterObserver(ctx context.Context, observer observer.Observer) error {
+	if initializerImpl.isTrace {
+		initializerImpl.traceEntry(7, observer.GetObserverId(ctx))
 	}
 	entryTime := time.Now()
-	if initializer.observers == nil {
-		initializer.observers = &subject.SubjectImpl{}
+	if initializerImpl.observers == nil {
+		initializerImpl.observers = &subject.SubjectImpl{}
 	}
-	err := initializer.observers.RegisterObserver(ctx, observer)
-	if initializer.observers != nil {
-		go func() {
-			details := map[string]string{
-				"observerID": observer.GetObserverId(ctx),
-			}
-			initializer.notify(ctx, 8005, err, details)
-		}()
+	err := initializerImpl.observers.RegisterObserver(ctx, observer)
+	details := map[string]string{
+		"observerID": observer.GetObserverId(ctx),
 	}
-	if initializer.isTrace {
-		defer initializer.traceExit(8, observer.GetObserverId(ctx), err, time.Since(entryTime))
+	initializerImpl.notify(ctx, 8005, err, details)
+	if initializerImpl.isTrace {
+		defer initializerImpl.traceExit(8, observer.GetObserverId(ctx), err, time.Since(entryTime))
 	}
 	return err
 }
@@ -171,24 +183,25 @@ Input
   - ctx: A context to control lifecycle.
   - logLevel: The desired log level. TRACE, DEBUG, INFO, WARN, ERROR, FATAL or PANIC.
 */
-func (initializer *InitializerImpl) SetLogLevel(ctx context.Context, logLevel logger.Level) error {
-	if initializer.isTrace {
-		initializer.traceEntry(9, logLevel)
+func (initializerImpl *InitializerImpl) SetLogLevel(ctx context.Context, logLevel logger.Level) error {
+	if initializerImpl.isTrace {
+		initializerImpl.traceEntry(9, logLevel)
 	}
 	entryTime := time.Now()
 	var err error = nil
-	initializer.getLogger().SetLogLevel(messagelogger.Level(logLevel))
-	initializer.isTrace = (initializer.getLogger().GetLogLevel() == messagelogger.LevelTrace)
-	if initializer.observers != nil {
+	initializerImpl.logLevel = logLevel
+	initializerImpl.getLogger().SetLogLevel(messagelogger.Level(logLevel))
+	initializerImpl.isTrace = (initializerImpl.getLogger().GetLogLevel() == messagelogger.LevelTrace)
+	if initializerImpl.observers != nil {
 		go func() {
 			details := map[string]string{
 				"logLevel": logger.LevelToTextMap[logLevel],
 			}
-			initializer.notify(ctx, 8006, err, details)
+			initializerImpl.notify(ctx, 8006, err, details)
 		}()
 	}
-	if initializer.isTrace {
-		defer initializer.traceExit(10, logLevel, err, time.Since(entryTime))
+	if initializerImpl.isTrace {
+		defer initializerImpl.traceExit(10, logLevel, err, time.Since(entryTime))
 	}
 	return err
 }
@@ -200,13 +213,13 @@ Input
   - ctx: A context to control lifecycle.
   - observer: The observer to be removed.
 */
-func (initializer *InitializerImpl) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
-	if initializer.isTrace {
-		initializer.traceEntry(11, observer.GetObserverId(ctx))
+func (initializerImpl *InitializerImpl) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
+	if initializerImpl.isTrace {
+		initializerImpl.traceEntry(11, observer.GetObserverId(ctx))
 	}
 	entryTime := time.Now()
 	var err error = nil
-	if initializer.observers != nil {
+	if initializerImpl.observers != nil {
 		// Tricky code:
 		// client.notify is called synchronously before client.observers is set to nil.
 		// In client.notify, each observer will get notified in a goroutine.
@@ -214,14 +227,14 @@ func (initializer *InitializerImpl) UnregisterObserver(ctx context.Context, obse
 		details := map[string]string{
 			"observerID": observer.GetObserverId(ctx),
 		}
-		initializer.notify(ctx, 8007, err, details)
+		initializerImpl.notify(ctx, 8007, err, details)
 	}
-	err = initializer.observers.UnregisterObserver(ctx, observer)
-	if !initializer.observers.HasObservers(ctx) {
-		initializer.observers = nil
+	err = initializerImpl.observers.UnregisterObserver(ctx, observer)
+	if !initializerImpl.observers.HasObservers(ctx) {
+		initializerImpl.observers = nil
 	}
-	if initializer.isTrace {
-		defer initializer.traceExit(12, observer.GetObserverId(ctx), err, time.Since(entryTime))
+	if initializerImpl.isTrace {
+		defer initializerImpl.traceExit(12, observer.GetObserverId(ctx), err, time.Since(entryTime))
 	}
 	return err
 }

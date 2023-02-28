@@ -27,7 +27,7 @@ type SenzingConfigImpl struct {
 	GrpcOptions                    []grpc.DialOption
 	isTrace                        bool
 	logger                         messagelogger.MessageLoggerInterface
-	LogLevel                       logger.Level
+	logLevel                       logger.Level
 	observers                      subject.Subject
 	SenzingEngineConfigurationJson string
 	SenzingModuleName              string
@@ -116,18 +116,20 @@ func (senzingConfig *SenzingConfigImpl) getLogger() messagelogger.MessageLoggerI
 
 // Notify registered observers.
 func (senzingConfig *SenzingConfigImpl) notify(ctx context.Context, messageId int, err error, details map[string]string) {
-	now := time.Now()
-	details["subjectId"] = strconv.Itoa(ProductId)
-	details["messageId"] = strconv.Itoa(messageId)
-	details["messageTime"] = strconv.FormatInt(now.UnixNano(), 10)
-	if err != nil {
-		details["error"] = err.Error()
-	}
-	message, err := json.Marshal(details)
-	if err != nil {
-		fmt.Printf("Error: %s", err.Error())
-	} else {
-		senzingConfig.observers.NotifyObservers(ctx, string(message))
+	if senzingConfig.observers != nil {
+		now := time.Now()
+		details["subjectId"] = strconv.Itoa(ProductId)
+		details["messageId"] = strconv.Itoa(messageId)
+		details["messageTime"] = strconv.FormatInt(now.UnixNano(), 10)
+		if err != nil {
+			details["error"] = err.Error()
+		}
+		message, err := json.Marshal(details)
+		if err != nil {
+			fmt.Printf("Error: %s", err.Error())
+		} else {
+			senzingConfig.observers.NotifyObservers(ctx, string(message))
+		}
 	}
 }
 
@@ -160,7 +162,7 @@ func (senzingConfig *SenzingConfigImpl) Initialize(ctx context.Context) error {
 
 	// Log entry parameters.
 
-	logger, _ := messagelogger.NewSenzingApiLogger(ProductId, IdMessages, IdStatuses, senzingConfig.LogLevel)
+	logger, _ := messagelogger.NewSenzingApiLogger(ProductId, IdMessages, IdStatuses, senzingConfig.logLevel)
 	logger.Log(2000, senzingConfig)
 
 	// Create Senzing objects.
@@ -220,6 +222,8 @@ func (senzingConfig *SenzingConfigImpl) Initialize(ctx context.Context) error {
 		return err
 	}
 
+	// Epilog.
+
 	if senzingConfig.observers != nil {
 		go func() {
 			details := map[string]string{}
@@ -247,17 +251,41 @@ func (senzingConfig *SenzingConfigImpl) RegisterObserver(ctx context.Context, ob
 	if senzingConfig.observers == nil {
 		senzingConfig.observers = &subject.SubjectImpl{}
 	}
+
+	// Register observer with senzingConfig.
+
 	err := senzingConfig.observers.RegisterObserver(ctx, observer)
-	// senzingConfig.getG2config(ctx).RegisterObserver(ctx, observer)
-	// senzingConfig.getG2configmgr(ctx).RegisterObserver(ctx, observer)
-	if senzingConfig.observers != nil {
-		go func() {
-			details := map[string]string{
-				"observerID": observer.GetObserverId(ctx),
-			}
-			senzingConfig.notify(ctx, 8003, err, details)
-		}()
+	if err != nil {
+		return err
 	}
+
+	// Register observer with dependent stucts.
+
+	g2Config, err := senzingConfig.getG2config(ctx)
+	if err != nil {
+		return err
+	}
+	g2Configmgr, err := senzingConfig.getG2configmgr(ctx)
+	if err != nil {
+		return err
+	}
+	for _, observer := range senzingConfig.observers.GetObservers(ctx) {
+		err = g2Config.RegisterObserver(ctx, observer)
+		if err != nil {
+			return err
+		}
+		err = g2Configmgr.RegisterObserver(ctx, observer)
+		if err != nil {
+			return err
+		}
+	}
+
+	// Epilog.
+
+	details := map[string]string{
+		"observerID": observer.GetObserverId(ctx),
+	}
+	senzingConfig.notify(ctx, 8003, err, details)
 	if senzingConfig.isTrace {
 		defer senzingConfig.traceExit(4, observer.GetObserverId(ctx), err, time.Since(entryTime))
 	}
@@ -277,6 +305,7 @@ func (senzingConfig *SenzingConfigImpl) SetLogLevel(ctx context.Context, logLeve
 	}
 	entryTime := time.Now()
 	var err error = nil
+	senzingConfig.logLevel = logLevel
 	senzingConfig.getLogger().SetLogLevel(messagelogger.Level(logLevel))
 	senzingConfig.isTrace = (senzingConfig.getLogger().GetLogLevel() == messagelogger.LevelTrace)
 	if senzingConfig.observers != nil {
@@ -298,7 +327,7 @@ The UnregisterObserver method removes the observer to the list of observers noti
 
 Input
   - ctx: A context to control lifecycle.
-  - observer: The observer to be added.
+  - observer: The observer to be removed.
 */
 func (senzingConfig *SenzingConfigImpl) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
 	if senzingConfig.isTrace {
