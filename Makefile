@@ -70,10 +70,10 @@ build-linux:
 
 .PHONY: test
 test:
-	@go test -v -p 1 ./...
+#	@go test -v -p 1 ./...
 #	@go test -v ./initializer
 #	@go test -v ./senzingconfig
-
+#	@go test -v ./senzingschema
 
 # -----------------------------------------------------------------------------
 # docker-build

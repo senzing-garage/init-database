@@ -43,33 +43,33 @@ func teardown() error {
 // Test interface functions
 // ----------------------------------------------------------------------------
 
-func TestInitializerImpl_Initialize(test *testing.T) {
+func TestSenzingSchemaImpl_Initialize(test *testing.T) {
 	ctx := context.TODO()
 	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
 	if err != nil {
 		fmt.Print(err)
 	}
-	testObject := &InitializerImpl{
+	testObject := &SenzingSchemaImpl{
 		LogLevel:                       logger.LevelTrace,
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
 	testObject.Initialize(ctx)
 }
 
-// func TestInitializerImpl_InitializeSenzingConfiguration(test *testing.T) {
+// func TestSenzingSchemaImpl_InitializeSenzingConfiguration(test *testing.T) {
 // 	ctx := context.TODO()
 // 	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
 // 	if err != nil {
 // 		fmt.Print(err)
 // 	}
-// 	testObject := &InitializerImpl{
+// 	testObject := &SenzingSchemaImpl{
 // 		LogLevel:                       logger.LevelInfo,
 // 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 // 	}
 // 	testObject.InitializeSenzingConfiguration(ctx)
 // }
 
-func TestInitializerImpl_RegisterObserver(test *testing.T) {
+func TestSenzingSchemaImpl_RegisterObserver(test *testing.T) {
 	ctx := context.TODO()
 
 	observer1 := &observer.ObserverNull{
@@ -81,7 +81,7 @@ func TestInitializerImpl_RegisterObserver(test *testing.T) {
 	if err != nil {
 		fmt.Print(err)
 	}
-	testObject := &InitializerImpl{
+	testObject := &SenzingSchemaImpl{
 		LogLevel:                       logger.LevelInfo,
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
@@ -89,7 +89,7 @@ func TestInitializerImpl_RegisterObserver(test *testing.T) {
 	testObject.Initialize(ctx)
 }
 
-func TestInitializerImpl_UnregisterObserver(test *testing.T) {
+func TestSenzingSchemaImpl_UnregisterObserver(test *testing.T) {
 	ctx := context.TODO()
 
 	observer1 := &observer.ObserverNull{
@@ -101,7 +101,7 @@ func TestInitializerImpl_UnregisterObserver(test *testing.T) {
 	if err != nil {
 		fmt.Print(err)
 	}
-	testObject := &InitializerImpl{
+	testObject := &SenzingSchemaImpl{
 		LogLevel:                       logger.LevelInfo,
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}

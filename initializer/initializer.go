@@ -4,21 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"net/url"
-	"os"
 	"strconv"
-	"sync"
 	"time"
 
-	"github.com/senzing/g2-sdk-go/g2api"
-	"github.com/senzing/go-common/engineconfigurationjsonparser"
-	"github.com/senzing/go-databasing/connector"
-	"github.com/senzing/go-databasing/sqlexecutor"
 	"github.com/senzing/go-logging/logger"
 	"github.com/senzing/go-logging/messagelogger"
 	"github.com/senzing/go-observing/observer"
 	"github.com/senzing/go-observing/subject"
-	"github.com/senzing/go-sdk-abstract-factory/factory"
+	"github.com/senzing/initdatabase/senzingconfig"
+	"github.com/senzing/initdatabase/senzingschema"
 	"google.golang.org/grpc"
 )
 
@@ -37,29 +31,11 @@ type InitializerImpl struct {
 	SenzingEngineConfigurationJson string
 	SenzingModuleName              string
 	SenzingVerboseLogging          int
-	g2configSingleton              g2api.G2config
-	g2configSyncOnce               sync.Once
-	g2configmgrSingleton           g2api.G2configmgr
-	g2configmgrSyncOnce            sync.Once
-	g2factorySingleton             factory.SdkAbstractFactory
-	g2factorySyncOnce              sync.Once
 }
-
-// ----------------------------------------------------------------------------
-// Variables
-// ----------------------------------------------------------------------------
-
-var defaultModuleName string = "initdatabase"
 
 // ----------------------------------------------------------------------------
 // Internal methods
 // ----------------------------------------------------------------------------
-
-// Print error and leave program.
-func errorExit(message string, err error) {
-	fmt.Printf("Exit with error: %s   Error: %v\n", message, err)
-	os.Exit(1)
-}
 
 // Get the Logger singleton.
 func (initializer *InitializerImpl) getLogger() messagelogger.MessageLoggerInterface {
@@ -102,117 +78,47 @@ func (initializer *InitializerImpl) traceExit(errorNumber int, details ...interf
 
 /*
 The Initialize method adds the Senzing database schema and Senzing default configuration to databases.
-
-Input
-  - ctx: A context to control lifecycle.
-*/
-func (initializer *InitializerImpl) InitializeSenzingSchema(ctx context.Context) error {
-	if initializer.isTrace {
-		initializer.traceEntry(3)
-	}
-	entryTime := time.Now()
-
-	// Log entry parameters.
-
-	logger, _ := messagelogger.NewSenzingApiLogger(ProductId, IdMessages, IdStatuses, initializer.LogLevel)
-	logger.Log(2000, initializer)
-
-	parser, err := engineconfigurationjsonparser.New(initializer.SenzingEngineConfigurationJson)
-	if err != nil {
-		return err
-	}
-
-	// Pull values out of SENZING_ENGINE_CONFIGURATION_JSON.
-
-	resourcePath, err := parser.GetResourcePath(ctx)
-	if err != nil {
-		return err
-	}
-	databaseUrls, err := parser.GetDatabaseUrls(ctx)
-	if err != nil {
-		return err
-	}
-
-	// Process each database.
-
-	for _, databaseUrl := range databaseUrls {
-		var sqlFilename string
-
-		// Connect to the database.
-
-		databaseConnector, err := connector.NewConnector(ctx, databaseUrl)
-		if err != nil {
-			return err
-		}
-
-		// Determine which SQL file to process.
-
-		parsedUrl, err := url.Parse(databaseUrl)
-		if err != nil {
-			return err
-		}
-		switch parsedUrl.Scheme {
-		case "sqlite3":
-			sqlFilename = resourcePath + "/schema/g2core-schema-sqlite-create.sql"
-		case "postgresql":
-			sqlFilename = resourcePath + "/schema/g2core-schema-postgresql-create.sql"
-		case "mysql":
-			sqlFilename = resourcePath + "/schema/g2core-schema-mysql-create.sql"
-		case "mssql":
-			sqlFilename = resourcePath + "/schema/g2core-schema-mssql-create.sql"
-		default:
-			return fmt.Errorf("unknown database scheme: %s", parsedUrl.Scheme)
-		}
-
-		// Process file of SQL.
-
-		sqlExecutor := &sqlexecutor.SqlExecutorImpl{
-			DatabaseConnector: databaseConnector,
-		}
-		// FIXME: sqlExecutor.SetLogLevel(ctx, (logger.LogLevel)initializer.messageLogger.GetLogLevel())
-		// FIXME: When available, use initializer.observers.RegisterObservers()
-
-		err = sqlExecutor.ProcessFileName(ctx, sqlFilename)
-		if err != nil {
-			return err
-		}
-	}
-
-	if initializer.observers != nil {
-		go func() {
-			details := map[string]string{}
-			initializer.notify(ctx, 8003, err, details)
-		}()
-	}
-	if initializer.isTrace {
-		defer initializer.traceExit(4, err, time.Since(entryTime))
-	}
-	return err
-}
-
-/*
-The Initialize method adds the Senzing database schema and Senzing default configuration to databases.
 Essentially it calls InitializeSenzingConfiguration() and InitializeSenzingSchema().
 
 Input
   - ctx: A context to control lifecycle.
 */
 func (initializer *InitializerImpl) Initialize(ctx context.Context) error {
+	var err error = nil
 	if initializer.isTrace {
 		initializer.traceEntry(5)
 	}
 	entryTime := time.Now()
 
-	// Initialize schema and configuration.
+	// Initialize Senzing schema.
 
-	err := initializer.InitializeSenzingSchema(ctx)
-	if err != nil {
-		errorExit("Could not initialize Senzing database schema.", err)
+	senzingSchema := &senzingschema.SenzingSchemaImpl{
+		LogLevel:                       logger.LevelInfo,
+		SenzingEngineConfigurationJson: initializer.SenzingEngineConfigurationJson,
 	}
-	err = initializer.InitializeSenzingConfiguration(ctx)
-	if err != nil {
-		errorExit("Could not create Senzing configuration.", err)
+
+	// FIXME:
+	// for _, observer := range initializer.observers.GetObservers(ctx) {
+	// 	senzingSchema.RegisterObserver(observer)
+	// }
+	senzingSchema.Initialize(ctx)
+
+	// Initialize Senzing configuration.
+
+	senzingConfig := &senzingconfig.SenzingConfigImpl{
+		GrpcAddress:                    initializer.GrpcAddress,
+		GrpcOptions:                    initializer.GrpcOptions,
+		LogLevel:                       logger.LevelInfo,
+		SenzingEngineConfigurationJson: initializer.SenzingEngineConfigurationJson,
+		SenzingModuleName:              initializer.SenzingModuleName,
+		SenzingVerboseLogging:          initializer.SenzingVerboseLogging,
 	}
+
+	// FIXME:
+	// for _, observer := range initializer.observers.GetObservers(ctx) {
+	// 	senzingSchema.RegisterObserver(observer)
+	// }
+	senzingConfig.Initialize(ctx)
 
 	// Epilog.
 

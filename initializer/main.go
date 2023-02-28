@@ -13,8 +13,6 @@ import (
 
 type Initializer interface {
 	Initialize(ctx context.Context) error
-	InitializeSenzingConfiguration(ctx context.Context) error
-	InitializeSenzingSchema(ctx context.Context) error
 	RegisterObserver(ctx context.Context, observer observer.Observer) error
 	SetLogLevel(ctx context.Context, logLevel logger.Level) error
 	UnregisterObserver(ctx context.Context, observer observer.Observer) error

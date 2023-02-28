@@ -5,12 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
-	"os"
 	"strconv"
-	"sync"
 	"time"
 
-	"github.com/senzing/g2-sdk-go/g2api"
 	"github.com/senzing/go-common/engineconfigurationjsonparser"
 	"github.com/senzing/go-databasing/connector"
 	"github.com/senzing/go-databasing/sqlexecutor"
@@ -18,59 +15,35 @@ import (
 	"github.com/senzing/go-logging/messagelogger"
 	"github.com/senzing/go-observing/observer"
 	"github.com/senzing/go-observing/subject"
-	"github.com/senzing/go-sdk-abstract-factory/factory"
-	"google.golang.org/grpc"
 )
 
 // ----------------------------------------------------------------------------
 // Types
 // ----------------------------------------------------------------------------
 
-// InitializerImpl is the default implementation of the GrpcServer interface.
-type InitializerImpl struct {
-	GrpcAddress                    string
-	GrpcOptions                    []grpc.DialOption
+// SenzingSchemaImpl is the default implementation of the SenzingSchema interface.
+type SenzingSchemaImpl struct {
 	isTrace                        bool
 	messageLogger                  messagelogger.MessageLoggerInterface
 	LogLevel                       logger.Level
 	observers                      subject.Subject
 	SenzingEngineConfigurationJson string
-	SenzingModuleName              string
-	SenzingVerboseLogging          int
-	g2configSingleton              g2api.G2config
-	g2configSyncOnce               sync.Once
-	g2configmgrSingleton           g2api.G2configmgr
-	g2configmgrSyncOnce            sync.Once
-	g2factorySingleton             factory.SdkAbstractFactory
-	g2factorySyncOnce              sync.Once
 }
-
-// ----------------------------------------------------------------------------
-// Variables
-// ----------------------------------------------------------------------------
-
-var defaultModuleName string = "initdatabase"
 
 // ----------------------------------------------------------------------------
 // Internal methods
 // ----------------------------------------------------------------------------
 
-// Print error and leave program.
-func errorExit(message string, err error) {
-	fmt.Printf("Exit with error: %s   Error: %v\n", message, err)
-	os.Exit(1)
-}
-
 // Get the Logger singleton.
-func (initializer *InitializerImpl) getLogger() messagelogger.MessageLoggerInterface {
-	if initializer.messageLogger == nil {
-		initializer.messageLogger, _ = messagelogger.NewSenzingApiLogger(ProductId, IdMessages, IdStatuses, messagelogger.LevelInfo)
+func (senzingSchema *SenzingSchemaImpl) getLogger() messagelogger.MessageLoggerInterface {
+	if senzingSchema.messageLogger == nil {
+		senzingSchema.messageLogger, _ = messagelogger.NewSenzingApiLogger(ProductId, IdMessages, IdStatuses, messagelogger.LevelInfo)
 	}
-	return initializer.messageLogger
+	return senzingSchema.messageLogger
 }
 
 // Notify registered observers.
-func (initializer *InitializerImpl) notify(ctx context.Context, messageId int, err error, details map[string]string) {
+func (senzingSchema *SenzingSchemaImpl) notify(ctx context.Context, messageId int, err error, details map[string]string) {
 	now := time.Now()
 	details["subjectId"] = strconv.Itoa(ProductId)
 	details["messageId"] = strconv.Itoa(messageId)
@@ -82,18 +55,18 @@ func (initializer *InitializerImpl) notify(ctx context.Context, messageId int, e
 	if err != nil {
 		fmt.Printf("Error: %s", err.Error())
 	} else {
-		initializer.observers.NotifyObservers(ctx, string(message))
+		senzingSchema.observers.NotifyObservers(ctx, string(message))
 	}
 }
 
 // Trace method entry.
-func (initializer *InitializerImpl) traceEntry(errorNumber int, details ...interface{}) {
-	initializer.getLogger().Log(errorNumber, details...)
+func (senzingSchema *SenzingSchemaImpl) traceEntry(errorNumber int, details ...interface{}) {
+	senzingSchema.getLogger().Log(errorNumber, details...)
 }
 
 // Trace method exit.
-func (initializer *InitializerImpl) traceExit(errorNumber int, details ...interface{}) {
-	initializer.getLogger().Log(errorNumber, details...)
+func (senzingSchema *SenzingSchemaImpl) traceExit(errorNumber int, details ...interface{}) {
+	senzingSchema.getLogger().Log(errorNumber, details...)
 }
 
 // ----------------------------------------------------------------------------
@@ -101,23 +74,23 @@ func (initializer *InitializerImpl) traceExit(errorNumber int, details ...interf
 // ----------------------------------------------------------------------------
 
 /*
-The Initialize method adds the Senzing database schema and Senzing default configuration to databases.
+The Initialize method adds the Senzing database schema to the specified database.
 
 Input
   - ctx: A context to control lifecycle.
 */
-func (initializer *InitializerImpl) InitializeSenzingSchema(ctx context.Context) error {
-	if initializer.isTrace {
-		initializer.traceEntry(3)
+func (senzingSchema *SenzingSchemaImpl) Initialize(ctx context.Context) error {
+	if senzingSchema.isTrace {
+		senzingSchema.traceEntry(1)
 	}
 	entryTime := time.Now()
 
 	// Log entry parameters.
 
-	logger, _ := messagelogger.NewSenzingApiLogger(ProductId, IdMessages, IdStatuses, initializer.LogLevel)
-	logger.Log(2000, initializer)
+	logger, _ := messagelogger.NewSenzingApiLogger(ProductId, IdMessages, IdStatuses, senzingSchema.LogLevel)
+	logger.Log(2000, senzingSchema)
 
-	parser, err := engineconfigurationjsonparser.New(initializer.SenzingEngineConfigurationJson)
+	parser, err := engineconfigurationjsonparser.New(senzingSchema.SenzingEngineConfigurationJson)
 	if err != nil {
 		return err
 	}
@@ -178,52 +151,14 @@ func (initializer *InitializerImpl) InitializeSenzingSchema(ctx context.Context)
 		}
 	}
 
-	if initializer.observers != nil {
+	if senzingSchema.observers != nil {
 		go func() {
 			details := map[string]string{}
-			initializer.notify(ctx, 8003, err, details)
+			senzingSchema.notify(ctx, 8001, err, details)
 		}()
 	}
-	if initializer.isTrace {
-		defer initializer.traceExit(4, err, time.Since(entryTime))
-	}
-	return err
-}
-
-/*
-The Initialize method adds the Senzing database schema and Senzing default configuration to databases.
-Essentially it calls InitializeSenzingConfiguration() and InitializeSenzingSchema().
-
-Input
-  - ctx: A context to control lifecycle.
-*/
-func (initializer *InitializerImpl) Initialize(ctx context.Context) error {
-	if initializer.isTrace {
-		initializer.traceEntry(5)
-	}
-	entryTime := time.Now()
-
-	// Initialize schema and configuration.
-
-	err := initializer.InitializeSenzingSchema(ctx)
-	if err != nil {
-		errorExit("Could not initialize Senzing database schema.", err)
-	}
-	err = initializer.InitializeSenzingConfiguration(ctx)
-	if err != nil {
-		errorExit("Could not create Senzing configuration.", err)
-	}
-
-	// Epilog.
-
-	if initializer.observers != nil {
-		go func() {
-			details := map[string]string{}
-			initializer.notify(ctx, 8004, err, details)
-		}()
-	}
-	if initializer.isTrace {
-		defer initializer.traceExit(6, err, time.Since(entryTime))
+	if senzingSchema.isTrace {
+		defer senzingSchema.traceExit(2, err, time.Since(entryTime))
 	}
 	return err
 }
@@ -235,25 +170,25 @@ Input
   - ctx: A context to control lifecycle.
   - observer: The observer to be added.
 */
-func (initializer *InitializerImpl) RegisterObserver(ctx context.Context, observer observer.Observer) error {
-	if initializer.isTrace {
-		initializer.traceEntry(7, observer.GetObserverId(ctx))
+func (senzingSchema *SenzingSchemaImpl) RegisterObserver(ctx context.Context, observer observer.Observer) error {
+	if senzingSchema.isTrace {
+		senzingSchema.traceEntry(3, observer.GetObserverId(ctx))
 	}
 	entryTime := time.Now()
-	if initializer.observers == nil {
-		initializer.observers = &subject.SubjectImpl{}
+	if senzingSchema.observers == nil {
+		senzingSchema.observers = &subject.SubjectImpl{}
 	}
-	err := initializer.observers.RegisterObserver(ctx, observer)
-	if initializer.observers != nil {
+	err := senzingSchema.observers.RegisterObserver(ctx, observer)
+	if senzingSchema.observers != nil {
 		go func() {
 			details := map[string]string{
 				"observerID": observer.GetObserverId(ctx),
 			}
-			initializer.notify(ctx, 8005, err, details)
+			senzingSchema.notify(ctx, 8002, err, details)
 		}()
 	}
-	if initializer.isTrace {
-		defer initializer.traceExit(8, observer.GetObserverId(ctx), err, time.Since(entryTime))
+	if senzingSchema.isTrace {
+		defer senzingSchema.traceExit(4, observer.GetObserverId(ctx), err, time.Since(entryTime))
 	}
 	return err
 }
@@ -265,24 +200,24 @@ Input
   - ctx: A context to control lifecycle.
   - logLevel: The desired log level. TRACE, DEBUG, INFO, WARN, ERROR, FATAL or PANIC.
 */
-func (initializer *InitializerImpl) SetLogLevel(ctx context.Context, logLevel logger.Level) error {
-	if initializer.isTrace {
-		initializer.traceEntry(9, logLevel)
+func (senzingSchema *SenzingSchemaImpl) SetLogLevel(ctx context.Context, logLevel logger.Level) error {
+	if senzingSchema.isTrace {
+		senzingSchema.traceEntry(5, logLevel)
 	}
 	entryTime := time.Now()
 	var err error = nil
-	initializer.getLogger().SetLogLevel(messagelogger.Level(logLevel))
-	initializer.isTrace = (initializer.getLogger().GetLogLevel() == messagelogger.LevelTrace)
-	if initializer.observers != nil {
+	senzingSchema.getLogger().SetLogLevel(messagelogger.Level(logLevel))
+	senzingSchema.isTrace = (senzingSchema.getLogger().GetLogLevel() == messagelogger.LevelTrace)
+	if senzingSchema.observers != nil {
 		go func() {
 			details := map[string]string{
 				"logLevel": logger.LevelToTextMap[logLevel],
 			}
-			initializer.notify(ctx, 8006, err, details)
+			senzingSchema.notify(ctx, 8003, err, details)
 		}()
 	}
-	if initializer.isTrace {
-		defer initializer.traceExit(10, logLevel, err, time.Since(entryTime))
+	if senzingSchema.isTrace {
+		defer senzingSchema.traceExit(6, logLevel, err, time.Since(entryTime))
 	}
 	return err
 }
@@ -294,13 +229,13 @@ Input
   - ctx: A context to control lifecycle.
   - observer: The observer to be removed.
 */
-func (initializer *InitializerImpl) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
-	if initializer.isTrace {
-		initializer.traceEntry(11, observer.GetObserverId(ctx))
+func (senzingSchema *SenzingSchemaImpl) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
+	if senzingSchema.isTrace {
+		senzingSchema.traceEntry(7, observer.GetObserverId(ctx))
 	}
 	entryTime := time.Now()
 	var err error = nil
-	if initializer.observers != nil {
+	if senzingSchema.observers != nil {
 		// Tricky code:
 		// client.notify is called synchronously before client.observers is set to nil.
 		// In client.notify, each observer will get notified in a goroutine.
@@ -308,14 +243,14 @@ func (initializer *InitializerImpl) UnregisterObserver(ctx context.Context, obse
 		details := map[string]string{
 			"observerID": observer.GetObserverId(ctx),
 		}
-		initializer.notify(ctx, 8007, err, details)
+		senzingSchema.notify(ctx, 8004, err, details)
 	}
-	err = initializer.observers.UnregisterObserver(ctx, observer)
-	if !initializer.observers.HasObservers(ctx) {
-		initializer.observers = nil
+	err = senzingSchema.observers.UnregisterObserver(ctx, observer)
+	if !senzingSchema.observers.HasObservers(ctx) {
+		senzingSchema.observers = nil
 	}
-	if initializer.isTrace {
-		defer initializer.traceExit(12, observer.GetObserverId(ctx), err, time.Since(entryTime))
+	if senzingSchema.isTrace {
+		defer senzingSchema.traceExit(8, observer.GetObserverId(ctx), err, time.Since(entryTime))
 	}
 	return err
 }
