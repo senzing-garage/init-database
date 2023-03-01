@@ -22,8 +22,8 @@ type SenzingSchema interface {
 // Constants
 // ----------------------------------------------------------------------------
 
-// Identfier of the  package found messages having the format "senzing-6212xxxx".
-const ProductId = 6212
+// Identfier of the  package found messages having the format "senzing-6503xxxx".
+const ProductId = 6503
 
 // ----------------------------------------------------------------------------
 // Variables

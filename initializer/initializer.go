@@ -2,13 +2,11 @@ package initializer
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/senzing/go-logging/logger"
 	"github.com/senzing/go-logging/messagelogger"
+	"github.com/senzing/go-observing/notifier"
 	"github.com/senzing/go-observing/observer"
 	"github.com/senzing/go-observing/subject"
 	"github.com/senzing/initdatabase/senzingconfig"
@@ -45,25 +43,6 @@ func (initializerImpl *InitializerImpl) getLogger() messagelogger.MessageLoggerI
 	return initializerImpl.messageLogger
 }
 
-// Notify registered observers.
-func (initializerImpl *InitializerImpl) notify(ctx context.Context, messageId int, err error, details map[string]string) {
-	if initializerImpl.observers != nil {
-		now := time.Now()
-		details["subjectId"] = strconv.Itoa(ProductId)
-		details["messageId"] = strconv.Itoa(messageId)
-		details["messageTime"] = strconv.FormatInt(now.UnixNano(), 10)
-		if err != nil {
-			details["error"] = err.Error()
-		}
-		message, err := json.Marshal(details)
-		if err != nil {
-			fmt.Printf("Error: %s", err.Error())
-		} else {
-			initializerImpl.observers.NotifyObservers(ctx, string(message))
-		}
-	}
-}
-
 // Trace method entry.
 func (initializerImpl *InitializerImpl) traceEntry(errorNumber int, details ...interface{}) {
 	initializerImpl.getLogger().Log(errorNumber, details...)
@@ -88,9 +67,14 @@ Input
 func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 	var err error = nil
 	if initializerImpl.isTrace {
-		initializerImpl.traceEntry(5)
+		initializerImpl.traceEntry(1)
 	}
 	entryTime := time.Now()
+
+	// Log entry parameters.
+
+	logger, _ := messagelogger.NewSenzingApiLogger(ProductId, IdMessages, IdStatuses, initializerImpl.logLevel)
+	logger.Log(2000, initializerImpl)
 
 	// Create senzingSchema for initializing Senzing schema.
 
@@ -141,11 +125,11 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 	if initializerImpl.observers != nil {
 		go func() {
 			details := map[string]string{}
-			initializerImpl.notify(ctx, 8004, err, details)
+			notifier.Notify(ctx, initializerImpl.observers, ProductId, 8001, err, details)
 		}()
 	}
 	if initializerImpl.isTrace {
-		defer initializerImpl.traceExit(6, err, time.Since(entryTime))
+		defer initializerImpl.traceExit(2, err, time.Since(entryTime))
 	}
 	return err
 }
@@ -159,7 +143,7 @@ Input
 */
 func (initializerImpl *InitializerImpl) RegisterObserver(ctx context.Context, observer observer.Observer) error {
 	if initializerImpl.isTrace {
-		initializerImpl.traceEntry(7, observer.GetObserverId(ctx))
+		initializerImpl.traceEntry(3, observer.GetObserverId(ctx))
 	}
 	entryTime := time.Now()
 	if initializerImpl.observers == nil {
@@ -169,9 +153,9 @@ func (initializerImpl *InitializerImpl) RegisterObserver(ctx context.Context, ob
 	details := map[string]string{
 		"observerID": observer.GetObserverId(ctx),
 	}
-	initializerImpl.notify(ctx, 8005, err, details)
+	notifier.Notify(ctx, initializerImpl.observers, ProductId, 8002, err, details)
 	if initializerImpl.isTrace {
-		defer initializerImpl.traceExit(8, observer.GetObserverId(ctx), err, time.Since(entryTime))
+		defer initializerImpl.traceExit(4, observer.GetObserverId(ctx), err, time.Since(entryTime))
 	}
 	return err
 }
@@ -185,7 +169,7 @@ Input
 */
 func (initializerImpl *InitializerImpl) SetLogLevel(ctx context.Context, logLevel logger.Level) error {
 	if initializerImpl.isTrace {
-		initializerImpl.traceEntry(9, logLevel)
+		initializerImpl.traceEntry(5, logLevel)
 	}
 	entryTime := time.Now()
 	var err error = nil
@@ -197,11 +181,11 @@ func (initializerImpl *InitializerImpl) SetLogLevel(ctx context.Context, logLeve
 			details := map[string]string{
 				"logLevel": logger.LevelToTextMap[logLevel],
 			}
-			initializerImpl.notify(ctx, 8006, err, details)
+			notifier.Notify(ctx, initializerImpl.observers, ProductId, 8003, err, details)
 		}()
 	}
 	if initializerImpl.isTrace {
-		defer initializerImpl.traceExit(10, logLevel, err, time.Since(entryTime))
+		defer initializerImpl.traceExit(6, logLevel, err, time.Since(entryTime))
 	}
 	return err
 }
@@ -215,7 +199,7 @@ Input
 */
 func (initializerImpl *InitializerImpl) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
 	if initializerImpl.isTrace {
-		initializerImpl.traceEntry(11, observer.GetObserverId(ctx))
+		initializerImpl.traceEntry(7, observer.GetObserverId(ctx))
 	}
 	entryTime := time.Now()
 	var err error = nil
@@ -227,14 +211,14 @@ func (initializerImpl *InitializerImpl) UnregisterObserver(ctx context.Context, 
 		details := map[string]string{
 			"observerID": observer.GetObserverId(ctx),
 		}
-		initializerImpl.notify(ctx, 8007, err, details)
+		notifier.Notify(ctx, initializerImpl.observers, ProductId, 8004, err, details)
 	}
 	err = initializerImpl.observers.UnregisterObserver(ctx, observer)
 	if !initializerImpl.observers.HasObservers(ctx) {
 		initializerImpl.observers = nil
 	}
 	if initializerImpl.isTrace {
-		defer initializerImpl.traceExit(12, observer.GetObserverId(ctx), err, time.Since(entryTime))
+		defer initializerImpl.traceExit(8, observer.GetObserverId(ctx), err, time.Since(entryTime))
 	}
 	return err
 }

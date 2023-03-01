@@ -2,15 +2,14 @@ package senzingconfig
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"strconv"
 	"sync"
 	"time"
 
 	"github.com/senzing/g2-sdk-go/g2api"
 	"github.com/senzing/go-logging/logger"
 	"github.com/senzing/go-logging/messagelogger"
+	"github.com/senzing/go-observing/notifier"
 	"github.com/senzing/go-observing/observer"
 	"github.com/senzing/go-observing/subject"
 	"github.com/senzing/go-sdk-abstract-factory/factory"
@@ -114,25 +113,6 @@ func (senzingConfig *SenzingConfigImpl) getLogger() messagelogger.MessageLoggerI
 	return senzingConfig.logger
 }
 
-// Notify registered observers.
-func (senzingConfig *SenzingConfigImpl) notify(ctx context.Context, messageId int, err error, details map[string]string) {
-	if senzingConfig.observers != nil {
-		now := time.Now()
-		details["subjectId"] = strconv.Itoa(ProductId)
-		details["messageId"] = strconv.Itoa(messageId)
-		details["messageTime"] = strconv.FormatInt(now.UnixNano(), 10)
-		if err != nil {
-			details["error"] = err.Error()
-		}
-		message, err := json.Marshal(details)
-		if err != nil {
-			fmt.Printf("Error: %s", err.Error())
-		} else {
-			senzingConfig.observers.NotifyObservers(ctx, string(message))
-		}
-	}
-}
-
 // Trace method entry.
 func (senzingConfig *SenzingConfigImpl) traceEntry(errorNumber int, details ...interface{}) {
 	senzingConfig.getLogger().Log(errorNumber, details...)
@@ -187,7 +167,7 @@ func (senzingConfig *SenzingConfigImpl) Initialize(ctx context.Context) error {
 		if senzingConfig.observers != nil {
 			go func() {
 				details := map[string]string{}
-				senzingConfig.notify(ctx, 8001, err, details)
+				notifier.Notify(ctx, senzingConfig.observers, ProductId, 8001, err, details)
 			}()
 		}
 		logger.Log(2002, configID)
@@ -227,11 +207,11 @@ func (senzingConfig *SenzingConfigImpl) Initialize(ctx context.Context) error {
 	if senzingConfig.observers != nil {
 		go func() {
 			details := map[string]string{}
-			senzingConfig.notify(ctx, 8002, err, details)
+			notifier.Notify(ctx, senzingConfig.observers, ProductId, 8002, err, details)
 		}()
 	}
 	if senzingConfig.isTrace {
-		defer senzingConfig.traceExit(2, configID, err, configID, time.Since(entryTime))
+		defer senzingConfig.traceExit(2, err, configID, time.Since(entryTime))
 	}
 	return err
 }
@@ -285,7 +265,7 @@ func (senzingConfig *SenzingConfigImpl) RegisterObserver(ctx context.Context, ob
 	details := map[string]string{
 		"observerID": observer.GetObserverId(ctx),
 	}
-	senzingConfig.notify(ctx, 8003, err, details)
+	notifier.Notify(ctx, senzingConfig.observers, ProductId, 8003, err, details)
 	if senzingConfig.isTrace {
 		defer senzingConfig.traceExit(4, observer.GetObserverId(ctx), err, time.Since(entryTime))
 	}
@@ -313,7 +293,7 @@ func (senzingConfig *SenzingConfigImpl) SetLogLevel(ctx context.Context, logLeve
 			details := map[string]string{
 				"logLevel": logger.LevelToTextMap[logLevel],
 			}
-			senzingConfig.notify(ctx, 8004, err, details)
+			notifier.Notify(ctx, senzingConfig.observers, ProductId, 8004, err, details)
 		}()
 	}
 	if senzingConfig.isTrace {
@@ -345,7 +325,7 @@ func (senzingConfig *SenzingConfigImpl) UnregisterObserver(ctx context.Context, 
 		details := map[string]string{
 			"observerID": observer.GetObserverId(ctx),
 		}
-		senzingConfig.notify(ctx, 8005, err, details)
+		notifier.Notify(ctx, senzingConfig.observers, ProductId, 8005, err, details)
 	}
 	err = senzingConfig.observers.UnregisterObserver(ctx, observer)
 	if !senzingConfig.observers.HasObservers(ctx) {
