@@ -52,22 +52,9 @@ func TestSenzingSchemaImpl_Initialize(test *testing.T) {
 	testObject := &SenzingSchemaImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
-	testObject.SetLogLevel(ctx, logger.LevelTrace)
+	testObject.SetLogLevel(ctx, logger.LevelInfo)
 	testObject.Initialize(ctx)
 }
-
-// func TestSenzingSchemaImpl_InitializeSenzingConfiguration(test *testing.T) {
-// 	ctx := context.TODO()
-// 	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
-// 	if err != nil {
-// 		fmt.Print(err)
-// 	}
-// 	testObject := &SenzingSchemaImpl{
-// 		LogLevel:                       logger.LevelInfo,
-// 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
-// 	}
-// 	testObject.InitializeSenzingConfiguration(ctx)
-// }
 
 func TestSenzingSchemaImpl_RegisterObserver(test *testing.T) {
 	ctx := context.TODO()
@@ -84,7 +71,7 @@ func TestSenzingSchemaImpl_RegisterObserver(test *testing.T) {
 	testObject := &SenzingSchemaImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
-	testObject.SetLogLevel(ctx, logger.LevelTrace)
+	testObject.SetLogLevel(ctx, logger.LevelInfo)
 	testObject.RegisterObserver(ctx, observer1)
 	testObject.Initialize(ctx)
 }
@@ -104,8 +91,91 @@ func TestSenzingSchemaImpl_UnregisterObserver(test *testing.T) {
 	testObject := &SenzingSchemaImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
-	testObject.SetLogLevel(ctx, logger.LevelTrace)
+	testObject.SetLogLevel(ctx, logger.LevelInfo)
 	testObject.RegisterObserver(ctx, observer1)
 	testObject.Initialize(ctx)
 	testObject.UnregisterObserver(ctx, observer1)
+}
+
+// ----------------------------------------------------------------------------
+// Examples for godoc documentation
+// ----------------------------------------------------------------------------
+
+func ExampleSenzingSchemaImpl_Initialize() {
+	// For more information, visit https://github.com/Senzing/initdatabase/blob/main/senzingschema/senzingschema_test.go
+	ctx := context.TODO()
+	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	if err != nil {
+		fmt.Print(err)
+	}
+	senzingSchema := &SenzingSchemaImpl{
+		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
+	}
+	err = senzingSchema.SetLogLevel(ctx, logger.LevelInfo)
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = senzingSchema.Initialize(ctx)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// Output:
+}
+
+func ExampleSenzingSchemaImpl_RegisterObserver() {
+	// For more information, visit https://github.com/Senzing/initdatabase/blob/main/senzingschema/senzingschema_test.go
+	ctx := context.TODO()
+	anObserver := &observer.ObserverNull{
+		Id: "Observer 1",
+	}
+	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	if err != nil {
+		fmt.Print(err)
+	}
+	senzingSchema := &SenzingSchemaImpl{
+		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
+	}
+	err = senzingSchema.RegisterObserver(ctx, anObserver)
+	if err != nil {
+		fmt.Print(err)
+	}
+	// Output:
+}
+
+func ExampleSenzingSchemaImpl_SetLogLevel() {
+	// For more information, visit https://github.com/Senzing/initdatabase/blob/main/senzingschema/senzingschema_test.go
+	ctx := context.TODO()
+	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	if err != nil {
+		fmt.Print(err)
+	}
+	senzingSchema := &SenzingSchemaImpl{
+		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
+	}
+	err = senzingSchema.SetLogLevel(ctx, logger.LevelInfo)
+	// Output:
+}
+
+func ExampleSenzingSchemaImpl_UnregisterObserver() {
+	// For more information, visit https://github.com/Senzing/initdatabase/blob/main/senzingschema/senzingschema_test.go
+	ctx := context.TODO()
+	anObserver := &observer.ObserverNull{
+		Id: "Observer 1",
+	}
+	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	if err != nil {
+		fmt.Print(err)
+	}
+	senzingSchema := &SenzingSchemaImpl{
+		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
+	}
+	err = senzingSchema.RegisterObserver(ctx, anObserver)
+	if err != nil {
+		fmt.Print(err)
+	}
+	err = senzingSchema.UnregisterObserver(ctx, anObserver)
+	if err != nil {
+		fmt.Print(err)
+	}
+	// Output:
 }

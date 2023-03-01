@@ -52,7 +52,7 @@ func TestInitializerImpl_Initialize(test *testing.T) {
 	testObject := &InitializerImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
-	testObject.SetLogLevel(ctx, logger.LevelTrace)
+	testObject.SetLogLevel(ctx, logger.LevelInfo)
 	testObject.Initialize(ctx)
 }
 
@@ -111,9 +111,71 @@ func ExampleInitializerImpl_Initialize() {
 	anInitializer := &InitializerImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
+	err = anInitializer.SetLogLevel(ctx, logger.LevelInfo)
+	if err != nil {
+		fmt.Println(err)
+	}
 	err = anInitializer.Initialize(ctx)
 	if err != nil {
 		fmt.Println(err)
+	}
+	// Output:
+}
+
+func ExampleInitializerImpl_RegisterObserver() {
+	// For more information, visit https://github.com/Senzing/initdatabase/blob/main/initializer/initializer_test.go
+	ctx := context.TODO()
+	anObserver := &observer.ObserverNull{
+		Id: "Observer 1",
+	}
+	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	if err != nil {
+		fmt.Print(err)
+	}
+	anInitializer := &InitializerImpl{
+		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
+	}
+	err = anInitializer.RegisterObserver(ctx, anObserver)
+	if err != nil {
+		fmt.Print(err)
+	}
+	// Output:
+}
+
+func ExampleInitializerImpl_SetLogLevel() {
+	// For more information, visit https://github.com/Senzing/initdatabase/blob/main/initializer/initializer_test.go
+	ctx := context.TODO()
+	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	if err != nil {
+		fmt.Print(err)
+	}
+	anInitializer := &InitializerImpl{
+		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
+	}
+	err = anInitializer.SetLogLevel(ctx, logger.LevelInfo)
+	// Output:
+}
+
+func ExampleInitializerImpl_UnregisterObserver() {
+	// For more information, visit https://github.com/Senzing/initdatabase/blob/main/initializer/initializer_test.go
+	ctx := context.TODO()
+	anObserver := &observer.ObserverNull{
+		Id: "Observer 1",
+	}
+	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	if err != nil {
+		fmt.Print(err)
+	}
+	anInitializer := &InitializerImpl{
+		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
+	}
+	err = anInitializer.RegisterObserver(ctx, anObserver)
+	if err != nil {
+		fmt.Print(err)
+	}
+	err = anInitializer.UnregisterObserver(ctx, anObserver)
+	if err != nil {
+		fmt.Print(err)
 	}
 	// Output:
 }
