@@ -4,10 +4,10 @@ go 1.20
 
 require (
 	github.com/senzing/g2-sdk-go v0.4.1
-	github.com/senzing/go-common v0.1.1
+	github.com/senzing/go-common v0.1.2
 	github.com/senzing/go-databasing v0.2.1
 	github.com/senzing/go-logging v1.1.3
-	github.com/senzing/go-observing v0.1.2
+	github.com/senzing/go-observing v0.1.3
 	github.com/senzing/go-sdk-abstract-factory v0.2.0
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/viper v1.15.0
@@ -46,9 +46,4 @@ require (
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-)
-
-replace (
-	github.com/senzing/go-common v0.1.1 => /home/senzing/senzing.git/go-common
-	github.com/senzing/go-observing v0.1.2 => /home/senzing/senzing.git/go-observing
 )
