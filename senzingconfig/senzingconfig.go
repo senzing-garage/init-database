@@ -193,6 +193,7 @@ func (senzingConfig *SenzingConfigImpl) Initialize(ctx context.Context) error {
 		if err != nil {
 			return err
 		}
+		logger.Log(2003, datasource)
 	}
 
 	configStr, err := g2Config.Save(ctx, configHandle)

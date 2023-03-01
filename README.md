@@ -13,26 +13,17 @@ to initialize databases with a Senzing schema and a default Senzing configuratio
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/senzing/initdatabase.svg)](https://pkg.go.dev/github.com/senzing/initdatabase)
 [![Go Report Card](https://goreportcard.com/badge/github.com/senzing/initdatabase)](https://goreportcard.com/report/github.com/senzing/initdatabase)
+[![go-test.yaml](https://github.com/Senzing/initdatabase/actions/workflows/go-test.yaml/badge.svg)](https://github.com/Senzing/initdatabase/actions/workflows/go-test.yaml)
 
 ## Overview
 
-The Senzing `initdatabase` supports the
-[Senzing Protocol Buffer definitions](https://github.com/Senzing/g2-sdk-proto).
-Under the covers, the gRPC request is translated into a Senzing Go SDK API call using
-[senzing/g2-sdk-go-base](https://github.com/Senzing/g2-sdk-go-base).
-The response from the Senzing Go SDK API is returned to the gRPC client.
+Senzing `initdatabase` performs the following:
 
-Other implementations of the
-[g2-sdk-go](https://github.com/Senzing/g2-sdk-go)
-interface include:
-
-- [g2-sdk-go-base](https://github.com/Senzing/g2-sdk-go-base) - for
-  calling Senzing SDK APIs natively
-- [g2-sdk-go-mock](https://github.com/Senzing/g2-sdk-go-mock) - for
-  unit testing calls to the Senzing Go SDK
-- [go-sdk-abstract-factory](https://github.com/Senzing/go-sdk-abstract-factory) - An
-  [abstract factory pattern](https://en.wikipedia.org/wiki/Abstract_factory_pattern)
-  for switching among implementations
+1. Creates a Senzing database schema from a file of SQL statements found in `/opt/senzing/g2/resources/schema`.
+   The file chosen depends on the database engine specified in the protocol section of `SENZING_TOOLS_DATABASE_URL`
+   or the database(s) specified in `SENZING_TOOLS_ENGINE_CONFIGURATION_JSON`.
+1. Creates a Senzing configuration in the database based on the contents of `/opt/senzing/g2/resources/templates/g2config.json`
+1. *Optionally:* Adds datasources to the Senzing configuration.
 
 ## Use
 

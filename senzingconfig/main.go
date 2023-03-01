@@ -43,7 +43,7 @@ var IdMessages = map[int]string{
 	1000: "Entry: %+v",
 	2001: "SENZING_ENGINE_CONFIGURATION_JSON: %v",
 	2002: "No new Senzing configuration created.  One already exists (%d).",
-	2003: "Server listening at %v",
+	2003: "Added datasource: %s",
 	4001: "Call to net.Listen(tcp, %s) failed.",
 	5001: "Failed to serve.",
 	8001: "Initialize - config exists",

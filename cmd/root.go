@@ -5,14 +5,17 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/senzing/go-common/g2engineconfigurationjson"
 	"github.com/senzing/go-logging/logger"
 	"github.com/senzing/initdatabase/initializer"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"google.golang.org/grpc"
 )
 
 var (
@@ -53,8 +56,29 @@ var RootCmd = &cobra.Command{
 			}
 		}
 
+		grpcAddress := ""
+		senzingGrpcUrl := viper.GetString("senzing-grpc-url")
+		if len(senzingGrpcUrl) > 0 {
+			parsedUrl, err := url.Parse(senzingGrpcUrl)
+			if err != nil {
+				return err
+			}
+			if parsedUrl.Scheme != "grpc" {
+				return fmt.Errorf("SENZING_TOOLS_SENZING_GRPC_URL (%s) must start with 'grpc://'", senzingGrpcUrl)
+			}
+			grpcAddress = parsedUrl.Host
+		}
+
+		// FIXME: Populate grpcOptions
+
+		var grpcOptions []grpc.DialOption = nil
+
 		initializer := &initializer.InitializerImpl{
+			DataSources:                    viper.GetStringSlice("datasources"),
+			GrpcAddress:                    grpcAddress,
+			GrpcOptions:                    grpcOptions,
 			SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
+			SenzingModuleName:              viper.GetString("senzing-module-name"),
 			SenzingVerboseLogging:          viper.GetInt("engine-log-level"),
 		}
 		initializer.SetLogLevel(ctx, logLevel)
@@ -74,19 +98,31 @@ func Execute() {
 }
 
 func init() {
+	now := time.Now()
 	cobra.OnInitialize(initConfig)
 
-	engineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	// Synthesize variables
+
+	defaultDatabaseUrl := ""
+	defaultDatasources := []string{}
+	defaultEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
 	if err != nil {
-		engineConfigurationJson = err.Error()
+		defaultEngineConfigurationJson = err.Error()
 	}
+	defaultEngineLogLevel := 0
+	defaultLogLevel := "INFO"
+	defaultSenzingGrpcUrl := ""
+	defaultSenzingModuleName := fmt.Sprintf("initdatabase-%s", now.UTC())
 
 	// Define flags for command.
 
-	RootCmd.Flags().String("database-url", "", "URL of database to initialize [SENZING_TOOLS_DATABASE_URL]")
-	RootCmd.Flags().Int("engine-log-level", 0, "log level for Senzing Engine [SENZING_TOOLS_ENGINE_LOG_LEVEL]")
-	RootCmd.Flags().String("engine-configuration-json", engineConfigurationJson, "JSON string sent to Senzing's init() function [SENZING_TOOLS_ENGINE_CONFIGURATION_JSON]")
-	RootCmd.Flags().String("log-level", "INFO", "log level of TRACE, DEBUG, INFO, WARN, ERROR, FATAL, or PANIC [SENZING_TOOLS_LOG_LEVEL]")
+	RootCmd.Flags().String("database-url", defaultDatabaseUrl, "URL of database to initialize [SENZING_TOOLS_DATABASE_URL]")
+	RootCmd.Flags().StringArray("datasources", defaultDatasources, "a list of datasources to be added to initial Senzing configuration [SENZING_TOOLS_DATASOURCES]")
+	RootCmd.Flags().String("engine-configuration-json", defaultEngineConfigurationJson, "JSON string sent to Senzing's init() function [SENZING_TOOLS_ENGINE_CONFIGURATION_JSON]")
+	RootCmd.Flags().Int("engine-log-level", defaultEngineLogLevel, "log level for Senzing Engine [SENZING_TOOLS_ENGINE_LOG_LEVEL]")
+	RootCmd.Flags().String("log-level", defaultLogLevel, "log level of TRACE, DEBUG, INFO, WARN, ERROR, FATAL, or PANIC [SENZING_TOOLS_LOG_LEVEL]")
+	RootCmd.Flags().String("senzing-grpc-url", defaultSenzingGrpcUrl, "URL of the Senzing gRPC server. Example: grpc://localhost:8258 [SENZING_TOOLS_SENZING_GRPC_URL]")
+	RootCmd.Flags().String("senzing-module-name", defaultSenzingModuleName, "The identifier given to the Senzing engine [SENZING_TOOLS_SENZING_MODULE_NAME]")
 
 	// Integrate with Viper.
 
@@ -96,17 +132,26 @@ func init() {
 
 	// Define flags in Viper.
 
-	viper.SetDefault("database-url", engineConfigurationJson)
+	viper.SetDefault("database-url", defaultDatabaseUrl)
 	viper.BindPFlag("database-url", RootCmd.Flags().Lookup("database-url"))
 
-	viper.SetDefault("engine-log-level", 0)
-	viper.BindPFlag("engine-log-level", RootCmd.Flags().Lookup("engine-log-level"))
+	viper.SetDefault("datasources", defaultDatasources)
+	viper.BindPFlag("datasources", RootCmd.Flags().Lookup("datasources"))
 
-	viper.SetDefault("engine-configuration-json", engineConfigurationJson)
+	viper.SetDefault("engine-configuration-json", defaultEngineConfigurationJson)
 	viper.BindPFlag("engine-configuration-json", RootCmd.Flags().Lookup("engine-configuration-json"))
 
-	viper.SetDefault("log-level", "INFO")
+	viper.SetDefault("engine-log-level", defaultEngineLogLevel)
+	viper.BindPFlag("engine-log-level", RootCmd.Flags().Lookup("engine-log-level"))
+
+	viper.SetDefault("log-level", defaultLogLevel)
 	viper.BindPFlag("log-level", RootCmd.Flags().Lookup("log-level"))
+
+	viper.SetDefault("senzing-grpc-url", defaultSenzingGrpcUrl)
+	viper.BindPFlag("senzing-grpc-url", RootCmd.Flags().Lookup("senzing-grpc-url"))
+
+	viper.SetDefault("senzing-module-name", defaultSenzingModuleName)
+	viper.BindPFlag("senzing-module-name", RootCmd.Flags().Lookup("senzing-module-name"))
 
 	// Set version template.
 

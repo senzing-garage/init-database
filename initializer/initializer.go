@@ -20,6 +20,7 @@ import (
 
 // InitializerImpl is the default implementation of the Initializer interface.
 type InitializerImpl struct {
+	DataSources                    []string
 	GrpcAddress                    string
 	GrpcOptions                    []grpc.DialOption
 	isTrace                        bool
@@ -86,6 +87,7 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 	// Create senzingConfig for initializing Senzing configuration.
 
 	senzingConfig := &senzingconfig.SenzingConfigImpl{
+		DataSources:                    initializerImpl.DataSources,
 		GrpcAddress:                    initializerImpl.GrpcAddress,
 		GrpcOptions:                    initializerImpl.GrpcOptions,
 		SenzingEngineConfigurationJson: initializerImpl.SenzingEngineConfigurationJson,
