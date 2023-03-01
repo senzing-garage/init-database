@@ -70,7 +70,7 @@ func (senzingSchema *SenzingSchemaImpl) Initialize(ctx context.Context) error {
 	// Log entry parameters.
 
 	logger, _ := messagelogger.NewSenzingApiLogger(ProductId, IdMessages, IdStatuses, senzingSchema.logLevel)
-	logger.Log(2000, senzingSchema)
+	logger.Log(1000, senzingSchema)
 
 	// Pull values out of SENZING_ENGINE_CONFIGURATION_JSON.
 

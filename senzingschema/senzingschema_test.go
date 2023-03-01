@@ -126,7 +126,8 @@ func ExampleSenzingSchemaImpl_RegisterObserver() {
 	// For more information, visit https://github.com/Senzing/initdatabase/blob/main/senzingschema/senzingschema_test.go
 	ctx := context.TODO()
 	anObserver := &observer.ObserverNull{
-		Id: "Observer 1",
+		Id:       "Observer 1",
+		IsSilent: true,
 	}
 	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
 	if err != nil {
@@ -160,7 +161,8 @@ func ExampleSenzingSchemaImpl_UnregisterObserver() {
 	// For more information, visit https://github.com/Senzing/initdatabase/blob/main/senzingschema/senzingschema_test.go
 	ctx := context.TODO()
 	anObserver := &observer.ObserverNull{
-		Id: "Observer 1",
+		Id:       "Observer 1",
+		IsSilent: true,
 	}
 	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
 	if err != nil {

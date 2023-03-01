@@ -143,7 +143,7 @@ func (senzingConfig *SenzingConfigImpl) Initialize(ctx context.Context) error {
 	// Log entry parameters.
 
 	logger, _ := messagelogger.NewSenzingApiLogger(ProductId, IdMessages, IdStatuses, senzingConfig.logLevel)
-	logger.Log(2000, senzingConfig)
+	logger.Log(1000, senzingConfig)
 
 	// Create Senzing objects.
 

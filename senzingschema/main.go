@@ -40,7 +40,7 @@ var IdMessages = map[int]string{
 	7:    "Enter UnregisterObserver(%s).",
 	8:    "Exit  UnregisterObserver(%s) returned (%v).",
 	901:  "Exit  InitializeSenzingConfiguration() returned (%v).",
-	2000: "Entry: %+v",
+	1000: "Entry: %+v",
 	2001: "SENZING_ENGINE_CONFIGURATION_JSON: %v",
 	8001: "Initialize",
 	8002: "RegisterObserver",
