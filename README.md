@@ -61,7 +61,6 @@ This version accepts a URL of an external database.
     docker run \
         --env SENZING_TOOLS_DATABASE_URL \
         --interactive \
-        --publish 8258:8258 \
         --rm \
         --tty \
         senzing/initdatabase
