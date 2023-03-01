@@ -22,6 +22,13 @@ import (
 
 // SenzingConfigImpl is the default implementation of the GrpcServer interface.
 type SenzingConfigImpl struct {
+	DataSources                    []string
+	g2configmgrSingleton           g2api.G2configmgr
+	g2configmgrSyncOnce            sync.Once
+	g2configSingleton              g2api.G2config
+	g2configSyncOnce               sync.Once
+	g2factorySingleton             factory.SdkAbstractFactory
+	g2factorySyncOnce              sync.Once
 	GrpcAddress                    string
 	GrpcOptions                    []grpc.DialOption
 	isTrace                        bool
@@ -31,12 +38,6 @@ type SenzingConfigImpl struct {
 	SenzingEngineConfigurationJson string
 	SenzingModuleName              string
 	SenzingVerboseLogging          int
-	g2configSingleton              g2api.G2config
-	g2configSyncOnce               sync.Once
-	g2configmgrSingleton           g2api.G2configmgr
-	g2configmgrSyncOnce            sync.Once
-	g2factorySingleton             factory.SdkAbstractFactory
-	g2factorySyncOnce              sync.Once
 }
 
 // ----------------------------------------------------------------------------
@@ -182,6 +183,16 @@ func (senzingConfig *SenzingConfigImpl) Initialize(ctx context.Context) error {
 	configHandle, err := g2Config.Create(ctx)
 	if err != nil {
 		return err
+	}
+
+	// If requested, add DataSources to fresh Senzing configuration.
+
+	for _, datasource := range senzingConfig.DataSources {
+		inputJson := `{"DSRC_CODE": "` + datasource + `"}`
+		_, err = g2Config.AddDataSource(ctx, configHandle, inputJson)
+		if err != nil {
+			return err
+		}
 	}
 
 	configStr, err := g2Config.Save(ctx, configHandle)

@@ -59,22 +59,31 @@ func teardown() error {
 // Test interface functions
 // ----------------------------------------------------------------------------
 
-func TestSenzingConfigImpl_Initialize(test *testing.T) {
+// ----------------------------------------------------------------------------
+// Examples for godoc documentation
+// ----------------------------------------------------------------------------
+
+func ExampleSenzingConfigImpl_Initialize_withDatasources() {
+	// For more information, visit https://github.com/Senzing/initdatabase/blob/main/senzingconfig/senzingconfig_test.go
 	ctx := context.TODO()
 	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
 	if err != nil {
 		fmt.Print(err)
 	}
-	testObject := &SenzingConfigImpl{
+	senzingConfig := &SenzingConfigImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
+		DataSources:                    []string{"CUSTOMERS", "REFERENCE", "WATCHLIST"},
 	}
-	testObject.SetLogLevel(ctx, logger.LevelInfo)
-	testObject.Initialize(ctx)
+	err = senzingConfig.SetLogLevel(ctx, logger.LevelInfo)
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = senzingConfig.Initialize(ctx)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// Output:
 }
-
-// ----------------------------------------------------------------------------
-// Examples for godoc documentation
-// ----------------------------------------------------------------------------
 
 func ExampleSenzingConfigImpl_Initialize() {
 	// For more information, visit https://github.com/Senzing/initdatabase/blob/main/senzingconfig/senzingconfig_test.go
