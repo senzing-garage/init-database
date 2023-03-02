@@ -65,7 +65,7 @@ This usage shows how to initialze a database with a Docker container.
    Example:
 
     ```console
-    export SENZING_ENGINE_CONFIGURATION_JSON='{
+    export SENZING_TOOLS_ENGINE_CONFIGURATION_JSON='{
         "PIPELINE": {
             "CONFIGPATH": "/etc/opt/senzing",
             "RESOURCEPATH": "/opt/senzing/g2/resources",
