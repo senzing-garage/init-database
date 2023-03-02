@@ -40,9 +40,9 @@ export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
 initdatabase --help
 ```
 
-## Docker with external database
+### Use with Docker
 
-This version accepts a URL of an external database.
+This usage shows how to initialze a database with a Docker container.
 
 1. :thinking: Identify the database URL.
    The example may not work in all cases.
