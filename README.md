@@ -58,13 +58,27 @@ This usage shows how to initialze a database with a Docker container.
    Example:
 
     ```console
-    docker run \
-        --env SENZING_TOOLS_DATABASE_URL \
-        --interactive \
-        --rm \
-        --tty \
-        senzing/initdatabase
+    docker run --env SENZING_TOOLS_DATABASE_URL senzing/initdatabase
+    ```
 
+1. *Alternative:* Using `SENZING_TOOLS_ENGINE_CONFIGURATION_JSON` environment variable.
+   Example:
+
+    ```console
+    export SENZING_ENGINE_CONFIGURATION_JSON='{
+        "PIPELINE": {
+            "CONFIGPATH": "/etc/opt/senzing",
+            "RESOURCEPATH": "/opt/senzing/g2/resources",
+            "SUPPORTPATH": "/opt/senzing/data"
+        },
+        "SQL": {
+            "CONNECTION": "postgresql://postgres:postgres@${LOCAL_IP_ADDRESS}:5432:G2"
+        }
+    }'
+    ```
+
+    ```console
+    docker run --env SENZING_TOOLS_ENGINE_CONFIGURATION_JSON senzing/initdatabase
     ```
 
 ## Development
