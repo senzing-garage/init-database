@@ -44,9 +44,31 @@ initdatabase --help
 
 :thinking: Optionally, `initdatabase` can add datasources to the initial Senzing configuration.
 
-1. Example:
+1. Example 1:
 
     ```console
+    export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
+    export SENZING_TOOLS_DATABASE_URL=postgresql://username:password@postgres.example.com:5432/G2
+    initdatabase --datasources CUSTOMER,REFERENCE,WATCHLIST
+    ```
+
+1. Example 2:
+
+    ```console
+    export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
+    export SENZING_TOOLS_DATABASE_URL=postgresql://username:password@postgres.example.com:5432/G2
+    initdatabase \
+        --datasources CUSTOMER \
+        --datasources REFERENCE \
+        --datasources WATCHLIST
+    ```
+
+1. Example 3:
+
+    ```console
+    export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
+    export SENZING_TOOLS_DATABASE_URL=postgresql://username:password@postgres.example.com:5432/G2
+    export SENZING_TOOLS_DATASOURCES="CUSTOMER REFERENCE WATCHLIST"
     initdatabase
     ```
 
@@ -64,25 +86,39 @@ This usage shows how to initialze a database with a Docker container.
     ```
 
 1. *Alternative:* Using `SENZING_TOOLS_ENGINE_CONFIGURATION_JSON` environment variable.
+
+    1. :pencil2: Set `SENZING_TOOLS_ENGINE_CONFIGURATION_JSON`.
+       Example:
+
+        ```console
+        export SENZING_TOOLS_ENGINE_CONFIGURATION_JSON='{
+            "PIPELINE": {
+                "CONFIGPATH": "/etc/opt/senzing",
+                "RESOURCEPATH": "/opt/senzing/g2/resources",
+                "SUPPORTPATH": "/opt/senzing/data"
+            },
+            "SQL": {
+                "CONNECTION": "postgresql://username:password@postgres.example.com:5432:G2"
+            }
+        }'
+        ```
+
+    1. Run `senzing/initdatabase`.
+       **Note:** `SENZING_TOOLS_ENGINE_CONFIGURATION_JSON` superceeds use of `SENZING_TOOLS_DATABASE_URL`.
+       Example:
+
+        ```console
+        docker run --env SENZING_TOOLS_ENGINE_CONFIGURATION_JSON senzing/initdatabase
+        ```
+
+1. :pencil2: Run `senzing/initdatabase` specifying datasources to add.
    Example:
 
     ```console
-    export SENZING_TOOLS_ENGINE_CONFIGURATION_JSON='{
-        "PIPELINE": {
-            "CONFIGPATH": "/etc/opt/senzing",
-            "RESOURCEPATH": "/opt/senzing/g2/resources",
-            "SUPPORTPATH": "/opt/senzing/data"
-        },
-        "SQL": {
-            "CONNECTION": "postgresql://username:password@postgres.example.com:5432:G2"
-        }
-    }'
-    ```
-
-   **Note:** `SENZING_TOOLS_ENGINE_CONFIGURATION_JSON` superceeds use of `SENZING_TOOLS_DATABASE_URL`.
-
-    ```console
-    docker run --env SENZING_TOOLS_ENGINE_CONFIGURATION_JSON senzing/initdatabase
+    docker run \
+        --env SENZING_TOOLS_DATABASE_URL=postgresql://username:password@postgres.example.com:5432/G2 \
+        --env SENZING_TOOLS_DATASOURCES="CUSTOMER REFERENCE WATCHLIST" \
+        senzing/initdatabase
     ```
 
 ### Parameters
