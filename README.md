@@ -40,30 +40,50 @@ export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
 initdatabase --help
 ```
 
-### Use with Senzing datasources
+### Using command line options
 
-:thinking: Optionally, `initdatabase` can add datasources to the initial Senzing configuration.
-
-1. Example 1:
+1. :pencil2: Specifying database.
+   Example:
 
     ```console
     export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
-    export SENZING_TOOLS_DATABASE_URL=postgresql://username:password@postgres.example.com:5432/G2
-    initdatabase --datasources CUSTOMER,REFERENCE,WATCHLIST
+    initdatabase --database-url postgresql://username:password@postgres.example.com:5432/G2
     ```
 
-1. Example 2:
+1. :pencil2: Specifying datasources to create.
+   Examples:
 
     ```console
     export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
-    export SENZING_TOOLS_DATABASE_URL=postgresql://username:password@postgres.example.com:5432/G2
     initdatabase \
+        --database-url postgresql://username:password@postgres.example.com:5432/G2 \
+        --datasources CUSTOMER,REFERENCE,WATCHLIST
+    ```
+
+    or
+
+    ```console
+    export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
+    initdatabase \
+        --database-url postgresql://username:password@postgres.example.com:5432/G2 \
         --datasources CUSTOMER \
         --datasources REFERENCE \
         --datasources WATCHLIST
     ```
 
-1. Example 3:
+### Using environment variables
+
+1. :pencil2: Specifying database.
+   Example:
+
+    ```console
+    export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
+    export SENZING_TOOLS_DATABASE_URL=postgresql://username:password@postgres.example.com:5432/G2
+    initdatabase
+    ```
+
+1. :pencil2: Specifying datasources to create.
+   Examples:
 
     ```console
     export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
