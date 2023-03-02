@@ -191,7 +191,7 @@ in testing the `g2-sdk-go-base` packages.
     source ${SENZING_DEMO_DIR}/docker-versions-stable.sh
     curl -X GET \
         --output ${SENZING_DEMO_DIR}/docker-compose.yaml \
-        "https://raw.githubusercontent.com/Senzing/docker-compose-demo/main/resources/postgresql/docker-compose-postgresql.yaml"
+        "https://raw.githubusercontent.com/Senzing/docker-compose-demo/main/resources/postgresql/docker-compose-postgresql-uninitialized.yaml"
 
     cd ${SENZING_DEMO_DIR}
     sudo --preserve-env docker-compose up
