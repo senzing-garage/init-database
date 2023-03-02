@@ -49,7 +49,7 @@ This usage shows how to initialze a database with a Docker container.
 
     ```console
     docker run \
-        --env SENZING_TOOLS_DATABASE_URL=postgresql://postgres:postgres@$postgres.example.com:5432/G2 \
+        --env SENZING_TOOLS_DATABASE_URL=postgresql://username:password@postgres.example.com:5432/G2 \
         senzing/initdatabase
     ```
 
@@ -64,7 +64,7 @@ This usage shows how to initialze a database with a Docker container.
             "SUPPORTPATH": "/opt/senzing/data"
         },
         "SQL": {
-            "CONNECTION": "postgresql://postgres:postgres@${LOCAL_IP_ADDRESS}:5432:G2"
+            "CONNECTION": "postgresql://username:password@postgres.example.com:5432:G2"
         }
     }'
     ```
