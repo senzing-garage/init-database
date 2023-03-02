@@ -74,7 +74,7 @@ var RootCmd = &cobra.Command{
 		var grpcOptions []grpc.DialOption = nil
 
 		initializer := &initializer.InitializerImpl{
-			DataSources:                    viper.GetStringSlice("datasources"),
+			DataSources:                    viper.GetStringSlice("datasource"),
 			GrpcAddress:                    grpcAddress,
 			GrpcOptions:                    grpcOptions,
 			SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
@@ -117,7 +117,7 @@ func init() {
 	// Define flags for command.
 
 	RootCmd.Flags().String("database-url", defaultDatabaseUrl, "URL of database to initialize [SENZING_TOOLS_DATABASE_URL]")
-	RootCmd.Flags().StringArray("datasources", defaultDatasources, "a list of datasources to be added to initial Senzing configuration [SENZING_TOOLS_DATASOURCES]")
+	RootCmd.Flags().StringArray("datasource", defaultDatasources, "a datasource to be added to initial Senzing configuration [SENZING_TOOLS_DATASOURCES]")
 	RootCmd.Flags().String("engine-configuration-json", defaultEngineConfigurationJson, "JSON string sent to Senzing's init() function [SENZING_TOOLS_ENGINE_CONFIGURATION_JSON]")
 	RootCmd.Flags().Int("engine-log-level", defaultEngineLogLevel, "log level for Senzing Engine [SENZING_TOOLS_ENGINE_LOG_LEVEL]")
 	RootCmd.Flags().String("engine-module-name", defaultEngineModuleName, "the identifier given to the Senzing engine [SENZING_TOOLS_ENGINE_MODULE_NAME]")
@@ -135,8 +135,8 @@ func init() {
 	viper.SetDefault("database-url", defaultDatabaseUrl)
 	viper.BindPFlag("database-url", RootCmd.Flags().Lookup("database-url"))
 
-	viper.SetDefault("datasources", defaultDatasources)
-	viper.BindPFlag("datasources", RootCmd.Flags().Lookup("datasources"))
+	viper.SetDefault("datasource", defaultDatasources)
+	viper.BindPFlag("datasource", RootCmd.Flags().Lookup("datasource"))
 
 	viper.SetDefault("engine-configuration-json", defaultEngineConfigurationJson)
 	viper.BindPFlag("engine-configuration-json", RootCmd.Flags().Lookup("engine-configuration-json"))

@@ -8,7 +8,7 @@ require (
 	github.com/senzing/go-databasing v0.2.1
 	github.com/senzing/go-logging v1.1.3
 	github.com/senzing/go-observing v0.1.3
-	github.com/senzing/go-sdk-abstract-factory v0.2.0
+	github.com/senzing/go-sdk-abstract-factory v0.2.1
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/viper v1.15.0
 	google.golang.org/grpc v1.53.0

@@ -162,7 +162,7 @@ clean:
 	@rm -f $(GOPATH)/bin/$(PROGRAM_NAME) || true
 	@rm -rf /tmp/sqlite
 	@mkdir  /tmp/sqlite
-	@touch /tmp/sqlite/G2C.db
+	@touch  /tmp/sqlite/G2C.db
 
 
 .PHONY: print-make-variables

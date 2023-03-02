@@ -40,6 +40,16 @@ export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
 initdatabase --help
 ```
 
+### Use with Senzing datasources
+
+:thinking: Optionally, `initdatabase` can add datasources to the initial Senzing configuration.
+
+1. Example:
+
+    ```console
+    initdatabase
+    ```
+
 ### Use with Docker
 
 This usage shows how to initialze a database with a Docker container.
