@@ -151,6 +151,8 @@ func (senzingSchema *SenzingSchemaImpl) Initialize(ctx context.Context) error {
 		if err != nil {
 			return err
 		}
+
+		logger.Log(2002, sqlFilename, parsedUrl.Redacted())
 	}
 
 	// Epilog.

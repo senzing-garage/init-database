@@ -163,7 +163,6 @@ func (senzingConfig *SenzingConfigImpl) Initialize(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-
 	if configID != 0 {
 		if senzingConfig.observers != nil {
 			go func() {
@@ -195,7 +194,6 @@ func (senzingConfig *SenzingConfigImpl) Initialize(ctx context.Context) error {
 		}
 		logger.Log(2003, datasource)
 	}
-
 	configStr, err := g2Config.Save(ctx, configHandle)
 	if err != nil {
 		return err
@@ -208,7 +206,6 @@ func (senzingConfig *SenzingConfigImpl) Initialize(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-
 	err = g2Configmgr.SetDefaultConfigID(ctx, configID)
 	if err != nil {
 		return err
@@ -216,6 +213,7 @@ func (senzingConfig *SenzingConfigImpl) Initialize(ctx context.Context) error {
 
 	// Epilog.
 
+	logger.Log(2004, configID, configComments)
 	if senzingConfig.observers != nil {
 		go func() {
 			details := map[string]string{}

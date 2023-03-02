@@ -42,6 +42,7 @@ var IdMessages = map[int]string{
 	901:  "Exit  InitializeSenzingConfiguration() returned (%v).",
 	1000: "Entry: %+v",
 	2001: "SENZING_ENGINE_CONFIGURATION_JSON: %v",
+	2002: "Sent SQL in %s to database %s",
 	8001: "Initialize",
 	8002: "RegisterObserver",
 	8003: "SetLogLevel",
