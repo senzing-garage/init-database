@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/senzing/go-common/engineconfigurationjsonparser"
@@ -103,8 +104,16 @@ func (senzingSchema *SenzingSchemaImpl) Initialize(ctx context.Context) error {
 
 		parsedUrl, err := url.Parse(databaseUrl)
 		if err != nil {
-			return err
+			if strings.HasPrefix(databaseUrl, "postgresql") {
+				index := strings.LastIndex(databaseUrl, ":")
+				newDatabaseUrl := databaseUrl[:index] + "/" + databaseUrl[index+1:]
+				parsedUrl, err = url.Parse(newDatabaseUrl)
+			}
+			if err != nil {
+				return err
+			}
 		}
+
 		switch parsedUrl.Scheme {
 		case "sqlite3":
 			sqlFilename = resourcePath + "/schema/g2core-schema-sqlite-create.sql"
