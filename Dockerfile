@@ -10,7 +10,7 @@ ARG IMAGE_FINAL=senzing/senzingapi-runtime:3.4.2
 # -----------------------------------------------------------------------------
 
 FROM ${IMAGE_GO_BUILDER} as go_builder
-ENV REFRESHED_AT 2023-02-06
+ENV REFRESHED_AT 2023-03-02
 LABEL Name="senzing/initdatabase-builder" \
       Maintainer="support@senzing.com" \
       Version="0.0.5"
@@ -54,10 +54,14 @@ RUN mkdir -p /output \
 # -----------------------------------------------------------------------------
 
 FROM ${IMAGE_FINAL} as final
-ENV REFRESHED_AT 2023-02-15
+ENV REFRESHED_AT 2023-03-02
 LABEL Name="senzing/initdatabase" \
       Maintainer="support@senzing.com" \
       Version="0.0.5"
+
+# Copy files from repository.
+
+COPY ./rootfs /
 
 # Copy files from prior step.
 
