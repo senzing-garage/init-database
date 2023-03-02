@@ -48,7 +48,7 @@ var RootCmd = &cobra.Command{
 
 		senzingEngineConfigurationJson := viper.GetString("engine-configuration-json")
 		if len(senzingEngineConfigurationJson) == 0 {
-			senzingEngineConfigurationJson, err = g2engineconfigurationjson.BuildSimpleSystemConfigurationJson(viper.GetString("engine-configuration-json"))
+			senzingEngineConfigurationJson, err = g2engineconfigurationjson.BuildSimpleSystemConfigurationJson(viper.GetString("database-url"))
 			if err != nil {
 				return err
 			}
@@ -84,10 +84,7 @@ func init() {
 
 	defaultDatabaseUrl := ""
 	defaultDatasources := []string{}
-	defaultEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
-	if err != nil {
-		defaultEngineConfigurationJson = err.Error()
-	}
+	defaultEngineConfigurationJson, _ := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
 	defaultEngineLogLevel := 0
 	defaultEngineModuleName := fmt.Sprintf("initdatabase-%s", now.UTC())
 	defaultLogLevel := "INFO"
