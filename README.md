@@ -77,8 +77,8 @@ initdatabase --help
    Example:
 
     ```console
-    export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
     export SENZING_TOOLS_DATABASE_URL=postgresql://username:password@postgres.example.com:5432/G2
+    export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
     initdatabase
     ```
 
@@ -86,9 +86,9 @@ initdatabase --help
    Examples:
 
     ```console
-    export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
     export SENZING_TOOLS_DATABASE_URL=postgresql://username:password@postgres.example.com:5432/G2
     export SENZING_TOOLS_DATASOURCES="CUSTOMER REFERENCE WATCHLIST"
+    export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
     initdatabase
     ```
 
