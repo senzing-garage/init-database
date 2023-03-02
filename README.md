@@ -44,21 +44,13 @@ initdatabase --help
 
 This usage shows how to initialze a database with a Docker container.
 
-1. :thinking: Identify the database URL.
-   The example may not work in all cases.
+1. :pencil2: Run `senzing/initdatabase`.
    Example:
 
     ```console
-    export LOCAL_IP_ADDRESS=$(curl --silent https://raw.githubusercontent.com/Senzing/knowledge-base/main/gists/find-local-ip-address/find-local-ip-address.py | python3 -)
-    export SENZING_TOOLS_DATABASE_URL=postgresql://postgres:postgres@${LOCAL_IP_ADDRESS}:5432/G2
-
-    ```
-
-1. Run `senzing/initdatabase`.
-   Example:
-
-    ```console
-    docker run --env SENZING_TOOLS_DATABASE_URL senzing/initdatabase
+    docker run \
+        --env SENZING_TOOLS_DATABASE_URL=postgresql://postgres:postgres@$postgres.example.com:5432/G2 \
+        senzing/initdatabase
     ```
 
 1. *Alternative:* Using `SENZING_TOOLS_ENGINE_CONFIGURATION_JSON` environment variable.
@@ -76,6 +68,8 @@ This usage shows how to initialze a database with a Docker container.
         }
     }'
     ```
+
+   **Note:** `SENZING_TOOLS_ENGINE_CONFIGURATION_JSON` superceeds use of `SENZING_TOOLS_DATABASE_URL`.
 
     ```console
     docker run --env SENZING_TOOLS_ENGINE_CONFIGURATION_JSON senzing/initdatabase
