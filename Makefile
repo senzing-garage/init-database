@@ -136,7 +136,7 @@ docker-run:
 
 .PHONY: run-initdatabase
 run-initdatabase: build
-	@target/linux/servegrpc
+	@target/linux/initdatabase
 
 .PHONY: run-initdatabase-trace
 run-initdatabase-trace: build

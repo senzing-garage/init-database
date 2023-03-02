@@ -11,7 +11,6 @@ import (
 	"github.com/senzing/go-observing/subject"
 	"github.com/senzing/initdatabase/senzingconfig"
 	"github.com/senzing/initdatabase/senzingschema"
-	"google.golang.org/grpc"
 )
 
 // ----------------------------------------------------------------------------
@@ -21,8 +20,6 @@ import (
 // InitializerImpl is the default implementation of the Initializer interface.
 type InitializerImpl struct {
 	DataSources                    []string
-	GrpcAddress                    string
-	GrpcOptions                    []grpc.DialOption
 	isTrace                        bool
 	logLevel                       logger.Level
 	messageLogger                  messagelogger.MessageLoggerInterface
@@ -88,8 +85,6 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 
 	senzingConfig := &senzingconfig.SenzingConfigImpl{
 		DataSources:                    initializerImpl.DataSources,
-		GrpcAddress:                    initializerImpl.GrpcAddress,
-		GrpcOptions:                    initializerImpl.GrpcOptions,
 		SenzingEngineConfigurationJson: initializerImpl.SenzingEngineConfigurationJson,
 		SenzingModuleName:              initializerImpl.SenzingModuleName,
 		SenzingVerboseLogging:          initializerImpl.SenzingVerboseLogging,

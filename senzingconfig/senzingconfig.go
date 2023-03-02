@@ -13,14 +13,13 @@ import (
 	"github.com/senzing/go-observing/observer"
 	"github.com/senzing/go-observing/subject"
 	"github.com/senzing/go-sdk-abstract-factory/factory"
-	"google.golang.org/grpc"
 )
 
 // ----------------------------------------------------------------------------
 // Types
 // ----------------------------------------------------------------------------
 
-// SenzingConfigImpl is the default implementation of the GrpcServer interface.
+// SenzingConfigImpl is the default implementation of the SenzingConfig interface.
 type SenzingConfigImpl struct {
 	DataSources                    []string
 	g2configmgrSingleton           g2api.G2configmgr
@@ -29,8 +28,6 @@ type SenzingConfigImpl struct {
 	g2configSyncOnce               sync.Once
 	g2factorySingleton             factory.SdkAbstractFactory
 	g2factorySyncOnce              sync.Once
-	GrpcAddress                    string
-	GrpcOptions                    []grpc.DialOption
 	isTrace                        bool
 	logger                         messagelogger.MessageLoggerInterface
 	logLevel                       logger.Level
@@ -52,14 +49,7 @@ var defaultModuleName string = "initdatabase"
 
 func (senzingConfig *SenzingConfigImpl) getG2Factory(ctx context.Context) factory.SdkAbstractFactory {
 	senzingConfig.g2factorySyncOnce.Do(func() {
-		if senzingConfig.GrpcAddress != "" {
-			senzingConfig.g2factorySingleton = &factory.SdkAbstractFactoryImpl{
-				GrpcAddress: senzingConfig.GrpcAddress,
-				GrpcOptions: senzingConfig.GrpcOptions,
-			}
-		} else {
-			senzingConfig.g2factorySingleton = &factory.SdkAbstractFactoryImpl{}
-		}
+		senzingConfig.g2factorySingleton = &factory.SdkAbstractFactoryImpl{}
 	})
 	return senzingConfig.g2factorySingleton
 }
