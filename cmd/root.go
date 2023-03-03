@@ -57,7 +57,7 @@ var RootCmd = &cobra.Command{
 		initializer := &initializer.InitializerImpl{
 			DataSources:                    viper.GetStringSlice("datasources"),
 			SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
-			SenzingModuleName:              viper.GetString("senzing-module-name"),
+			SenzingModuleName:              viper.GetString("engine-module-name"),
 			SenzingVerboseLogging:          viper.GetInt("engine-log-level"),
 		}
 		initializer.SetLogLevel(ctx, logLevel)
