@@ -3,14 +3,14 @@
 # -----------------------------------------------------------------------------
 
 ARG IMAGE_GO_BUILDER=golang:1.20.0
-ARG IMAGE_FINAL=senzing/senzingapi-runtime:3.4.0
+ARG IMAGE_FINAL=senzing/senzingapi-runtime:3.4.2
 
 # -----------------------------------------------------------------------------
 # Stage: go_builder
 # -----------------------------------------------------------------------------
 
 FROM ${IMAGE_GO_BUILDER} as go_builder
-ENV REFRESHED_AT 2023-02-06
+ENV REFRESHED_AT 2023-03-03
 LABEL Name="senzing/initdatabase-builder" \
       Maintainer="support@senzing.com" \
       Version="0.0.5"
@@ -22,9 +22,13 @@ ARG BUILD_VERSION=0.0.0
 ARG BUILD_ITERATION=0
 ARG GO_PACKAGE_NAME="unknown"
 
+# Copy remote files from DockerHub.
+
+COPY --from=senzing/senzingapi-runtime:3.4.2  "/opt/senzing/g2/lib/"   "/opt/senzing/g2/lib/"
+COPY --from=senzing/senzingapi-runtime:3.4.2  "/opt/senzing/g2/sdk/c/" "/opt/senzing/g2/sdk/c/"
+
 # Copy local files from the Git repository.
 
-COPY ./rootfs /
 COPY . ${GOPATH}/src/${GO_PACKAGE_NAME}
 
 # Build go program.
@@ -50,10 +54,14 @@ RUN mkdir -p /output \
 # -----------------------------------------------------------------------------
 
 FROM ${IMAGE_FINAL} as final
-ENV REFRESHED_AT 2023-02-06
+ENV REFRESHED_AT 2023-03-03
 LABEL Name="senzing/initdatabase" \
       Maintainer="support@senzing.com" \
       Version="0.0.5"
+
+# Copy files from repository.
+
+COPY ./rootfs /
 
 # Copy files from prior step.
 

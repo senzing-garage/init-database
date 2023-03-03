@@ -1,4 +1,4 @@
-# Makefile for initdatabase.
+# Makefile that builds initdatabase, a "go" program.
 
 # "Simple expanded" variables (':=')
 
@@ -10,8 +10,8 @@ TARGET_DIRECTORY := $(MAKEFILE_DIRECTORY)/target
 DOCKER_CONTAINER_NAME := $(PROGRAM_NAME)
 DOCKER_IMAGE_NAME := senzing/$(PROGRAM_NAME)
 DOCKER_BUILD_IMAGE_NAME := $(DOCKER_IMAGE_NAME)-build
-BUILD_VERSION := $(shell git describe --always --tags --abbrev=0 --dirty)
-BUILD_TAG := $(shell git describe --always --tags --abbrev=0)
+BUILD_VERSION := $(shell git describe --always --tags --abbrev=0 --dirty  | sed 's/v//')
+BUILD_TAG := $(shell git describe --always --tags --abbrev=0  | sed 's/v//')
 BUILD_ITERATION := $(shell git log $(BUILD_TAG)..HEAD --oneline | wc -l | sed 's/^ *//')
 GIT_REMOTE_URL := $(shell git config --get remote.origin.url)
 GO_PACKAGE_NAME := $(shell echo $(GIT_REMOTE_URL) | sed -e 's|^git@github.com:|github.com/|' -e 's|\.git$$||' -e 's|Senzing|senzing|')
@@ -24,7 +24,8 @@ CC = gcc
 # Can be overridden with "export"
 # Example: "export LD_LIBRARY_PATH=/path/to/my/senzing/g2/lib"
 
-LD_LIBRARY_PATH ?= ${SENZING_G2_DIR}/lib
+LD_LIBRARY_PATH ?= /opt/senzing/g2/lib
+SENZING_TOOLS_DATABASE_URL ?= sqlite3://na:na@/tmp/sqlite/G2C.db
 
 # Export environment variables.
 
@@ -56,9 +57,8 @@ build-linux:
 	GOARCH=amd64 \
 	go build \
 		-ldflags \
-			"-X 'main.buildIteration=${BUILD_ITERATION}' \
-			-X 'main.buildVersion=${BUILD_VERSION}' \
-			-X 'main.programName=${PROGRAM_NAME}' \
+			"-X 'github.com/senzing/initdatabase/cmd.buildVersion=${BUILD_VERSION}' \
+			-X 'github.com/senzing/initdatabase/cmd.buildIteration=${BUILD_ITERATION}' \
 			" \
 		-o $(GO_PACKAGE_NAME)
 	@mkdir -p $(TARGET_DIRECTORY)/linux || true
@@ -71,6 +71,9 @@ build-linux:
 .PHONY: test
 test:
 	@go test -v -p 1 ./...
+#	@go test -v ./initializer
+#	@go test -v ./senzingconfig
+#	@go test -v ./senzingschema
 
 # -----------------------------------------------------------------------------
 # docker-build
@@ -130,6 +133,15 @@ docker-run:
 		--name $(DOCKER_CONTAINER_NAME) \
 		$(DOCKER_IMAGE_NAME)
 
+
+.PHONY: run-initdatabase
+run-initdatabase: build
+	@target/linux/initdatabase
+
+.PHONY: run-initdatabase-trace
+run-initdatabase-trace: build
+	@target/linux/initdatabase --log-level TRACE --engine-log-level 1
+
 # -----------------------------------------------------------------------------
 # Utility targets
 # -----------------------------------------------------------------------------
@@ -148,6 +160,9 @@ clean:
 	@docker rmi --force $(DOCKER_IMAGE_NAME) $(DOCKER_BUILD_IMAGE_NAME) 2> /dev/null || true
 	@rm -rf $(TARGET_DIRECTORY) || true
 	@rm -f $(GOPATH)/bin/$(PROGRAM_NAME) || true
+	@rm -rf /tmp/sqlite
+	@mkdir  /tmp/sqlite
+	@touch  /tmp/sqlite/G2C.db
 
 
 .PHONY: print-make-variables
