@@ -73,7 +73,7 @@ func (senzingSchema *SenzingSchemaImpl) Initialize(ctx context.Context) error {
 	logger, _ := messagelogger.NewSenzingApiLogger(ProductId, IdMessages, IdStatuses, senzingSchema.logLevel)
 	logger.Log(1000, senzingSchema)
 
-	// Pull values out of SENZING_ENGINE_CONFIGURATION_JSON.
+	// Pull values out of SENZING_TOOLS_ENGINE_CONFIGURATION_JSON.
 
 	parser, err := engineconfigurationjsonparser.New(senzingSchema.SenzingEngineConfigurationJson)
 	if err != nil {
@@ -151,7 +151,6 @@ func (senzingSchema *SenzingSchemaImpl) Initialize(ctx context.Context) error {
 		if err != nil {
 			return err
 		}
-
 		logger.Log(2002, sqlFilename, parsedUrl.Redacted())
 	}
 

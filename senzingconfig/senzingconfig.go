@@ -47,6 +47,7 @@ var defaultModuleName string = "initdatabase"
 // Internal methods
 // ----------------------------------------------------------------------------
 
+// Create an abstract factory singleton and return it.
 func (senzingConfig *SenzingConfigImpl) getG2Factory(ctx context.Context) factory.SdkAbstractFactory {
 	senzingConfig.g2factorySyncOnce.Do(func() {
 		senzingConfig.g2factorySingleton = &factory.SdkAbstractFactoryImpl{}
@@ -54,6 +55,7 @@ func (senzingConfig *SenzingConfigImpl) getG2Factory(ctx context.Context) factor
 	return senzingConfig.g2factorySingleton
 }
 
+// Create a G2Config singleton and return it.
 func (senzingConfig *SenzingConfigImpl) getG2config(ctx context.Context) (g2api.G2config, error) {
 	var err error = nil
 	senzingConfig.g2configSyncOnce.Do(func() {
@@ -75,6 +77,7 @@ func (senzingConfig *SenzingConfigImpl) getG2config(ctx context.Context) (g2api.
 	return senzingConfig.g2configSingleton, err
 }
 
+// Create a G2Configmgr singleton and return it.
 func (senzingConfig *SenzingConfigImpl) getG2configmgr(ctx context.Context) (g2api.G2configmgr, error) {
 	var err error = nil
 	senzingConfig.g2configmgrSyncOnce.Do(func() {
