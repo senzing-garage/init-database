@@ -154,6 +154,9 @@ func ExampleInitializerImpl_SetLogLevel() {
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
 	err = anInitializer.SetLogLevel(ctx, logger.LevelInfo)
+	if err != nil {
+		fmt.Println(err)
+	}
 	// Output:
 }
 

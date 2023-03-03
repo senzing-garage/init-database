@@ -37,7 +37,7 @@ type SenzingSchemaImpl struct {
 // Get the Logger singleton.
 func (senzingSchema *SenzingSchemaImpl) getLogger() messagelogger.MessageLoggerInterface {
 	if senzingSchema.messageLogger == nil {
-		senzingSchema.messageLogger, _ = messagelogger.NewSenzingApiLogger(ProductId, IdMessages, IdStatuses, messagelogger.LevelInfo)
+		senzingSchema.messageLogger, _ = messagelogger.NewSenzingApiLogger(ProductId, IdMessages, IdStatuses, senzingSchema.logLevel)
 	}
 	return senzingSchema.messageLogger
 }
@@ -50,6 +50,72 @@ func (senzingSchema *SenzingSchemaImpl) traceEntry(errorNumber int, details ...i
 // Trace method exit.
 func (senzingSchema *SenzingSchemaImpl) traceExit(errorNumber int, details ...interface{}) {
 	senzingSchema.getLogger().Log(errorNumber, details...)
+}
+
+// Given a database URL, detemine the correct SQL file and send the statements to the database.
+func (senzingSchema *SenzingSchemaImpl) processDatabase(ctx context.Context, resourcePath string, databaseUrl string) error {
+	var sqlFilename string
+
+	// Determine which SQL file to process.
+
+	parsedUrl, err := url.Parse(databaseUrl)
+	if err != nil {
+		if strings.HasPrefix(databaseUrl, "postgresql") {
+			index := strings.LastIndex(databaseUrl, ":")
+			newDatabaseUrl := databaseUrl[:index] + "/" + databaseUrl[index+1:]
+			parsedUrl, err = url.Parse(newDatabaseUrl)
+		}
+		if err != nil {
+			return err
+		}
+	}
+
+	switch parsedUrl.Scheme {
+	case "sqlite3":
+		sqlFilename = resourcePath + "/schema/g2core-schema-sqlite-create.sql"
+	case "postgresql":
+		sqlFilename = resourcePath + "/schema/g2core-schema-postgresql-create.sql"
+	case "mysql":
+		sqlFilename = resourcePath + "/schema/g2core-schema-mysql-create.sql"
+	case "mssql":
+		sqlFilename = resourcePath + "/schema/g2core-schema-mssql-create.sql"
+	default:
+		return fmt.Errorf("unknown database scheme: %s", parsedUrl.Scheme)
+	}
+
+	// Connect to the database.
+
+	databaseConnector, err := connector.NewConnector(ctx, databaseUrl)
+	if err != nil {
+		return err
+	}
+
+	// Create sqlExecutor to process file of SQL.
+
+	sqlExecutor := &sqlexecutor.SqlExecutorImpl{
+		DatabaseConnector: databaseConnector,
+	}
+	sqlExecutor.SetLogLevel(ctx, senzingSchema.logLevel)
+
+	// Add observers to sqlExecutor.
+
+	if senzingSchema.observers != nil {
+		for _, observer := range senzingSchema.observers.GetObservers(ctx) {
+			err = sqlExecutor.RegisterObserver(ctx, observer)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	// Process file of SQL
+
+	err = sqlExecutor.ProcessFileName(ctx, sqlFilename)
+	if err != nil {
+		return err
+	}
+	senzingSchema.getLogger().Log(2002, sqlFilename, parsedUrl.Redacted())
+	return err
 }
 
 // ----------------------------------------------------------------------------
@@ -70,10 +136,9 @@ func (senzingSchema *SenzingSchemaImpl) Initialize(ctx context.Context) error {
 
 	// Log entry parameters.
 
-	logger, _ := messagelogger.NewSenzingApiLogger(ProductId, IdMessages, IdStatuses, senzingSchema.logLevel)
-	logger.Log(1000, senzingSchema)
+	senzingSchema.getLogger().Log(1000, senzingSchema)
 
-	// Pull values out of SENZING_TOOLS_ENGINE_CONFIGURATION_JSON.
+	// Pull values out of SenzingEngineConfigurationJson.
 
 	parser, err := engineconfigurationjsonparser.New(senzingSchema.SenzingEngineConfigurationJson)
 	if err != nil {
@@ -91,67 +156,10 @@ func (senzingSchema *SenzingSchemaImpl) Initialize(ctx context.Context) error {
 	// Process each database.
 
 	for _, databaseUrl := range databaseUrls {
-		var sqlFilename string
-
-		// Connect to the database.
-
-		databaseConnector, err := connector.NewConnector(ctx, databaseUrl)
+		err = senzingSchema.processDatabase(ctx, resourcePath, databaseUrl)
 		if err != nil {
 			return err
 		}
-
-		// Determine which SQL file to process.
-
-		parsedUrl, err := url.Parse(databaseUrl)
-		if err != nil {
-			if strings.HasPrefix(databaseUrl, "postgresql") {
-				index := strings.LastIndex(databaseUrl, ":")
-				newDatabaseUrl := databaseUrl[:index] + "/" + databaseUrl[index+1:]
-				parsedUrl, err = url.Parse(newDatabaseUrl)
-			}
-			if err != nil {
-				return err
-			}
-		}
-
-		switch parsedUrl.Scheme {
-		case "sqlite3":
-			sqlFilename = resourcePath + "/schema/g2core-schema-sqlite-create.sql"
-		case "postgresql":
-			sqlFilename = resourcePath + "/schema/g2core-schema-postgresql-create.sql"
-		case "mysql":
-			sqlFilename = resourcePath + "/schema/g2core-schema-mysql-create.sql"
-		case "mssql":
-			sqlFilename = resourcePath + "/schema/g2core-schema-mssql-create.sql"
-		default:
-			return fmt.Errorf("unknown database scheme: %s", parsedUrl.Scheme)
-		}
-
-		// Create sqlExecutor to process file of SQL.
-
-		sqlExecutor := &sqlexecutor.SqlExecutorImpl{
-			DatabaseConnector: databaseConnector,
-		}
-		sqlExecutor.SetLogLevel(ctx, senzingSchema.logLevel)
-
-		// Add observers to sqlExecutor.
-
-		if senzingSchema.observers != nil {
-			for _, observer := range senzingSchema.observers.GetObservers(ctx) {
-				err = sqlExecutor.RegisterObserver(ctx, observer)
-				if err != nil {
-					return err
-				}
-			}
-		}
-
-		// Process file of SQL
-
-		err = sqlExecutor.ProcessFileName(ctx, sqlFilename)
-		if err != nil {
-			return err
-		}
-		logger.Log(2002, sqlFilename, parsedUrl.Redacted())
 	}
 
 	// Epilog.

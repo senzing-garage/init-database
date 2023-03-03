@@ -23,7 +23,7 @@ var (
 )
 
 func makeVersion(version string, iteration string) string {
-	var result string = ""
+	result := ""
 	if buildIteration == "0" {
 		result = version
 	} else {
