@@ -71,8 +71,7 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 
 	// Log entry parameters.
 
-	logger, _ := messagelogger.NewSenzingApiLogger(ProductId, IdMessages, IdStatuses, initializerImpl.logLevel)
-	logger.Log(1000, initializerImpl)
+	initializerImpl.getLogger().Log(1000, initializerImpl)
 
 	// Create senzingSchema for initializing Senzing schema.
 

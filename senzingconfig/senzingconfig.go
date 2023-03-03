@@ -47,6 +47,24 @@ var defaultModuleName string = "initdatabase"
 // Internal methods
 // ----------------------------------------------------------------------------
 
+// Get the Logger singleton.
+func (senzingConfig *SenzingConfigImpl) getLogger() messagelogger.MessageLoggerInterface {
+	if senzingConfig.logger == nil {
+		senzingConfig.logger, _ = messagelogger.NewSenzingApiLogger(ProductId, IdMessages, IdStatuses, senzingConfig.logLevel)
+	}
+	return senzingConfig.logger
+}
+
+// Trace method entry.
+func (senzingConfig *SenzingConfigImpl) traceEntry(errorNumber int, details ...interface{}) {
+	senzingConfig.getLogger().Log(errorNumber, details...)
+}
+
+// Trace method exit.
+func (senzingConfig *SenzingConfigImpl) traceExit(errorNumber int, details ...interface{}) {
+	senzingConfig.getLogger().Log(errorNumber, details...)
+}
+
 // Create an abstract factory singleton and return it.
 func (senzingConfig *SenzingConfigImpl) getG2Factory(ctx context.Context) factory.SdkAbstractFactory {
 	senzingConfig.g2factorySyncOnce.Do(func() {
@@ -99,22 +117,18 @@ func (senzingConfig *SenzingConfigImpl) getG2configmgr(ctx context.Context) (g2a
 	return senzingConfig.g2configmgrSingleton, err
 }
 
-// Get the Logger singleton.
-func (senzingConfig *SenzingConfigImpl) getLogger() messagelogger.MessageLoggerInterface {
-	if senzingConfig.logger == nil {
-		senzingConfig.logger, _ = messagelogger.NewSenzingApiLogger(ProductId, IdMessages, IdStatuses, messagelogger.LevelInfo)
+// Add datasources to Senzing configuration.
+func (senzingConfig *SenzingConfigImpl) addDatasources(ctx context.Context, g2Config g2api.G2config, configHandle uintptr) error {
+	var err error = nil
+	for _, datasource := range senzingConfig.DataSources {
+		inputJson := `{"DSRC_CODE": "` + datasource + `"}`
+		_, err = g2Config.AddDataSource(ctx, configHandle, inputJson)
+		if err != nil {
+			return err
+		}
+		senzingConfig.getLogger().Log(2003, datasource)
 	}
-	return senzingConfig.logger
-}
-
-// Trace method entry.
-func (senzingConfig *SenzingConfigImpl) traceEntry(errorNumber int, details ...interface{}) {
-	senzingConfig.getLogger().Log(errorNumber, details...)
-}
-
-// Trace method exit.
-func (senzingConfig *SenzingConfigImpl) traceExit(errorNumber int, details ...interface{}) {
-	senzingConfig.getLogger().Log(errorNumber, details...)
+	return err
 }
 
 // ----------------------------------------------------------------------------
@@ -132,12 +146,10 @@ func (senzingConfig *SenzingConfigImpl) Initialize(ctx context.Context) error {
 		senzingConfig.traceEntry(1)
 	}
 	entryTime := time.Now()
-	var err error = nil
 
 	// Log entry parameters.
 
-	logger, _ := messagelogger.NewSenzingApiLogger(ProductId, IdMessages, IdStatuses, senzingConfig.logLevel)
-	logger.Log(1000, senzingConfig)
+	senzingConfig.getLogger().Log(1000, senzingConfig)
 
 	// Create Senzing objects.
 
@@ -163,7 +175,7 @@ func (senzingConfig *SenzingConfigImpl) Initialize(ctx context.Context) error {
 				notifier.Notify(ctx, senzingConfig.observers, ProductId, 8001, err, details)
 			}()
 		}
-		logger.Log(2002, configID)
+		senzingConfig.getLogger().Log(2002, configID)
 		if senzingConfig.isTrace {
 			defer senzingConfig.traceExit(901, err, time.Since(entryTime))
 		}
@@ -179,20 +191,21 @@ func (senzingConfig *SenzingConfigImpl) Initialize(ctx context.Context) error {
 
 	// If requested, add DataSources to fresh Senzing configuration.
 
-	for _, datasource := range senzingConfig.DataSources {
-		inputJson := `{"DSRC_CODE": "` + datasource + `"}`
-		_, err = g2Config.AddDataSource(ctx, configHandle, inputJson)
+	if len(senzingConfig.DataSources) > 0 {
+		err = senzingConfig.addDatasources(ctx, g2Config, configHandle)
 		if err != nil {
 			return err
 		}
-		logger.Log(2003, datasource)
 	}
+
+	// Create a JSON string from the in-memory configuration.
+
 	configStr, err := g2Config.Save(ctx, configHandle)
 	if err != nil {
 		return err
 	}
 
-	// Persist the Senzing configuration to the Senzing repository.
+	// Persist the Senzing configuration to the Senzing repository and set as default configuration.
 
 	configComments := fmt.Sprintf("Created by initdatabase at %s", entryTime.UTC())
 	configID, err = g2Configmgr.AddConfig(ctx, configStr, configComments)
@@ -206,7 +219,7 @@ func (senzingConfig *SenzingConfigImpl) Initialize(ctx context.Context) error {
 
 	// Epilog.
 
-	logger.Log(2004, configID, configComments)
+	senzingConfig.getLogger().Log(2004, configID, configComments)
 	if senzingConfig.observers != nil {
 		go func() {
 			details := map[string]string{}

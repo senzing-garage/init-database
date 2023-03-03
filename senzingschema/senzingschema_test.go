@@ -154,6 +154,9 @@ func ExampleSenzingSchemaImpl_SetLogLevel() {
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
 	err = senzingSchema.SetLogLevel(ctx, logger.LevelInfo)
+	if err != nil {
+		fmt.Print(err)
+	}
 	// Output:
 }
 
