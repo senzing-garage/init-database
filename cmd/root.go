@@ -57,7 +57,7 @@ var RootCmd = &cobra.Command{
 		initializer := &initializer.InitializerImpl{
 			DataSources:                    viper.GetStringSlice("datasources"),
 			SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
-			SenzingModuleName:              viper.GetString("senzing-module-name"),
+			SenzingModuleName:              viper.GetString("engine-module-name"),
 			SenzingVerboseLogging:          viper.GetInt("engine-log-level"),
 		}
 		initializer.SetLogLevel(ctx, logLevel)
@@ -91,12 +91,12 @@ func init() {
 
 	// Define flags for command.
 
-	RootCmd.Flags().String("database-url", defaultDatabaseUrl, "URL of database to initialize [SENZING_TOOLS_DATABASE_URL]")
-	RootCmd.Flags().StringSlice("datasources", defaultDatasources, "datasources to be added to initial Senzing configuration [SENZING_TOOLS_DATASOURCES]")
-	RootCmd.Flags().String("engine-configuration-json", defaultEngineConfigurationJson, "JSON string sent to Senzing's init() function [SENZING_TOOLS_ENGINE_CONFIGURATION_JSON]")
 	RootCmd.Flags().Int("engine-log-level", defaultEngineLogLevel, "log level for Senzing Engine [SENZING_TOOLS_ENGINE_LOG_LEVEL]")
+	RootCmd.Flags().String("database-url", defaultDatabaseUrl, "URL of database to initialize [SENZING_TOOLS_DATABASE_URL]")
+	RootCmd.Flags().String("engine-configuration-json", defaultEngineConfigurationJson, "JSON string sent to Senzing's init() function [SENZING_TOOLS_ENGINE_CONFIGURATION_JSON]")
 	RootCmd.Flags().String("engine-module-name", defaultEngineModuleName, "the identifier given to the Senzing engine [SENZING_TOOLS_ENGINE_MODULE_NAME]")
 	RootCmd.Flags().String("log-level", defaultLogLevel, "log level of TRACE, DEBUG, INFO, WARN, ERROR, FATAL, or PANIC [SENZING_TOOLS_LOG_LEVEL]")
+	RootCmd.Flags().StringSlice("datasources", defaultDatasources, "datasources to be added to initial Senzing configuration [SENZING_TOOLS_DATASOURCES]")
 
 	// Integrate with Viper.
 
@@ -106,23 +106,23 @@ func init() {
 
 	// Define flags in Viper.
 
+	viper.SetDefault("engine-log-level", defaultEngineLogLevel)
+	viper.BindPFlag("engine-log-level", RootCmd.Flags().Lookup("engine-log-level"))
+
 	viper.SetDefault("database-url", defaultDatabaseUrl)
 	viper.BindPFlag("database-url", RootCmd.Flags().Lookup("database-url"))
 
-	viper.SetDefault("datasources", defaultDatasources)
-	viper.BindPFlag("datasources", RootCmd.Flags().Lookup("datasources"))
-
 	viper.SetDefault("engine-configuration-json", defaultEngineConfigurationJson)
 	viper.BindPFlag("engine-configuration-json", RootCmd.Flags().Lookup("engine-configuration-json"))
-
-	viper.SetDefault("engine-log-level", defaultEngineLogLevel)
-	viper.BindPFlag("engine-log-level", RootCmd.Flags().Lookup("engine-log-level"))
 
 	viper.SetDefault("engine-module-name", defaultEngineModuleName)
 	viper.BindPFlag("engine-module-name", RootCmd.Flags().Lookup("engine-module-name"))
 
 	viper.SetDefault("log-level", defaultLogLevel)
 	viper.BindPFlag("log-level", RootCmd.Flags().Lookup("log-level"))
+
+	viper.SetDefault("datasources", defaultDatasources)
+	viper.BindPFlag("datasources", RootCmd.Flags().Lookup("datasources"))
 
 	// Set version template.
 
