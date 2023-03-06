@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [0.1.2] - 2023-03-06
+
+### Added to 0.1.2
+
+- Fixed issue with `SENZING_TOOLS_DATABASE_URL`
+
 ## [0.1.1] - 2023-03-03
 
 ### Added to 0.1.1

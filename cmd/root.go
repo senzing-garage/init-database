@@ -84,7 +84,7 @@ func init() {
 
 	defaultDatabaseUrl := ""
 	defaultDatasources := []string{}
-	defaultEngineConfigurationJson, _ := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	defaultEngineConfigurationJson := ""
 	defaultEngineLogLevel := 0
 	defaultEngineModuleName := fmt.Sprintf("initdatabase-%s", now.UTC())
 	defaultLogLevel := "INFO"
