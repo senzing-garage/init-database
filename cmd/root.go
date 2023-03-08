@@ -42,7 +42,8 @@ func makeVersion(version string, iteration string) string {
 var RootCmd = &cobra.Command{
 	Use:   "initdatabase",
 	Short: "Initialize a database with the Senzing schema and configuration",
-	Long:  `For more information, visit https://github.com/Senzing/initdatabase`,
+	Long: `Initialize a database with the Senzing schema and configuration.
+			For more information, visit https://github.com/Senzing/initdatabase`,
 	PreRun: func(cobraCommand *cobra.Command, args []string) {
 
 		// Integrate with Viper.
