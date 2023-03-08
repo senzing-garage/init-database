@@ -14,7 +14,7 @@ FROM ${IMAGE_GO_BUILDER} as go_builder
 ENV REFRESHED_AT 2023-03-03
 LABEL Name="senzing/initdatabase-builder" \
       Maintainer="support@senzing.com" \
-      Version="0.1.1"
+      Version="0.1.3"
 
 # Build arguments.
 
@@ -61,7 +61,7 @@ FROM ${IMAGE_FPM_BUILDER} as fpm_builder
 ENV REFRESHED_AT 2023-03-03
 LABEL Name="senzing/initdatabase-fpm-builder" \
       Maintainer="support@senzing.com" \
-      Version="0.1.1"
+      Version="0.1.3"
 
 # Use arguments from prior stage.
 
@@ -105,7 +105,7 @@ FROM ${IMAGE_FINAL} as final
 ENV REFRESHED_AT 2023-03-03
 LABEL Name="senzing/initdatabase" \
       Maintainer="support@senzing.com" \
-      Version="0.1.1"
+      Version="0.1.3"
 
 # Use arguments from prior stage.
 

@@ -13,7 +13,7 @@ FROM ${IMAGE_GO_BUILDER} as go_builder
 ENV REFRESHED_AT 2023-03-03
 LABEL Name="senzing/initdatabase-builder" \
       Maintainer="support@senzing.com" \
-      Version="0.1.1"
+      Version="0.1.3"
 
 # Build arguments.
 
@@ -57,7 +57,7 @@ FROM ${IMAGE_FINAL} as final
 ENV REFRESHED_AT 2023-03-03
 LABEL Name="senzing/initdatabase" \
       Maintainer="support@senzing.com" \
-      Version="0.1.1"
+      Version="0.1.3"
 
 # Copy files from repository.
 
