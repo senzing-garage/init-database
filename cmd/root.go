@@ -42,8 +42,10 @@ func makeVersion(version string, iteration string) string {
 var RootCmd = &cobra.Command{
 	Use:   "initdatabase",
 	Short: "Initialize a database with the Senzing schema and configuration",
-	Long: `Initialize a database with the Senzing schema and configuration.
-			For more information, visit https://github.com/Senzing/initdatabase`,
+	Long: `
+Initialize a database with the Senzing schema and configuration.
+For more information, visit https://github.com/Senzing/initdatabase
+	`,
 	PreRun: func(cobraCommand *cobra.Command, args []string) {
 
 		// Integrate with Viper.
@@ -121,12 +123,12 @@ func init() {
 
 	// Define flags for Cobra command.
 
-	RootCmd.Flags().Int("engine-log-level", defaultEngineLogLevel, "log level for Senzing Engine [SENZING_TOOLS_ENGINE_LOG_LEVEL]")
+	RootCmd.Flags().Int("engine-log-level", defaultEngineLogLevel, "Log level for Senzing Engine [SENZING_TOOLS_ENGINE_LOG_LEVEL]")
 	RootCmd.Flags().String("database-url", defaultDatabaseUrl, "URL of database to initialize [SENZING_TOOLS_DATABASE_URL]")
 	RootCmd.Flags().String("engine-configuration-json", defaultEngineConfigurationJson, "JSON string sent to Senzing's init() function [SENZING_TOOLS_ENGINE_CONFIGURATION_JSON]")
-	RootCmd.Flags().String("engine-module-name", defaultEngineModuleName, "the identifier given to the Senzing engine [SENZING_TOOLS_ENGINE_MODULE_NAME]")
-	RootCmd.Flags().String("log-level", defaultLogLevel, "log level of TRACE, DEBUG, INFO, WARN, ERROR, FATAL, or PANIC [SENZING_TOOLS_LOG_LEVEL]")
-	RootCmd.Flags().StringSlice("datasources", defaultDatasources, "datasources to be added to initial Senzing configuration [SENZING_TOOLS_DATASOURCES]")
+	RootCmd.Flags().String("engine-module-name", defaultEngineModuleName, "Identifier given to the Senzing engine [SENZING_TOOLS_ENGINE_MODULE_NAME]")
+	RootCmd.Flags().String("log-level", defaultLogLevel, "Log level of TRACE, DEBUG, INFO, WARN, ERROR, FATAL, or PANIC [SENZING_TOOLS_LOG_LEVEL]")
+	RootCmd.Flags().StringSlice("datasources", defaultDatasources, "Datasources to be added to initial Senzing configuration [SENZING_TOOLS_DATASOURCES]")
 }
 
 // initConfig reads in config file and ENV variables if set.
