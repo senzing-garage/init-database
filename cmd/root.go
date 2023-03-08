@@ -17,10 +17,9 @@ import (
 )
 
 var (
-	configurationFile string
-	buildVersion      string = "0.0.0"
-	buildIteration    string = "0"
-
+	buildIteration                 string = "0"
+	buildVersion                   string = "0.0.0"
+	configurationFile              string
 	defaultDatabaseUrl             string = ""
 	defaultDatasources             []string
 	defaultEngineConfigurationJson string = ""
@@ -45,8 +44,6 @@ var RootCmd = &cobra.Command{
 	Short: "Initialize a database with the Senzing schema and configuration",
 	Long:  `For more information, visit https://github.com/Senzing/initdatabase`,
 	PreRun: func(cobraCommand *cobra.Command, args []string) {
-
-		fmt.Printf(">>>>> initdatabase.cmd.RootCmd.PreRun\n")
 
 		// Integrate with Viper.
 
@@ -121,7 +118,7 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	// Define flags for command.
+	// Define flags for Cobra command.
 
 	RootCmd.Flags().Int("engine-log-level", defaultEngineLogLevel, "log level for Senzing Engine [SENZING_TOOLS_ENGINE_LOG_LEVEL]")
 	RootCmd.Flags().String("database-url", defaultDatabaseUrl, "URL of database to initialize [SENZING_TOOLS_DATABASE_URL]")
