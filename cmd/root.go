@@ -102,8 +102,11 @@ For more information, visit https://github.com/Senzing/initdatabase
 			SenzingModuleName:              viper.GetString("engine-module-name"),
 			SenzingVerboseLogging:          viper.GetInt("engine-log-level"),
 		}
-		initializer.SetLogLevel(ctx, logLevel)
-		initializer.Initialize(ctx)
+		err = initializer.SetLogLevel(ctx, logLevel)
+		if err != nil {
+			return err
+		}
+		err = initializer.Initialize(ctx)
 		return err
 	},
 	Version: makeVersion(buildVersion, buildIteration),
