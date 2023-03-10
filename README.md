@@ -50,6 +50,8 @@ senzing-tools initdatabase [flags]
         senzing-tools initdatabase --help
         ```
 
+1. In addition to the following simple usage examples, there are additional [Examples](docs/examples.md).
+
 ### Using command line options
 
 1. :pencil2: Specify database using command line option.
