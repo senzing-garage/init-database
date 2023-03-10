@@ -28,7 +28,9 @@ In these examples, datasources are added to the initial Senzing configuration.
         --datasources WATCHLIST
     ```
 
-1. :pencil2: Specify datasources to create using `SENZING_TOOLS_DATASOURCES` environment variable.
+1. :pencil2: Specify datasources to create using
+   [SENZING_TOOLS_DATASOURCES](https://github.com/Senzing/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_datasources)
+   environment variable.
    Example:
 
     ```console
@@ -75,7 +77,7 @@ For more information, see
 
 ### Docker example - Add datasources
 
-In these examples, datasources are added to the initial Senzing configuration.
+Datasources can be added to the initial Senzing configuration.
 
 1. :pencil2: Specify datasources to create using
    [SENZING_TOOLS_DATASOURCES](https://github.com/Senzing/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_datasources)
