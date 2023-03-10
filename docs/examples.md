@@ -7,7 +7,7 @@
 In these examples, datasources are added to the initial Senzing configuration.
 
 1. :pencil2: Specify datasources to create using single `--datasources` parameter.
-   Examples:
+   Example:
 
     ```console
     export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
@@ -17,6 +17,7 @@ In these examples, datasources are added to the initial Senzing configuration.
     ```
 
 1. :pencil2: Specify datasources to create using multiple `--datasources` parameter.
+   Example:
 
     ```console
     export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
@@ -28,7 +29,7 @@ In these examples, datasources are added to the initial Senzing configuration.
     ```
 
 1. :pencil2: Specify datasources to create using `SENZING_TOOLS_DATASOURCES` environment variable.
-   Examples:
+   Example:
 
     ```console
     export SENZING_TOOLS_DATABASE_URL=postgresql://username:password@postgres.example.com:5432/G2
