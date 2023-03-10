@@ -2,6 +2,12 @@
 
 ## Commands
 
-1. [initdatabase](initdatabase.md) - Initialize database with Senzing schema and configuration
-1. [initdatabase completion](initdatabase_completion.md) - Generate bash completion for the command
-1. [initdatabase docs](initdatabase_docs.md) - Generate documentation for the command
+1. [senzing-tools initdatabase](https://hub.senzing.com/senzing-tools/senzing-tools_initdatabsae)
+
+## Examples
+
+1. [examples](examples.md)
+
+## Errors
+
+1. [errors](errors.md)
