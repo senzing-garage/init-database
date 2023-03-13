@@ -10,15 +10,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [0.1.5] - 2023-03-13
+
+### Fixed in 0.1.5
+
+- Fixed issue silent error when connecting to database.
+
 ## [0.1.4] - 2023-03-08
 
-### Changed in 0.1.4
+### Fixed in 0.1.4
 
 - Fixed issue with Cobra, Viper, and subcommand parameters, again.
 
 ## [0.1.3] - 2023-03-07
 
-### Changed in 0.1.3
+### Fixed in 0.1.3
 
 - Fixed issue with Cobra, Viper, and subcommand parameters
 
