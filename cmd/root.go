@@ -19,7 +19,7 @@ import (
 var (
 	buildIteration                 string = "0"
 	buildVersion                   string = "0.1.4"
-	configurationFile              string
+	defaultConfigurationFile       string = ""
 	defaultDatabaseUrl             string = ""
 	defaultDatasources             []string
 	defaultEngineConfigurationJson string = ""
@@ -47,6 +47,38 @@ Initialize a database with the Senzing schema and configuration.
 For more information, visit https://github.com/Senzing/initdatabase
 	`,
 	PreRun: func(cobraCommand *cobra.Command, args []string) {
+		fmt.Println(">>>>> initdatabase.PreRun")
+		viper.AutomaticEnv()
+		viper.SetDefault("configuration", defaultDatabaseUrl)
+		viper.BindPFlag("configuration", cobraCommand.Flags().Lookup("configuration"))
+
+		if viper.GetString("configuration") != "" {
+			// Use config file from the flag.
+			viper.SetConfigFile(viper.GetString("configuration"))
+		} else {
+
+			// Determine home directory.
+
+			home, err := os.UserHomeDir()
+			cobra.CheckErr(err)
+
+			// Configuration file: initdatabase.yaml
+
+			viper.SetConfigName("initdatabase")
+			viper.SetConfigType("yaml")
+
+			// Search path order.
+
+			viper.AddConfigPath(home + "/.senzing-tools")
+			viper.AddConfigPath(home)
+			viper.AddConfigPath("/etc/senzing-tools")
+		}
+
+		// If a config file is found, read it in.
+
+		if err := viper.ReadInConfig(); err == nil {
+			fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+		}
 
 		// Integrate with Viper.
 
@@ -122,46 +154,13 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
-
-	// Define flags for Cobra command.
+	fmt.Println(">>>>> initdatabase.init()")
 
 	RootCmd.Flags().Int("engine-log-level", defaultEngineLogLevel, "Log level for Senzing Engine [SENZING_TOOLS_ENGINE_LOG_LEVEL]")
+	RootCmd.Flags().String("configuration", defaultConfigurationFile, "Path to configuration file [SENZING_TOOLS_CONFIGURATION]")
 	RootCmd.Flags().String("database-url", defaultDatabaseUrl, "URL of database to initialize [SENZING_TOOLS_DATABASE_URL]")
 	RootCmd.Flags().String("engine-configuration-json", defaultEngineConfigurationJson, "JSON string sent to Senzing's init() function [SENZING_TOOLS_ENGINE_CONFIGURATION_JSON]")
 	RootCmd.Flags().String("engine-module-name", defaultEngineModuleName, "Identifier given to the Senzing engine [SENZING_TOOLS_ENGINE_MODULE_NAME]")
 	RootCmd.Flags().String("log-level", defaultLogLevel, "Log level of TRACE, DEBUG, INFO, WARN, ERROR, FATAL, or PANIC [SENZING_TOOLS_LOG_LEVEL]")
 	RootCmd.Flags().StringSlice("datasources", defaultDatasources, "Datasources to be added to initial Senzing configuration [SENZING_TOOLS_DATASOURCES]")
-}
-
-// initConfig reads in config file and ENV variables if set.
-func initConfig() {
-	if configurationFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(configurationFile)
-	} else {
-
-		// Find home directory.
-
-		home, err := os.UserHomeDir()
-		cobra.CheckErr(err)
-
-		// Search config in home directory with name ".senzing-tools" (without extension).
-
-		viper.AddConfigPath(home + "/.senzing-tools")
-		viper.AddConfigPath(home)
-		viper.AddConfigPath("/etc/senzing-tools")
-		viper.SetConfigType("yaml")
-		viper.SetConfigName("initdatabase")
-	}
-
-	// Read in environment variables that match "SENZING_TOOLS_*" pattern.
-
-	viper.AutomaticEnv()
-
-	// If a config file is found, read it in.
-
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
-	}
 }
