@@ -10,6 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [0.1.6] - 2023-03-14
+
+### Changed in 0.1.6
+
+- Update dependencies
+- Standardize use of Viper/Cobra
+
 ## [0.1.5] - 2023-03-13
 
 ### Fixed in 0.1.5
