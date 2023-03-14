@@ -15,6 +15,7 @@ import (
 	"github.com/senzing/senzing-tools/constant"
 	"github.com/senzing/senzing-tools/envar"
 	"github.com/senzing/senzing-tools/helper"
+	"github.com/senzing/senzing-tools/option"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -36,7 +37,7 @@ var (
 
 // If a configuration file is present, load it.
 func loadConfigurationFile(cobraCommand *cobra.Command) {
-	configuration := cobraCommand.Flags().Lookup(constant.Configuration).Value.String()
+	configuration := cobraCommand.Flags().Lookup(option.Configuration).Value.String()
 	if configuration != "" { // Use configuration file specified as a command line option.
 		viper.SetConfigFile(configuration)
 	} else { // Search for a configuration file.
@@ -67,29 +68,38 @@ func loadConfigurationFile(cobraCommand *cobra.Command) {
 
 // Configure Viper with user-specified options.
 func loadOptions(cobraCommand *cobra.Command) {
-
 	viper.AutomaticEnv()
 	replacer := strings.NewReplacer("-", "_")
 	viper.SetEnvKeyReplacer(replacer)
 	viper.SetEnvPrefix(constant.SetEnvPrefix)
 
-	viper.SetDefault(constant.DatabaseUrl, defaultDatabaseUrl)
-	viper.BindPFlag(constant.DatabaseUrl, cobraCommand.Flags().Lookup(constant.DatabaseUrl))
+	// Ints
 
-	viper.SetDefault(constant.Datasources, defaultDatasources)
-	viper.BindPFlag(constant.Datasources, cobraCommand.Flags().Lookup(constant.Datasources))
+	intOptions := map[string]int{
+		option.EngineLogLevel: defaultEngineLogLevel,
+	}
+	for optionKey, optionValue := range intOptions {
+		viper.SetDefault(optionKey, optionValue)
+		viper.BindPFlag(optionKey, cobraCommand.Flags().Lookup(optionKey))
+	}
 
-	viper.SetDefault(constant.EngineConfigurationJson, defaultEngineConfigurationJson)
-	viper.BindPFlag(constant.EngineConfigurationJson, cobraCommand.Flags().Lookup(constant.EngineConfigurationJson))
+	// Strings
 
-	viper.SetDefault(constant.EngineLogLevel, defaultEngineLogLevel)
-	viper.BindPFlag(constant.EngineLogLevel, cobraCommand.Flags().Lookup(constant.EngineLogLevel))
+	stringOptions := map[string]string{
+		option.DatabaseUrl:             defaultDatabaseUrl,
+		option.EngineConfigurationJson: defaultEngineConfigurationJson,
+		option.EngineModuleName:        defaultEngineModuleName,
+		option.LogLevel:                defaultLogLevel,
+	}
+	for optionKey, optionValue := range stringOptions {
+		viper.SetDefault(optionKey, optionValue)
+		viper.BindPFlag(optionKey, cobraCommand.Flags().Lookup(optionKey))
+	}
 
-	viper.SetDefault(constant.EngineModuleName, defaultEngineModuleName)
-	viper.BindPFlag(constant.EngineModuleName, cobraCommand.Flags().Lookup(constant.EngineModuleName))
+	// StringSlice
 
-	viper.SetDefault(constant.LogLevel, defaultLogLevel)
-	viper.BindPFlag(constant.LogLevel, cobraCommand.Flags().Lookup(constant.LogLevel))
+	viper.SetDefault(option.Datasources, defaultDatasources)
+	viper.BindPFlag(option.Datasources, cobraCommand.Flags().Lookup(option.Datasources))
 }
 
 // RootCmd represents the command.
@@ -110,24 +120,24 @@ For more information, visit https://github.com/Senzing/initdatabase
 		var err error = nil
 		ctx := context.TODO()
 
-		logLevel, ok := logger.TextToLevelMap[viper.GetString(constant.LogLevel)]
+		logLevel, ok := logger.TextToLevelMap[viper.GetString(option.LogLevel)]
 		if !ok {
 			logLevel = logger.LevelInfo
 		}
 
-		senzingEngineConfigurationJson := viper.GetString(constant.EngineConfigurationJson)
+		senzingEngineConfigurationJson := viper.GetString(option.EngineConfigurationJson)
 		if len(senzingEngineConfigurationJson) == 0 {
-			senzingEngineConfigurationJson, err = g2engineconfigurationjson.BuildSimpleSystemConfigurationJson(viper.GetString(constant.DatabaseUrl))
+			senzingEngineConfigurationJson, err = g2engineconfigurationjson.BuildSimpleSystemConfigurationJson(viper.GetString(option.DatabaseUrl))
 			if err != nil {
 				return err
 			}
 		}
 
 		initializer := &initializer.InitializerImpl{
-			DataSources:                    viper.GetStringSlice(constant.Datasources),
+			DataSources:                    viper.GetStringSlice(option.Datasources),
 			SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
-			SenzingModuleName:              viper.GetString(constant.EngineModuleName),
-			SenzingVerboseLogging:          viper.GetInt(constant.EngineLogLevel),
+			SenzingModuleName:              viper.GetString(option.EngineModuleName),
+			SenzingVerboseLogging:          viper.GetInt(option.EngineLogLevel),
 		}
 		err = initializer.SetLogLevel(ctx, logLevel)
 		if err != nil {
@@ -151,11 +161,11 @@ func Execute() {
 // Since init() is always invoked, define command line parameters.
 func init() {
 	fmt.Println(">>>>> initdatabase.init()")
-	RootCmd.Flags().Int(constant.EngineLogLevel, defaultEngineLogLevel, fmt.Sprintf("Log level for Senzing Engine [%s]", envar.EngineLogLevel))
-	RootCmd.Flags().String(constant.Configuration, defaultConfiguration, fmt.Sprintf("Path to configuration file [%s]", envar.Configuration))
-	RootCmd.Flags().String(constant.DatabaseUrl, defaultDatabaseUrl, fmt.Sprintf("URL of database to initialize [%s]", envar.DatabaseUrl))
-	RootCmd.Flags().String(constant.EngineConfigurationJson, defaultEngineConfigurationJson, fmt.Sprintf("JSON string sent to Senzing's init() function [%s]", envar.EngineConfigurationJson))
-	RootCmd.Flags().String(constant.EngineModuleName, defaultEngineModuleName, fmt.Sprintf("Identifier given to the Senzing engine [%s]", envar.EngineModuleName))
-	RootCmd.Flags().String(constant.LogLevel, defaultLogLevel, fmt.Sprintf("Log level of TRACE, DEBUG, INFO, WARN, ERROR, FATAL, or PANIC [%s]", envar.LogLevel))
-	RootCmd.Flags().StringSlice(constant.Datasources, defaultDatasources, fmt.Sprintf("Datasources to be added to initial Senzing configuration [%s]", envar.Datasources))
+	RootCmd.Flags().Int(option.EngineLogLevel, defaultEngineLogLevel, fmt.Sprintf("Log level for Senzing Engine [%s]", envar.EngineLogLevel))
+	RootCmd.Flags().String(option.Configuration, defaultConfiguration, fmt.Sprintf("Path to configuration file [%s]", envar.Configuration))
+	RootCmd.Flags().String(option.DatabaseUrl, defaultDatabaseUrl, fmt.Sprintf("URL of database to initialize [%s]", envar.DatabaseUrl))
+	RootCmd.Flags().String(option.EngineConfigurationJson, defaultEngineConfigurationJson, fmt.Sprintf("JSON string sent to Senzing's init() function [%s]", envar.EngineConfigurationJson))
+	RootCmd.Flags().String(option.EngineModuleName, defaultEngineModuleName, fmt.Sprintf("Identifier given to the Senzing engine [%s]", envar.EngineModuleName))
+	RootCmd.Flags().String(option.LogLevel, defaultLogLevel, fmt.Sprintf("Log level of TRACE, DEBUG, INFO, WARN, ERROR, FATAL, or PANIC [%s]", envar.LogLevel))
+	RootCmd.Flags().StringSlice(option.Datasources, defaultDatasources, fmt.Sprintf("Datasources to be added to initial Senzing configuration [%s]", envar.Datasources))
 }
