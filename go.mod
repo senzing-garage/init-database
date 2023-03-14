@@ -9,6 +9,7 @@ require (
 	github.com/senzing/go-logging v1.1.3
 	github.com/senzing/go-observing v0.2.0
 	github.com/senzing/go-sdk-abstract-factory v0.2.1
+	github.com/senzing/senzing-tools v0.1.4
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/viper v1.15.0
 )
@@ -29,7 +30,7 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.7 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
-	github.com/senzing/g2-sdk-go-base v0.1.1 // indirect
+	github.com/senzing/g2-sdk-go-base v0.1.2 // indirect
 	github.com/senzing/g2-sdk-go-grpc v0.2.1 // indirect
 	github.com/senzing/g2-sdk-proto/go v0.0.0-20230310202231-e2f8d3edf4b8 // indirect
 	github.com/spf13/afero v1.9.5 // indirect
@@ -43,7 +44,7 @@ require (
 	golang.org/x/text v0.8.0 // indirect
 	google.golang.org/genproto v0.0.0-20230306155012-7f2fa6fef1f4 // indirect
 	google.golang.org/grpc v1.53.0 // indirect
-	google.golang.org/protobuf v1.29.0 // indirect
+	google.golang.org/protobuf v1.29.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
