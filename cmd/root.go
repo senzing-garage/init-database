@@ -62,7 +62,7 @@ func loadConfigurationFile(cobraCommand *cobra.Command) {
 	// If a config file is found, read it in.
 
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+		fmt.Fprintln(os.Stderr, "Applying configuration file:", viper.ConfigFileUsed())
 	}
 }
 
@@ -111,7 +111,6 @@ Initialize a database with the Senzing schema and configuration.
 For more information, visit https://github.com/Senzing/initdatabase
 	`,
 	PreRun: func(cobraCommand *cobra.Command, args []string) {
-		fmt.Println(">>>>> initdatabase.PreRun")
 		loadConfigurationFile(cobraCommand)
 		loadOptions(cobraCommand)
 		cobraCommand.SetVersionTemplate(constant.VersionTemplate)
@@ -160,7 +159,6 @@ func Execute() {
 
 // Since init() is always invoked, define command line parameters.
 func init() {
-	fmt.Println(">>>>> initdatabase.init()")
 	RootCmd.Flags().Int(option.EngineLogLevel, defaultEngineLogLevel, fmt.Sprintf("Log level for Senzing Engine [%s]", envar.EngineLogLevel))
 	RootCmd.Flags().String(option.Configuration, defaultConfiguration, fmt.Sprintf("Path to configuration file [%s]", envar.Configuration))
 	RootCmd.Flags().String(option.DatabaseUrl, defaultDatabaseUrl, fmt.Sprintf("URL of database to initialize [%s]", envar.DatabaseUrl))
