@@ -151,7 +151,6 @@ func Execute() {
 // Since init() is always invoked, define command line parameters.
 func init() {
 	fmt.Println(">>>>> initdatabase.init()")
-
 	RootCmd.Flags().Int(constant.EngineLogLevel, defaultEngineLogLevel, fmt.Sprintf("Log level for Senzing Engine [%s]", envar.EngineLogLevel))
 	RootCmd.Flags().String(constant.Configuration, defaultConfiguration, fmt.Sprintf("Path to configuration file [%s]", envar.Configuration))
 	RootCmd.Flags().String(constant.DatabaseUrl, defaultDatabaseUrl, fmt.Sprintf("URL of database to initialize [%s]", envar.DatabaseUrl))
