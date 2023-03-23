@@ -2,8 +2,13 @@ package initializer
 
 import (
 	"context"
+	"net/url"
+	"os"
+	"path/filepath"
+	"strings"
 	"time"
 
+	"github.com/senzing/go-common/engineconfigurationjsonparser"
 	"github.com/senzing/go-logging/logger"
 	"github.com/senzing/go-logging/messagelogger"
 	"github.com/senzing/go-observing/notifier"
@@ -39,6 +44,34 @@ func (initializerImpl *InitializerImpl) getLogger() messagelogger.MessageLoggerI
 		initializerImpl.messageLogger, _ = messagelogger.NewSenzingApiLogger(ProductId, IdMessages, IdStatuses, initializerImpl.logLevel)
 	}
 	return initializerImpl.messageLogger
+}
+
+func (initializerImpl *InitializerImpl) initializeSpecificDatabaseSqlite(ctx context.Context, parsedUrl *url.URL) error {
+	// If file doesn't exist, create it.
+
+	filename := parsedUrl.Path
+	_, err := os.Stat(filename)
+	if err != nil {
+		path := filepath.Dir(filename)
+		err = os.MkdirAll(path, os.ModePerm)
+		if err != nil {
+			return err
+		}
+		_, err = os.Create(filename)
+		if err != nil {
+			return err
+		}
+		initializerImpl.getLogger().Log(2001, filename)
+		if initializerImpl.observers != nil {
+			go func() {
+				details := map[string]string{
+					"sqliteFile": filename,
+				}
+				notifier.Notify(ctx, initializerImpl.observers, ProductId, 8005, err, details)
+			}()
+		}
+	}
+	return err
 }
 
 // Trace method entry.
@@ -107,6 +140,10 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 
 	// Perform initialization.
 
+	err = initializerImpl.InitializeSpecificDatabase(ctx)
+	if err != nil {
+		return err
+	}
 	err = senzingSchema.Initialize(ctx)
 	if err != nil {
 		return err
@@ -126,6 +163,56 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 	}
 	if initializerImpl.isTrace {
 		defer initializerImpl.traceExit(2, err, time.Since(entryTime))
+	}
+	return err
+}
+
+/*
+The RegisterObserver method adds the observer to the list of observers notified.
+
+Input
+  - ctx: A context to control lifecycle.
+*/
+func (initializerImpl *InitializerImpl) InitializeSpecificDatabase(ctx context.Context) error {
+
+	// Pull values out of SenzingEngineConfigurationJson.
+
+	parser, err := engineconfigurationjsonparser.New(initializerImpl.SenzingEngineConfigurationJson)
+	if err != nil {
+		return err
+	}
+	databaseUrls, err := parser.GetDatabaseUrls(ctx)
+	if err != nil {
+		return err
+	}
+
+	// Process each database.
+
+	for _, databaseUrl := range databaseUrls {
+
+		// Parse URL.
+
+		parsedUrl, err := url.Parse(databaseUrl)
+		if err != nil {
+			if strings.HasPrefix(databaseUrl, "postgresql") {
+				index := strings.LastIndex(databaseUrl, ":")
+				newDatabaseUrl := databaseUrl[:index] + "/" + databaseUrl[index+1:]
+				parsedUrl, err = url.Parse(newDatabaseUrl)
+			}
+			if err != nil {
+				return err
+			}
+		}
+
+		// Special handling for each database type.
+
+		switch parsedUrl.Scheme {
+		case "sqlite3":
+			err = initializerImpl.initializeSpecificDatabaseSqlite(ctx, parsedUrl)
+			if err != nil {
+				return err
+			}
+		}
 	}
 	return err
 }
