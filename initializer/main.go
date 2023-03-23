@@ -40,10 +40,12 @@ var IdMessages = map[int]string{
 	7:    "Enter UnregisterObserver(%s).",
 	8:    "Exit  UnregisterObserver(%s) returned (%v).",
 	1000: "Entry: %+v",
+	2001: "Created file: %s",
 	8001: "Initialize",
 	8002: "RegisterObserver",
 	8003: "SetLogLevel",
 	8004: "UnregisterObserver",
+	8005: "InitializeFiles",
 }
 
 // Status strings for specific messages.

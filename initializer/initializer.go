@@ -2,8 +2,12 @@ package initializer
 
 import (
 	"context"
+	"net/url"
+	"os"
+	"path/filepath"
 	"time"
 
+	"github.com/senzing/go-common/engineconfigurationjsonparser"
 	"github.com/senzing/go-logging/logger"
 	"github.com/senzing/go-logging/messagelogger"
 	"github.com/senzing/go-observing/notifier"
@@ -107,6 +111,10 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 
 	// Perform initialization.
 
+	err = initializerImpl.InitializeFiles(ctx)
+	if err != nil {
+		return err
+	}
 	err = senzingSchema.Initialize(ctx)
 	if err != nil {
 		return err
@@ -126,6 +134,63 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 	}
 	if initializerImpl.isTrace {
 		defer initializerImpl.traceExit(2, err, time.Since(entryTime))
+	}
+	return err
+}
+
+/*
+The RegisterObserver method adds the observer to the list of observers notified.
+
+Input
+  - ctx: A context to control lifecycle.
+*/
+func (initializerImpl *InitializerImpl) InitializeFiles(ctx context.Context) error {
+
+	// Pull values out of SenzingEngineConfigurationJson.
+
+	parser, err := engineconfigurationjsonparser.New(initializerImpl.SenzingEngineConfigurationJson)
+	if err != nil {
+		return err
+	}
+	databaseUrls, err := parser.GetDatabaseUrls(ctx)
+	if err != nil {
+		return err
+	}
+
+	// Process each database.
+
+	for _, databaseUrl := range databaseUrls {
+		parsedUrl, err := url.Parse(databaseUrl)
+
+		// Special handling for sqlite3 databases.
+
+		if parsedUrl.Scheme == "sqlite3" {
+
+			// If file doesn't exist, create it.
+
+			filename := parsedUrl.Path
+			_, err = os.Stat(filename)
+			if err != nil {
+				path := filepath.Dir(filename)
+				err = os.MkdirAll(path, os.ModePerm)
+				if err != nil {
+					return err
+				}
+				_, err = os.Create(filename)
+				if err != nil {
+					return err
+				}
+				initializerImpl.getLogger().Log(2001, filename)
+				if initializerImpl.observers != nil {
+					go func() {
+						details := map[string]string{
+							"sqliteFile": filename,
+						}
+						notifier.Notify(ctx, initializerImpl.observers, ProductId, 8005, err, details)
+					}()
+				}
+			}
+		}
 	}
 	return err
 }
