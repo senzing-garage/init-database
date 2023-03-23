@@ -204,7 +204,7 @@ func (initializerImpl *InitializerImpl) InitializeSpecificDatabase(ctx context.C
 			}
 		}
 
-		// Special handling for sqlite3 databases.
+		// Special handling for each database type.
 
 		switch parsedUrl.Scheme {
 		case "sqlite3":
