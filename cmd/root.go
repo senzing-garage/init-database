@@ -11,7 +11,7 @@ import (
 
 	"github.com/senzing/go-common/g2engineconfigurationjson"
 	"github.com/senzing/go-logging/logger"
-	"github.com/senzing/initdatabase/initializer"
+	"github.com/senzing/init-database/initializer"
 	"github.com/senzing/senzing-tools/constant"
 	"github.com/senzing/senzing-tools/envar"
 	"github.com/senzing/senzing-tools/helper"

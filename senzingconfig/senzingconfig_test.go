@@ -9,7 +9,7 @@ import (
 	"github.com/senzing/go-common/g2engineconfigurationjson"
 	"github.com/senzing/go-logging/logger"
 	"github.com/senzing/go-observing/observer"
-	"github.com/senzing/initdatabase/senzingschema"
+	"github.com/senzing/init-database/senzingschema"
 )
 
 // ----------------------------------------------------------------------------
