@@ -21,7 +21,7 @@ var docsCmd = &cobra.Command{
 			return err
 		}
 		if dir == "" {
-			if dir, err = os.MkdirTemp("", "initdatabase"); err != nil {
+			if dir, err = os.MkdirTemp("", "init-database"); err != nil {
 				return err
 			}
 		}
