@@ -1,4 +1,4 @@
-# Makefile that builds initdatabase, a "go" program.
+# Makefile that builds init-database, a "go" program.
 
 # "Simple expanded" variables (':=')
 
@@ -57,8 +57,8 @@ build-linux:
 	GOARCH=amd64 \
 	go build \
 		-ldflags \
-			"-X 'github.com/senzing/initdatabase/cmd.buildVersion=${BUILD_VERSION}' \
-			-X 'github.com/senzing/initdatabase/cmd.buildIteration=${BUILD_ITERATION}' \
+			"-X 'github.com/senzing/init-database/cmd.buildVersion=${BUILD_VERSION}' \
+			-X 'github.com/senzing/init-database/cmd.buildIteration=${BUILD_ITERATION}' \
 			" \
 		-o $(GO_PACKAGE_NAME)
 	@mkdir -p $(TARGET_DIRECTORY)/linux || true
@@ -134,13 +134,13 @@ docker-run:
 		$(DOCKER_IMAGE_NAME)
 
 
-.PHONY: run-initdatabase
-run-initdatabase: build
-	@target/linux/initdatabase
+.PHONY: run-init-database
+run-init-database: build
+	@target/linux/init-database
 
-.PHONY: run-initdatabase-trace
-run-initdatabase-trace: build
-	@target/linux/initdatabase --log-level TRACE --engine-log-level 1
+.PHONY: run-init-database-trace
+run-init-database-trace: build
+	@target/linux/init-database --log-level TRACE --engine-log-level 1
 
 # -----------------------------------------------------------------------------
 # Utility targets

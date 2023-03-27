@@ -1,8 +1,8 @@
-# initdatabase
+# init-database
 
 ## Commands
 
-1. [senzing-tools initdatabase](https://hub.senzing.com/senzing-tools/senzing-tools_initdatabsae)
+1. [senzing-tools init-database](https://hub.senzing.com/senzing-tools/senzing-tools_init-database)
 
 ## Examples
 

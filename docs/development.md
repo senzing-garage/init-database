@@ -239,17 +239,17 @@ in testing the `g2-sdk-go-base` packages.
    Example:
 
     ```console
-    yum list installed | grep initdatabase
+    yum list installed | grep init-database
 
     ```
 
-1. :pencil2: Install `initdatabase`.
-   The `initdatabase-...` filename will need modification.
+1. :pencil2: Install `init-database`.
+   The `init-database...` filename will need modification.
    Example:
 
     ```console
     cd ${GIT_REPOSITORY_DIR}/target
-    sudo yum install ./initdatabase-0.0.0.rpm
+    sudo yum install ./init-database-0.0.0.rpm
 
     ```
 
@@ -268,29 +268,29 @@ in testing the `g2-sdk-go-base` packages.
 
     ```console
     export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
-    initdatabase
+    init-database
 
     ```
 
-1. Remove `initdatabase` from system.
+1. Remove `init-database` from system.
    Example:
 
     ```console
-    sudo yum remove initdatabase
+    sudo yum remove init-database
 
     ```
 
 ## Make documents
 
 Make documents visible at
-[hub.senzing.com/initdatabase](https://hub.senzing.com/initdatabase).
+[hub.senzing.com/init-database](https://hub.senzing.com/init-database).
 
 1. Identify repository.
    Example:
 
     ```console
     export GIT_ACCOUNT=senzing
-    export GIT_REPOSITORY=initdatabase
+    export GIT_REPOSITORY=init-database
     export GIT_ACCOUNT_DIR=~/${GIT_ACCOUNT}.git
     export GIT_REPOSITORY_DIR="${GIT_ACCOUNT_DIR}/${GIT_REPOSITORY}"
 
@@ -301,6 +301,6 @@ Make documents visible at
 
     ```console
     export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
-    initdatabase docs --dir ${GIT_REPOSITORY_DIR}/docs
+    init-database docs --dir ${GIT_REPOSITORY_DIR}/docs
 
     ```

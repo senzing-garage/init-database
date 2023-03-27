@@ -41,7 +41,7 @@ type SenzingConfigImpl struct {
 // Variables
 // ----------------------------------------------------------------------------
 
-var defaultModuleName string = "initdatabase"
+var defaultModuleName string = "init-database"
 
 // ----------------------------------------------------------------------------
 // Internal methods
@@ -207,7 +207,7 @@ func (senzingConfig *SenzingConfigImpl) Initialize(ctx context.Context) error {
 
 	// Persist the Senzing configuration to the Senzing repository and set as default configuration.
 
-	configComments := fmt.Sprintf("Created by initdatabase at %s", entryTime.UTC())
+	configComments := fmt.Sprintf("Created by init-database at %s", entryTime.UTC())
 	configID, err = g2Configmgr.AddConfig(ctx, configStr, configComments)
 	if err != nil {
 		return err
