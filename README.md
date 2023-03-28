@@ -59,7 +59,8 @@ senzing-tools init-database [flags]
 
     ```console
     export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
-    senzing-tools init-database --database-url postgresql://username:password@postgres.example.com:5432/G2
+    senzing-tools init-database \
+        --database-url postgresql://username:password@postgres.example.com:5432/G2
     ```
 
 1. See [Parameters](#parameters) for additional parameters.
