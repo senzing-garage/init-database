@@ -40,8 +40,6 @@
 
     ```
 
-
-
 ### Command line example adding datasources
 
 In these examples, datasources are added to the initial Senzing configuration.
@@ -87,11 +85,13 @@ In these examples, datasources are added to the initial Senzing configuration.
 
 ### Docker example using SENZING_TOOLS_DATABASE_URL
 
+#### Initialize SQLite database
+
 1. Make a directory for Docker volume.
    Example:
 
     ```console
-    mkdir  /tmp/sqlite
+    mkdir /tmp/my-sqlite
 
     ```
 
@@ -102,7 +102,41 @@ In these examples, datasources are added to the initial Senzing configuration.
     docker run \
         --env SENZING_TOOLS_DATABASE_URL=sqlite3://na:na@/tmp/sqlite/G2C.db \
         --rm \
-        --volume /tmp/sqlite:/tmp/sqlite \
+        --volume /tmp/my-sqlite:/tmp/sqlite \
+        senzing/senzing-tools init-database
+
+    ```
+
+#### Initialize PostgreSql database
+
+1. **Optional:** If an existing PostgreSql database doesn't exist,
+   [bring up a new PostgreSql database in a docker-compose formation](#docker-compose-stack-with-postgresql-database).
+
+1. :pencil2: Identify database URL, if using existing PostgreSql.
+   Example:
+
+    ```console
+    export SENZING_TOOLS_DATABASE_URL=postgresql://postgres:postgres@postgres.example.com:5432/G2
+
+    ```
+
+1. Identify database URL, if using docker-compose stack.
+   *Note:*  Assignment of `LOCAL_IP_ADDRESS` may not work in all cases.
+   Example:
+
+    ```console
+    export LOCAL_IP_ADDRESS=$(curl --silent https://raw.githubusercontent.com/Senzing/knowledge-base/main/gists/find-local-ip-address/find-local-ip-address.py | python3 -)
+    export SENZING_TOOLS_DATABASE_URL=postgresql://postgres:postgres@${LOCAL_IP_ADDRESS}:5432/G2/?sslmode=disable
+
+    ```
+
+1. Run `senzing/senzing-tools` Docker image with `init-database` command.
+   Example:
+
+    ```console
+    docker run \
+        --env SENZING_TOOLS_DATABASE_URL \
+        --rm \
         senzing/senzing-tools init-database
 
     ```
@@ -154,42 +188,6 @@ Datasources can be added to the initial Senzing configuration.
         --env SENZING_TOOLS_DATABASE_URL=postgresql://username:password@postgres.example.com:5432/G2 \
         --env SENZING_TOOLS_DATASOURCES="CUSTOMER REFERENCE WATCHLIST" \
         senzing/senzing-tools init-database
-    ```
-
-### Initialize database using Docker
-
-#### Initialize PostgreSql database
-
-1. **Optional:** If an existing PostgreSql database doesn't exist,
-   [bring up a new PostgreSql database in a docker-compose formation](#docker-compose-stack-with-postgresql-database).
-
-1. :pencil2: Identify database URL, if using existing PostgreSql.
-   Example:
-
-    ```console
-    export SENZING_TOOLS_DATABASE_URL=postgresql://postgres:postgres@postgres.example.com:5432/G2
-
-    ```
-
-1. Identify database URL, if using docker-compose stack.
-   *Note:*  Assignment of `LOCAL_IP_ADDRESS` may not work in all cases.
-   Example:
-
-    ```console
-    export LOCAL_IP_ADDRESS=$(curl --silent https://raw.githubusercontent.com/Senzing/knowledge-base/main/gists/find-local-ip-address/find-local-ip-address.py | python3 -)
-    export SENZING_TOOLS_DATABASE_URL=postgresql://postgres:postgres@${LOCAL_IP_ADDRESS}:5432/G2/?sslmode=disable
-
-    ```
-
-1. Run `senzing/senzing-tools` Docker image with `init-database` command.
-   Example:
-
-    ```console
-    docker run \
-        --env SENZING_TOOLS_DATABASE_URL \
-        --rm \
-        senzing/senzing-tools init-database
-
     ```
 
 ## Miscellaneous
