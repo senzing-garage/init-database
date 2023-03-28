@@ -29,7 +29,7 @@ This command initialize databases with a Senzing schema and a default Senzing co
 
 ## Install
 
-1. The `servegrpc` command is installed with the
+1. The `init-database` command is installed with the
    [senzing-tools](https://github.com/Senzing/senzing-tools)
    suite of tools.
    See senzing-tools [install](https://github.com/Senzing/senzing-tools#install).
