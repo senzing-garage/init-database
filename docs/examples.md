@@ -192,7 +192,7 @@ Datasources can be added to the initial Senzing configuration.
 
 ## Miscellaneous
 
-### Docker-compose stack with PostgreSql database
+### Docker-compose stack with uninitialized PostgreSql database
 
 1. Identify a directory to place docker-compose artifacts.
    The directory specified will be deleted and re-created.
@@ -232,44 +232,14 @@ Datasources can be added to the initial Senzing configuration.
 
     ```
 
-1. In a separate terminal window, set environment variables.
-   Identify Database URL of database in docker-compose stack.
-   Example:
+### View PostgreSQL database
 
-    ```console
-    export LOCAL_IP_ADDRESS=$(curl --silent https://raw.githubusercontent.com/Senzing/knowledge-base/main/gists/find-local-ip-address/find-local-ip-address.py | python3 -)
-    export SENZING_TOOLS_DATABASE_URL=postgresql://postgres:postgres@${LOCAL_IP_ADDRESS}:5432/G2/?sslmode=disable
-
-    ```
-
-1. In PostgreSQL database, create Senzing schema and initial Senzing config.
-   Example:
-
-    ```console
-    docker run \
-        --env SENZING_TOOLS_DATABASE_URL \
-        --rm \
-        senzing/senzing-tools init-database
-
-    ```
-
-1. **Optional:** View the PostgreSQL database.
+1. **Optional:** View the database.
 
    Visit [localhost:9171](http://localhost:9171).
    For the initial login, review the instructions at the top of the web page.
    For server password information, see the `POSTGRESQL_POSTGRES_PASSWORD` value in `${SENZING_DEMO_DIR}/docker-compose.yaml`.
    Usually, it's "postgres".
-
-1. Start a gRPC server using that database.
-   Example:
-
-    ```console
-    docker run \
-        --env SENZING_TOOLS_DATABASE_URL \
-        --rm \
-        senzing/senzing-tools servegrpc
-
-    ```
 
 1. Cleanup.
    Example:
