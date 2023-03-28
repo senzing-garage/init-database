@@ -232,15 +232,6 @@ Datasources can be added to the initial Senzing configuration.
 
     ```
 
-### View PostgreSQL database
-
-1. **Optional:** View the database.
-
-   Visit [localhost:9171](http://localhost:9171).
-   For the initial login, review the instructions at the top of the web page.
-   For server password information, see the `POSTGRESQL_POSTGRES_PASSWORD` value in `${SENZING_DEMO_DIR}/docker-compose.yaml`.
-   Usually, it's "postgres".
-
 1. Cleanup.
    Example:
 
@@ -250,9 +241,21 @@ Datasources can be added to the initial Senzing configuration.
 
     ```
 
+### View PostgreSQL database
+
+`pgadmin` is deployed with
+[Docker-compose stack with uninitialized PostgreSql database](#docker-compose-stack-with-uninitialized-postgresql-database)
+
+1. Visit [localhost:9171](http://localhost:9171).
+   For the initial login, review the instructions at the top of the web page.
+   For server password information, see the `POSTGRESQL_POSTGRES_PASSWORD` value in `${SENZING_DEMO_DIR}/docker-compose.yaml`.
+   Usually, it's "postgres".
+
 ### View SQLite database
 
-1. **Optional:** View the database.
+The `coleifer/sqlite-web` Docker container can be used to view a SQLite database.
+
+1. Run Docker container.
    Example:
 
     ```console
@@ -267,4 +270,4 @@ Datasources can be added to the initial Senzing configuration.
 
     ```
 
-   Visit <http://localhost:9174>
+1. Visit <http://localhost:9174>
