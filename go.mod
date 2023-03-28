@@ -1,4 +1,4 @@
-module github.com/senzing/initdatabase
+module github.com/senzing/init-database
 
 go 1.20
 

@@ -1,4 +1,4 @@
-## initdatabase errors
+## init-database errors
 
 ## Error prefixes
 

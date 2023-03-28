@@ -11,7 +11,7 @@ ARG IMAGE_FINAL=senzing/senzingapi-runtime:3.4.2
 
 FROM ${IMAGE_GO_BUILDER} as go_builder
 ENV REFRESHED_AT 2023-03-08
-LABEL Name="senzing/initdatabase-builder" \
+LABEL Name="senzing/init-database-builder" \
       Maintainer="support@senzing.com" \
       Version="0.1.4"
 
@@ -55,7 +55,7 @@ RUN mkdir -p /output \
 
 FROM ${IMAGE_FINAL} as final
 ENV REFRESHED_AT 2023-03-08
-LABEL Name="senzing/initdatabase" \
+LABEL Name="senzing/init-database" \
       Maintainer="support@senzing.com" \
       Version="0.1.4"
 
@@ -65,7 +65,7 @@ COPY ./rootfs /
 
 # Copy files from prior step.
 
-COPY --from=go_builder "/output/linux/initdatabase" "/app/initdatabase"
+COPY --from=go_builder "/output/linux/init-database" "/app/init-database"
 
 # Runtime environment variables.
 
@@ -74,4 +74,4 @@ ENV LD_LIBRARY_PATH=/opt/senzing/g2/lib/
 # Runtime execution.
 
 WORKDIR /app
-ENTRYPOINT ["/app/initdatabase"]
+ENTRYPOINT ["/app/init-database"]

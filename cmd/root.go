@@ -11,7 +11,7 @@ import (
 
 	"github.com/senzing/go-common/g2engineconfigurationjson"
 	"github.com/senzing/go-logging/logger"
-	"github.com/senzing/initdatabase/initializer"
+	"github.com/senzing/init-database/initializer"
 	"github.com/senzing/senzing-tools/constant"
 	"github.com/senzing/senzing-tools/envar"
 	"github.com/senzing/senzing-tools/helper"
@@ -32,7 +32,7 @@ var (
 	buildIteration          string = "0"
 	buildVersion            string = "0.1.4"
 	defaultDatasources      []string
-	defaultEngineModuleName string = fmt.Sprintf("initdatabase-%d", time.Now().Unix())
+	defaultEngineModuleName string = fmt.Sprintf("init-database-%d", time.Now().Unix())
 )
 
 // If a configuration file is present, load it.
@@ -53,7 +53,7 @@ func loadConfigurationFile(cobraCommand *cobra.Command) {
 
 		// Specify configuration file name.
 
-		viper.SetConfigName("initdatabase")
+		viper.SetConfigName("init-database")
 		viper.SetConfigType("yaml")
 
 		// Define search path order.
@@ -108,11 +108,11 @@ func loadOptions(cobraCommand *cobra.Command) {
 
 // RootCmd represents the command.
 var RootCmd = &cobra.Command{
-	Use:   "initdatabase",
+	Use:   "init-database",
 	Short: "Initialize a database with the Senzing schema and configuration",
 	Long: `
 Initialize a database with the Senzing schema and configuration.
-For more information, visit https://github.com/Senzing/initdatabase
+For more information, visit https://github.com/Senzing/init-database
 	`,
 	PreRun: func(cobraCommand *cobra.Command, args []string) {
 		loadConfigurationFile(cobraCommand)

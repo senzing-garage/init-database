@@ -1,6 +1,6 @@
-# initdatabase
+# init-database
 
-## :warning: WARNING: initdatabase is still in development :warning: _
+## :warning: WARNING: init-database is still in development :warning: _
 
 At the moment, this is "work-in-progress" with Semantic Versions of `0.n.x`.
 Although it can be reviewed and commented on,
@@ -8,18 +8,18 @@ the recommendation is not to use it yet.
 
 ## Synopsis
 
-`initdatabase` is a command in the
+`init-database` is a command in the
 [senzing-tools](https://github.com/Senzing/senzing-tools)
 suite of tools.
 This command initialize databases with a Senzing schema and a default Senzing configuration.
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/senzing/initdatabase.svg)](https://pkg.go.dev/github.com/senzing/initdatabase)
-[![Go Report Card](https://goreportcard.com/badge/github.com/senzing/initdatabase)](https://goreportcard.com/report/github.com/senzing/initdatabase)
-[![go-test.yaml](https://github.com/Senzing/initdatabase/actions/workflows/go-test.yaml/badge.svg)](https://github.com/Senzing/initdatabase/actions/workflows/go-test.yaml)
+[![Go Reference](https://pkg.go.dev/badge/github.com/senzing/init-database.svg)](https://pkg.go.dev/github.com/senzing/init-database)
+[![Go Report Card](https://goreportcard.com/badge/github.com/senzing/init-database)](https://goreportcard.com/report/github.com/senzing/init-database)
+[![go-test.yaml](https://github.com/Senzing/init-database/actions/workflows/go-test.yaml/badge.svg)](https://github.com/Senzing/init-database/actions/workflows/go-test.yaml)
 
 ## Overview
 
-`initdatabase` performs the following:
+`init-database` performs the following:
 
 1. Creates a Senzing database schema from a file of SQL statements found in `/opt/senzing/g2/resources/schema`.
    The file chosen depends on the database engine specified in the protocol section of `SENZING_TOOLS_DATABASE_URL`
@@ -38,16 +38,16 @@ This command initialize databases with a Senzing schema and a default Senzing co
 
 ```console
 export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
-senzing-tools initdatabase [flags]
+senzing-tools init-database [flags]
 ```
 
 1. For options and flags:
-    1. [Online documentation](https://hub.senzing.com/senzing-tools/senzing-tools_initdatabase.html)
+    1. [Online documentation](https://hub.senzing.com/senzing-tools/senzing-tools_init-database.html)
     1. Runtime documentation:
 
         ```console
         export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
-        senzing-tools initdatabase --help
+        senzing-tools init-database --help
         ```
 
 1. In addition to the following simple usage examples, there are additional [Examples](docs/examples.md).
@@ -59,7 +59,7 @@ senzing-tools initdatabase [flags]
 
     ```console
     export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
-    senzing-tools initdatabase --database-url postgresql://username:password@postgres.example.com:5432/G2
+    senzing-tools init-database --database-url postgresql://username:password@postgres.example.com:5432/G2
     ```
 
 1. See [Parameters](#parameters) for additional parameters.
@@ -72,7 +72,7 @@ senzing-tools initdatabase [flags]
     ```console
     export SENZING_TOOLS_DATABASE_URL=postgresql://username:password@postgres.example.com:5432/G2
     export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
-    senzing-tools initdatabase
+    senzing-tools init-database
     ```
 
 1. See [Parameters](#parameters) for additional parameters.
@@ -81,14 +81,14 @@ senzing-tools initdatabase [flags]
 
 This usage shows how to initialze a database with a Docker container.
 
-1. :pencil2: Run `senzing/initdatabase`.
+1. :pencil2: Run `senzing/init-database`.
    Example:
 
     ```console
     docker run \
         --env SENZING_TOOLS_DATABASE_URL=postgresql://username:password@postgres.example.com:5432/G2 \
         --rm \
-        senzing/senzing-tools initdatabase
+        senzing/senzing-tools init-database
     ```
 
 1. See [Parameters](#parameters) for additional parameters.
@@ -104,7 +104,7 @@ This usage shows how to initialze a database with a Docker container.
 
 ## References
 
-- [Command reference](https://hub.senzing.com/senzing-tools/senzing-tools_initdatabase.html)
+- [Command reference](https://hub.senzing.com/senzing-tools/senzing-tools_init-database.html)
 - [Development](docs/development.md)
 - [Errors](docs/errors.md)
 - [Examples](docs/examples.md)

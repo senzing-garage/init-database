@@ -1,4 +1,4 @@
-# initdatabase examples
+# init-database examples
 
 ## Command line examples
 
@@ -11,7 +11,7 @@ In these examples, datasources are added to the initial Senzing configuration.
 
     ```console
     export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
-    senzing-tools initdatabase \
+    senzing-tools init-database \
         --database-url postgresql://username:password@postgres.example.com:5432/G2 \
         --datasources CUSTOMER,REFERENCE,WATCHLIST
     ```
@@ -21,7 +21,7 @@ In these examples, datasources are added to the initial Senzing configuration.
 
     ```console
     export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
-    senzing-tools initdatabase \
+    senzing-tools init-database \
         --database-url postgresql://username:password@postgres.example.com:5432/G2 \
         --datasources CUSTOMER \
         --datasources REFERENCE \
@@ -37,7 +37,7 @@ In these examples, datasources are added to the initial Senzing configuration.
     export SENZING_TOOLS_DATABASE_URL=postgresql://username:password@postgres.example.com:5432/G2
     export SENZING_TOOLS_DATASOURCES="CUSTOMER REFERENCE WATCHLIST"
     export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
-    senzing-tools initdatabase
+    senzing-tools init-database
     ```
 
 ## Docker examples
@@ -72,7 +72,7 @@ For more information, see
     docker run \
         --env SENZING_TOOLS_ENGINE_CONFIGURATION_JSON \
         --rm \
-        senzing/senzing-tools initdatabase
+        senzing/senzing-tools init-database
     ```
 
 ### Docker example - Add datasources
@@ -88,5 +88,5 @@ Datasources can be added to the initial Senzing configuration.
     docker run \
         --env SENZING_TOOLS_DATABASE_URL=postgresql://username:password@postgres.example.com:5432/G2 \
         --env SENZING_TOOLS_DATASOURCES="CUSTOMER REFERENCE WATCHLIST" \
-        senzing/senzing-tools initdatabase
+        senzing/senzing-tools init-database
     ```

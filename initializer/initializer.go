@@ -14,8 +14,8 @@ import (
 	"github.com/senzing/go-observing/notifier"
 	"github.com/senzing/go-observing/observer"
 	"github.com/senzing/go-observing/subject"
-	"github.com/senzing/initdatabase/senzingconfig"
-	"github.com/senzing/initdatabase/senzingschema"
+	"github.com/senzing/init-database/senzingconfig"
+	"github.com/senzing/init-database/senzingschema"
 )
 
 // ----------------------------------------------------------------------------

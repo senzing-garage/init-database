@@ -102,7 +102,7 @@ func TestInitializerImpl_UnregisterObserver(test *testing.T) {
 // ----------------------------------------------------------------------------
 
 func ExampleInitializerImpl_Initialize() {
-	// For more information, visit https://github.com/Senzing/initdatabase/blob/main/initializer/initializer_test.go
+	// For more information, visit https://github.com/Senzing/init-database/blob/main/initializer/initializer_test.go
 	ctx := context.TODO()
 	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
 	if err != nil {
@@ -123,7 +123,7 @@ func ExampleInitializerImpl_Initialize() {
 }
 
 func ExampleInitializerImpl_RegisterObserver() {
-	// For more information, visit https://github.com/Senzing/initdatabase/blob/main/initializer/initializer_test.go
+	// For more information, visit https://github.com/Senzing/init-database/blob/main/initializer/initializer_test.go
 	ctx := context.TODO()
 	anObserver := &observer.ObserverNull{
 		Id:       "Observer 1",
@@ -144,7 +144,7 @@ func ExampleInitializerImpl_RegisterObserver() {
 }
 
 func ExampleInitializerImpl_SetLogLevel() {
-	// For more information, visit https://github.com/Senzing/initdatabase/blob/main/initializer/initializer_test.go
+	// For more information, visit https://github.com/Senzing/init-database/blob/main/initializer/initializer_test.go
 	ctx := context.TODO()
 	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
 	if err != nil {
@@ -161,7 +161,7 @@ func ExampleInitializerImpl_SetLogLevel() {
 }
 
 func ExampleInitializerImpl_UnregisterObserver() {
-	// For more information, visit https://github.com/Senzing/initdatabase/blob/main/initializer/initializer_test.go
+	// For more information, visit https://github.com/Senzing/init-database/blob/main/initializer/initializer_test.go
 	ctx := context.TODO()
 	anObserver := &observer.ObserverNull{
 		Id:       "Observer 1",
