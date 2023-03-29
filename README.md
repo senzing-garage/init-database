@@ -29,7 +29,7 @@ This command initialize databases with a Senzing schema and a default Senzing co
 
 ## Install
 
-1. The `servegrpc` command is installed with the
+1. The `init-database` command is installed with the
    [senzing-tools](https://github.com/Senzing/senzing-tools)
    suite of tools.
    See senzing-tools [install](https://github.com/Senzing/senzing-tools#install).
@@ -59,7 +59,8 @@ senzing-tools init-database [flags]
 
     ```console
     export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
-    senzing-tools init-database --database-url postgresql://username:password@postgres.example.com:5432/G2
+    senzing-tools init-database \
+        --database-url postgresql://username:password@postgres.example.com:5432/G2
     ```
 
 1. See [Parameters](#parameters) for additional parameters.
