@@ -9,7 +9,7 @@ require (
 	github.com/senzing/go-logging v1.1.3
 	github.com/senzing/go-observing v0.2.0
 	github.com/senzing/go-sdk-abstract-factory v0.2.1
-	github.com/senzing/senzing-tools v0.1.5
+	github.com/senzing/senzing-tools v0.2.0
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/viper v1.15.0
 )
@@ -26,12 +26,12 @@ require (
 	github.com/lib/pq v1.10.7 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mattn/go-sqlite3 v1.14.16 // indirect
-	github.com/microsoft/go-mssqldb v0.20.0 // indirect
+	github.com/microsoft/go-mssqldb v0.21.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.7 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
-	github.com/senzing/g2-sdk-go-base v0.1.3 // indirect
-	github.com/senzing/g2-sdk-go-grpc v0.2.1 // indirect
+	github.com/senzing/g2-sdk-go-base v0.1.4 // indirect
+	github.com/senzing/g2-sdk-go-grpc v0.2.2 // indirect
 	github.com/senzing/g2-sdk-proto/go v0.0.0-20230315125947-e4aea8f381eb // indirect
 	github.com/spf13/afero v1.9.5 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
@@ -42,7 +42,7 @@ require (
 	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/sys v0.6.0 // indirect
 	golang.org/x/text v0.8.0 // indirect
-	google.golang.org/genproto v0.0.0-20230322174352-cde4c949918d // indirect
+	google.golang.org/genproto v0.0.0-20230327215041-6ac7f18bb9d5 // indirect
 	google.golang.org/grpc v1.54.0 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
@@ -50,13 +50,13 @@ require (
 )
 
 retract (
-	v0.1.0
-	v0.1.1
-	v0.1.2
-	v0.1.3
-	v0.1.4
-	v0.1.5
-	v0.1.6
-	v0.1.7
 	v0.1.8
+	v0.1.7
+	v0.1.6
+	v0.1.5
+	v0.1.4
+	v0.1.3
+	v0.1.2
+	v0.1.1
+	v0.1.0
 )
