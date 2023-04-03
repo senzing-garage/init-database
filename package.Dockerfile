@@ -11,7 +11,7 @@ ARG IMAGE_FINAL=alpine
 # -----------------------------------------------------------------------------
 
 FROM ${IMAGE_GO_BUILDER} as go_builder
-ENV REFRESHED_AT 2023-03-08
+ENV REFRESHED_AT=2023-03-08
 LABEL Name="senzing/init-database-builder" \
       Maintainer="support@senzing.com" \
       Version="0.1.4"
@@ -58,7 +58,7 @@ RUN mkdir -p /output \
 # -----------------------------------------------------------------------------
 
 FROM ${IMAGE_FPM_BUILDER} as fpm_builder
-ENV REFRESHED_AT 2023-03-08
+ENV REFRESHED_AT=2023-03-08
 LABEL Name="senzing/init-database-fpm-builder" \
       Maintainer="support@senzing.com" \
       Version="0.1.4"
@@ -102,7 +102,7 @@ RUN fpm \
 # -----------------------------------------------------------------------------
 
 FROM ${IMAGE_FINAL} as final
-ENV REFRESHED_AT 2023-03-08
+ENV REFRESHED_AT=2023-03-08
 LABEL Name="senzing/init-database" \
       Maintainer="support@senzing.com" \
       Version="0.1.4"
