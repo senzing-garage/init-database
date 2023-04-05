@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/senzing/go-common/g2engineconfigurationjson"
-	"github.com/senzing/go-logging/logger"
 	"github.com/senzing/init-database/initializer"
 	"github.com/senzing/senzing-tools/constant"
 	"github.com/senzing/senzing-tools/envar"
@@ -150,11 +149,6 @@ func RunE(_ *cobra.Command, _ []string) error {
 	var err error = nil
 	ctx := context.TODO()
 
-	logLevel, ok := logger.TextToLevelMap[viper.GetString(option.LogLevel)]
-	if !ok {
-		logLevel = logger.LevelInfo
-	}
-
 	senzingEngineConfigurationJson := viper.GetString(option.EngineConfigurationJson)
 	if len(senzingEngineConfigurationJson) == 0 {
 		senzingEngineConfigurationJson, err = g2engineconfigurationjson.BuildSimpleSystemConfigurationJson(viper.GetString(option.DatabaseUrl))
@@ -166,13 +160,11 @@ func RunE(_ *cobra.Command, _ []string) error {
 	initializer := &initializer.InitializerImpl{
 		DataSources:                    viper.GetStringSlice(option.Datasources),
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
+		SenzingLogLevel:                viper.GetString(option.LogLevel),
 		SenzingModuleName:              viper.GetString(option.EngineModuleName),
 		SenzingVerboseLogging:          viper.GetInt(option.EngineLogLevel),
 	}
-	err = initializer.SetLogLevel(ctx, logLevel)
-	if err != nil {
-		return err
-	}
+
 	err = initializer.Initialize(ctx)
 	return err
 }

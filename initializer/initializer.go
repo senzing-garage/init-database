@@ -2,6 +2,7 @@ package initializer
 
 import (
 	"context"
+	"fmt"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -11,11 +12,13 @@ import (
 	"github.com/senzing/go-common/engineconfigurationjsonparser"
 	"github.com/senzing/go-logging/logger"
 	"github.com/senzing/go-logging/messagelogger"
+	"github.com/senzing/go-logging/slogconfig"
 	"github.com/senzing/go-observing/notifier"
 	"github.com/senzing/go-observing/observer"
 	"github.com/senzing/go-observing/subject"
 	"github.com/senzing/init-database/senzingconfig"
 	"github.com/senzing/init-database/senzingschema"
+	"golang.org/x/exp/slog"
 )
 
 // ----------------------------------------------------------------------------
@@ -26,10 +29,12 @@ import (
 type InitializerImpl struct {
 	DataSources                    []string
 	isTrace                        bool
+	slogger                        *slog.Logger
 	logLevel                       logger.Level
 	messageLogger                  messagelogger.MessageLoggerInterface
 	observers                      subject.Subject
 	SenzingEngineConfigurationJson string
+	SenzingLogLevel                string
 	SenzingModuleName              string
 	SenzingVerboseLogging          int
 }
@@ -74,9 +79,23 @@ func (initializerImpl *InitializerImpl) initializeSpecificDatabaseSqlite(ctx con
 	return err
 }
 
+// Get the Logger singleton.
+func (initializerImpl *InitializerImpl) setLogging(ctx context.Context) error {
+	opts := slog.HandlerOptions{
+		Level: slogconfig.LevelTraceSlog,
+	}
+	initializerImpl.slogger = slog.New(opts.NewJSONHandler(os.Stderr))
+	initializerImpl.isTrace = true
+	return nil
+}
+
 // Trace method entry.
 func (initializerImpl *InitializerImpl) traceEntry(errorNumber int, details ...interface{}) {
-	initializerImpl.getLogger().Log(errorNumber, details...)
+	message, err := initializerImpl.getLogger().Message(errorNumber, details...)
+	if err != nil {
+		fmt.Printf(">>>>> Error: %v", err)
+	}
+	initializerImpl.slogger.Debug(message)
 }
 
 // Trace method exit.
@@ -97,6 +116,9 @@ Input
 */
 func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 	var err error = nil
+
+	initializerImpl.setLogging(ctx)
+
 	if initializerImpl.isTrace {
 		initializerImpl.traceEntry(1)
 	}
