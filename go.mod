@@ -49,6 +49,10 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
+replace (
+	github.com/senzing/go-logging v1.1.3 => /home/senzing/senzing.git/go-logging
+)
+
 retract (
 	v0.1.8
 	v0.1.7
