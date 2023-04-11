@@ -2,7 +2,6 @@ package initializer
 
 import (
 	"context"
-	"fmt"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -10,15 +9,12 @@ import (
 	"time"
 
 	"github.com/senzing/go-common/engineconfigurationjsonparser"
-	"github.com/senzing/go-logging/logger"
-	"github.com/senzing/go-logging/messagelogger"
-	"github.com/senzing/go-logging/slogconfig"
+	"github.com/senzing/go-logging/logging"
 	"github.com/senzing/go-observing/notifier"
 	"github.com/senzing/go-observing/observer"
 	"github.com/senzing/go-observing/subject"
 	"github.com/senzing/init-database/senzingconfig"
 	"github.com/senzing/init-database/senzingschema"
-	"golang.org/x/exp/slog"
 )
 
 // ----------------------------------------------------------------------------
@@ -27,16 +23,20 @@ import (
 
 // InitializerImpl is the default implementation of the Initializer interface.
 type InitializerImpl struct {
-	DataSources                    []string
-	isTrace                        bool
-	slogger                        *slog.Logger
-	logLevel                       logger.Level
-	messageLogger                  messagelogger.MessageLoggerInterface
+	DataSources []string
+	isTrace     bool
+	logger      logging.LoggingInterface
+	// xxslogger      *slog.Logger
+	// xxsloggerLevel slog.Level
+	// xxlogLevel     logger.Level
+	// messageLogger                  messagelogger.MessageLoggerInterface
 	observers                      subject.Subject
 	SenzingEngineConfigurationJson string
 	SenzingLogLevel                string
 	SenzingModuleName              string
 	SenzingVerboseLogging          int
+	senzingSchema                  senzingschema.SenzingSchema
+	senzingConfig                  senzingconfig.SenzingConfig
 }
 
 // ----------------------------------------------------------------------------
@@ -44,11 +44,15 @@ type InitializerImpl struct {
 // ----------------------------------------------------------------------------
 
 // Get the Logger singleton.
-func (initializerImpl *InitializerImpl) getLogger() messagelogger.MessageLoggerInterface {
-	if initializerImpl.messageLogger == nil {
-		initializerImpl.messageLogger, _ = messagelogger.NewSenzingApiLogger(ProductId, IdMessages, IdStatuses, initializerImpl.logLevel)
+func (initializerImpl *InitializerImpl) getLogger() logging.LoggingInterface {
+	var err error = nil
+	if initializerImpl.logger == nil {
+		initializerImpl.logger, err = logging.NewSenzingToolsLogger(ProductId, IdMessages)
+		if err != nil {
+			panic(err)
+		}
 	}
-	return initializerImpl.messageLogger
+	return initializerImpl.logger
 }
 
 func (initializerImpl *InitializerImpl) initializeSpecificDatabaseSqlite(ctx context.Context, parsedUrl *url.URL) error {
@@ -66,7 +70,7 @@ func (initializerImpl *InitializerImpl) initializeSpecificDatabaseSqlite(ctx con
 		if err != nil {
 			return err
 		}
-		initializerImpl.getLogger().Log(2001, filename)
+		initializerImpl.log(2001, filename)
 		if initializerImpl.observers != nil {
 			go func() {
 				details := map[string]string{
@@ -79,28 +83,57 @@ func (initializerImpl *InitializerImpl) initializeSpecificDatabaseSqlite(ctx con
 	return err
 }
 
-// Get the Logger singleton.
+func (initializerImpl *InitializerImpl) log(messageNumber int, details ...interface{}) {
+	initializerImpl.getLogger().Log(messageNumber, details...)
+}
+
+// Set logging.
 func (initializerImpl *InitializerImpl) setLogging(ctx context.Context) error {
-	opts := slog.HandlerOptions{
-		Level: slogconfig.LevelTraceSlog,
+
+	logLevelName := initializerImpl.SenzingLogLevel
+	if logLevelName == "" {
+		logLevelName = "INFO"
 	}
-	initializerImpl.slogger = slog.New(opts.NewJSONHandler(os.Stderr))
-	initializerImpl.isTrace = true
+
+	err := initializerImpl.logger.SetLogLevel(logLevelName)
+	if err != nil {
+		panic(err)
+	}
+
+	// Configure slog.
+
+	// slogLevel, ok := slogconfig.TextToLevelMap[logLevelName]
+	// if !ok {
+	// 	return fmt.Errorf("unknown log level: %s", logLevelName)
+	// }
+	// initializerImpl.sloggerLevel = slogLevel
+	// opts := slog.HandlerOptions{
+	// 	Level: initializerImpl.sloggerLevel,
+	// }
+	// initializerImpl.slogger = slog.New(opts.NewJSONHandler(os.Stderr))
+
+	// Configure Senzing SDK logging.
+
+	// sdkLevel, ok := logger.TextToLevelMap[logLevelName]
+	// if !ok {
+	// 	return fmt.Errorf("unknown log level: %s", logLevelName)
+	// }
+	// fmt.Printf(">>>>>>>>>>  SDK Log level: %v\n", sdkLevel)
+
+	// initializerImpl.logLevel = messagelogger.Level(sdkLevel)
+	// initializerImpl.getLogger().SetLogLevel(initializerImpl.logLevel)
+	// initializerImpl.isTrace = (logconst.LevelTraceName == logLevelName)
 	return nil
 }
 
 // Trace method entry.
 func (initializerImpl *InitializerImpl) traceEntry(errorNumber int, details ...interface{}) {
-	message, err := initializerImpl.getLogger().Message(errorNumber, details...)
-	if err != nil {
-		fmt.Printf(">>>>> Error: %v", err)
-	}
-	initializerImpl.slogger.Debug(message)
+	initializerImpl.log(errorNumber, details...)
 }
 
 // Trace method exit.
 func (initializerImpl *InitializerImpl) traceExit(errorNumber int, details ...interface{}) {
-	initializerImpl.getLogger().Log(errorNumber, details...)
+	initializerImpl.log(errorNumber, details...)
 }
 
 // ----------------------------------------------------------------------------
@@ -117,7 +150,15 @@ Input
 func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 	var err error = nil
 
-	initializerImpl.setLogging(ctx)
+	// Initialize logging.
+
+	logLevel := initializerImpl.SenzingLogLevel
+	if logLevel == "" {
+		logLevel = "INFO"
+	}
+	initializerImpl.SetLogLevel(ctx, logLevel)
+
+	// Start initialization process.
 
 	if initializerImpl.isTrace {
 		initializerImpl.traceEntry(1)
@@ -126,34 +167,32 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 
 	// Log entry parameters.
 
-	initializerImpl.getLogger().Log(1000, initializerImpl)
+	initializerImpl.log(1000, initializerImpl)
 
 	// Create senzingSchema for initializing Senzing schema.
 
-	senzingSchema := &senzingschema.SenzingSchemaImpl{
+	initializerImpl.senzingSchema = &senzingschema.SenzingSchemaImpl{
 		SenzingEngineConfigurationJson: initializerImpl.SenzingEngineConfigurationJson,
 	}
-	senzingSchema.SetLogLevel(ctx, initializerImpl.logLevel)
 
 	// Create senzingConfig for initializing Senzing configuration.
 
-	senzingConfig := &senzingconfig.SenzingConfigImpl{
+	initializerImpl.senzingConfig = &senzingconfig.SenzingConfigImpl{
 		DataSources:                    initializerImpl.DataSources,
 		SenzingEngineConfigurationJson: initializerImpl.SenzingEngineConfigurationJson,
 		SenzingModuleName:              initializerImpl.SenzingModuleName,
 		SenzingVerboseLogging:          initializerImpl.SenzingVerboseLogging,
 	}
-	senzingConfig.SetLogLevel(ctx, initializerImpl.logLevel)
 
 	// Add observers to structs.
 
 	if initializerImpl.observers != nil {
 		for _, observer := range initializerImpl.observers.GetObservers(ctx) {
-			err = senzingConfig.RegisterObserver(ctx, observer)
+			err = initializerImpl.senzingConfig.RegisterObserver(ctx, observer)
 			if err != nil {
 				return err
 			}
-			err = senzingSchema.RegisterObserver(ctx, observer)
+			err = initializerImpl.senzingSchema.RegisterObserver(ctx, observer)
 			if err != nil {
 				return err
 			}
@@ -166,11 +205,11 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	err = senzingSchema.Initialize(ctx)
+	err = initializerImpl.senzingSchema.Initialize(ctx)
 	if err != nil {
 		return err
 	}
-	err = senzingConfig.Initialize(ctx)
+	err = initializerImpl.senzingConfig.Initialize(ctx)
 	if err != nil {
 		return err
 	}
@@ -272,19 +311,18 @@ Input
   - ctx: A context to control lifecycle.
   - logLevel: The desired log level. TRACE, DEBUG, INFO, WARN, ERROR, FATAL or PANIC.
 */
-func (initializerImpl *InitializerImpl) SetLogLevel(ctx context.Context, logLevel logger.Level) error {
+func (initializerImpl *InitializerImpl) SetLogLevel(ctx context.Context, logLevel string) error {
 	if initializerImpl.isTrace {
 		initializerImpl.traceEntry(5, logLevel)
 	}
 	entryTime := time.Now()
 	var err error = nil
-	initializerImpl.logLevel = logLevel
-	initializerImpl.getLogger().SetLogLevel(messagelogger.Level(logLevel))
-	initializerImpl.isTrace = (initializerImpl.getLogger().GetLogLevel() == messagelogger.LevelTrace)
+	initializerImpl.SenzingLogLevel = logLevel
+	initializerImpl.setLogging(ctx)
 	if initializerImpl.observers != nil {
 		go func() {
 			details := map[string]string{
-				"logLevel": logger.LevelToTextMap[logLevel],
+				"logLevel": logLevel,
 			}
 			notifier.Notify(ctx, initializerImpl.observers, ProductId, 8003, err, details)
 		}()

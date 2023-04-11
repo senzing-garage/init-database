@@ -74,7 +74,7 @@ func ExampleSenzingConfigImpl_Initialize_withDatasources() {
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 		DataSources:                    []string{"CUSTOMERS", "REFERENCE", "WATCHLIST"},
 	}
-	err = senzingConfig.SetLogLevel(ctx, logger.LevelInfo)
+	err = senzingConfig.SetLogLevel(ctx, logger.LevelInfoName)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -95,7 +95,7 @@ func ExampleSenzingConfigImpl_Initialize() {
 	senzingConfig := &SenzingConfigImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
-	err = senzingConfig.SetLogLevel(ctx, logger.LevelInfo)
+	err = senzingConfig.SetLogLevel(ctx, logger.LevelInfoName)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -137,7 +137,7 @@ func ExampleSenzingConfigImpl_SetLogLevel() {
 	senzingConfig := &SenzingConfigImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
-	err = senzingConfig.SetLogLevel(ctx, logger.LevelInfo)
+	err = senzingConfig.SetLogLevel(ctx, logger.LevelInfoName)
 	if err != nil {
 		fmt.Println(err)
 	}

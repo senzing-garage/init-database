@@ -3,7 +3,6 @@ package senzingschema
 import (
 	"context"
 
-	"github.com/senzing/go-logging/logger"
 	"github.com/senzing/go-observing/observer"
 )
 
@@ -14,7 +13,7 @@ import (
 type SenzingSchema interface {
 	Initialize(ctx context.Context) error
 	RegisterObserver(ctx context.Context, observer observer.Observer) error
-	SetLogLevel(ctx context.Context, logLevel logger.Level) error
+	SetLogLevel(ctx context.Context, logLevelName string) error
 	UnregisterObserver(ctx context.Context, observer observer.Observer) error
 }
 

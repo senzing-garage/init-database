@@ -11,6 +11,7 @@ import (
 	"github.com/senzing/go-databasing/connector"
 	"github.com/senzing/go-databasing/sqlexecutor"
 	"github.com/senzing/go-logging/logger"
+	"github.com/senzing/go-logging/logging"
 	"github.com/senzing/go-logging/messagelogger"
 	"github.com/senzing/go-observing/notifier"
 	"github.com/senzing/go-observing/observer"
@@ -24,8 +25,8 @@ import (
 // SenzingSchemaImpl is the default implementation of the SenzingSchema interface.
 type SenzingSchemaImpl struct {
 	isTrace                        bool
-	messageLogger                  messagelogger.MessageLoggerInterface
-	logLevel                       logger.Level
+	logger                         logging.LoggingInterface
+	xlogLevel                      logger.Level
 	observers                      subject.Subject
 	SenzingEngineConfigurationJson string
 }
@@ -35,21 +36,31 @@ type SenzingSchemaImpl struct {
 // ----------------------------------------------------------------------------
 
 // Get the Logger singleton.
-func (senzingSchema *SenzingSchemaImpl) getLogger() messagelogger.MessageLoggerInterface {
-	if senzingSchema.messageLogger == nil {
-		senzingSchema.messageLogger, _ = messagelogger.NewSenzingApiLogger(ProductId, IdMessages, IdStatuses, senzingSchema.logLevel)
+func (senzingSchema *SenzingSchemaImpl) getLogger() logging.LoggingInterface {
+	var err error = nil
+	if senzingSchema.logger == nil {
+		senzingSchema.logger, err = logging.NewSenzingToolsLogger(ProductId, IdMessages)
+		if err != nil {
+			panic(err)
+		}
 	}
-	return senzingSchema.messageLogger
+	return senzingSchema.logger
+}
+
+// Log message.
+func (senzingSchema *SenzingSchemaImpl) log(messageNumber int, details ...interface{}) {
+	// TODO: Add skipCaller.
+	senzingSchema.getLogger().Log(messageNumber, details...)
 }
 
 // Trace method entry.
 func (senzingSchema *SenzingSchemaImpl) traceEntry(errorNumber int, details ...interface{}) {
-	senzingSchema.getLogger().Log(errorNumber, details...)
+	senzingSchema.log(errorNumber, details...)
 }
 
 // Trace method exit.
 func (senzingSchema *SenzingSchemaImpl) traceExit(errorNumber int, details ...interface{}) {
-	senzingSchema.getLogger().Log(errorNumber, details...)
+	senzingSchema.log(errorNumber, details...)
 }
 
 // Given a database URL, detemine the correct SQL file and send the statements to the database.
@@ -209,25 +220,25 @@ Input
   - ctx: A context to control lifecycle.
   - logLevel: The desired log level. TRACE, DEBUG, INFO, WARN, ERROR, FATAL or PANIC.
 */
-func (senzingSchema *SenzingSchemaImpl) SetLogLevel(ctx context.Context, logLevel logger.Level) error {
+func (senzingSchema *SenzingSchemaImpl) SetLogLevel(ctx context.Context, logLevelName string) error {
 	if senzingSchema.isTrace {
-		senzingSchema.traceEntry(5, logLevel)
+		senzingSchema.traceEntry(5, logLevelName)
 	}
 	entryTime := time.Now()
 	var err error = nil
-	senzingSchema.logLevel = logLevel
-	senzingSchema.getLogger().SetLogLevel(messagelogger.Level(logLevel))
+	senzingSchema.logLevel = logLevelName
+	senzingSchema.getLogger().SetLogLevel(logLevelName)
 	senzingSchema.isTrace = (senzingSchema.getLogger().GetLogLevel() == messagelogger.LevelTrace)
 	if senzingSchema.observers != nil {
 		go func() {
 			details := map[string]string{
-				"logLevel": logger.LevelToTextMap[logLevel],
+				"logLevel": logLevelName,
 			}
 			notifier.Notify(ctx, senzingSchema.observers, ProductId, 8003, err, details)
 		}()
 	}
 	if senzingSchema.isTrace {
-		defer senzingSchema.traceExit(6, logLevel, err, time.Since(entryTime))
+		defer senzingSchema.traceExit(6, logLevelName, err, time.Since(entryTime))
 	}
 	return err
 }

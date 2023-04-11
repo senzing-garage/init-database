@@ -7,8 +7,7 @@ import (
 	"time"
 
 	"github.com/senzing/g2-sdk-go/g2api"
-	"github.com/senzing/go-logging/logger"
-	"github.com/senzing/go-logging/messagelogger"
+	"github.com/senzing/go-logging/logging"
 	"github.com/senzing/go-observing/notifier"
 	"github.com/senzing/go-observing/observer"
 	"github.com/senzing/go-observing/subject"
@@ -29,8 +28,8 @@ type SenzingConfigImpl struct {
 	g2factorySingleton             factory.SdkAbstractFactory
 	g2factorySyncOnce              sync.Once
 	isTrace                        bool
-	logger                         messagelogger.MessageLoggerInterface
-	logLevel                       logger.Level
+	logger                         logging.LoggingInterface
+	logLevel                       string
 	observers                      subject.Subject
 	SenzingEngineConfigurationJson string
 	SenzingModuleName              string
@@ -48,21 +47,33 @@ var defaultModuleName string = "init-database"
 // ----------------------------------------------------------------------------
 
 // Get the Logger singleton.
-func (senzingConfig *SenzingConfigImpl) getLogger() messagelogger.MessageLoggerInterface {
+func (senzingConfig *SenzingConfigImpl) getLogger() logging.LoggingInterface {
+	var err error = nil
 	if senzingConfig.logger == nil {
-		senzingConfig.logger, _ = messagelogger.NewSenzingApiLogger(ProductId, IdMessages, IdStatuses, senzingConfig.logLevel)
+		senzingConfig.logger, err = logging.NewSenzingToolsLogger(ProductId, IdMessages)
+		if err != nil {
+			panic(err)
+		}
 	}
 	return senzingConfig.logger
 }
 
+// Log message.
+func (senzingConfig *SenzingConfigImpl) log(messageNumber int, details ...interface{}) {
+	// TODO: Add skipCaller.
+	senzingConfig.getLogger().Log(messageNumber, details...)
+}
+
 // Trace method entry.
-func (senzingConfig *SenzingConfigImpl) traceEntry(errorNumber int, details ...interface{}) {
-	senzingConfig.getLogger().Log(errorNumber, details...)
+func (senzingConfig *SenzingConfigImpl) traceEntry(messageNumber int, details ...interface{}) {
+	// TODO: Add skipCaller.
+	senzingConfig.log(messageNumber, details...)
 }
 
 // Trace method exit.
-func (senzingConfig *SenzingConfigImpl) traceExit(errorNumber int, details ...interface{}) {
-	senzingConfig.getLogger().Log(errorNumber, details...)
+func (senzingConfig *SenzingConfigImpl) traceExit(messageNumber int, details ...interface{}) {
+	// TODO: Add skipCaller.
+	senzingConfig.log(messageNumber, details...)
 }
 
 // Create an abstract factory singleton and return it.
@@ -295,25 +306,25 @@ Input
   - ctx: A context to control lifecycle.
   - logLevel: The desired log level. TRACE, DEBUG, INFO, WARN, ERROR, FATAL or PANIC.
 */
-func (senzingConfig *SenzingConfigImpl) SetLogLevel(ctx context.Context, logLevel logger.Level) error {
+func (senzingConfig *SenzingConfigImpl) SetLogLevel(ctx context.Context, logLevelName string) error {
 	if senzingConfig.isTrace {
-		senzingConfig.traceEntry(5, logLevel)
+		senzingConfig.traceEntry(5, logLevelName)
 	}
 	entryTime := time.Now()
 	var err error = nil
-	senzingConfig.logLevel = logLevel
-	senzingConfig.getLogger().SetLogLevel(messagelogger.Level(logLevel))
-	senzingConfig.isTrace = (senzingConfig.getLogger().GetLogLevel() == messagelogger.LevelTrace)
+	senzingConfig.logLevel = logLevelName
+	senzingConfig.getLogger().SetLogLevel(logLevelName)
+	senzingConfig.isTrace = (logLevelName == logging.LevelTraceName)
 	if senzingConfig.observers != nil {
 		go func() {
 			details := map[string]string{
-				"logLevel": logger.LevelToTextMap[logLevel],
+				"logLevel": logLevelName,
 			}
 			notifier.Notify(ctx, senzingConfig.observers, ProductId, 8004, err, details)
 		}()
 	}
 	if senzingConfig.isTrace {
-		defer senzingConfig.traceExit(6, logLevel, err, time.Since(entryTime))
+		defer senzingConfig.traceExit(6, logLevelName, err, time.Since(entryTime))
 	}
 	return err
 }

@@ -3,7 +3,6 @@ package initializer
 import (
 	"context"
 
-	"github.com/senzing/go-logging/logger"
 	"github.com/senzing/go-observing/observer"
 )
 
@@ -14,7 +13,7 @@ import (
 type Initializer interface {
 	Initialize(ctx context.Context) error
 	RegisterObserver(ctx context.Context, observer observer.Observer) error
-	SetLogLevel(ctx context.Context, logLevel logger.Level) error
+	SetLogLevel(ctx context.Context, logLevel string) error
 	UnregisterObserver(ctx context.Context, observer observer.Observer) error
 }
 
@@ -35,8 +34,8 @@ var IdMessages = map[int]string{
 	2:    "Exit  Initialize() returned (%v).",
 	3:    "Enter RegisterObserver(%s).",
 	4:    "Exit  RegisterObserver(%s) returned (%v).",
-	5:    "Enter SetLogLevel(%v).",
-	6:    "Exit  SetLogLevel(%v) returned (%v).",
+	5:    "Enter SetLogLevel(%s).",
+	6:    "Exit  SetLogLevel(%s) returned (%v).",
 	7:    "Enter UnregisterObserver(%s).",
 	8:    "Exit  UnregisterObserver(%s) returned (%v).",
 	1000: "Entry: %+v",
