@@ -53,9 +53,9 @@ require (
 )
 
 replace (
+	github.com/senzing/go-databasing v0.2.1 => /home/senzing/senzing.git/go-databasing
 	github.com/senzing/go-logging v1.1.3 => /home/senzing/senzing.git/go-logging
 	github.com/senzing/go-messaging v0.0.0 => /home/senzing/senzing.git/go-messaging
-	github.com/senzing/go-databasing v0.2.1 => /home/senzing/senzing.git/go-databasing
 )
 
 retract (
