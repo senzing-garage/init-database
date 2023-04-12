@@ -39,7 +39,7 @@ var (
 )
 
 // ----------------------------------------------------------------------------
-// Privatefunctions
+// Private functions
 // ----------------------------------------------------------------------------
 
 // Since init() is always invoked, define command line parameters.
