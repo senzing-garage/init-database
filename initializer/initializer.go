@@ -40,7 +40,7 @@ type InitializerImpl struct {
 // Internal methods
 // ----------------------------------------------------------------------------
 
-// --- Logging -------------------------------------------------------------------------
+// --- Logging ----------------------------------------------------------------
 
 // Get the Logger singleton.
 func (initializerImpl *InitializerImpl) getLogger() logging.LoggingInterface {
@@ -72,7 +72,7 @@ func (initializerImpl *InitializerImpl) traceExit(errorNumber int, details ...in
 	initializerImpl.log(errorNumber, details...)
 }
 
-// --- Specific database processing ----------------------------------------------------
+// --- Specific database processing -------------------------------------------
 
 func (initializerImpl *InitializerImpl) initializeSpecificDatabaseSqlite(ctx context.Context, parsedUrl *url.URL) error {
 	// If file doesn't exist, create it.
