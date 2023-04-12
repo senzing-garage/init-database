@@ -50,7 +50,10 @@ var defaultModuleName string = "init-database"
 func (senzingConfig *SenzingConfigImpl) getLogger() logging.LoggingInterface {
 	var err error = nil
 	if senzingConfig.logger == nil {
-		senzingConfig.logger, err = logging.NewSenzingToolsLogger(ProductId, IdMessages)
+		options := []interface{}{
+			&logging.OptionCallerSkip{Value: 3},
+		}
+		senzingConfig.logger, err = logging.NewSenzingToolsLogger(ProductId, IdMessages, options...)
 		if err != nil {
 			panic(err)
 		}
@@ -218,7 +221,7 @@ func (senzingConfig *SenzingConfigImpl) Initialize(ctx context.Context) error {
 
 	// Persist the Senzing configuration to the Senzing repository and set as default configuration.
 
-	configComments := fmt.Sprintf("Created by init-database at %s", entryTime.UTC())
+	configComments := fmt.Sprintf("Created by init-database at %s", entryTime.Format(time.RFC3339Nano))
 	configID, err = g2Configmgr.AddConfig(ctx, configStr, configComments)
 	if err != nil {
 		return err

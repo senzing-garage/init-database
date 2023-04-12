@@ -24,20 +24,16 @@ import (
 
 // InitializerImpl is the default implementation of the Initializer interface.
 type InitializerImpl struct {
-	DataSources []string
-	isTrace     bool
-	logger      logging.LoggingInterface
-	// xxslogger      *slog.Logger
-	// xxsloggerLevel slog.Level
-	// xxlogLevel     logger.Level
-	// messageLogger                  messagelogger.MessageLoggerInterface
+	DataSources                    []string
+	isTrace                        bool
+	logger                         logging.LoggingInterface
 	observers                      subject.Subject
+	senzingConfig                  senzingconfig.SenzingConfig
 	SenzingEngineConfigurationJson string
 	SenzingLogLevel                string
 	SenzingModuleName              string
-	SenzingVerboseLogging          int
 	senzingSchema                  senzingschema.SenzingSchema
-	senzingConfig                  senzingconfig.SenzingConfig
+	SenzingVerboseLogging          int
 }
 
 // ----------------------------------------------------------------------------
@@ -50,7 +46,10 @@ type InitializerImpl struct {
 func (initializerImpl *InitializerImpl) getLogger() logging.LoggingInterface {
 	var err error = nil
 	if initializerImpl.logger == nil {
-		initializerImpl.logger, err = logging.NewSenzingToolsLogger(ProductId, IdMessages)
+		options := []interface{}{
+			&logging.OptionCallerSkip{Value: 3},
+		}
+		initializerImpl.logger, err = logging.NewSenzingToolsLogger(ProductId, IdMessages, options...)
 		if err != nil {
 			panic(err)
 		}
@@ -73,7 +72,7 @@ func (initializerImpl *InitializerImpl) traceExit(errorNumber int, details ...in
 	initializerImpl.log(errorNumber, details...)
 }
 
-// --- Logging -------------------------------------------------------------------------
+// --- Specific database processing ----------------------------------------------------
 
 func (initializerImpl *InitializerImpl) initializeSpecificDatabaseSqlite(ctx context.Context, parsedUrl *url.URL) error {
 	// If file doesn't exist, create it.
@@ -287,6 +286,12 @@ func (initializerImpl *InitializerImpl) SetLogLevel(ctx context.Context, logLeve
 	if logging.IsValidLogLevelName(logLevelName) {
 		initializerImpl.getLogger().SetLogLevel(logLevelName)
 		initializerImpl.isTrace = (logLevelName == logging.LevelTraceName)
+		if initializerImpl.senzingConfig != nil {
+			initializerImpl.senzingConfig.SetLogLevel(ctx, logLevelName)
+		}
+		if initializerImpl.senzingSchema != nil {
+			initializerImpl.senzingSchema.SetLogLevel(ctx, logLevelName)
+		}
 		if initializerImpl.observers != nil {
 			go func() {
 				details := map[string]string{

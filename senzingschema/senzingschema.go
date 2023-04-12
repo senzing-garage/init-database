@@ -37,7 +37,10 @@ type SenzingSchemaImpl struct {
 func (senzingSchema *SenzingSchemaImpl) getLogger() logging.LoggingInterface {
 	var err error = nil
 	if senzingSchema.logger == nil {
-		senzingSchema.logger, err = logging.NewSenzingToolsLogger(ProductId, IdMessages)
+		options := []interface{}{
+			&logging.OptionCallerSkip{Value: 3},
+		}
+		senzingSchema.logger, err = logging.NewSenzingToolsLogger(ProductId, IdMessages, options...)
 		if err != nil {
 			panic(err)
 		}
