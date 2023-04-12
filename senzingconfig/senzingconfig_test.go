@@ -39,7 +39,7 @@ func setup() error {
 	senzingSchema := &senzingschema.SenzingSchemaImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
-	err = senzingSchema.SetLogLevel(ctx, logger.LevelInfo)
+	err = senzingSchema.SetLogLevel(ctx, logger.LevelInfoName)
 	if err != nil {
 		fmt.Println(err)
 	}

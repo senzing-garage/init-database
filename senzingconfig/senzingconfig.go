@@ -312,16 +312,20 @@ func (senzingConfig *SenzingConfigImpl) SetLogLevel(ctx context.Context, logLeve
 	}
 	entryTime := time.Now()
 	var err error = nil
-	senzingConfig.logLevel = logLevelName
-	senzingConfig.getLogger().SetLogLevel(logLevelName)
-	senzingConfig.isTrace = (logLevelName == logging.LevelTraceName)
-	if senzingConfig.observers != nil {
-		go func() {
-			details := map[string]string{
-				"logLevel": logLevelName,
-			}
-			notifier.Notify(ctx, senzingConfig.observers, ProductId, 8004, err, details)
-		}()
+	if logging.IsValidLogLevelName(logLevelName) {
+		senzingConfig.logLevel = logLevelName
+		senzingConfig.getLogger().SetLogLevel(logLevelName)
+		senzingConfig.isTrace = (logLevelName == logging.LevelTraceName)
+		if senzingConfig.observers != nil {
+			go func() {
+				details := map[string]string{
+					"logLevelName": logLevelName,
+				}
+				notifier.Notify(ctx, senzingConfig.observers, ProductId, 8004, err, details)
+			}()
+		}
+	} else {
+		err = fmt.Errorf("invalid error level: %s", logLevelName)
 	}
 	if senzingConfig.isTrace {
 		defer senzingConfig.traceExit(6, logLevelName, err, time.Since(entryTime))

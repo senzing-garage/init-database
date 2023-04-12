@@ -10,9 +10,7 @@ import (
 	"github.com/senzing/go-common/engineconfigurationjsonparser"
 	"github.com/senzing/go-databasing/connector"
 	"github.com/senzing/go-databasing/sqlexecutor"
-	"github.com/senzing/go-logging/logger"
 	"github.com/senzing/go-logging/logging"
-	"github.com/senzing/go-logging/messagelogger"
 	"github.com/senzing/go-observing/notifier"
 	"github.com/senzing/go-observing/observer"
 	"github.com/senzing/go-observing/subject"
@@ -26,7 +24,7 @@ import (
 type SenzingSchemaImpl struct {
 	isTrace                        bool
 	logger                         logging.LoggingInterface
-	xlogLevel                      logger.Level
+	logLevelName                   string
 	observers                      subject.Subject
 	SenzingEngineConfigurationJson string
 }
@@ -106,7 +104,7 @@ func (senzingSchema *SenzingSchemaImpl) processDatabase(ctx context.Context, res
 	sqlExecutor := &sqlexecutor.SqlExecutorImpl{
 		DatabaseConnector: databaseConnector,
 	}
-	sqlExecutor.SetLogLevel(ctx, senzingSchema.logLevel)
+	sqlExecutor.SetLogLevel(ctx, senzingSchema.logLevelName)
 
 	// Add observers to sqlExecutor.
 
@@ -226,16 +224,20 @@ func (senzingSchema *SenzingSchemaImpl) SetLogLevel(ctx context.Context, logLeve
 	}
 	entryTime := time.Now()
 	var err error = nil
-	senzingSchema.logLevel = logLevelName
-	senzingSchema.getLogger().SetLogLevel(logLevelName)
-	senzingSchema.isTrace = (senzingSchema.getLogger().GetLogLevel() == messagelogger.LevelTrace)
-	if senzingSchema.observers != nil {
-		go func() {
-			details := map[string]string{
-				"logLevel": logLevelName,
-			}
-			notifier.Notify(ctx, senzingSchema.observers, ProductId, 8003, err, details)
-		}()
+	if logging.IsValidLogLevelName(logLevelName) {
+		senzingSchema.logLevelName = logLevelName
+		senzingSchema.getLogger().SetLogLevel(logLevelName)
+		senzingSchema.isTrace = (logLevelName == logging.LevelTraceName)
+		if senzingSchema.observers != nil {
+			go func() {
+				details := map[string]string{
+					"logLevelName": logLevelName,
+				}
+				notifier.Notify(ctx, senzingSchema.observers, ProductId, 8003, err, details)
+			}()
+		}
+	} else {
+		err = fmt.Errorf("invalid error level: %s", logLevelName)
 	}
 	if senzingSchema.isTrace {
 		defer senzingSchema.traceExit(6, logLevelName, err, time.Since(entryTime))

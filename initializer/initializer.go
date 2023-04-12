@@ -2,6 +2,7 @@ package initializer
 
 import (
 	"context"
+	"fmt"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -43,6 +44,8 @@ type InitializerImpl struct {
 // Internal methods
 // ----------------------------------------------------------------------------
 
+// --- Logging -------------------------------------------------------------------------
+
 // Get the Logger singleton.
 func (initializerImpl *InitializerImpl) getLogger() logging.LoggingInterface {
 	var err error = nil
@@ -54,6 +57,23 @@ func (initializerImpl *InitializerImpl) getLogger() logging.LoggingInterface {
 	}
 	return initializerImpl.logger
 }
+
+// Log message.
+func (initializerImpl *InitializerImpl) log(messageNumber int, details ...interface{}) {
+	initializerImpl.getLogger().Log(messageNumber, details...)
+}
+
+// Trace method entry.
+func (initializerImpl *InitializerImpl) traceEntry(errorNumber int, details ...interface{}) {
+	initializerImpl.log(errorNumber, details...)
+}
+
+// Trace method exit.
+func (initializerImpl *InitializerImpl) traceExit(errorNumber int, details ...interface{}) {
+	initializerImpl.log(errorNumber, details...)
+}
+
+// --- Logging -------------------------------------------------------------------------
 
 func (initializerImpl *InitializerImpl) initializeSpecificDatabaseSqlite(ctx context.Context, parsedUrl *url.URL) error {
 	// If file doesn't exist, create it.
@@ -81,59 +101,6 @@ func (initializerImpl *InitializerImpl) initializeSpecificDatabaseSqlite(ctx con
 		}
 	}
 	return err
-}
-
-func (initializerImpl *InitializerImpl) log(messageNumber int, details ...interface{}) {
-	initializerImpl.getLogger().Log(messageNumber, details...)
-}
-
-// Set logging.
-func (initializerImpl *InitializerImpl) setLogging(ctx context.Context) error {
-
-	logLevelName := initializerImpl.SenzingLogLevel
-	if logLevelName == "" {
-		logLevelName = "INFO"
-	}
-
-	err := initializerImpl.logger.SetLogLevel(logLevelName)
-	if err != nil {
-		panic(err)
-	}
-
-	// Configure slog.
-
-	// slogLevel, ok := slogconfig.TextToLevelMap[logLevelName]
-	// if !ok {
-	// 	return fmt.Errorf("unknown log level: %s", logLevelName)
-	// }
-	// initializerImpl.sloggerLevel = slogLevel
-	// opts := slog.HandlerOptions{
-	// 	Level: initializerImpl.sloggerLevel,
-	// }
-	// initializerImpl.slogger = slog.New(opts.NewJSONHandler(os.Stderr))
-
-	// Configure Senzing SDK logging.
-
-	// sdkLevel, ok := logger.TextToLevelMap[logLevelName]
-	// if !ok {
-	// 	return fmt.Errorf("unknown log level: %s", logLevelName)
-	// }
-	// fmt.Printf(">>>>>>>>>>  SDK Log level: %v\n", sdkLevel)
-
-	// initializerImpl.logLevel = messagelogger.Level(sdkLevel)
-	// initializerImpl.getLogger().SetLogLevel(initializerImpl.logLevel)
-	// initializerImpl.isTrace = (logconst.LevelTraceName == logLevelName)
-	return nil
-}
-
-// Trace method entry.
-func (initializerImpl *InitializerImpl) traceEntry(errorNumber int, details ...interface{}) {
-	initializerImpl.log(errorNumber, details...)
-}
-
-// Trace method exit.
-func (initializerImpl *InitializerImpl) traceExit(errorNumber int, details ...interface{}) {
-	initializerImpl.log(errorNumber, details...)
 }
 
 // ----------------------------------------------------------------------------
@@ -311,24 +278,28 @@ Input
   - ctx: A context to control lifecycle.
   - logLevel: The desired log level. TRACE, DEBUG, INFO, WARN, ERROR, FATAL or PANIC.
 */
-func (initializerImpl *InitializerImpl) SetLogLevel(ctx context.Context, logLevel string) error {
+func (initializerImpl *InitializerImpl) SetLogLevel(ctx context.Context, logLevelName string) error {
 	if initializerImpl.isTrace {
-		initializerImpl.traceEntry(5, logLevel)
+		initializerImpl.traceEntry(5, logLevelName)
 	}
 	entryTime := time.Now()
 	var err error = nil
-	initializerImpl.SenzingLogLevel = logLevel
-	initializerImpl.setLogging(ctx)
-	if initializerImpl.observers != nil {
-		go func() {
-			details := map[string]string{
-				"logLevel": logLevel,
-			}
-			notifier.Notify(ctx, initializerImpl.observers, ProductId, 8003, err, details)
-		}()
+	if logging.IsValidLogLevelName(logLevelName) {
+		initializerImpl.getLogger().SetLogLevel(logLevelName)
+		initializerImpl.isTrace = (logLevelName == logging.LevelTraceName)
+		if initializerImpl.observers != nil {
+			go func() {
+				details := map[string]string{
+					"logLevelName": logLevelName,
+				}
+				notifier.Notify(ctx, initializerImpl.observers, ProductId, 8003, err, details)
+			}()
+		}
+	} else {
+		err = fmt.Errorf("invalid error level: %s", logLevelName)
 	}
 	if initializerImpl.isTrace {
-		defer initializerImpl.traceExit(6, logLevel, err, time.Since(entryTime))
+		defer initializerImpl.traceExit(6, logLevelName, err, time.Since(entryTime))
 	}
 	return err
 }

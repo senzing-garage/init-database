@@ -13,7 +13,7 @@ import (
 type SenzingConfig interface {
 	Initialize(ctx context.Context) error
 	RegisterObserver(ctx context.Context, observer observer.Observer) error
-	SetLogLevel(ctx context.Context, logLevel string) error
+	SetLogLevel(ctx context.Context, logLevelName string) error
 	UnregisterObserver(ctx context.Context, observer observer.Observer) error
 }
 
