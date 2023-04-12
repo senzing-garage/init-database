@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/senzing/go-common/g2engineconfigurationjson"
-	"github.com/senzing/go-logging/logger"
+	"github.com/senzing/go-logging/logging"
 	"github.com/senzing/go-observing/observer"
 	"github.com/senzing/init-database/senzingschema"
 )
@@ -39,7 +39,7 @@ func setup() error {
 	senzingSchema := &senzingschema.SenzingSchemaImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
-	err = senzingSchema.SetLogLevel(ctx, logger.LevelInfoName)
+	err = senzingSchema.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -74,7 +74,7 @@ func ExampleSenzingConfigImpl_Initialize_withDatasources() {
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 		DataSources:                    []string{"CUSTOMERS", "REFERENCE", "WATCHLIST"},
 	}
-	err = senzingConfig.SetLogLevel(ctx, logger.LevelInfoName)
+	err = senzingConfig.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -95,7 +95,7 @@ func ExampleSenzingConfigImpl_Initialize() {
 	senzingConfig := &SenzingConfigImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
-	err = senzingConfig.SetLogLevel(ctx, logger.LevelInfoName)
+	err = senzingConfig.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -137,7 +137,7 @@ func ExampleSenzingConfigImpl_SetLogLevel() {
 	senzingConfig := &SenzingConfigImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
-	err = senzingConfig.SetLogLevel(ctx, logger.LevelInfoName)
+	err = senzingConfig.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		fmt.Println(err)
 	}
