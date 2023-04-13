@@ -52,8 +52,6 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/senzing/go-databasing v0.2.2 => /home/senzing/senzing.git/go-databasing
-
 retract (
 	v0.1.8
 	v0.1.7
