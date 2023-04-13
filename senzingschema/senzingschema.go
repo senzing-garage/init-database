@@ -38,7 +38,7 @@ func (senzingSchema *SenzingSchemaImpl) getLogger() logging.LoggingInterface {
 	var err error = nil
 	if senzingSchema.logger == nil {
 		options := []interface{}{
-			&logging.OptionCallerSkip{Value: 3},
+			&logging.OptionCallerSkip{Value: 4},
 		}
 		senzingSchema.logger, err = logging.NewSenzingToolsLogger(ProductId, IdMessages, options...)
 		if err != nil {

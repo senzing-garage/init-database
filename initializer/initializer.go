@@ -47,7 +47,7 @@ func (initializerImpl *InitializerImpl) getLogger() logging.LoggingInterface {
 	var err error = nil
 	if initializerImpl.logger == nil {
 		options := []interface{}{
-			&logging.OptionCallerSkip{Value: 3},
+			&logging.OptionCallerSkip{Value: 4},
 		}
 		initializerImpl.logger, err = logging.NewSenzingToolsLogger(ProductId, IdMessages, options...)
 		if err != nil {
@@ -63,13 +63,13 @@ func (initializerImpl *InitializerImpl) log(messageNumber int, details ...interf
 }
 
 // Trace method entry.
-func (initializerImpl *InitializerImpl) traceEntry(errorNumber int, details ...interface{}) {
-	initializerImpl.log(errorNumber, details...)
+func (initializerImpl *InitializerImpl) traceEntry(messageNumber int, details ...interface{}) {
+	initializerImpl.getLogger().Log(messageNumber, details...)
 }
 
 // Trace method exit.
-func (initializerImpl *InitializerImpl) traceExit(errorNumber int, details ...interface{}) {
-	initializerImpl.log(errorNumber, details...)
+func (initializerImpl *InitializerImpl) traceExit(messageNumber int, details ...interface{}) {
+	initializerImpl.getLogger().Log(messageNumber, details...)
 }
 
 // --- Specific database processing -------------------------------------------

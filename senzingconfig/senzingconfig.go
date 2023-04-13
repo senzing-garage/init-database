@@ -51,7 +51,7 @@ func (senzingConfig *SenzingConfigImpl) getLogger() logging.LoggingInterface {
 	var err error = nil
 	if senzingConfig.logger == nil {
 		options := []interface{}{
-			&logging.OptionCallerSkip{Value: 3},
+			&logging.OptionCallerSkip{Value: 4},
 		}
 		senzingConfig.logger, err = logging.NewSenzingToolsLogger(ProductId, IdMessages, options...)
 		if err != nil {
