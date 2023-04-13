@@ -5,8 +5,8 @@ go 1.20
 require (
 	github.com/senzing/g2-sdk-go v0.5.1
 	github.com/senzing/go-common v0.1.2
-	github.com/senzing/go-databasing v0.2.1
-	github.com/senzing/go-logging v1.1.3
+	github.com/senzing/go-databasing v0.2.2
+	github.com/senzing/go-logging v1.2.0
 	github.com/senzing/go-observing v0.2.0
 	github.com/senzing/go-sdk-abstract-factory v0.2.1
 	github.com/senzing/senzing-tools v0.2.1
@@ -34,7 +34,7 @@ require (
 	github.com/senzing/g2-sdk-go-base v0.1.4 // indirect
 	github.com/senzing/g2-sdk-go-grpc v0.2.2 // indirect
 	github.com/senzing/g2-sdk-proto/go v0.0.0-20230315125947-e4aea8f381eb // indirect
-	github.com/senzing/go-messaging v0.0.0 // indirect
+	github.com/senzing/go-messaging v0.1.0 // indirect
 	github.com/spf13/afero v1.9.5 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
@@ -50,12 +50,6 @@ require (
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-)
-
-replace (
-	github.com/senzing/go-databasing v0.2.1 => /home/senzing/senzing.git/go-databasing
-	github.com/senzing/go-logging v1.1.3 => /home/senzing/senzing.git/go-logging
-	github.com/senzing/go-messaging v0.0.0 => /home/senzing/senzing.git/go-messaging
 )
 
 retract (
