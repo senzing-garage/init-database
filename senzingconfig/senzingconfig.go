@@ -63,20 +63,17 @@ func (senzingConfig *SenzingConfigImpl) getLogger() logging.LoggingInterface {
 
 // Log message.
 func (senzingConfig *SenzingConfigImpl) log(messageNumber int, details ...interface{}) {
-	// TODO: Add skipCaller.
 	senzingConfig.getLogger().Log(messageNumber, details...)
 }
 
 // Trace method entry.
 func (senzingConfig *SenzingConfigImpl) traceEntry(messageNumber int, details ...interface{}) {
-	// TODO: Add skipCaller.
-	senzingConfig.log(messageNumber, details...)
+	senzingConfig.getLogger().Log(messageNumber, details...)
 }
 
 // Trace method exit.
 func (senzingConfig *SenzingConfigImpl) traceExit(messageNumber int, details ...interface{}) {
-	// TODO: Add skipCaller.
-	senzingConfig.log(messageNumber, details...)
+	senzingConfig.getLogger().Log(messageNumber, details...)
 }
 
 // Create an abstract factory singleton and return it.
@@ -140,7 +137,7 @@ func (senzingConfig *SenzingConfigImpl) addDatasources(ctx context.Context, g2Co
 		if err != nil {
 			return err
 		}
-		senzingConfig.getLogger().Log(2003, datasource)
+		senzingConfig.log(2003, datasource)
 	}
 	return err
 }
@@ -163,7 +160,7 @@ func (senzingConfig *SenzingConfigImpl) Initialize(ctx context.Context) error {
 
 	// Log entry parameters.
 
-	senzingConfig.getLogger().Log(1000, senzingConfig)
+	senzingConfig.log(1000, senzingConfig)
 
 	// Create Senzing objects.
 
@@ -189,7 +186,7 @@ func (senzingConfig *SenzingConfigImpl) Initialize(ctx context.Context) error {
 				notifier.Notify(ctx, senzingConfig.observers, ProductId, 8001, err, details)
 			}()
 		}
-		senzingConfig.getLogger().Log(2002, configID)
+		senzingConfig.log(2002, configID)
 		if senzingConfig.isTrace {
 			defer senzingConfig.traceExit(901, err, time.Since(entryTime))
 		}
@@ -233,7 +230,7 @@ func (senzingConfig *SenzingConfigImpl) Initialize(ctx context.Context) error {
 
 	// Epilog.
 
-	senzingConfig.getLogger().Log(2004, configID, configComments)
+	senzingConfig.log(2004, configID, configComments)
 	if senzingConfig.observers != nil {
 		go func() {
 			details := map[string]string{}

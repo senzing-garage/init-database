@@ -50,18 +50,17 @@ func (senzingSchema *SenzingSchemaImpl) getLogger() logging.LoggingInterface {
 
 // Log message.
 func (senzingSchema *SenzingSchemaImpl) log(messageNumber int, details ...interface{}) {
-	// TODO: Add skipCaller.
 	senzingSchema.getLogger().Log(messageNumber, details...)
 }
 
 // Trace method entry.
-func (senzingSchema *SenzingSchemaImpl) traceEntry(errorNumber int, details ...interface{}) {
-	senzingSchema.log(errorNumber, details...)
+func (senzingSchema *SenzingSchemaImpl) traceEntry(messageNumber int, details ...interface{}) {
+	senzingSchema.getLogger().Log(messageNumber, details...)
 }
 
 // Trace method exit.
-func (senzingSchema *SenzingSchemaImpl) traceExit(errorNumber int, details ...interface{}) {
-	senzingSchema.log(errorNumber, details...)
+func (senzingSchema *SenzingSchemaImpl) traceExit(messageNumber int, details ...interface{}) {
+	senzingSchema.getLogger().Log(messageNumber, details...)
 }
 
 // Given a database URL, detemine the correct SQL file and send the statements to the database.
@@ -126,7 +125,7 @@ func (senzingSchema *SenzingSchemaImpl) processDatabase(ctx context.Context, res
 	if err != nil {
 		return err
 	}
-	senzingSchema.getLogger().Log(2002, sqlFilename, parsedUrl.Redacted())
+	senzingSchema.log(2002, sqlFilename, parsedUrl.Redacted())
 	return err
 }
 
@@ -148,7 +147,7 @@ func (senzingSchema *SenzingSchemaImpl) Initialize(ctx context.Context) error {
 
 	// Log entry parameters.
 
-	senzingSchema.getLogger().Log(1000, senzingSchema)
+	senzingSchema.log(1000, senzingSchema)
 
 	// Pull values out of SenzingEngineConfigurationJson.
 
