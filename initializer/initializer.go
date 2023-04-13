@@ -195,7 +195,8 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 }
 
 /*
-The RegisterObserver method adds the observer to the list of observers notified.
+The InitializeSpecificDatabase method routes specific databse processing
+based on the database URL's protocol field.
 
 Input
   - ctx: A context to control lifecycle.
@@ -259,11 +260,33 @@ func (initializerImpl *InitializerImpl) RegisterObserver(ctx context.Context, ob
 	if initializerImpl.observers == nil {
 		initializerImpl.observers = &subject.SubjectImpl{}
 	}
+
+	// Register observer with initializerImpl and dependencies.
+
 	err := initializerImpl.observers.RegisterObserver(ctx, observer)
-	details := map[string]string{
-		"observerID": observer.GetObserverId(ctx),
+	if err != nil {
+		return err
 	}
-	notifier.Notify(ctx, initializerImpl.observers, ProductId, 8002, err, details)
+	err = initializerImpl.senzingConfig.RegisterObserver(ctx, observer)
+	if err != nil {
+		return err
+	}
+	err = initializerImpl.senzingSchema.RegisterObserver(ctx, observer)
+	if err != nil {
+		return err
+	}
+
+	// Notify observer.
+
+	go func() {
+		details := map[string]string{
+			"observerID": observer.GetObserverId(ctx),
+		}
+		notifier.Notify(ctx, initializerImpl.observers, ProductId, 8002, err, details)
+	}()
+
+	// Epilog.
+
 	if initializerImpl.isTrace {
 		defer initializerImpl.traceExit(4, observer.GetObserverId(ctx), err, time.Since(entryTime))
 	}
@@ -322,7 +345,22 @@ func (initializerImpl *InitializerImpl) UnregisterObserver(ctx context.Context, 
 	}
 	entryTime := time.Now()
 	var err error = nil
+
+	// Unregister observer in dependencies.
+
+	err = initializerImpl.senzingConfig.UnregisterObserver(ctx, observer)
+	if err != nil {
+		return err
+	}
+	err = initializerImpl.senzingSchema.UnregisterObserver(ctx, observer)
+	if err != nil {
+		return err
+	}
+
+	// Remove observer from this service.
+
 	if initializerImpl.observers != nil {
+
 		// Tricky code:
 		// client.notify is called synchronously before client.observers is set to nil.
 		// In client.notify, each observer will get notified in a goroutine.
@@ -331,11 +369,19 @@ func (initializerImpl *InitializerImpl) UnregisterObserver(ctx context.Context, 
 			"observerID": observer.GetObserverId(ctx),
 		}
 		notifier.Notify(ctx, initializerImpl.observers, ProductId, 8004, err, details)
+
+		err = initializerImpl.observers.UnregisterObserver(ctx, observer)
+		if err != nil {
+			return err
+		}
+
+		if !initializerImpl.observers.HasObservers(ctx) {
+			initializerImpl.observers = nil
+		}
 	}
-	err = initializerImpl.observers.UnregisterObserver(ctx, observer)
-	if !initializerImpl.observers.HasObservers(ctx) {
-		initializerImpl.observers = nil
-	}
+
+	// Epilog.
+
 	if initializerImpl.isTrace {
 		defer initializerImpl.traceExit(8, observer.GetObserverId(ctx), err, time.Since(entryTime))
 	}

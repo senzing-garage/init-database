@@ -202,11 +202,22 @@ func (senzingSchema *SenzingSchemaImpl) RegisterObserver(ctx context.Context, ob
 	if senzingSchema.observers == nil {
 		senzingSchema.observers = &subject.SubjectImpl{}
 	}
+
+	// Register observer with senzingSchema.
+
 	err := senzingSchema.observers.RegisterObserver(ctx, observer)
-	details := map[string]string{
-		"observerID": observer.GetObserverId(ctx),
-	}
-	notifier.Notify(ctx, senzingSchema.observers, ProductId, 8002, err, details)
+
+	// Notify observers.
+
+	go func() {
+		details := map[string]string{
+			"observerID": observer.GetObserverId(ctx),
+		}
+		notifier.Notify(ctx, senzingSchema.observers, ProductId, 8002, err, details)
+	}()
+
+	// Epilog.
+
 	if senzingSchema.isTrace {
 		defer senzingSchema.traceExit(4, observer.GetObserverId(ctx), err, time.Since(entryTime))
 	}
@@ -230,7 +241,7 @@ func (senzingSchema *SenzingSchemaImpl) SetLogLevel(ctx context.Context, logLeve
 		senzingSchema.logLevelName = logLevelName
 		senzingSchema.getLogger().SetLogLevel(logLevelName)
 		senzingSchema.isTrace = (logLevelName == logging.LevelTraceName)
-		if senzingSchema.observers != nil {
+		if senzingSchema.observers != nil { // Performance optimization.
 			go func() {
 				details := map[string]string{
 					"logLevelName": logLevelName,
@@ -260,7 +271,11 @@ func (senzingSchema *SenzingSchemaImpl) UnregisterObserver(ctx context.Context, 
 	}
 	entryTime := time.Now()
 	var err error = nil
+
+	// Remove observer from this service.
+
 	if senzingSchema.observers != nil {
+
 		// Tricky code:
 		// client.notify is called synchronously before client.observers is set to nil.
 		// In client.notify, each observer will get notified in a goroutine.
@@ -269,11 +284,19 @@ func (senzingSchema *SenzingSchemaImpl) UnregisterObserver(ctx context.Context, 
 			"observerID": observer.GetObserverId(ctx),
 		}
 		notifier.Notify(ctx, senzingSchema.observers, ProductId, 8004, err, details)
+
+		err = senzingSchema.observers.UnregisterObserver(ctx, observer)
+		if err != nil {
+			return err
+		}
+
+		if !senzingSchema.observers.HasObservers(ctx) {
+			senzingSchema.observers = nil
+		}
 	}
-	err = senzingSchema.observers.UnregisterObserver(ctx, observer)
-	if !senzingSchema.observers.HasObservers(ctx) {
-		senzingSchema.observers = nil
-	}
+
+	// Epilog.
+
 	if senzingSchema.isTrace {
 		defer senzingSchema.traceExit(8, observer.GetObserverId(ctx), err, time.Since(entryTime))
 	}

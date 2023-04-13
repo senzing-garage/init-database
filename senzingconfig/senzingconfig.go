@@ -46,6 +46,8 @@ var defaultModuleName string = "init-database"
 // Internal methods
 // ----------------------------------------------------------------------------
 
+// --- Logging ----------------------------------------------------------------
+
 // Get the Logger singleton.
 func (senzingConfig *SenzingConfigImpl) getLogger() logging.LoggingInterface {
 	var err error = nil
@@ -75,6 +77,8 @@ func (senzingConfig *SenzingConfigImpl) traceEntry(messageNumber int, details ..
 func (senzingConfig *SenzingConfigImpl) traceExit(messageNumber int, details ...interface{}) {
 	senzingConfig.getLogger().Log(messageNumber, details...)
 }
+
+// --- G2 Factory methods -----------------------------------------------------
 
 // Create an abstract factory singleton and return it.
 func (senzingConfig *SenzingConfigImpl) getG2Factory(ctx context.Context) factory.SdkAbstractFactory {
@@ -127,6 +131,8 @@ func (senzingConfig *SenzingConfigImpl) getG2configmgr(ctx context.Context) (g2a
 	})
 	return senzingConfig.g2configmgrSingleton, err
 }
+
+// --- Misc -------------------------------------------------------------------
 
 // Add datasources to Senzing configuration.
 func (senzingConfig *SenzingConfigImpl) addDatasources(ctx context.Context, g2Config g2api.G2config, configHandle uintptr) error {
@@ -259,16 +265,17 @@ func (senzingConfig *SenzingConfigImpl) RegisterObserver(ctx context.Context, ob
 		senzingConfig.observers = &subject.SubjectImpl{}
 	}
 
-	// Register observer with senzingConfig.
+	// Register observer with senzingConfig and dependencies.
 
 	err := senzingConfig.observers.RegisterObserver(ctx, observer)
 	if err != nil {
 		return err
 	}
-
-	// Register observer with dependent stucts.
-
 	g2Config, err := senzingConfig.getG2config(ctx)
+	if err != nil {
+		return err
+	}
+	err = g2Config.RegisterObserver(ctx, observer)
 	if err != nil {
 		return err
 	}
@@ -276,23 +283,22 @@ func (senzingConfig *SenzingConfigImpl) RegisterObserver(ctx context.Context, ob
 	if err != nil {
 		return err
 	}
-	for _, observer := range senzingConfig.observers.GetObservers(ctx) {
-		err = g2Config.RegisterObserver(ctx, observer)
-		if err != nil {
-			return err
-		}
-		err = g2Configmgr.RegisterObserver(ctx, observer)
-		if err != nil {
-			return err
-		}
+	err = g2Configmgr.RegisterObserver(ctx, observer)
+	if err != nil {
+		return err
 	}
+
+	// Notify observers.
+
+	go func() {
+		details := map[string]string{
+			"observerID": observer.GetObserverId(ctx),
+		}
+		notifier.Notify(ctx, senzingConfig.observers, ProductId, 8003, err, details)
+	}()
 
 	// Epilog.
 
-	details := map[string]string{
-		"observerID": observer.GetObserverId(ctx),
-	}
-	notifier.Notify(ctx, senzingConfig.observers, ProductId, 8003, err, details)
 	if senzingConfig.isTrace {
 		defer senzingConfig.traceExit(4, observer.GetObserverId(ctx), err, time.Since(entryTime))
 	}
@@ -316,7 +322,7 @@ func (senzingConfig *SenzingConfigImpl) SetLogLevel(ctx context.Context, logLeve
 		senzingConfig.logLevel = logLevelName
 		senzingConfig.getLogger().SetLogLevel(logLevelName)
 		senzingConfig.isTrace = (logLevelName == logging.LevelTraceName)
-		if senzingConfig.observers != nil {
+		if senzingConfig.observers != nil { // Performance optimization.
 			go func() {
 				details := map[string]string{
 					"logLevelName": logLevelName,
@@ -346,9 +352,30 @@ func (senzingConfig *SenzingConfigImpl) UnregisterObserver(ctx context.Context, 
 	}
 	entryTime := time.Now()
 	var err error = nil
-	// senzingConfig.getG2config(ctx).UnregisterObserver(ctx, observer)
-	// senzingConfig.getG2configmgr(ctx).UnregisterObserver(ctx, observer)
+
+	// Unregister observers in dependencies.
+
+	g2Config, err := senzingConfig.getG2config(ctx)
+	if err != nil {
+		return err
+	}
+	err = g2Config.UnregisterObserver(ctx, observer)
+	if err != nil {
+		return err
+	}
+	g2ConfigMgr, err := senzingConfig.getG2configmgr(ctx)
+	if err != nil {
+		return err
+	}
+	err = g2ConfigMgr.UnregisterObserver(ctx, observer)
+	if err != nil {
+		return err
+	}
+
+	// Remove observer from this service.
+
 	if senzingConfig.observers != nil {
+
 		// Tricky code:
 		// client.notify is called synchronously before client.observers is set to nil.
 		// In client.notify, each observer will get notified in a goroutine.
@@ -357,11 +384,19 @@ func (senzingConfig *SenzingConfigImpl) UnregisterObserver(ctx context.Context, 
 			"observerID": observer.GetObserverId(ctx),
 		}
 		notifier.Notify(ctx, senzingConfig.observers, ProductId, 8005, err, details)
+
+		err = senzingConfig.observers.UnregisterObserver(ctx, observer)
+		if err != nil {
+			return err
+		}
+
+		if !senzingConfig.observers.HasObservers(ctx) {
+			senzingConfig.observers = nil
+		}
 	}
-	err = senzingConfig.observers.UnregisterObserver(ctx, observer)
-	if !senzingConfig.observers.HasObservers(ctx) {
-		senzingConfig.observers = nil
-	}
+
+	// Epilog.
+
 	if senzingConfig.isTrace {
 		defer senzingConfig.traceExit(8, observer.GetObserverId(ctx), err, time.Since(entryTime))
 	}
