@@ -38,7 +38,7 @@ type InitializerImpl struct {
 }
 
 // ----------------------------------------------------------------------------
-// variables
+// Variables
 // ----------------------------------------------------------------------------
 
 var traceOptions []interface{} = []interface{}{
@@ -83,7 +83,7 @@ func (initializerImpl *InitializerImpl) traceExit(messageNumber int, details ...
 	initializerImpl.getLogger().Log(messageNumber, details...)
 }
 
-// --- Factory ----------------------------------------------------------------
+// --- Dependent services -----------------------------------------------------
 
 func (initializerImpl *InitializerImpl) getSenzingConfig() senzingconfig.SenzingConfig {
 	if initializerImpl.senzingConfigSingleton == nil {
@@ -362,7 +362,7 @@ func (initializerImpl *InitializerImpl) RegisterObserver(ctx context.Context, ob
 		initializerImpl.observers = &subject.SubjectImpl{}
 	}
 
-	// Register observer with initializerImpl and dependencies.
+	// Register observer with initializerImpl and dependent services.
 
 	err = initializerImpl.observers.RegisterObserver(ctx, observer)
 	if err != nil {
@@ -487,6 +487,8 @@ func (initializerImpl *InitializerImpl) UnregisterObserver(ctx context.Context, 
 			initializerImpl.traceExit(traceExitMessageNumber, observer.GetObserverId(ctx), err, time.Since(entryTime))
 		}()
 	}
+
+	// Log entry parameters.
 
 	if initializerImpl.getLogger().IsDebug() {
 		asJson, err := json.Marshal(initializerImpl)

@@ -2,6 +2,7 @@ package senzingconfig
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"sync"
 	"time"
@@ -40,6 +41,10 @@ type SenzingConfigImpl struct {
 // Variables
 // ----------------------------------------------------------------------------
 
+var traceOptions []interface{} = []interface{}{
+	&logging.OptionCallerSkip{Value: 5},
+}
+
 var defaultModuleName string = "init-database"
 
 // ----------------------------------------------------------------------------
@@ -70,11 +75,13 @@ func (senzingConfig *SenzingConfigImpl) log(messageNumber int, details ...interf
 
 // Trace method entry.
 func (senzingConfig *SenzingConfigImpl) traceEntry(messageNumber int, details ...interface{}) {
+	details = append(details, traceOptions...)
 	senzingConfig.getLogger().Log(messageNumber, details...)
 }
 
 // Trace method exit.
 func (senzingConfig *SenzingConfigImpl) traceExit(messageNumber int, details ...interface{}) {
+	details = append(details, traceOptions...)
 	senzingConfig.getLogger().Log(messageNumber, details...)
 }
 
@@ -150,7 +157,7 @@ func (senzingConfig *SenzingConfigImpl) addDatasources(ctx context.Context, g2Co
 		if err != nil {
 			return err
 		}
-		senzingConfig.log(2003, datasource)
+		senzingConfig.log(2001, datasource)
 	}
 	return err
 }
@@ -166,26 +173,42 @@ Input
   - ctx: A context to control lifecycle.
 */
 func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) error {
-	if senzingConfig.isTrace {
-		senzingConfig.traceEntry(1)
-	}
+	var err error = nil
+	var configID int64 = 0
+
+	// Prolog.
+
+	traceExitMessageNumber := 29
 	entryTime := time.Now()
+	if senzingConfig.isTrace {
+		senzingConfig.traceEntry(10)
+		defer func() { senzingConfig.traceExit(traceExitMessageNumber, err, configID, time.Since(entryTime)) }()
+	}
 
 	// Log entry parameters.
 
-	senzingConfig.log(1000, senzingConfig)
+	if senzingConfig.getLogger().IsDebug() {
+		asJson, err := json.Marshal(senzingConfig)
+		if err != nil {
+			traceExitMessageNumber = 11
+			return err
+		}
+		senzingConfig.log(1001, senzingConfig, string(asJson))
+	}
 
 	// Create Senzing objects.
 
 	g2Config, g2Configmgr, err := senzingConfig.getDependentServices(ctx)
 	if err != nil {
+		traceExitMessageNumber = 12
 		return err
 	}
 
 	// Determine if configuration already exists. If so, return.
 
-	configID, err := g2Configmgr.GetDefaultConfigID(ctx)
+	configID, err = g2Configmgr.GetDefaultConfigID(ctx)
 	if err != nil {
+		traceExitMessageNumber = 13
 		return err
 	}
 	if configID != 0 {
@@ -196,9 +219,7 @@ func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) e
 			}()
 		}
 		senzingConfig.log(2002, configID)
-		if senzingConfig.isTrace {
-			defer senzingConfig.traceExit(901, err, time.Since(entryTime))
-		}
+		traceExitMessageNumber = 14
 		return err
 	}
 
@@ -206,6 +227,7 @@ func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) e
 
 	configHandle, err := g2Config.Create(ctx)
 	if err != nil {
+		traceExitMessageNumber = 15
 		return err
 	}
 
@@ -214,6 +236,7 @@ func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) e
 	if len(senzingConfig.DataSources) > 0 {
 		err = senzingConfig.addDatasources(ctx, g2Config, configHandle)
 		if err != nil {
+			traceExitMessageNumber = 16
 			return err
 		}
 	}
@@ -222,6 +245,7 @@ func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) e
 
 	configStr, err := g2Config.Save(ctx, configHandle)
 	if err != nil {
+		traceExitMessageNumber = 17
 		return err
 	}
 
@@ -230,16 +254,18 @@ func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) e
 	configComments := fmt.Sprintf("Created by init-database at %s", entryTime.Format(time.RFC3339Nano))
 	configID, err = g2Configmgr.AddConfig(ctx, configStr, configComments)
 	if err != nil {
+		traceExitMessageNumber = 18
 		return err
 	}
 	err = g2Configmgr.SetDefaultConfigID(ctx, configID)
 	if err != nil {
+		traceExitMessageNumber = 19
 		return err
 	}
 
 	// Notify observers.
 
-	senzingConfig.log(2004, configID, configComments)
+	senzingConfig.log(2003, configID, configComments)
 	if senzingConfig.observers != nil {
 		go func() {
 			details := map[string]string{}
@@ -247,11 +273,6 @@ func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) e
 		}()
 	}
 
-	// Epilog.
-
-	if senzingConfig.isTrace {
-		defer senzingConfig.traceExit(2, err, configID, time.Since(entryTime))
-	}
 	return err
 }
 
@@ -264,10 +285,31 @@ Input
 */
 func (senzingConfig *SenzingConfigImpl) RegisterObserver(ctx context.Context, observer observer.Observer) error {
 	var err error = nil
+
+	// Prolog.
+
+	traceExitMessageNumber := 39
 	if senzingConfig.isTrace {
-		senzingConfig.traceEntry(3, observer.GetObserverId(ctx))
+		entryTime := time.Now()
+		senzingConfig.traceEntry(30, observer.GetObserverId(ctx))
+		defer func() {
+			senzingConfig.traceExit(traceExitMessageNumber, observer.GetObserverId(ctx), err, time.Since(entryTime))
+		}()
 	}
-	entryTime := time.Now()
+
+	// Log entry parameters.
+
+	if senzingConfig.getLogger().IsDebug() {
+		asJson, err := json.Marshal(senzingConfig)
+		if err != nil {
+			traceExitMessageNumber = 31
+			return err
+		}
+		senzingConfig.log(1002, senzingConfig, string(asJson))
+	}
+
+	// Create empty list of observers.
+
 	if senzingConfig.observers == nil {
 		senzingConfig.observers = &subject.SubjectImpl{}
 	}
@@ -276,6 +318,7 @@ func (senzingConfig *SenzingConfigImpl) RegisterObserver(ctx context.Context, ob
 
 	err = senzingConfig.observers.RegisterObserver(ctx, observer)
 	if err != nil {
+		traceExitMessageNumber = 32
 		return err
 	}
 
@@ -303,11 +346,6 @@ func (senzingConfig *SenzingConfigImpl) RegisterObserver(ctx context.Context, ob
 		notifier.Notify(ctx, senzingConfig.observers, ProductId, 8003, err, details)
 	}()
 
-	// Epilog.
-
-	if senzingConfig.isTrace {
-		defer senzingConfig.traceExit(4, observer.GetObserverId(ctx), err, time.Since(entryTime))
-	}
 	return err
 }
 
@@ -319,49 +357,77 @@ Input
   - logLevel: The desired log level. TRACE, DEBUG, INFO, WARN, ERROR, FATAL or PANIC.
 */
 func (senzingConfig *SenzingConfigImpl) SetLogLevel(ctx context.Context, logLevelName string) error {
-	if senzingConfig.isTrace {
-		senzingConfig.traceEntry(5, logLevelName)
-	}
-	entryTime := time.Now()
 	var err error = nil
-	if logging.IsValidLogLevelName(logLevelName) {
-		senzingConfig.logLevel = logLevelName
-		err = senzingConfig.getLogger().SetLogLevel(logLevelName)
-		if err != nil {
-			return err
-		}
-		senzingConfig.isTrace = (logLevelName == logging.LevelTraceName)
 
-		// TODO: Remove once g2configmgr.SetLogLevel(context.Context, string)
-		logLevel := logging.TextToLoggerLevelMap[logLevelName]
+	// Prolog.
 
-		g2Config, g2Configmgr, err := senzingConfig.getDependentServices(ctx)
-		if err != nil {
-			return err
-		}
-		err = g2Config.SetLogLevel(ctx, logLevel)
-		if err != nil {
-			return err
-		}
-		err = g2Configmgr.SetLogLevel(ctx, logLevel)
-		if err != nil {
-			return err
-		}
-
-		if senzingConfig.observers != nil { // Performance optimization.
-			go func() {
-				details := map[string]string{
-					"logLevelName": logLevelName,
-				}
-				notifier.Notify(ctx, senzingConfig.observers, ProductId, 8004, err, details)
-			}()
-		}
-	} else {
-		err = fmt.Errorf("invalid error level: %s", logLevelName)
-	}
+	traceExitMessageNumber := 49
 	if senzingConfig.isTrace {
-		defer senzingConfig.traceExit(6, logLevelName, err, time.Since(entryTime))
+		entryTime := time.Now()
+		senzingConfig.traceEntry(40, logLevelName)
+		defer func() { senzingConfig.traceExit(traceExitMessageNumber, logLevelName, err, time.Since(entryTime)) }()
 	}
+
+	// Log entry parameters.
+
+	if senzingConfig.getLogger().IsDebug() {
+		asJson, err := json.Marshal(senzingConfig)
+		if err != nil {
+			traceExitMessageNumber = 41
+			return err
+		}
+		senzingConfig.log(1003, senzingConfig, string(asJson))
+	}
+
+	// Verify value of logLevelName.
+
+	if !logging.IsValidLogLevelName(logLevelName) {
+		traceExitMessageNumber = 42
+		return fmt.Errorf("invalid error level: %s", logLevelName)
+	}
+
+	// Set senzingConfig log level.
+
+	senzingConfig.logLevel = logLevelName
+	err = senzingConfig.getLogger().SetLogLevel(logLevelName)
+	if err != nil {
+		traceExitMessageNumber = 43
+		return err
+	}
+	senzingConfig.isTrace = (logLevelName == logging.LevelTraceName)
+
+	// Set log level for dependent services.
+
+	// TODO: Remove once g2configmgr.SetLogLevel(context.Context, string)
+	logLevel := logging.TextToLoggerLevelMap[logLevelName]
+
+	g2Config, g2Configmgr, err := senzingConfig.getDependentServices(ctx)
+	if err != nil {
+		traceExitMessageNumber = 44
+		return err
+	}
+	err = g2Config.SetLogLevel(ctx, logLevel)
+	if err != nil {
+		traceExitMessageNumber = 45
+		return err
+	}
+	err = g2Configmgr.SetLogLevel(ctx, logLevel)
+	if err != nil {
+		traceExitMessageNumber = 46
+		return err
+	}
+
+	// Notify observers.
+
+	if senzingConfig.observers != nil {
+		go func() {
+			details := map[string]string{
+				"logLevelName": logLevelName,
+			}
+			notifier.Notify(ctx, senzingConfig.observers, ProductId, 8004, err, details)
+		}()
+	}
+
 	return err
 }
 
@@ -373,13 +439,28 @@ Input
   - observer: The observer to be removed.
 */
 func (senzingConfig *SenzingConfigImpl) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
-	if senzingConfig.isTrace {
-		senzingConfig.traceEntry(7, observer.GetObserverId(ctx))
-	}
-	entryTime := time.Now()
 	var err error = nil
-	if err != nil {
-		return err
+
+	// Prolog.
+
+	traceExitMessageNumber := 59
+	if senzingConfig.isTrace {
+		entryTime := time.Now()
+		senzingConfig.traceEntry(50, observer.GetObserverId(ctx))
+		defer func() {
+			senzingConfig.traceExit(traceExitMessageNumber, observer.GetObserverId(ctx), err, time.Since(entryTime))
+		}()
+	}
+
+	// Log entry parameters.
+
+	if senzingConfig.getLogger().IsDebug() {
+		asJson, err := json.Marshal(senzingConfig)
+		if err != nil {
+			traceExitMessageNumber = 51
+			return err
+		}
+		senzingConfig.log(1004, senzingConfig, string(asJson))
 	}
 
 	// FIXME: Need issue to fix registering observers with g2-sdk-go-*
@@ -387,10 +468,12 @@ func (senzingConfig *SenzingConfigImpl) UnregisterObserver(ctx context.Context, 
 	// g2Config, g2Configmgr, err := senzingConfig.getDependentServices(ctx)
 	// err = g2Config.UnregisterObserver(ctx, observer)
 	// if err != nil {
+	// 	traceExitMessageNumber = 52
 	// 	return err
 	// }
 	// err = g2Configmgr.UnregisterObserver(ctx, observer)
 	// if err != nil {
+	// 	traceExitMessageNumber = 53
 	// 	return err
 	// }
 
@@ -409,6 +492,7 @@ func (senzingConfig *SenzingConfigImpl) UnregisterObserver(ctx context.Context, 
 
 		err = senzingConfig.observers.UnregisterObserver(ctx, observer)
 		if err != nil {
+			traceExitMessageNumber = 54
 			return err
 		}
 
@@ -417,10 +501,5 @@ func (senzingConfig *SenzingConfigImpl) UnregisterObserver(ctx context.Context, 
 		}
 	}
 
-	// Epilog.
-
-	if senzingConfig.isTrace {
-		defer senzingConfig.traceExit(8, observer.GetObserverId(ctx), err, time.Since(entryTime))
-	}
 	return err
 }
