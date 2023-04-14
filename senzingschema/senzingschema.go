@@ -33,6 +33,8 @@ type SenzingSchemaImpl struct {
 // Internal methods
 // ----------------------------------------------------------------------------
 
+// --- Logging ----------------------------------------------------------------
+
 // Get the Logger singleton.
 func (senzingSchema *SenzingSchemaImpl) getLogger() logging.LoggingInterface {
 	var err error = nil

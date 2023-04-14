@@ -28,11 +28,11 @@ type InitializerImpl struct {
 	isTrace                        bool
 	logger                         logging.LoggingInterface
 	observers                      subject.Subject
-	senzingConfig                  senzingconfig.SenzingConfig
+	senzingConfigSingleton         senzingconfig.SenzingConfig
 	SenzingEngineConfigurationJson string
 	SenzingLogLevel                string
 	SenzingModuleName              string
-	senzingSchema                  senzingschema.SenzingSchema
+	senzingSchemaSingleton         senzingschema.SenzingSchema
 	SenzingVerboseLogging          int
 }
 
@@ -102,6 +102,27 @@ func (initializerImpl *InitializerImpl) initializeSpecificDatabaseSqlite(ctx con
 	return err
 }
 
+func (initializerImpl *InitializerImpl) getSenzingConfig() senzingconfig.SenzingConfig {
+	if initializerImpl.senzingConfigSingleton == nil {
+		initializerImpl.senzingConfigSingleton = &senzingconfig.SenzingConfigImpl{
+			DataSources:                    initializerImpl.DataSources,
+			SenzingEngineConfigurationJson: initializerImpl.SenzingEngineConfigurationJson,
+			SenzingModuleName:              initializerImpl.SenzingModuleName,
+			SenzingVerboseLogging:          initializerImpl.SenzingVerboseLogging,
+		}
+	}
+	return initializerImpl.senzingConfigSingleton
+}
+
+func (initializerImpl *InitializerImpl) getSenzingSchema() senzingschema.SenzingSchema {
+	if initializerImpl.senzingSchemaSingleton == nil {
+		initializerImpl.senzingSchemaSingleton = &senzingschema.SenzingSchemaImpl{
+			SenzingEngineConfigurationJson: initializerImpl.SenzingEngineConfigurationJson,
+		}
+	}
+	return initializerImpl.senzingSchemaSingleton
+}
+
 // ----------------------------------------------------------------------------
 // Interface methods
 // ----------------------------------------------------------------------------
@@ -135,47 +156,17 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 
 	initializerImpl.log(1000, initializerImpl)
 
-	// Create senzingSchema for initializing Senzing schema.
-
-	initializerImpl.senzingSchema = &senzingschema.SenzingSchemaImpl{
-		SenzingEngineConfigurationJson: initializerImpl.SenzingEngineConfigurationJson,
-	}
-
-	// Create senzingConfig for initializing Senzing configuration.
-
-	initializerImpl.senzingConfig = &senzingconfig.SenzingConfigImpl{
-		DataSources:                    initializerImpl.DataSources,
-		SenzingEngineConfigurationJson: initializerImpl.SenzingEngineConfigurationJson,
-		SenzingModuleName:              initializerImpl.SenzingModuleName,
-		SenzingVerboseLogging:          initializerImpl.SenzingVerboseLogging,
-	}
-
-	// Add observers to structs.
-
-	if initializerImpl.observers != nil {
-		for _, observer := range initializerImpl.observers.GetObservers(ctx) {
-			err = initializerImpl.senzingConfig.RegisterObserver(ctx, observer)
-			if err != nil {
-				return err
-			}
-			err = initializerImpl.senzingSchema.RegisterObserver(ctx, observer)
-			if err != nil {
-				return err
-			}
-		}
-	}
-
 	// Perform initialization.
 
 	err = initializerImpl.InitializeSpecificDatabase(ctx)
 	if err != nil {
 		return err
 	}
-	err = initializerImpl.senzingSchema.Initialize(ctx)
+	err = initializerImpl.getSenzingSchema().Initialize(ctx)
 	if err != nil {
 		return err
 	}
-	err = initializerImpl.senzingConfig.Initialize(ctx)
+	err = initializerImpl.getSenzingConfig().Initialize(ctx)
 	if err != nil {
 		return err
 	}
@@ -267,11 +258,11 @@ func (initializerImpl *InitializerImpl) RegisterObserver(ctx context.Context, ob
 	if err != nil {
 		return err
 	}
-	err = initializerImpl.senzingConfig.RegisterObserver(ctx, observer)
+	err = initializerImpl.getSenzingConfig().RegisterObserver(ctx, observer)
 	if err != nil {
 		return err
 	}
-	err = initializerImpl.senzingSchema.RegisterObserver(ctx, observer)
+	err = initializerImpl.getSenzingSchema().RegisterObserver(ctx, observer)
 	if err != nil {
 		return err
 	}
@@ -309,12 +300,8 @@ func (initializerImpl *InitializerImpl) SetLogLevel(ctx context.Context, logLeve
 	if logging.IsValidLogLevelName(logLevelName) {
 		initializerImpl.getLogger().SetLogLevel(logLevelName)
 		initializerImpl.isTrace = (logLevelName == logging.LevelTraceName)
-		if initializerImpl.senzingConfig != nil {
-			initializerImpl.senzingConfig.SetLogLevel(ctx, logLevelName)
-		}
-		if initializerImpl.senzingSchema != nil {
-			initializerImpl.senzingSchema.SetLogLevel(ctx, logLevelName)
-		}
+		initializerImpl.getSenzingConfig().SetLogLevel(ctx, logLevelName)
+		initializerImpl.getSenzingSchema().SetLogLevel(ctx, logLevelName)
 		if initializerImpl.observers != nil {
 			go func() {
 				details := map[string]string{
@@ -348,14 +335,14 @@ func (initializerImpl *InitializerImpl) UnregisterObserver(ctx context.Context, 
 
 	// Unregister observer in dependencies.
 
-	err = initializerImpl.senzingConfig.UnregisterObserver(ctx, observer)
-	if err != nil {
-		return err
-	}
-	err = initializerImpl.senzingSchema.UnregisterObserver(ctx, observer)
-	if err != nil {
-		return err
-	}
+	// err = initializerImpl.getSenzingConfig().UnregisterObserver(ctx, observer)
+	// if err != nil {
+	// 	return err
+	// }
+	// err = initializerImpl.getSenzingSchema().UnregisterObserver(ctx, observer)
+	// if err != nil {
+	// 	return err
+	// }
 
 	// Remove observer from this service.
 

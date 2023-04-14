@@ -78,7 +78,7 @@ func (senzingConfig *SenzingConfigImpl) traceExit(messageNumber int, details ...
 	senzingConfig.getLogger().Log(messageNumber, details...)
 }
 
-// --- G2 Factory methods -----------------------------------------------------
+// --- Dependent services -----------------------------------------------------
 
 // Create an abstract factory singleton and return it.
 func (senzingConfig *SenzingConfigImpl) getG2Factory(ctx context.Context) factory.SdkAbstractFactory {
@@ -132,6 +132,19 @@ func (senzingConfig *SenzingConfigImpl) getG2configmgr(ctx context.Context) (g2a
 	return senzingConfig.g2configmgrSingleton, err
 }
 
+// Get dependent services: G2config, G2configmgr
+func (senzingConfig *SenzingConfigImpl) getDependentServices(ctx context.Context) (g2api.G2config, g2api.G2configmgr, error) {
+	g2Config, err := senzingConfig.getG2config(ctx)
+	if err != nil {
+		return nil, nil, err
+	}
+	g2Configmgr, err := senzingConfig.getG2configmgr(ctx)
+	if err != nil {
+		return g2Config, nil, err
+	}
+	return g2Config, g2Configmgr, err
+}
+
 // --- Misc -------------------------------------------------------------------
 
 // Add datasources to Senzing configuration.
@@ -170,11 +183,7 @@ func (senzingConfig *SenzingConfigImpl) Initialize(ctx context.Context) error {
 
 	// Create Senzing objects.
 
-	g2Config, err := senzingConfig.getG2config(ctx)
-	if err != nil {
-		return err
-	}
-	g2Configmgr, err := senzingConfig.getG2configmgr(ctx)
+	g2Config, g2Configmgr, err := senzingConfig.getDependentServices(ctx)
 	if err != nil {
 		return err
 	}
@@ -234,7 +243,7 @@ func (senzingConfig *SenzingConfigImpl) Initialize(ctx context.Context) error {
 		return err
 	}
 
-	// Epilog.
+	// Notify observers.
 
 	senzingConfig.log(2004, configID, configComments)
 	if senzingConfig.observers != nil {
@@ -243,6 +252,9 @@ func (senzingConfig *SenzingConfigImpl) Initialize(ctx context.Context) error {
 			notifier.Notify(ctx, senzingConfig.observers, ProductId, 8002, err, details)
 		}()
 	}
+
+	// Epilog.
+
 	if senzingConfig.isTrace {
 		defer senzingConfig.traceExit(2, err, configID, time.Since(entryTime))
 	}
@@ -257,6 +269,7 @@ Input
   - observer: The observer to be added.
 */
 func (senzingConfig *SenzingConfigImpl) RegisterObserver(ctx context.Context, observer observer.Observer) error {
+	var err error = nil
 	if senzingConfig.isTrace {
 		senzingConfig.traceEntry(3, observer.GetObserverId(ctx))
 	}
@@ -265,28 +278,27 @@ func (senzingConfig *SenzingConfigImpl) RegisterObserver(ctx context.Context, ob
 		senzingConfig.observers = &subject.SubjectImpl{}
 	}
 
-	// Register observer with senzingConfig and dependencies.
+	// Register observer with senzingConfig and dependent services.
 
-	err := senzingConfig.observers.RegisterObserver(ctx, observer)
+	err = senzingConfig.observers.RegisterObserver(ctx, observer)
 	if err != nil {
 		return err
 	}
-	g2Config, err := senzingConfig.getG2config(ctx)
-	if err != nil {
-		return err
-	}
-	err = g2Config.RegisterObserver(ctx, observer)
-	if err != nil {
-		return err
-	}
-	g2Configmgr, err := senzingConfig.getG2configmgr(ctx)
-	if err != nil {
-		return err
-	}
-	err = g2Configmgr.RegisterObserver(ctx, observer)
-	if err != nil {
-		return err
-	}
+
+	// FIXME: Need issue to fix registering observers with g2-sdk-go-*
+
+	// g2Config, g2Configmgr, err := senzingConfig.getDependentServices(ctx)
+	// if err != nil {
+	// 	return err
+	// }
+	// err = g2Config.RegisterObserver(ctx, observer)
+	// if err != nil {
+	// 	return err
+	// }
+	// err = g2Configmgr.RegisterObserver(ctx, observer)
+	// if err != nil {
+	// 	return err
+	// }
 
 	// Notify observers.
 
@@ -322,6 +334,23 @@ func (senzingConfig *SenzingConfigImpl) SetLogLevel(ctx context.Context, logLeve
 		senzingConfig.logLevel = logLevelName
 		senzingConfig.getLogger().SetLogLevel(logLevelName)
 		senzingConfig.isTrace = (logLevelName == logging.LevelTraceName)
+
+		// TODO: Remove once g2configmgr.SetLogLevel(context.Context, string)
+		logLevel := logging.TextToLoggerLevelMap[logLevelName]
+
+		g2Config, g2Configmgr, err := senzingConfig.getDependentServices(ctx)
+		if err != nil {
+			return err
+		}
+		err = g2Config.SetLogLevel(ctx, logLevel)
+		if err != nil {
+			return err
+		}
+		err = g2Configmgr.SetLogLevel(ctx, logLevel)
+		if err != nil {
+			return err
+		}
+
 		if senzingConfig.observers != nil { // Performance optimization.
 			go func() {
 				details := map[string]string{
@@ -352,25 +381,21 @@ func (senzingConfig *SenzingConfigImpl) UnregisterObserver(ctx context.Context, 
 	}
 	entryTime := time.Now()
 	var err error = nil
+	if err != nil {
+		return err
+	}
 
+	// FIXME: Need issue to fix registering observers with g2-sdk-go-*
 	// Unregister observers in dependencies.
-
-	g2Config, err := senzingConfig.getG2config(ctx)
-	if err != nil {
-		return err
-	}
-	err = g2Config.UnregisterObserver(ctx, observer)
-	if err != nil {
-		return err
-	}
-	g2ConfigMgr, err := senzingConfig.getG2configmgr(ctx)
-	if err != nil {
-		return err
-	}
-	err = g2ConfigMgr.UnregisterObserver(ctx, observer)
-	if err != nil {
-		return err
-	}
+	// g2Config, g2Configmgr, err := senzingConfig.getDependentServices(ctx)
+	// err = g2Config.UnregisterObserver(ctx, observer)
+	// if err != nil {
+	// 	return err
+	// }
+	// err = g2Configmgr.UnregisterObserver(ctx, observer)
+	// if err != nil {
+	// 	return err
+	// }
 
 	// Remove observer from this service.
 
