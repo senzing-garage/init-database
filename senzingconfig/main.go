@@ -66,14 +66,9 @@ var IdMessages = map[int]string{
 	1002: "RegisterObserver parameters: %+v",
 	1003: "SetLogLevel parameters: %+v",
 	1004: "UnregisterObserver parameters: %+v",
-
 	2001: "Added Datasource: %s",
-
 	2002: "No new Senzing configuration created.  One already exists (%d).",
-	2003: "Added datasource: %s",
-	2004: "Created Senzing configuration: %d named: %s",
-	4001: "Call to net.Listen(tcp, %s) failed.",
-	5001: "Failed to serve.",
+	2003: "Created Senzing configuration: %d named: %s",
 	8001: "InitializeSenzing - config exists",
 	8002: "InitializeSenzing",
 	8003: "RegisterObserver",
