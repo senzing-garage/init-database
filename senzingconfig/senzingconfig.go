@@ -323,17 +323,19 @@ func (senzingConfig *SenzingConfigImpl) RegisterObserver(ctx context.Context, ob
 	}
 
 	// FIXME: Need issue to fix registering observers with g2-sdk-go-*
-
 	// g2Config, g2Configmgr, err := senzingConfig.getDependentServices(ctx)
 	// if err != nil {
+	// 	traceExitMessageNumber = 33
 	// 	return err
 	// }
 	// err = g2Config.RegisterObserver(ctx, observer)
 	// if err != nil {
+	// 	traceExitMessageNumber = 34
 	// 	return err
 	// }
 	// err = g2Configmgr.RegisterObserver(ctx, observer)
 	// if err != nil {
+	// 	traceExitMessageNumber = 35
 	// 	return err
 	// }
 
