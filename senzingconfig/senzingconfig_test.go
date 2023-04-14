@@ -43,7 +43,7 @@ func setup() error {
 	if err != nil {
 		fmt.Println(err)
 	}
-	err = senzingSchema.Initialize(ctx)
+	err = senzingSchema.InitializeSenzing(ctx)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -63,7 +63,7 @@ func teardown() error {
 // Examples for godoc documentation
 // ----------------------------------------------------------------------------
 
-func ExampleSenzingConfigImpl_Initialize_withDatasources() {
+func ExampleSenzingConfigImpl_InitializeSenzing_withDatasources() {
 	// For more information, visit https://github.com/Senzing/init-database/blob/main/senzingconfig/senzingconfig_test.go
 	ctx := context.TODO()
 	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
@@ -78,14 +78,14 @@ func ExampleSenzingConfigImpl_Initialize_withDatasources() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	err = senzingConfig.Initialize(ctx)
+	err = senzingConfig.InitializeSenzing(ctx)
 	if err != nil {
 		fmt.Println(err)
 	}
 	// Output:
 }
 
-func ExampleSenzingConfigImpl_Initialize() {
+func ExampleSenzingConfigImpl_InitializeSenzing() {
 	// For more information, visit https://github.com/Senzing/init-database/blob/main/senzingconfig/senzingconfig_test.go
 	ctx := context.TODO()
 	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
@@ -99,7 +99,7 @@ func ExampleSenzingConfigImpl_Initialize() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	err = senzingConfig.Initialize(ctx)
+	err = senzingConfig.InitializeSenzing(ctx)
 	if err != nil {
 		fmt.Println(err)
 	}

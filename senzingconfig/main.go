@@ -11,7 +11,7 @@ import (
 // ----------------------------------------------------------------------------
 
 type SenzingConfig interface {
-	Initialize(ctx context.Context) error
+	InitializeSenzing(ctx context.Context) error
 	RegisterObserver(ctx context.Context, observer observer.Observer) error
 	SetLogLevel(ctx context.Context, logLevelName string) error
 	UnregisterObserver(ctx context.Context, observer observer.Observer) error
@@ -30,8 +30,8 @@ const ProductId = 6502
 
 // Message templates for sqlfiler implementation.
 var IdMessages = map[int]string{
-	1:    "Enter Initialize().",
-	2:    "Exit  Initialize() returned (%v).",
+	1:    "Enter InitializeSenzing().",
+	2:    "Exit  InitializeSenzing() returned (%v).",
 	3:    "Enter RegisterObserver(%s).",
 	4:    "Exit  RegisterObserver(%s) returned (%v).",
 	5:    "Enter SetLogLevel(%s).",
@@ -46,8 +46,8 @@ var IdMessages = map[int]string{
 	2004: "Created Senzing configuration: %d named: %s",
 	4001: "Call to net.Listen(tcp, %s) failed.",
 	5001: "Failed to serve.",
-	8001: "Initialize - config exists",
-	8002: "Initialize",
+	8001: "InitializeSenzing - config exists",
+	8002: "InitializeSenzing",
 	8003: "RegisterObserver",
 	8004: "SetLogLevel",
 	8005: "UnregisterObserver",

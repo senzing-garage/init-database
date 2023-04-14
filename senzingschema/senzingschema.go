@@ -108,7 +108,10 @@ func (senzingSchema *SenzingSchemaImpl) processDatabase(ctx context.Context, res
 	sqlExecutor := &sqlexecutor.SqlExecutorImpl{
 		DatabaseConnector: databaseConnector,
 	}
-	sqlExecutor.SetLogLevel(ctx, senzingSchema.logLevelName)
+	err = sqlExecutor.SetLogLevel(ctx, senzingSchema.logLevelName)
+	if err != nil {
+		return err
+	}
 
 	// Add observers to sqlExecutor.
 
@@ -136,12 +139,12 @@ func (senzingSchema *SenzingSchemaImpl) processDatabase(ctx context.Context, res
 // ----------------------------------------------------------------------------
 
 /*
-The Initialize method adds the Senzing database schema to the specified database.
+The InitializeSenzing method adds the Senzing database schema to the specified database.
 
 Input
   - ctx: A context to control lifecycle.
 */
-func (senzingSchema *SenzingSchemaImpl) Initialize(ctx context.Context) error {
+func (senzingSchema *SenzingSchemaImpl) InitializeSenzing(ctx context.Context) error {
 	if senzingSchema.isTrace {
 		senzingSchema.traceEntry(1)
 	}

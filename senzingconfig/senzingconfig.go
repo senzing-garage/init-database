@@ -102,9 +102,6 @@ func (senzingConfig *SenzingConfigImpl) getG2config(ctx context.Context) (g2api.
 				moduleName = defaultModuleName
 			}
 			err = senzingConfig.g2configSingleton.Init(ctx, moduleName, senzingConfig.SenzingEngineConfigurationJson, senzingConfig.SenzingVerboseLogging)
-			if err != nil {
-				return
-			}
 		}
 	})
 	return senzingConfig.g2configSingleton, err
@@ -124,9 +121,6 @@ func (senzingConfig *SenzingConfigImpl) getG2configmgr(ctx context.Context) (g2a
 				moduleName = defaultModuleName
 			}
 			err = senzingConfig.g2configmgrSingleton.Init(ctx, moduleName, senzingConfig.SenzingEngineConfigurationJson, senzingConfig.SenzingVerboseLogging)
-			if err != nil {
-				return
-			}
 		}
 	})
 	return senzingConfig.g2configmgrSingleton, err
@@ -166,12 +160,12 @@ func (senzingConfig *SenzingConfigImpl) addDatasources(ctx context.Context, g2Co
 // ----------------------------------------------------------------------------
 
 /*
-The Initialize method adds the Senzing default configuration to databases.
+The InitializeSenzing method adds the Senzing default configuration to databases.
 
 Input
   - ctx: A context to control lifecycle.
 */
-func (senzingConfig *SenzingConfigImpl) Initialize(ctx context.Context) error {
+func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) error {
 	if senzingConfig.isTrace {
 		senzingConfig.traceEntry(1)
 	}
@@ -332,7 +326,10 @@ func (senzingConfig *SenzingConfigImpl) SetLogLevel(ctx context.Context, logLeve
 	var err error = nil
 	if logging.IsValidLogLevelName(logLevelName) {
 		senzingConfig.logLevel = logLevelName
-		senzingConfig.getLogger().SetLogLevel(logLevelName)
+		err = senzingConfig.getLogger().SetLogLevel(logLevelName)
+		if err != nil {
+			return err
+		}
 		senzingConfig.isTrace = (logLevelName == logging.LevelTraceName)
 
 		// TODO: Remove once g2configmgr.SetLogLevel(context.Context, string)

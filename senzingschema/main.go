@@ -11,7 +11,7 @@ import (
 // ----------------------------------------------------------------------------
 
 type SenzingSchema interface {
-	Initialize(ctx context.Context) error
+	InitializeSenzing(ctx context.Context) error
 	RegisterObserver(ctx context.Context, observer observer.Observer) error
 	SetLogLevel(ctx context.Context, logLevelName string) error
 	UnregisterObserver(ctx context.Context, observer observer.Observer) error
@@ -30,8 +30,8 @@ const ProductId = 6503
 
 // Message templates for g2config implementations.
 var IdMessages = map[int]string{
-	1:    "Enter Initialize().",
-	2:    "Exit  Initialize() returned (%v).",
+	1:    "Enter InitializeSenzing().",
+	2:    "Exit  InitializeSenzing() returned (%v).",
 	3:    "Enter RegisterObserver(%s).",
 	4:    "Exit  RegisterObserver(%s) returned (%v).",
 	5:    "Enter SetLogLevel(%s).",
@@ -42,7 +42,7 @@ var IdMessages = map[int]string{
 	1000: "Entry: %+v",
 	2001: "SENZING_ENGINE_CONFIGURATION_JSON: %v",
 	2002: "Sent SQL in %s to database %s",
-	8001: "Initialize",
+	8001: "InitializeSenzing",
 	8002: "RegisterObserver",
 	8003: "SetLogLevel",
 	8004: "UnregisterObserver",
