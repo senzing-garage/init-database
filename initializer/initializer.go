@@ -2,6 +2,7 @@ package initializer
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"os"
@@ -37,6 +38,14 @@ type InitializerImpl struct {
 }
 
 // ----------------------------------------------------------------------------
+// variables
+// ----------------------------------------------------------------------------
+
+var traceOptions []interface{} = []interface{}{
+	&logging.OptionCallerSkip{Value: 5},
+}
+
+// ----------------------------------------------------------------------------
 // Internal methods
 // ----------------------------------------------------------------------------
 
@@ -64,11 +73,13 @@ func (initializerImpl *InitializerImpl) log(messageNumber int, details ...interf
 
 // Trace method entry.
 func (initializerImpl *InitializerImpl) traceEntry(messageNumber int, details ...interface{}) {
+	details = append(details, traceOptions...)
 	initializerImpl.getLogger().Log(messageNumber, details...)
 }
 
 // Trace method exit.
 func (initializerImpl *InitializerImpl) traceExit(messageNumber int, details ...interface{}) {
+	details = append(details, traceOptions...)
 	initializerImpl.getLogger().Log(messageNumber, details...)
 }
 
@@ -102,10 +113,10 @@ func (initializerImpl *InitializerImpl) initializeSpecificDatabaseSqlite(ctx con
 
 	// Prolog.
 
-	traceExitMessageNumber := 102
+	traceExitMessageNumber := 109
 	if initializerImpl.isTrace {
 		entryTime := time.Now()
-		initializerImpl.traceEntry(101, parsedUrl)
+		initializerImpl.traceEntry(100, parsedUrl)
 		defer func() { initializerImpl.traceExit(traceExitMessageNumber, err, time.Since(entryTime)) }()
 	}
 
@@ -117,12 +128,12 @@ func (initializerImpl *InitializerImpl) initializeSpecificDatabaseSqlite(ctx con
 		path := filepath.Dir(filename)
 		err = os.MkdirAll(path, os.ModePerm)
 		if err != nil {
-			traceExitMessageNumber = 103
+			traceExitMessageNumber = 101
 			return err
 		}
 		_, err = os.Create(filename)
 		if err != nil {
-			traceExitMessageNumber = 104
+			traceExitMessageNumber = 102
 			return err
 		}
 		initializerImpl.log(2001, filename)
@@ -178,15 +189,20 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 
 	// Log entry parameters.
 
-	if initializerImpl.logger.IsDebug() {
-		initializerImpl.log(1000, initializerImpl)
+	if initializerImpl.getLogger().IsDebug() {
+		asJson, err := json.Marshal(initializerImpl)
+		if err != nil {
+			traceExitMessageNumber = 11
+			return err
+		}
+		initializerImpl.log(1000, initializerImpl, string(asJson))
 	}
 
 	// Perform initialization for specific databases.
 
 	err = initializerImpl.InitializeSpecificDatabase(ctx)
 	if err != nil {
-		traceExitMessageNumber = 11
+		traceExitMessageNumber = 12
 		return err
 	}
 
@@ -195,12 +211,12 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 	senzingSchema := initializerImpl.getSenzingSchema()
 	err = senzingSchema.SetLogLevel(ctx, logLevel)
 	if err != nil {
-		traceExitMessageNumber = 12
+		traceExitMessageNumber = 13
 		return err
 	}
 	err = senzingSchema.InitializeSenzing(ctx)
 	if err != nil {
-		traceExitMessageNumber = 13
+		traceExitMessageNumber = 14
 		return err
 	}
 
@@ -209,12 +225,12 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 	senzingConfig := initializerImpl.getSenzingConfig()
 	senzingConfig.SetLogLevel(ctx, logLevel)
 	if err != nil {
-		traceExitMessageNumber = 14
+		traceExitMessageNumber = 15
 		return err
 	}
 	err = senzingConfig.InitializeSenzing(ctx)
 	if err != nil {
-		traceExitMessageNumber = 15
+		traceExitMessageNumber = 16
 		return err
 	}
 
@@ -250,16 +266,27 @@ func (initializerImpl *InitializerImpl) InitializeSpecificDatabase(ctx context.C
 		defer func() { initializerImpl.traceExit(traceExitMessageNumber, err, time.Since(entryTime)) }()
 	}
 
+	// Log entry parameters.
+
+	if initializerImpl.getLogger().IsDebug() {
+		asJson, err := json.Marshal(initializerImpl)
+		if err != nil {
+			traceExitMessageNumber = 21
+			return err
+		}
+		initializerImpl.log(1001, initializerImpl, string(asJson))
+	}
+
 	// Pull values out of SenzingEngineConfigurationJson.
 
 	parser, err := engineconfigurationjsonparser.New(initializerImpl.SenzingEngineConfigurationJson)
 	if err != nil {
-		traceExitMessageNumber = 21
+		traceExitMessageNumber = 22
 		return err
 	}
 	databaseUrls, err = parser.GetDatabaseUrls(ctx)
 	if err != nil {
-		traceExitMessageNumber = 22
+		traceExitMessageNumber = 23
 		return err
 	}
 
@@ -277,7 +304,7 @@ func (initializerImpl *InitializerImpl) InitializeSpecificDatabase(ctx context.C
 				parsedUrl, err = url.Parse(newDatabaseUrl)
 			}
 			if err != nil {
-				traceExitMessageNumber = 23
+				traceExitMessageNumber = 24
 				return err
 			}
 		}
@@ -288,7 +315,7 @@ func (initializerImpl *InitializerImpl) InitializeSpecificDatabase(ctx context.C
 		case "sqlite3":
 			err = initializerImpl.initializeSpecificDatabaseSqlite(ctx, parsedUrl)
 			if err != nil {
-				traceExitMessageNumber = 24
+				traceExitMessageNumber = 25
 				return err
 			}
 		}
@@ -318,6 +345,19 @@ func (initializerImpl *InitializerImpl) RegisterObserver(ctx context.Context, ob
 		}()
 	}
 
+	// Log entry parameters.
+
+	if initializerImpl.getLogger().IsDebug() {
+		asJson, err := json.Marshal(initializerImpl)
+		if err != nil {
+			traceExitMessageNumber = 31
+			return err
+		}
+		initializerImpl.log(1002, initializerImpl, string(asJson))
+	}
+
+	// Create empty list of observers.
+
 	if initializerImpl.observers == nil {
 		initializerImpl.observers = &subject.SubjectImpl{}
 	}
@@ -326,17 +366,17 @@ func (initializerImpl *InitializerImpl) RegisterObserver(ctx context.Context, ob
 
 	err = initializerImpl.observers.RegisterObserver(ctx, observer)
 	if err != nil {
-		traceExitMessageNumber = 31
+		traceExitMessageNumber = 32
 		return err
 	}
 	err = initializerImpl.getSenzingConfig().RegisterObserver(ctx, observer)
 	if err != nil {
-		traceExitMessageNumber = 32
+		traceExitMessageNumber = 33
 		return err
 	}
 	err = initializerImpl.getSenzingSchema().RegisterObserver(ctx, observer)
 	if err != nil {
-		traceExitMessageNumber = 33
+		traceExitMessageNumber = 34
 		return err
 	}
 
@@ -371,10 +411,21 @@ func (initializerImpl *InitializerImpl) SetLogLevel(ctx context.Context, logLeve
 		defer func() { initializerImpl.traceExit(traceExitMessageNumber, logLevelName, err, time.Since(entryTime)) }()
 	}
 
+	// Log entry parameters.
+
+	if initializerImpl.getLogger().IsDebug() {
+		asJson, err := json.Marshal(initializerImpl)
+		if err != nil {
+			traceExitMessageNumber = 41
+			return err
+		}
+		initializerImpl.log(1003, initializerImpl, string(asJson))
+	}
+
 	// Verify value of logLevelName.
 
 	if !logging.IsValidLogLevelName(logLevelName) {
-		traceExitMessageNumber = 41
+		traceExitMessageNumber = 42
 		return fmt.Errorf("invalid error level: %s", logLevelName)
 	}
 
@@ -382,7 +433,7 @@ func (initializerImpl *InitializerImpl) SetLogLevel(ctx context.Context, logLeve
 
 	err = initializerImpl.getLogger().SetLogLevel(logLevelName)
 	if err != nil {
-		traceExitMessageNumber = 42
+		traceExitMessageNumber = 43
 		return err
 	}
 	initializerImpl.isTrace = (logLevelName == logging.LevelTraceName)
@@ -392,13 +443,13 @@ func (initializerImpl *InitializerImpl) SetLogLevel(ctx context.Context, logLeve
 	if initializerImpl.senzingConfigSingleton != nil {
 		err = initializerImpl.senzingConfigSingleton.SetLogLevel(ctx, logLevelName)
 		if err != nil {
-			traceExitMessageNumber = 43
+			traceExitMessageNumber = 44
 			return err
 		}
 	}
 	err = initializerImpl.getSenzingSchema().SetLogLevel(ctx, logLevelName)
 	if err != nil {
-		traceExitMessageNumber = 44
+		traceExitMessageNumber = 45
 		return err
 	}
 
@@ -437,16 +488,25 @@ func (initializerImpl *InitializerImpl) UnregisterObserver(ctx context.Context, 
 		}()
 	}
 
+	if initializerImpl.getLogger().IsDebug() {
+		asJson, err := json.Marshal(initializerImpl)
+		if err != nil {
+			traceExitMessageNumber = 51
+			return err
+		}
+		initializerImpl.log(1004, initializerImpl, string(asJson))
+	}
+
 	// Unregister observer in dependencies.
 
 	// err = initializerImpl.getSenzingConfig().UnregisterObserver(ctx, observer)
 	// if err != nil {
-	// 	traceExitMessageNumber = 51
+	// 	traceExitMessageNumber = 52
 	// 	return err
 	// }
 	// err = initializerImpl.getSenzingSchema().UnregisterObserver(ctx, observer)
 	// if err != nil {
-	// 	traceExitMessageNumber = 52
+	// 	traceExitMessageNumber = 53
 	// 	return err
 	// }
 
@@ -465,7 +525,7 @@ func (initializerImpl *InitializerImpl) UnregisterObserver(ctx context.Context, 
 
 		err = initializerImpl.observers.UnregisterObserver(ctx, observer)
 		if err != nil {
-			traceExitMessageNumber = 53
+			traceExitMessageNumber = 54
 			return err
 		}
 
