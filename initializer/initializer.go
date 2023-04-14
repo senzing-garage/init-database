@@ -72,49 +72,7 @@ func (initializerImpl *InitializerImpl) traceExit(messageNumber int, details ...
 	initializerImpl.getLogger().Log(messageNumber, details...)
 }
 
-// --- Specific database processing -------------------------------------------
-
-func (initializerImpl *InitializerImpl) initializeSpecificDatabaseSqlite(ctx context.Context, parsedUrl *url.URL) error {
-
-	// Prolog.
-
-	if initializerImpl.isTrace {
-		initializerImpl.traceEntry(103, parsedUrl)
-	}
-	entryTime := time.Now()
-
-	// If file doesn't exist, create it.
-
-	filename := parsedUrl.Path
-	_, err := os.Stat(filename)
-	if err != nil {
-		path := filepath.Dir(filename)
-		err = os.MkdirAll(path, os.ModePerm)
-		if err != nil {
-			return err
-		}
-		_, err = os.Create(filename)
-		if err != nil {
-			return err
-		}
-		initializerImpl.log(2001, filename)
-		if initializerImpl.observers != nil {
-			go func() {
-				details := map[string]string{
-					"sqliteFile": filename,
-				}
-				notifier.Notify(ctx, initializerImpl.observers, ProductId, 8005, err, details)
-			}()
-		}
-	}
-
-	// Epilog.
-
-	if initializerImpl.isTrace {
-		defer initializerImpl.traceExit(102, parsedUrl, err, time.Since(entryTime))
-	}
-	return err
-}
+// --- Factory ----------------------------------------------------------------
 
 func (initializerImpl *InitializerImpl) getSenzingConfig() senzingconfig.SenzingConfig {
 	if initializerImpl.senzingConfigSingleton == nil {
@@ -135,6 +93,53 @@ func (initializerImpl *InitializerImpl) getSenzingSchema() senzingschema.Senzing
 		}
 	}
 	return initializerImpl.senzingSchemaSingleton
+}
+
+// --- Specific database processing -------------------------------------------
+
+func (initializerImpl *InitializerImpl) initializeSpecificDatabaseSqlite(ctx context.Context, parsedUrl *url.URL) error {
+	var err error = nil
+
+	// Prolog.
+
+	traceExitMessageNumber := 102
+	if initializerImpl.isTrace {
+		entryTime := time.Now()
+		initializerImpl.traceEntry(101, parsedUrl)
+		defer func() { initializerImpl.traceExit(traceExitMessageNumber, err, time.Since(entryTime)) }()
+	}
+
+	// If file doesn't exist, create it.
+
+	filename := parsedUrl.Path
+	_, err = os.Stat(filename)
+	if err != nil {
+		path := filepath.Dir(filename)
+		err = os.MkdirAll(path, os.ModePerm)
+		if err != nil {
+			traceExitMessageNumber = 103
+			return err
+		}
+		_, err = os.Create(filename)
+		if err != nil {
+			traceExitMessageNumber = 104
+			return err
+		}
+		initializerImpl.log(2001, filename)
+
+		// Notify observers.
+
+		if initializerImpl.observers != nil {
+			go func() {
+				details := map[string]string{
+					"sqliteFile": filename,
+				}
+				notifier.Notify(ctx, initializerImpl.observers, ProductId, 8005, err, details)
+			}()
+		}
+	}
+
+	return err
 }
 
 // ----------------------------------------------------------------------------
@@ -164,10 +169,12 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 
 	// Prolog.
 
+	traceExitMessageNumber := 19
 	if initializerImpl.isTrace {
-		initializerImpl.traceEntry(1)
+		entryTime := time.Now()
+		initializerImpl.traceEntry(10)
+		defer func() { initializerImpl.traceExit(traceExitMessageNumber, err, time.Since(entryTime)) }()
 	}
-	entryTime := time.Now()
 
 	// Log entry parameters.
 
@@ -179,6 +186,7 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 
 	err = initializerImpl.InitializeSpecificDatabase(ctx)
 	if err != nil {
+		traceExitMessageNumber = 11
 		return err
 	}
 
@@ -187,10 +195,12 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 	senzingSchema := initializerImpl.getSenzingSchema()
 	err = senzingSchema.SetLogLevel(ctx, logLevel)
 	if err != nil {
+		traceExitMessageNumber = 12
 		return err
 	}
 	err = senzingSchema.InitializeSenzing(ctx)
 	if err != nil {
+		traceExitMessageNumber = 13
 		return err
 	}
 
@@ -199,10 +209,12 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 	senzingConfig := initializerImpl.getSenzingConfig()
 	senzingConfig.SetLogLevel(ctx, logLevel)
 	if err != nil {
+		traceExitMessageNumber = 14
 		return err
 	}
 	err = senzingConfig.InitializeSenzing(ctx)
 	if err != nil {
+		traceExitMessageNumber = 15
 		return err
 	}
 
@@ -215,11 +227,6 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 		}()
 	}
 
-	// Epilog.
-
-	if initializerImpl.isTrace {
-		defer initializerImpl.traceExit(2, err, time.Since(entryTime))
-	}
 	return err
 }
 
@@ -231,28 +238,29 @@ Input
   - ctx: A context to control lifecycle.
 */
 func (initializerImpl *InitializerImpl) InitializeSpecificDatabase(ctx context.Context) error {
-
+	var err error = nil
 	var databaseUrls []string
 
 	// Prolog.
 
+	traceExitMessageNumber := 29
 	if initializerImpl.isTrace {
-		initializerImpl.traceEntry(101)
+		entryTime := time.Now()
+		initializerImpl.traceEntry(20)
+		defer func() { initializerImpl.traceExit(traceExitMessageNumber, err, time.Since(entryTime)) }()
 	}
-	traceExitMessageNumber := 102
-	entryTime := time.Now()
 
 	// Pull values out of SenzingEngineConfigurationJson.
 
 	parser, err := engineconfigurationjsonparser.New(initializerImpl.SenzingEngineConfigurationJson)
 	if err != nil {
-		traceExitMessageNumber = 103
-		goto Epilog
+		traceExitMessageNumber = 21
+		return err
 	}
 	databaseUrls, err = parser.GetDatabaseUrls(ctx)
 	if err != nil {
-		traceExitMessageNumber = 104
-		goto Epilog
+		traceExitMessageNumber = 22
+		return err
 	}
 
 	// Process each database.
@@ -269,8 +277,8 @@ func (initializerImpl *InitializerImpl) InitializeSpecificDatabase(ctx context.C
 				parsedUrl, err = url.Parse(newDatabaseUrl)
 			}
 			if err != nil {
-				traceExitMessageNumber = 105
-				goto Epilog
+				traceExitMessageNumber = 23
+				return err
 			}
 		}
 
@@ -280,18 +288,10 @@ func (initializerImpl *InitializerImpl) InitializeSpecificDatabase(ctx context.C
 		case "sqlite3":
 			err = initializerImpl.initializeSpecificDatabaseSqlite(ctx, parsedUrl)
 			if err != nil {
-				defer initializerImpl.traceExit(105, err, time.Since(entryTime))
+				traceExitMessageNumber = 24
 				return err
 			}
 		}
-	}
-
-Epilog:
-
-	// Epilog.
-
-	if initializerImpl.isTrace {
-		defer initializerImpl.traceExit(traceExitMessageNumber, err, time.Since(entryTime))
 	}
 
 	return err
@@ -305,30 +305,42 @@ Input
   - observer: The observer to be added.
 */
 func (initializerImpl *InitializerImpl) RegisterObserver(ctx context.Context, observer observer.Observer) error {
+	var err error = nil
+
+	// Prolog.
+
+	traceExitMessageNumber := 39
 	if initializerImpl.isTrace {
-		initializerImpl.traceEntry(3, observer.GetObserverId(ctx))
+		entryTime := time.Now()
+		initializerImpl.traceEntry(30, observer.GetObserverId(ctx))
+		defer func() {
+			initializerImpl.traceExit(traceExitMessageNumber, observer.GetObserverId(ctx), err, time.Since(entryTime))
+		}()
 	}
-	entryTime := time.Now()
+
 	if initializerImpl.observers == nil {
 		initializerImpl.observers = &subject.SubjectImpl{}
 	}
 
 	// Register observer with initializerImpl and dependencies.
 
-	err := initializerImpl.observers.RegisterObserver(ctx, observer)
+	err = initializerImpl.observers.RegisterObserver(ctx, observer)
 	if err != nil {
+		traceExitMessageNumber = 31
 		return err
 	}
 	err = initializerImpl.getSenzingConfig().RegisterObserver(ctx, observer)
 	if err != nil {
+		traceExitMessageNumber = 32
 		return err
 	}
 	err = initializerImpl.getSenzingSchema().RegisterObserver(ctx, observer)
 	if err != nil {
+		traceExitMessageNumber = 33
 		return err
 	}
 
-	// Notify observer.
+	// Notify observers.
 
 	go func() {
 		details := map[string]string{
@@ -337,11 +349,6 @@ func (initializerImpl *InitializerImpl) RegisterObserver(ctx context.Context, ob
 		notifier.Notify(ctx, initializerImpl.observers, ProductId, 8002, err, details)
 	}()
 
-	// Epilog.
-
-	if initializerImpl.isTrace {
-		defer initializerImpl.traceExit(4, observer.GetObserverId(ctx), err, time.Since(entryTime))
-	}
 	return err
 }
 
@@ -353,42 +360,59 @@ Input
   - logLevel: The desired log level. TRACE, DEBUG, INFO, WARN, ERROR, FATAL or PANIC.
 */
 func (initializerImpl *InitializerImpl) SetLogLevel(ctx context.Context, logLevelName string) error {
-	if initializerImpl.isTrace {
-		initializerImpl.traceEntry(5, logLevelName)
-	}
-	entryTime := time.Now()
 	var err error = nil
-	if logging.IsValidLogLevelName(logLevelName) {
-		err = initializerImpl.getLogger().SetLogLevel(logLevelName)
-		if err != nil {
-			return err
-		}
-		initializerImpl.isTrace = (logLevelName == logging.LevelTraceName)
 
-		if initializerImpl.senzingConfigSingleton != nil {
-			err = initializerImpl.senzingConfigSingleton.SetLogLevel(ctx, logLevelName)
-			if err != nil {
-				return err
-			}
-		}
-		err = initializerImpl.getSenzingSchema().SetLogLevel(ctx, logLevelName)
+	// Prolog.
+
+	traceExitMessageNumber := 49
+	if initializerImpl.isTrace {
+		entryTime := time.Now()
+		initializerImpl.traceEntry(40, logLevelName)
+		defer func() { initializerImpl.traceExit(traceExitMessageNumber, logLevelName, err, time.Since(entryTime)) }()
+	}
+
+	// Verify value of logLevelName.
+
+	if !logging.IsValidLogLevelName(logLevelName) {
+		traceExitMessageNumber = 41
+		return fmt.Errorf("invalid error level: %s", logLevelName)
+	}
+
+	// Set initializerImpl log level.
+
+	err = initializerImpl.getLogger().SetLogLevel(logLevelName)
+	if err != nil {
+		traceExitMessageNumber = 42
+		return err
+	}
+	initializerImpl.isTrace = (logLevelName == logging.LevelTraceName)
+
+	// Set log level for dependent services.
+
+	if initializerImpl.senzingConfigSingleton != nil {
+		err = initializerImpl.senzingConfigSingleton.SetLogLevel(ctx, logLevelName)
 		if err != nil {
+			traceExitMessageNumber = 43
 			return err
 		}
-		if initializerImpl.observers != nil {
-			go func() {
-				details := map[string]string{
-					"logLevelName": logLevelName,
-				}
-				notifier.Notify(ctx, initializerImpl.observers, ProductId, 8003, err, details)
-			}()
-		}
-	} else {
-		err = fmt.Errorf("invalid error level: %s", logLevelName)
 	}
-	if initializerImpl.isTrace {
-		defer initializerImpl.traceExit(6, logLevelName, err, time.Since(entryTime))
+	err = initializerImpl.getSenzingSchema().SetLogLevel(ctx, logLevelName)
+	if err != nil {
+		traceExitMessageNumber = 44
+		return err
 	}
+
+	// Notify observers.
+
+	if initializerImpl.observers != nil {
+		go func() {
+			details := map[string]string{
+				"logLevelName": logLevelName,
+			}
+			notifier.Notify(ctx, initializerImpl.observers, ProductId, 8003, err, details)
+		}()
+	}
+
 	return err
 }
 
@@ -400,20 +424,29 @@ Input
   - observer: The observer to be removed.
 */
 func (initializerImpl *InitializerImpl) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
-	if initializerImpl.isTrace {
-		initializerImpl.traceEntry(7, observer.GetObserverId(ctx))
-	}
-	entryTime := time.Now()
 	var err error = nil
+
+	// Prolog.
+
+	traceExitMessageNumber := 59
+	if initializerImpl.isTrace {
+		entryTime := time.Now()
+		initializerImpl.traceEntry(50, observer.GetObserverId(ctx))
+		defer func() {
+			initializerImpl.traceExit(traceExitMessageNumber, observer.GetObserverId(ctx), err, time.Since(entryTime))
+		}()
+	}
 
 	// Unregister observer in dependencies.
 
 	// err = initializerImpl.getSenzingConfig().UnregisterObserver(ctx, observer)
 	// if err != nil {
+	// 	traceExitMessageNumber = 51
 	// 	return err
 	// }
 	// err = initializerImpl.getSenzingSchema().UnregisterObserver(ctx, observer)
 	// if err != nil {
+	// 	traceExitMessageNumber = 52
 	// 	return err
 	// }
 
@@ -432,6 +465,7 @@ func (initializerImpl *InitializerImpl) UnregisterObserver(ctx context.Context, 
 
 		err = initializerImpl.observers.UnregisterObserver(ctx, observer)
 		if err != nil {
+			traceExitMessageNumber = 53
 			return err
 		}
 
@@ -440,10 +474,5 @@ func (initializerImpl *InitializerImpl) UnregisterObserver(ctx context.Context, 
 		}
 	}
 
-	// Epilog.
-
-	if initializerImpl.isTrace {
-		defer initializerImpl.traceExit(8, observer.GetObserverId(ctx), err, time.Since(entryTime))
-	}
 	return err
 }
