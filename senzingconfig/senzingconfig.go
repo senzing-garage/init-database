@@ -28,7 +28,6 @@ type SenzingConfigImpl struct {
 	g2configSyncOnce               sync.Once
 	g2factorySingleton             factory.SdkAbstractFactory
 	g2factorySyncOnce              sync.Once
-	isTrace                        bool
 	logger                         logging.LoggingInterface
 	logLevel                       string
 	observers                      subject.Subject
@@ -40,6 +39,10 @@ type SenzingConfigImpl struct {
 // ----------------------------------------------------------------------------
 // Variables
 // ----------------------------------------------------------------------------
+
+var debugOptions []interface{} = []interface{}{
+	&logging.OptionCallerSkip{Value: 5},
+}
 
 var traceOptions []interface{} = []interface{}{
 	&logging.OptionCallerSkip{Value: 5},
@@ -70,6 +73,12 @@ func (senzingConfig *SenzingConfigImpl) getLogger() logging.LoggingInterface {
 
 // Log message.
 func (senzingConfig *SenzingConfigImpl) log(messageNumber int, details ...interface{}) {
+	senzingConfig.getLogger().Log(messageNumber, details...)
+}
+
+// Debug.
+func (senzingConfig *SenzingConfigImpl) debug(messageNumber int, details ...interface{}) {
+	details = append(details, debugOptions...)
 	senzingConfig.getLogger().Log(messageNumber, details...)
 }
 

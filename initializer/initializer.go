@@ -26,7 +26,6 @@ import (
 // InitializerImpl is the default implementation of the Initializer interface.
 type InitializerImpl struct {
 	DataSources                    []string
-	isTrace                        bool
 	logger                         logging.LoggingInterface
 	observers                      subject.Subject
 	senzingConfigSingleton         senzingconfig.SenzingConfig
@@ -40,6 +39,10 @@ type InitializerImpl struct {
 // ----------------------------------------------------------------------------
 // Variables
 // ----------------------------------------------------------------------------
+
+var debugOptions []interface{} = []interface{}{
+	&logging.OptionCallerSkip{Value: 5},
+}
 
 var traceOptions []interface{} = []interface{}{
 	&logging.OptionCallerSkip{Value: 5},
@@ -68,6 +71,12 @@ func (initializerImpl *InitializerImpl) getLogger() logging.LoggingInterface {
 
 // Log message.
 func (initializerImpl *InitializerImpl) log(messageNumber int, details ...interface{}) {
+	initializerImpl.getLogger().Log(messageNumber, details...)
+}
+
+// Debug.
+func (initializerImpl *InitializerImpl) debug(messageNumber int, details ...interface{}) {
+	details = append(details, debugOptions...)
 	initializerImpl.getLogger().Log(messageNumber, details...)
 }
 
@@ -113,43 +122,56 @@ func (initializerImpl *InitializerImpl) initializeSpecificDatabaseSqlite(ctx con
 
 	// Prolog.
 
+	debugMessageNumber := 0
 	traceExitMessageNumber := 109
-	if initializerImpl.isTrace {
-		entryTime := time.Now()
-		initializerImpl.traceEntry(100, parsedUrl)
-		defer func() { initializerImpl.traceExit(traceExitMessageNumber, err, time.Since(entryTime)) }()
+	if initializerImpl.getLogger().IsDebug() {
+		defer func() {
+			if debugMessageNumber > 0 {
+				initializerImpl.debug(debugMessageNumber, err)
+			}
+		}()
+		if initializerImpl.getLogger().IsTrace() {
+			entryTime := time.Now()
+			initializerImpl.traceEntry(100)
+			defer func() { initializerImpl.traceExit(traceExitMessageNumber, err, time.Since(entryTime)) }()
+		}
 	}
 
-	// If file doesn't exist, create it.
+	// If file exists, no more to do.
 
 	filename := parsedUrl.Path
 	_, err = os.Stat(filename)
-	if err != nil {
-		path := filepath.Dir(filename)
-		err = os.MkdirAll(path, os.ModePerm)
-		if err != nil {
-			traceExitMessageNumber = 101
-			return err
-		}
-		_, err = os.Create(filename)
-		if err != nil {
-			traceExitMessageNumber = 102
-			return err
-		}
-		initializerImpl.log(2001, filename)
-
-		// Notify observers.
-
-		if initializerImpl.observers != nil {
-			go func() {
-				details := map[string]string{
-					"sqliteFile": filename,
-				}
-				notifier.Notify(ctx, initializerImpl.observers, ProductId, 8005, err, details)
-			}()
-		}
+	if err == nil {
+		return err // Nothing more to do.
 	}
 
+	// File doesn't exist, create it.
+
+	path := filepath.Dir(filename)
+	err = os.MkdirAll(path, os.ModePerm)
+	if err != nil {
+		debugMessageNumber = 1101
+		traceExitMessageNumber = 101
+		return err
+	}
+	_, err = os.Create(filename)
+	if err != nil {
+		debugMessageNumber = 1102
+		traceExitMessageNumber = 102
+		return err
+	}
+	initializerImpl.log(2001, filename)
+
+	// Notify observers.
+
+	if initializerImpl.observers != nil {
+		go func() {
+			details := map[string]string{
+				"sqliteFile": filename,
+			}
+			notifier.Notify(ctx, initializerImpl.observers, ProductId, 8005, err, details)
+		}()
+	}
 	return err
 }
 
@@ -180,18 +202,22 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 
 	// Prolog.
 
+	debugMessageNumber := 0
 	traceExitMessageNumber := 19
-	if initializerImpl.isTrace {
-		entryTime := time.Now()
-		initializerImpl.traceEntry(10)
-		defer func() { initializerImpl.traceExit(traceExitMessageNumber, err, time.Since(entryTime)) }()
-	}
-
-	// Log entry parameters.
-
 	if initializerImpl.getLogger().IsDebug() {
+		defer func() {
+			if debugMessageNumber > 0 {
+				initializerImpl.debug(debugMessageNumber, err)
+			}
+		}()
+		if initializerImpl.getLogger().IsTrace() {
+			entryTime := time.Now()
+			initializerImpl.traceEntry(10)
+			defer func() { initializerImpl.traceExit(traceExitMessageNumber, err, time.Since(entryTime)) }()
+		}
 		asJson, err := json.Marshal(initializerImpl)
 		if err != nil {
+			debugMessageNumber = 1011
 			traceExitMessageNumber = 11
 			return err
 		}
@@ -202,6 +228,7 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 
 	err = initializerImpl.InitializeSpecificDatabase(ctx)
 	if err != nil {
+		debugMessageNumber = 1012
 		traceExitMessageNumber = 12
 		return err
 	}
@@ -211,11 +238,13 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 	senzingSchema := initializerImpl.getSenzingSchema()
 	err = senzingSchema.SetLogLevel(ctx, logLevel)
 	if err != nil {
+		debugMessageNumber = 1013
 		traceExitMessageNumber = 13
 		return err
 	}
 	err = senzingSchema.InitializeSenzing(ctx)
 	if err != nil {
+		debugMessageNumber = 1014
 		traceExitMessageNumber = 14
 		return err
 	}
@@ -225,11 +254,13 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 	senzingConfig := initializerImpl.getSenzingConfig()
 	senzingConfig.SetLogLevel(ctx, logLevel)
 	if err != nil {
+		debugMessageNumber = 1015
 		traceExitMessageNumber = 15
 		return err
 	}
 	err = senzingConfig.InitializeSenzing(ctx)
 	if err != nil {
+		debugMessageNumber = 1016
 		traceExitMessageNumber = 16
 		return err
 	}
@@ -242,7 +273,6 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 			notifier.Notify(ctx, initializerImpl.observers, ProductId, 8001, err, details)
 		}()
 	}
-
 	return err
 }
 
@@ -259,18 +289,22 @@ func (initializerImpl *InitializerImpl) InitializeSpecificDatabase(ctx context.C
 
 	// Prolog.
 
+	debugMessageNumber := 0
 	traceExitMessageNumber := 29
-	if initializerImpl.isTrace {
-		entryTime := time.Now()
-		initializerImpl.traceEntry(20)
-		defer func() { initializerImpl.traceExit(traceExitMessageNumber, err, time.Since(entryTime)) }()
-	}
-
-	// Log entry parameters.
-
 	if initializerImpl.getLogger().IsDebug() {
+		defer func() {
+			if debugMessageNumber > 0 {
+				initializerImpl.debug(debugMessageNumber, err)
+			}
+		}()
+		if initializerImpl.getLogger().IsTrace() {
+			entryTime := time.Now()
+			initializerImpl.traceEntry(20)
+			defer func() { initializerImpl.traceExit(traceExitMessageNumber, err, time.Since(entryTime)) }()
+		}
 		asJson, err := json.Marshal(initializerImpl)
 		if err != nil {
+			debugMessageNumber = 1021
 			traceExitMessageNumber = 21
 			return err
 		}
@@ -281,11 +315,13 @@ func (initializerImpl *InitializerImpl) InitializeSpecificDatabase(ctx context.C
 
 	parser, err := engineconfigurationjsonparser.New(initializerImpl.SenzingEngineConfigurationJson)
 	if err != nil {
+		debugMessageNumber = 1022
 		traceExitMessageNumber = 22
 		return err
 	}
 	databaseUrls, err = parser.GetDatabaseUrls(ctx)
 	if err != nil {
+		debugMessageNumber = 1023
 		traceExitMessageNumber = 23
 		return err
 	}
@@ -304,6 +340,7 @@ func (initializerImpl *InitializerImpl) InitializeSpecificDatabase(ctx context.C
 				parsedUrl, err = url.Parse(newDatabaseUrl)
 			}
 			if err != nil {
+				debugMessageNumber = 1024
 				traceExitMessageNumber = 24
 				return err
 			}
@@ -315,12 +352,12 @@ func (initializerImpl *InitializerImpl) InitializeSpecificDatabase(ctx context.C
 		case "sqlite3":
 			err = initializerImpl.initializeSpecificDatabaseSqlite(ctx, parsedUrl)
 			if err != nil {
+				debugMessageNumber = 1025
 				traceExitMessageNumber = 25
 				return err
 			}
 		}
 	}
-
 	return err
 }
 
@@ -336,20 +373,24 @@ func (initializerImpl *InitializerImpl) RegisterObserver(ctx context.Context, ob
 
 	// Prolog.
 
+	debugMessageNumber := 0
 	traceExitMessageNumber := 39
-	if initializerImpl.isTrace {
-		entryTime := time.Now()
-		initializerImpl.traceEntry(30, observer.GetObserverId(ctx))
-		defer func() {
-			initializerImpl.traceExit(traceExitMessageNumber, observer.GetObserverId(ctx), err, time.Since(entryTime))
-		}()
-	}
-
-	// Log entry parameters.
-
 	if initializerImpl.getLogger().IsDebug() {
+		defer func() {
+			if debugMessageNumber > 0 {
+				initializerImpl.debug(debugMessageNumber, err)
+			}
+		}()
+		if initializerImpl.getLogger().IsTrace() {
+			entryTime := time.Now()
+			initializerImpl.traceEntry(30)
+			defer func() {
+				initializerImpl.traceExit(traceExitMessageNumber, observer.GetObserverId(ctx), err, time.Since(entryTime))
+			}()
+		}
 		asJson, err := json.Marshal(initializerImpl)
 		if err != nil {
+			debugMessageNumber = 1031
 			traceExitMessageNumber = 31
 			return err
 		}
@@ -366,16 +407,19 @@ func (initializerImpl *InitializerImpl) RegisterObserver(ctx context.Context, ob
 
 	err = initializerImpl.observers.RegisterObserver(ctx, observer)
 	if err != nil {
+		debugMessageNumber = 1032
 		traceExitMessageNumber = 32
 		return err
 	}
 	err = initializerImpl.getSenzingConfig().RegisterObserver(ctx, observer)
 	if err != nil {
+		debugMessageNumber = 1033
 		traceExitMessageNumber = 33
 		return err
 	}
 	err = initializerImpl.getSenzingSchema().RegisterObserver(ctx, observer)
 	if err != nil {
+		debugMessageNumber = 1034
 		traceExitMessageNumber = 34
 		return err
 	}
@@ -388,7 +432,6 @@ func (initializerImpl *InitializerImpl) RegisterObserver(ctx context.Context, ob
 		}
 		notifier.Notify(ctx, initializerImpl.observers, ProductId, 8002, err, details)
 	}()
-
 	return err
 }
 
@@ -404,18 +447,22 @@ func (initializerImpl *InitializerImpl) SetLogLevel(ctx context.Context, logLeve
 
 	// Prolog.
 
+	debugMessageNumber := 0
 	traceExitMessageNumber := 49
-	if initializerImpl.isTrace {
-		entryTime := time.Now()
-		initializerImpl.traceEntry(40, logLevelName)
-		defer func() { initializerImpl.traceExit(traceExitMessageNumber, logLevelName, err, time.Since(entryTime)) }()
-	}
-
-	// Log entry parameters.
-
 	if initializerImpl.getLogger().IsDebug() {
+		defer func() {
+			if debugMessageNumber > 0 {
+				initializerImpl.debug(debugMessageNumber, err)
+			}
+		}()
+		if initializerImpl.getLogger().IsTrace() {
+			entryTime := time.Now()
+			initializerImpl.traceEntry(40)
+			defer func() { initializerImpl.traceExit(traceExitMessageNumber, logLevelName, err, time.Since(entryTime)) }()
+		}
 		asJson, err := json.Marshal(initializerImpl)
 		if err != nil {
+			debugMessageNumber = 1041
 			traceExitMessageNumber = 41
 			return err
 		}
@@ -425,6 +472,7 @@ func (initializerImpl *InitializerImpl) SetLogLevel(ctx context.Context, logLeve
 	// Verify value of logLevelName.
 
 	if !logging.IsValidLogLevelName(logLevelName) {
+		debugMessageNumber = 1042
 		traceExitMessageNumber = 42
 		return fmt.Errorf("invalid error level: %s", logLevelName)
 	}
@@ -433,22 +481,24 @@ func (initializerImpl *InitializerImpl) SetLogLevel(ctx context.Context, logLeve
 
 	err = initializerImpl.getLogger().SetLogLevel(logLevelName)
 	if err != nil {
+		debugMessageNumber = 1043
 		traceExitMessageNumber = 43
 		return err
 	}
-	initializerImpl.isTrace = (logLevelName == logging.LevelTraceName)
 
 	// Set log level for dependent services.
 
 	if initializerImpl.senzingConfigSingleton != nil {
 		err = initializerImpl.senzingConfigSingleton.SetLogLevel(ctx, logLevelName)
 		if err != nil {
+			debugMessageNumber = 1044
 			traceExitMessageNumber = 44
 			return err
 		}
 	}
 	err = initializerImpl.getSenzingSchema().SetLogLevel(ctx, logLevelName)
 	if err != nil {
+		debugMessageNumber = 1045
 		traceExitMessageNumber = 45
 		return err
 	}
@@ -463,7 +513,6 @@ func (initializerImpl *InitializerImpl) SetLogLevel(ctx context.Context, logLeve
 			notifier.Notify(ctx, initializerImpl.observers, ProductId, 8003, err, details)
 		}()
 	}
-
 	return err
 }
 
@@ -479,20 +528,24 @@ func (initializerImpl *InitializerImpl) UnregisterObserver(ctx context.Context, 
 
 	// Prolog.
 
+	debugMessageNumber := 0
 	traceExitMessageNumber := 59
-	if initializerImpl.isTrace {
-		entryTime := time.Now()
-		initializerImpl.traceEntry(50, observer.GetObserverId(ctx))
-		defer func() {
-			initializerImpl.traceExit(traceExitMessageNumber, observer.GetObserverId(ctx), err, time.Since(entryTime))
-		}()
-	}
-
-	// Log entry parameters.
-
 	if initializerImpl.getLogger().IsDebug() {
+		defer func() {
+			if debugMessageNumber > 0 {
+				initializerImpl.debug(debugMessageNumber, err)
+			}
+		}()
+		if initializerImpl.getLogger().IsTrace() {
+			entryTime := time.Now()
+			initializerImpl.traceEntry(50)
+			defer func() {
+				initializerImpl.traceExit(traceExitMessageNumber, observer.GetObserverId(ctx), err, time.Since(entryTime))
+			}()
+		}
 		asJson, err := json.Marshal(initializerImpl)
 		if err != nil {
+			debugMessageNumber = 1051
 			traceExitMessageNumber = 51
 			return err
 		}
@@ -503,11 +556,13 @@ func (initializerImpl *InitializerImpl) UnregisterObserver(ctx context.Context, 
 
 	// err = initializerImpl.getSenzingConfig().UnregisterObserver(ctx, observer)
 	// if err != nil {
+	//	debugMessageNumber = 1052
 	// 	traceExitMessageNumber = 52
 	// 	return err
 	// }
 	// err = initializerImpl.getSenzingSchema().UnregisterObserver(ctx, observer)
 	// if err != nil {
+	//  debugMessageNumber = 1053
 	// 	traceExitMessageNumber = 53
 	// 	return err
 	// }
@@ -527,6 +582,7 @@ func (initializerImpl *InitializerImpl) UnregisterObserver(ctx context.Context, 
 
 		err = initializerImpl.observers.UnregisterObserver(ctx, observer)
 		if err != nil {
+			debugMessageNumber = 1054
 			traceExitMessageNumber = 54
 			return err
 		}
@@ -535,6 +591,5 @@ func (initializerImpl *InitializerImpl) UnregisterObserver(ctx context.Context, 
 			initializerImpl.observers = nil
 		}
 	}
-
 	return err
 }
