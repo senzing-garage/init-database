@@ -28,6 +28,7 @@ type SenzingConfigImpl struct {
 	g2configSyncOnce               sync.Once
 	g2factorySingleton             factory.SdkAbstractFactory
 	g2factorySyncOnce              sync.Once
+	isTrace                        bool
 	logger                         logging.LoggingInterface
 	logLevel                       string
 	observers                      subject.Subject
