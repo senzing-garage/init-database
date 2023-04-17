@@ -405,7 +405,7 @@ func (initializerImpl *InitializerImpl) RegisterObserver(ctx context.Context, ob
 
 		defer func() {
 			if debugMessageNumber > 0 {
-				initializerImpl.debug(debugMessageNumber, err)
+				initializerImpl.debug(debugMessageNumber, observer.GetObserverId(ctx), err)
 			}
 		}()
 
@@ -488,7 +488,7 @@ func (initializerImpl *InitializerImpl) SetLogLevel(ctx context.Context, logLeve
 
 		defer func() {
 			if debugMessageNumber > 0 {
-				initializerImpl.debug(debugMessageNumber, err)
+				initializerImpl.debug(debugMessageNumber, logLevelName, err)
 			}
 		}()
 
@@ -578,7 +578,7 @@ func (initializerImpl *InitializerImpl) UnregisterObserver(ctx context.Context, 
 
 		defer func() {
 			if debugMessageNumber > 0 {
-				initializerImpl.debug(debugMessageNumber, err)
+				initializerImpl.debug(debugMessageNumber, observer.GetObserverId(ctx), err)
 			}
 		}()
 
