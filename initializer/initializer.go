@@ -125,15 +125,21 @@ func (initializerImpl *InitializerImpl) initializeSpecificDatabaseSqlite(ctx con
 	debugMessageNumber := 0
 	traceExitMessageNumber := 109
 	if initializerImpl.getLogger().IsDebug() {
+
+		// If DEBUG, log error exit.
+
 		defer func() {
 			if debugMessageNumber > 0 {
 				initializerImpl.debug(debugMessageNumber, err)
 			}
 		}()
+
+		// If TRACE, Log on entry/exit.
+
 		if initializerImpl.getLogger().IsTrace() {
 			entryTime := time.Now()
-			initializerImpl.traceEntry(100)
-			defer func() { initializerImpl.traceExit(traceExitMessageNumber, err, time.Since(entryTime)) }()
+			initializerImpl.traceEntry(100, parsedUrl)
+			defer func() { initializerImpl.traceExit(traceExitMessageNumber, parsedUrl, err, time.Since(entryTime)) }()
 		}
 	}
 
