@@ -23,7 +23,6 @@ import (
 
 // SenzingSchemaImpl is the default implementation of the SenzingSchema interface.
 type SenzingSchemaImpl struct {
-	isTrace                        bool
 	logger                         logging.LoggingInterface
 	logLevelName                   string
 	observers                      subject.Subject
@@ -103,7 +102,7 @@ func (senzingSchema *SenzingSchemaImpl) processDatabase(ctx context.Context, res
 
 		defer func() {
 			if debugMessageNumber > 0 {
-				senzingSchema.debug(debugMessageNumber, err)
+				senzingSchema.debug(debugMessageNumber, resourcePath, databaseUrl, err)
 			}
 		}()
 
@@ -111,19 +110,11 @@ func (senzingSchema *SenzingSchemaImpl) processDatabase(ctx context.Context, res
 
 		if senzingSchema.getLogger().IsTrace() {
 			entryTime := time.Now()
-			senzingSchema.traceEntry(100)
-			defer func() { senzingSchema.traceExit(traceExitMessageNumber, err, time.Since(entryTime)) }()
+			senzingSchema.traceEntry(100, resourcePath, databaseUrl)
+			defer func() {
+				senzingSchema.traceExit(traceExitMessageNumber, resourcePath, databaseUrl, err, time.Since(entryTime))
+			}()
 		}
-
-		// If DEBUG, log input parameters. Must be done after establishing DEBUG and TRACE logging.
-
-		asJson, err := json.Marshal(senzingSchema)
-		if err != nil {
-			debugMessageNumber = 1011
-			traceExitMessageNumber = 11
-			return err
-		}
-		senzingSchema.log(1001, senzingSchema, string(asJson))
 	}
 
 	// Determine which SQL file to process.
@@ -136,7 +127,8 @@ func (senzingSchema *SenzingSchemaImpl) processDatabase(ctx context.Context, res
 			parsedUrl, err = url.Parse(newDatabaseUrl)
 		}
 		if err != nil {
-			traceExitMessageNumber = 101
+			debugMessageNumber = 1102
+			traceExitMessageNumber = 102
 			return err
 		}
 	}
@@ -158,7 +150,8 @@ func (senzingSchema *SenzingSchemaImpl) processDatabase(ctx context.Context, res
 
 	databaseConnector, err := connector.NewConnector(ctx, databaseUrl)
 	if err != nil {
-		traceExitMessageNumber = 102
+		debugMessageNumber = 1103
+		traceExitMessageNumber = 103
 		return err
 	}
 
@@ -169,7 +162,8 @@ func (senzingSchema *SenzingSchemaImpl) processDatabase(ctx context.Context, res
 	}
 	err = sqlExecutor.SetLogLevel(ctx, senzingSchema.logLevelName)
 	if err != nil {
-		traceExitMessageNumber = 103
+		debugMessageNumber = 1104
+		traceExitMessageNumber = 104
 		return err
 	}
 
@@ -179,7 +173,8 @@ func (senzingSchema *SenzingSchemaImpl) processDatabase(ctx context.Context, res
 		for _, observer := range senzingSchema.observers.GetObservers(ctx) {
 			err = sqlExecutor.RegisterObserver(ctx, observer)
 			if err != nil {
-				traceExitMessageNumber = 104
+				debugMessageNumber = 1105
+				traceExitMessageNumber = 105
 				return err
 			}
 		}
@@ -189,7 +184,8 @@ func (senzingSchema *SenzingSchemaImpl) processDatabase(ctx context.Context, res
 
 	err = sqlExecutor.ProcessFileName(ctx, sqlFilename)
 	if err != nil {
-		traceExitMessageNumber = 105
+		debugMessageNumber = 1106
+		traceExitMessageNumber = 106
 		return err
 	}
 	senzingSchema.log(2001, sqlFilename, parsedUrl.Redacted())
@@ -306,7 +302,7 @@ func (senzingSchema *SenzingSchemaImpl) RegisterObserver(ctx context.Context, ob
 
 		defer func() {
 			if debugMessageNumber > 0 {
-				senzingSchema.debug(debugMessageNumber, err)
+				senzingSchema.debug(debugMessageNumber, observer.GetObserverId(ctx), err)
 			}
 		}()
 
@@ -406,6 +402,7 @@ func (senzingSchema *SenzingSchemaImpl) SetLogLevel(ctx context.Context, logLeve
 	// Verify value of logLevelName.
 
 	if !logging.IsValidLogLevelName(logLevelName) {
+		debugMessageNumber = 1032
 		traceExitMessageNumber = 32
 		return fmt.Errorf("invalid error level: %s", logLevelName)
 	}
@@ -414,7 +411,6 @@ func (senzingSchema *SenzingSchemaImpl) SetLogLevel(ctx context.Context, logLeve
 
 	senzingSchema.logLevelName = logLevelName
 	senzingSchema.getLogger().SetLogLevel(logLevelName)
-	senzingSchema.isTrace = (logLevelName == logging.LevelTraceName)
 
 	// Notify observers.
 
@@ -450,7 +446,7 @@ func (senzingSchema *SenzingSchemaImpl) UnregisterObserver(ctx context.Context, 
 
 		defer func() {
 			if debugMessageNumber > 0 {
-				senzingSchema.debug(debugMessageNumber, err)
+				senzingSchema.debug(debugMessageNumber, observer.GetObserverId(ctx), err)
 			}
 		}()
 
@@ -490,6 +486,7 @@ func (senzingSchema *SenzingSchemaImpl) UnregisterObserver(ctx context.Context, 
 
 		err = senzingSchema.observers.UnregisterObserver(ctx, observer)
 		if err != nil {
+			debugMessageNumber = 1042
 			traceExitMessageNumber = 42
 			return err
 		}
