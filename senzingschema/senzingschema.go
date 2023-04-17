@@ -127,8 +127,7 @@ func (senzingSchema *SenzingSchemaImpl) processDatabase(ctx context.Context, res
 			parsedUrl, err = url.Parse(newDatabaseUrl)
 		}
 		if err != nil {
-			debugMessageNumber = 1101
-			traceExitMessageNumber = 101
+			traceExitMessageNumber, debugMessageNumber = 101, 1101
 			return err
 		}
 	}
