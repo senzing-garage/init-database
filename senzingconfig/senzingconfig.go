@@ -212,8 +212,7 @@ func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) e
 
 		asJson, err := json.Marshal(senzingConfig)
 		if err != nil {
-			debugMessageNumber = 1011
-			traceExitMessageNumber = 11
+			traceExitMessageNumber, debugMessageNumber = 11, 1011
 			return err
 		}
 		senzingConfig.log(1001, senzingConfig, string(asJson))
@@ -223,8 +222,7 @@ func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) e
 
 	g2Config, g2Configmgr, err := senzingConfig.getDependentServices(ctx)
 	if err != nil {
-		debugMessageNumber = 1012
-		traceExitMessageNumber = 12
+		traceExitMessageNumber, debugMessageNumber = 12, 1012
 		return err
 	}
 
@@ -232,8 +230,7 @@ func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) e
 
 	configID, err = g2Configmgr.GetDefaultConfigID(ctx)
 	if err != nil {
-		debugMessageNumber = 1013
-		traceExitMessageNumber = 13
+		traceExitMessageNumber, debugMessageNumber = 13, 1013
 		return err
 	}
 	if configID != 0 {
@@ -244,8 +241,7 @@ func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) e
 			}()
 		}
 		senzingConfig.log(2002, configID)
-		debugMessageNumber = 1014
-		traceExitMessageNumber = 14
+		traceExitMessageNumber, debugMessageNumber = 14, 0 // debugMessageNumber=0 because it's not an error.
 		return err
 	}
 
@@ -253,8 +249,7 @@ func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) e
 
 	configHandle, err := g2Config.Create(ctx)
 	if err != nil {
-		debugMessageNumber = 1015
-		traceExitMessageNumber = 15
+		traceExitMessageNumber, debugMessageNumber = 15, 1015
 		return err
 	}
 
@@ -263,8 +258,7 @@ func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) e
 	if len(senzingConfig.DataSources) > 0 {
 		err = senzingConfig.addDatasources(ctx, g2Config, configHandle)
 		if err != nil {
-			debugMessageNumber = 1016
-			traceExitMessageNumber = 16
+			traceExitMessageNumber, debugMessageNumber = 16, 1016
 			return err
 		}
 	}
@@ -273,8 +267,7 @@ func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) e
 
 	configStr, err := g2Config.Save(ctx, configHandle)
 	if err != nil {
-		debugMessageNumber = 1017
-		traceExitMessageNumber = 17
+		traceExitMessageNumber, debugMessageNumber = 17, 1017
 		return err
 	}
 
@@ -283,14 +276,12 @@ func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) e
 	configComments := fmt.Sprintf("Created by %s at %s", defaultModuleName, entryTime.Format(time.RFC3339Nano))
 	configID, err = g2Configmgr.AddConfig(ctx, configStr, configComments)
 	if err != nil {
-		debugMessageNumber = 1018
-		traceExitMessageNumber = 18
+		traceExitMessageNumber, debugMessageNumber = 18, 1018
 		return err
 	}
 	err = g2Configmgr.SetDefaultConfigID(ctx, configID)
 	if err != nil {
-		debugMessageNumber = 1019
-		traceExitMessageNumber = 19
+		traceExitMessageNumber, debugMessageNumber = 19, 1019
 		return err
 	}
 
@@ -345,8 +336,7 @@ func (senzingConfig *SenzingConfigImpl) RegisterObserver(ctx context.Context, ob
 
 		asJson, err := json.Marshal(senzingConfig)
 		if err != nil {
-			debugMessageNumber = 1031
-			traceExitMessageNumber = 31
+			traceExitMessageNumber, debugMessageNumber = 31, 1031
 			return err
 		}
 		senzingConfig.log(1002, senzingConfig, string(asJson))
@@ -362,28 +352,24 @@ func (senzingConfig *SenzingConfigImpl) RegisterObserver(ctx context.Context, ob
 
 	err = senzingConfig.observers.RegisterObserver(ctx, observer)
 	if err != nil {
-		debugMessageNumber = 1032
-		traceExitMessageNumber = 32
+		traceExitMessageNumber, debugMessageNumber = 32, 1032
 		return err
 	}
 
 	// FIXME: Need issue to fix registering observers with g2-sdk-go-*
 	// g2Config, g2Configmgr, err := senzingConfig.getDependentServices(ctx)
 	// if err != nil {
-	// 	debugMessageNumber = 1033
-	// 	traceExitMessageNumber = 33
+	// 	traceExitMessageNumber, debugMessageNumber = 33, 1033
 	// 	return err
 	// }
 	// err = g2Config.RegisterObserver(ctx, observer)
 	// if err != nil {
-	// 	debugMessageNumber = 1034
-	// 	traceExitMessageNumber = 34
+	// 	traceExitMessageNumber, debugMessageNumber = 34, 1034
 	// 	return err
 	// }
 	// err = g2Configmgr.RegisterObserver(ctx, observer)
 	// if err != nil {
-	// 	debugMessageNumber = 1035
-	// 	traceExitMessageNumber = 35
+	// 	traceExitMessageNumber, debugMessageNumber = 35, 1035
 	// 	return err
 	// }
 
@@ -439,6 +425,7 @@ func (senzingConfig *SenzingConfigImpl) SetLogLevel(ctx context.Context, logLeve
 		if err != nil {
 			debugMessageNumber = 1041
 			traceExitMessageNumber = 41
+			traceExitMessageNumber, debugMessageNumber = 41, 1041
 			return err
 		}
 		senzingConfig.log(1003, senzingConfig, string(asJson))
@@ -447,8 +434,7 @@ func (senzingConfig *SenzingConfigImpl) SetLogLevel(ctx context.Context, logLeve
 	// Verify value of logLevelName.
 
 	if !logging.IsValidLogLevelName(logLevelName) {
-		debugMessageNumber = 1042
-		traceExitMessageNumber = 42
+		traceExitMessageNumber, debugMessageNumber = 42, 1042
 		return fmt.Errorf("invalid error level: %s", logLevelName)
 	}
 
@@ -457,8 +443,7 @@ func (senzingConfig *SenzingConfigImpl) SetLogLevel(ctx context.Context, logLeve
 	senzingConfig.logLevel = logLevelName
 	err = senzingConfig.getLogger().SetLogLevel(logLevelName)
 	if err != nil {
-		debugMessageNumber = 1043
-		traceExitMessageNumber = 43
+		traceExitMessageNumber, debugMessageNumber = 43, 1043
 		return err
 	}
 	senzingConfig.isTrace = (logLevelName == logging.LevelTraceName)
@@ -470,20 +455,17 @@ func (senzingConfig *SenzingConfigImpl) SetLogLevel(ctx context.Context, logLeve
 
 	g2Config, g2Configmgr, err := senzingConfig.getDependentServices(ctx)
 	if err != nil {
-		debugMessageNumber = 1044
-		traceExitMessageNumber = 44
+		traceExitMessageNumber, debugMessageNumber = 44, 1044
 		return err
 	}
 	err = g2Config.SetLogLevel(ctx, logLevel)
 	if err != nil {
-		debugMessageNumber = 1045
-		traceExitMessageNumber = 45
+		traceExitMessageNumber, debugMessageNumber = 45, 1045
 		return err
 	}
 	err = g2Configmgr.SetLogLevel(ctx, logLevel)
 	if err != nil {
-		debugMessageNumber = 1046
-		traceExitMessageNumber = 46
+		traceExitMessageNumber, debugMessageNumber = 46, 1046
 		return err
 	}
 
@@ -541,6 +523,7 @@ func (senzingConfig *SenzingConfigImpl) UnregisterObserver(ctx context.Context, 
 		if err != nil {
 			debugMessageNumber = 1051
 			traceExitMessageNumber = 51
+			traceExitMessageNumber, debugMessageNumber = 51, 1051
 			return err
 		}
 		senzingConfig.log(1004, senzingConfig, string(asJson))
@@ -551,14 +534,12 @@ func (senzingConfig *SenzingConfigImpl) UnregisterObserver(ctx context.Context, 
 	// g2Config, g2Configmgr, err := senzingConfig.getDependentServices(ctx)
 	// err = g2Config.UnregisterObserver(ctx, observer)
 	// if err != nil {
-	// 	debugMessageNumber = 1052
-	// 	traceExitMessageNumber = 52
+	// 	traceExitMessageNumber, debugMessageNumber = 52, 1052
 	// 	return err
 	// }
 	// err = g2Configmgr.UnregisterObserver(ctx, observer)
 	// if err != nil {
-	// 	debugMessageNumber = 1053
-	// 	traceExitMessageNumber = 53
+	// 	traceExitMessageNumber, debugMessageNumber = 53, 1053
 	// 	return err
 	// }
 
@@ -577,8 +558,7 @@ func (senzingConfig *SenzingConfigImpl) UnregisterObserver(ctx context.Context, 
 
 		err = senzingConfig.observers.UnregisterObserver(ctx, observer)
 		if err != nil {
-			debugMessageNumber = 1054
-			traceExitMessageNumber = 54
+			traceExitMessageNumber, debugMessageNumber = 54, 1054
 			return err
 		}
 

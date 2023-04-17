@@ -149,8 +149,7 @@ func (senzingSchema *SenzingSchemaImpl) processDatabase(ctx context.Context, res
 
 	databaseConnector, err := connector.NewConnector(ctx, databaseUrl)
 	if err != nil {
-		debugMessageNumber = 1102
-		traceExitMessageNumber = 102
+		traceExitMessageNumber, debugMessageNumber = 102, 1102
 		return err
 	}
 
@@ -161,8 +160,7 @@ func (senzingSchema *SenzingSchemaImpl) processDatabase(ctx context.Context, res
 	}
 	err = sqlExecutor.SetLogLevel(ctx, senzingSchema.logLevelName)
 	if err != nil {
-		debugMessageNumber = 1103
-		traceExitMessageNumber = 103
+		traceExitMessageNumber, debugMessageNumber = 103, 1103
 		return err
 	}
 
@@ -172,8 +170,7 @@ func (senzingSchema *SenzingSchemaImpl) processDatabase(ctx context.Context, res
 		for _, observer := range senzingSchema.observers.GetObservers(ctx) {
 			err = sqlExecutor.RegisterObserver(ctx, observer)
 			if err != nil {
-				debugMessageNumber = 1104
-				traceExitMessageNumber = 104
+				traceExitMessageNumber, debugMessageNumber = 104, 1104
 				return err
 			}
 		}
@@ -183,8 +180,7 @@ func (senzingSchema *SenzingSchemaImpl) processDatabase(ctx context.Context, res
 
 	err = sqlExecutor.ProcessFileName(ctx, sqlFilename)
 	if err != nil {
-		debugMessageNumber = 1105
-		traceExitMessageNumber = 105
+		traceExitMessageNumber, debugMessageNumber = 105, 1105
 		return err
 	}
 	senzingSchema.log(2001, sqlFilename, parsedUrl.Redacted())
@@ -230,8 +226,7 @@ func (senzingSchema *SenzingSchemaImpl) InitializeSenzing(ctx context.Context) e
 
 		asJson, err := json.Marshal(senzingSchema)
 		if err != nil {
-			debugMessageNumber = 1011
-			traceExitMessageNumber = 11
+			traceExitMessageNumber, debugMessageNumber = 11, 1011
 			return err
 		}
 		senzingSchema.log(1001, senzingSchema, string(asJson))
@@ -241,20 +236,17 @@ func (senzingSchema *SenzingSchemaImpl) InitializeSenzing(ctx context.Context) e
 
 	parser, err := engineconfigurationjsonparser.New(senzingSchema.SenzingEngineConfigurationJson)
 	if err != nil {
-		debugMessageNumber = 1012
-		traceExitMessageNumber = 12
+		traceExitMessageNumber, debugMessageNumber = 12, 1012
 		return err
 	}
 	resourcePath, err := parser.GetResourcePath(ctx)
 	if err != nil {
-		debugMessageNumber = 1013
-		traceExitMessageNumber = 13
+		traceExitMessageNumber, debugMessageNumber = 13, 1013
 		return err
 	}
 	databaseUrls, err := parser.GetDatabaseUrls(ctx)
 	if err != nil {
-		debugMessageNumber = 1014
-		traceExitMessageNumber = 14
+		traceExitMessageNumber, debugMessageNumber = 14, 1014
 		return err
 	}
 
@@ -263,8 +255,7 @@ func (senzingSchema *SenzingSchemaImpl) InitializeSenzing(ctx context.Context) e
 	for _, databaseUrl := range databaseUrls {
 		err = senzingSchema.processDatabase(ctx, resourcePath, databaseUrl)
 		if err != nil {
-			debugMessageNumber = 1015
-			traceExitMessageNumber = 15
+			traceExitMessageNumber, debugMessageNumber = 15, 1015
 			return err
 		}
 	}
@@ -319,8 +310,7 @@ func (senzingSchema *SenzingSchemaImpl) RegisterObserver(ctx context.Context, ob
 
 		asJson, err := json.Marshal(senzingSchema)
 		if err != nil {
-			debugMessageNumber = 1021
-			traceExitMessageNumber = 21
+			traceExitMessageNumber, debugMessageNumber = 21, 1021
 			return err
 		}
 		senzingSchema.log(1002, senzingSchema, string(asJson))
@@ -336,8 +326,7 @@ func (senzingSchema *SenzingSchemaImpl) RegisterObserver(ctx context.Context, ob
 
 	err = senzingSchema.observers.RegisterObserver(ctx, observer)
 	if err != nil {
-		debugMessageNumber = 1022
-		traceExitMessageNumber = 22
+		traceExitMessageNumber, debugMessageNumber = 22, 1022
 		return err
 	}
 
@@ -391,8 +380,7 @@ func (senzingSchema *SenzingSchemaImpl) SetLogLevel(ctx context.Context, logLeve
 
 		asJson, err := json.Marshal(senzingSchema)
 		if err != nil {
-			debugMessageNumber = 1031
-			traceExitMessageNumber = 31
+			traceExitMessageNumber, debugMessageNumber = 31, 1031
 			return err
 		}
 		senzingSchema.log(1003, senzingSchema, string(asJson))
@@ -401,8 +389,7 @@ func (senzingSchema *SenzingSchemaImpl) SetLogLevel(ctx context.Context, logLeve
 	// Verify value of logLevelName.
 
 	if !logging.IsValidLogLevelName(logLevelName) {
-		debugMessageNumber = 1032
-		traceExitMessageNumber = 32
+		traceExitMessageNumber, debugMessageNumber = 32, 1032
 		return fmt.Errorf("invalid error level: %s", logLevelName)
 	}
 
@@ -463,8 +450,7 @@ func (senzingSchema *SenzingSchemaImpl) UnregisterObserver(ctx context.Context, 
 
 		asJson, err := json.Marshal(senzingSchema)
 		if err != nil {
-			debugMessageNumber = 1041
-			traceExitMessageNumber = 41
+			traceExitMessageNumber, debugMessageNumber = 41, 1041
 			return err
 		}
 		senzingSchema.log(1004, senzingSchema, string(asJson))
@@ -487,6 +473,7 @@ func (senzingSchema *SenzingSchemaImpl) UnregisterObserver(ctx context.Context, 
 		if err != nil {
 			debugMessageNumber = 1042
 			traceExitMessageNumber = 42
+			traceExitMessageNumber, debugMessageNumber = 42, 1042
 			return err
 		}
 
