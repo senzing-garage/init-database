@@ -127,8 +127,8 @@ func (senzingSchema *SenzingSchemaImpl) processDatabase(ctx context.Context, res
 			parsedUrl, err = url.Parse(newDatabaseUrl)
 		}
 		if err != nil {
-			debugMessageNumber = 1102
-			traceExitMessageNumber = 102
+			debugMessageNumber = 1101
+			traceExitMessageNumber = 101
 			return err
 		}
 	}
@@ -150,8 +150,8 @@ func (senzingSchema *SenzingSchemaImpl) processDatabase(ctx context.Context, res
 
 	databaseConnector, err := connector.NewConnector(ctx, databaseUrl)
 	if err != nil {
-		debugMessageNumber = 1103
-		traceExitMessageNumber = 103
+		debugMessageNumber = 1102
+		traceExitMessageNumber = 102
 		return err
 	}
 
@@ -162,8 +162,8 @@ func (senzingSchema *SenzingSchemaImpl) processDatabase(ctx context.Context, res
 	}
 	err = sqlExecutor.SetLogLevel(ctx, senzingSchema.logLevelName)
 	if err != nil {
-		debugMessageNumber = 1104
-		traceExitMessageNumber = 104
+		debugMessageNumber = 1103
+		traceExitMessageNumber = 103
 		return err
 	}
 
@@ -173,8 +173,8 @@ func (senzingSchema *SenzingSchemaImpl) processDatabase(ctx context.Context, res
 		for _, observer := range senzingSchema.observers.GetObservers(ctx) {
 			err = sqlExecutor.RegisterObserver(ctx, observer)
 			if err != nil {
-				debugMessageNumber = 1105
-				traceExitMessageNumber = 105
+				debugMessageNumber = 1104
+				traceExitMessageNumber = 104
 				return err
 			}
 		}
@@ -184,8 +184,8 @@ func (senzingSchema *SenzingSchemaImpl) processDatabase(ctx context.Context, res
 
 	err = sqlExecutor.ProcessFileName(ctx, sqlFilename)
 	if err != nil {
-		debugMessageNumber = 1106
-		traceExitMessageNumber = 106
+		debugMessageNumber = 1105
+		traceExitMessageNumber = 105
 		return err
 	}
 	senzingSchema.log(2001, sqlFilename, parsedUrl.Redacted())
