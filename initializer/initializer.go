@@ -205,16 +205,25 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 	debugMessageNumber := 0
 	traceExitMessageNumber := 19
 	if initializerImpl.getLogger().IsDebug() {
+
+		// If DEBUG, log error exit.
+
 		defer func() {
 			if debugMessageNumber > 0 {
 				initializerImpl.debug(debugMessageNumber, err)
 			}
 		}()
+
+		// If TRACE, Log on entry/exit.
+
 		if initializerImpl.getLogger().IsTrace() {
 			entryTime := time.Now()
 			initializerImpl.traceEntry(10)
 			defer func() { initializerImpl.traceExit(traceExitMessageNumber, err, time.Since(entryTime)) }()
 		}
+
+		// If DEBUG, log input parameters. Must be done after establishing DEBUG and TRACE logging.
+
 		asJson, err := json.Marshal(initializerImpl)
 		if err != nil {
 			debugMessageNumber = 1011
