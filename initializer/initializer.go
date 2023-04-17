@@ -407,7 +407,7 @@ func (initializerImpl *InitializerImpl) RegisterObserver(ctx context.Context, ob
 
 		if initializerImpl.getLogger().IsTrace() {
 			entryTime := time.Now()
-			initializerImpl.traceEntry(30)
+			initializerImpl.traceEntry(30, observer.GetObserverId(ctx))
 			defer func() {
 				initializerImpl.traceExit(traceExitMessageNumber, observer.GetObserverId(ctx), err, time.Since(entryTime))
 			}()
@@ -490,7 +490,7 @@ func (initializerImpl *InitializerImpl) SetLogLevel(ctx context.Context, logLeve
 
 		if initializerImpl.getLogger().IsTrace() {
 			entryTime := time.Now()
-			initializerImpl.traceEntry(40)
+			initializerImpl.traceEntry(40, logLevelName)
 			defer func() { initializerImpl.traceExit(traceExitMessageNumber, logLevelName, err, time.Since(entryTime)) }()
 		}
 
@@ -580,7 +580,7 @@ func (initializerImpl *InitializerImpl) UnregisterObserver(ctx context.Context, 
 
 		if initializerImpl.getLogger().IsTrace() {
 			entryTime := time.Now()
-			initializerImpl.traceEntry(50)
+			initializerImpl.traceEntry(50, observer.GetObserverId(ctx))
 			defer func() {
 				initializerImpl.traceExit(traceExitMessageNumber, observer.GetObserverId(ctx), err, time.Since(entryTime))
 			}()

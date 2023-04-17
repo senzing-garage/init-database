@@ -34,6 +34,10 @@ type SenzingSchemaImpl struct {
 // Variables
 // ----------------------------------------------------------------------------
 
+var debugOptions []interface{} = []interface{}{
+	&logging.OptionCallerSkip{Value: 5},
+}
+
 var traceOptions []interface{} = []interface{}{
 	&logging.OptionCallerSkip{Value: 5},
 }
@@ -64,6 +68,12 @@ func (senzingSchema *SenzingSchemaImpl) log(messageNumber int, details ...interf
 	senzingSchema.getLogger().Log(messageNumber, details...)
 }
 
+// Debug.
+func (senzingSchema *SenzingSchemaImpl) debug(messageNumber int, details ...interface{}) {
+	details = append(details, debugOptions...)
+	senzingSchema.getLogger().Log(messageNumber, details...)
+}
+
 // Trace method entry.
 func (senzingSchema *SenzingSchemaImpl) traceEntry(messageNumber int, details ...interface{}) {
 	details = append(details, traceOptions...)
@@ -85,11 +95,35 @@ func (senzingSchema *SenzingSchemaImpl) processDatabase(ctx context.Context, res
 
 	// Prolog.
 
+	debugMessageNumber := 0
 	traceExitMessageNumber := 109
-	if senzingSchema.isTrace {
-		entryTime := time.Now()
-		senzingSchema.traceEntry(100)
-		defer func() { senzingSchema.traceExit(traceExitMessageNumber, err, time.Since(entryTime)) }()
+	if senzingSchema.getLogger().IsDebug() {
+
+		// If DEBUG, log error exit.
+
+		defer func() {
+			if debugMessageNumber > 0 {
+				senzingSchema.debug(debugMessageNumber, err)
+			}
+		}()
+
+		// If TRACE, Log on entry/exit.
+
+		if senzingSchema.getLogger().IsTrace() {
+			entryTime := time.Now()
+			senzingSchema.traceEntry(100)
+			defer func() { senzingSchema.traceExit(traceExitMessageNumber, err, time.Since(entryTime)) }()
+		}
+
+		// If DEBUG, log input parameters. Must be done after establishing DEBUG and TRACE logging.
+
+		asJson, err := json.Marshal(senzingSchema)
+		if err != nil {
+			debugMessageNumber = 1011
+			traceExitMessageNumber = 11
+			return err
+		}
+		senzingSchema.log(1001, senzingSchema, string(asJson))
 	}
 
 	// Determine which SQL file to process.
@@ -177,18 +211,31 @@ func (senzingSchema *SenzingSchemaImpl) InitializeSenzing(ctx context.Context) e
 
 	// Prolog.
 
+	debugMessageNumber := 0
 	traceExitMessageNumber := 19
-	if senzingSchema.isTrace {
-		entryTime := time.Now()
-		senzingSchema.traceEntry(10)
-		defer func() { senzingSchema.traceExit(traceExitMessageNumber, err, time.Since(entryTime)) }()
-	}
-
-	// Log entry parameters.
-
 	if senzingSchema.getLogger().IsDebug() {
+
+		// If DEBUG, log error exit.
+
+		defer func() {
+			if debugMessageNumber > 0 {
+				senzingSchema.debug(debugMessageNumber, err)
+			}
+		}()
+
+		// If TRACE, Log on entry/exit.
+
+		if senzingSchema.getLogger().IsTrace() {
+			entryTime := time.Now()
+			senzingSchema.traceEntry(10)
+			defer func() { senzingSchema.traceExit(traceExitMessageNumber, err, time.Since(entryTime)) }()
+		}
+
+		// If DEBUG, log input parameters. Must be done after establishing DEBUG and TRACE logging.
+
 		asJson, err := json.Marshal(senzingSchema)
 		if err != nil {
+			debugMessageNumber = 1011
 			traceExitMessageNumber = 11
 			return err
 		}
@@ -199,16 +246,19 @@ func (senzingSchema *SenzingSchemaImpl) InitializeSenzing(ctx context.Context) e
 
 	parser, err := engineconfigurationjsonparser.New(senzingSchema.SenzingEngineConfigurationJson)
 	if err != nil {
+		debugMessageNumber = 1012
 		traceExitMessageNumber = 12
 		return err
 	}
 	resourcePath, err := parser.GetResourcePath(ctx)
 	if err != nil {
+		debugMessageNumber = 1013
 		traceExitMessageNumber = 13
 		return err
 	}
 	databaseUrls, err := parser.GetDatabaseUrls(ctx)
 	if err != nil {
+		debugMessageNumber = 1014
 		traceExitMessageNumber = 14
 		return err
 	}
@@ -218,6 +268,7 @@ func (senzingSchema *SenzingSchemaImpl) InitializeSenzing(ctx context.Context) e
 	for _, databaseUrl := range databaseUrls {
 		err = senzingSchema.processDatabase(ctx, resourcePath, databaseUrl)
 		if err != nil {
+			debugMessageNumber = 1015
 			traceExitMessageNumber = 15
 			return err
 		}
@@ -247,20 +298,33 @@ func (senzingSchema *SenzingSchemaImpl) RegisterObserver(ctx context.Context, ob
 
 	// Prolog.
 
+	debugMessageNumber := 0
 	traceExitMessageNumber := 29
-	if senzingSchema.isTrace {
-		entryTime := time.Now()
-		senzingSchema.traceEntry(20, observer.GetObserverId(ctx))
-		defer func() {
-			senzingSchema.traceExit(traceExitMessageNumber, observer.GetObserverId(ctx), err, time.Since(entryTime))
-		}()
-	}
-
-	// Log entry parameters.
-
 	if senzingSchema.getLogger().IsDebug() {
+
+		// If DEBUG, log error exit.
+
+		defer func() {
+			if debugMessageNumber > 0 {
+				senzingSchema.debug(debugMessageNumber, err)
+			}
+		}()
+
+		// If TRACE, Log on entry/exit.
+
+		if senzingSchema.getLogger().IsTrace() {
+			entryTime := time.Now()
+			senzingSchema.traceEntry(20, observer.GetObserverId(ctx))
+			defer func() {
+				senzingSchema.traceExit(traceExitMessageNumber, observer.GetObserverId(ctx), err, time.Since(entryTime))
+			}()
+		}
+
+		// If DEBUG, log input parameters. Must be done after establishing DEBUG and TRACE logging.
+
 		asJson, err := json.Marshal(senzingSchema)
 		if err != nil {
+			debugMessageNumber = 1021
 			traceExitMessageNumber = 21
 			return err
 		}
@@ -277,6 +341,7 @@ func (senzingSchema *SenzingSchemaImpl) RegisterObserver(ctx context.Context, ob
 
 	err = senzingSchema.observers.RegisterObserver(ctx, observer)
 	if err != nil {
+		debugMessageNumber = 1022
 		traceExitMessageNumber = 22
 		return err
 	}
@@ -305,18 +370,33 @@ func (senzingSchema *SenzingSchemaImpl) SetLogLevel(ctx context.Context, logLeve
 
 	// Prolog.
 
+	debugMessageNumber := 0
 	traceExitMessageNumber := 39
-	if senzingSchema.isTrace {
-		entryTime := time.Now()
-		senzingSchema.traceEntry(30, logLevelName)
-		defer func() { senzingSchema.traceExit(traceExitMessageNumber, logLevelName, err, time.Since(entryTime)) }()
-	}
-
-	// Log entry parameters.
-
 	if senzingSchema.getLogger().IsDebug() {
+
+		// If DEBUG, log error exit.
+
+		defer func() {
+			if debugMessageNumber > 0 {
+				senzingSchema.debug(debugMessageNumber, err)
+			}
+		}()
+
+		// If TRACE, Log on entry/exit.
+
+		if senzingSchema.getLogger().IsTrace() {
+			entryTime := time.Now()
+			senzingSchema.traceEntry(30, logLevelName)
+			defer func() {
+				senzingSchema.traceExit(traceExitMessageNumber, logLevelName, err, time.Since(entryTime))
+			}()
+		}
+
+		// If DEBUG, log input parameters. Must be done after establishing DEBUG and TRACE logging.
+
 		asJson, err := json.Marshal(senzingSchema)
 		if err != nil {
+			debugMessageNumber = 1031
 			traceExitMessageNumber = 31
 			return err
 		}
@@ -362,20 +442,33 @@ func (senzingSchema *SenzingSchemaImpl) UnregisterObserver(ctx context.Context, 
 
 	// Prolog.
 
+	debugMessageNumber := 0
 	traceExitMessageNumber := 49
-	if senzingSchema.isTrace {
-		entryTime := time.Now()
-		senzingSchema.traceEntry(40, observer.GetObserverId(ctx))
-		defer func() {
-			senzingSchema.traceExit(traceExitMessageNumber, observer.GetObserverId(ctx), err, time.Since(entryTime))
-		}()
-	}
-
-	// Log entry parameters.
-
 	if senzingSchema.getLogger().IsDebug() {
+
+		// If DEBUG, log error exit.
+
+		defer func() {
+			if debugMessageNumber > 0 {
+				senzingSchema.debug(debugMessageNumber, err)
+			}
+		}()
+
+		// If TRACE, Log on entry/exit.
+
+		if senzingSchema.getLogger().IsTrace() {
+			entryTime := time.Now()
+			senzingSchema.traceEntry(40, observer.GetObserverId(ctx))
+			defer func() {
+				senzingSchema.traceExit(traceExitMessageNumber, observer.GetObserverId(ctx), err, time.Since(entryTime))
+			}()
+		}
+
+		// If DEBUG, log input parameters. Must be done after establishing DEBUG and TRACE logging.
+
 		asJson, err := json.Marshal(senzingSchema)
 		if err != nil {
+			debugMessageNumber = 1041
 			traceExitMessageNumber = 41
 			return err
 		}
