@@ -301,16 +301,25 @@ func (initializerImpl *InitializerImpl) InitializeSpecificDatabase(ctx context.C
 	debugMessageNumber := 0
 	traceExitMessageNumber := 29
 	if initializerImpl.getLogger().IsDebug() {
+
+		// If DEBUG, log error exit.
+
 		defer func() {
 			if debugMessageNumber > 0 {
 				initializerImpl.debug(debugMessageNumber, err)
 			}
 		}()
+
+		// If TRACE, Log on entry/exit.
+
 		if initializerImpl.getLogger().IsTrace() {
 			entryTime := time.Now()
 			initializerImpl.traceEntry(20)
 			defer func() { initializerImpl.traceExit(traceExitMessageNumber, err, time.Since(entryTime)) }()
 		}
+
+		// If DEBUG, log input parameters. Must be done after establishing DEBUG and TRACE logging.
+
 		asJson, err := json.Marshal(initializerImpl)
 		if err != nil {
 			debugMessageNumber = 1021
@@ -385,11 +394,17 @@ func (initializerImpl *InitializerImpl) RegisterObserver(ctx context.Context, ob
 	debugMessageNumber := 0
 	traceExitMessageNumber := 39
 	if initializerImpl.getLogger().IsDebug() {
+
+		// If DEBUG, log error exit.
+
 		defer func() {
 			if debugMessageNumber > 0 {
 				initializerImpl.debug(debugMessageNumber, err)
 			}
 		}()
+
+		// If TRACE, Log on entry/exit.
+
 		if initializerImpl.getLogger().IsTrace() {
 			entryTime := time.Now()
 			initializerImpl.traceEntry(30)
@@ -397,6 +412,9 @@ func (initializerImpl *InitializerImpl) RegisterObserver(ctx context.Context, ob
 				initializerImpl.traceExit(traceExitMessageNumber, observer.GetObserverId(ctx), err, time.Since(entryTime))
 			}()
 		}
+
+		// If DEBUG, log input parameters. Must be done after establishing DEBUG and TRACE logging.
+
 		asJson, err := json.Marshal(initializerImpl)
 		if err != nil {
 			debugMessageNumber = 1031
@@ -459,16 +477,25 @@ func (initializerImpl *InitializerImpl) SetLogLevel(ctx context.Context, logLeve
 	debugMessageNumber := 0
 	traceExitMessageNumber := 49
 	if initializerImpl.getLogger().IsDebug() {
+
+		// If DEBUG, log error exit.
+
 		defer func() {
 			if debugMessageNumber > 0 {
 				initializerImpl.debug(debugMessageNumber, err)
 			}
 		}()
+
+		// If TRACE, Log on entry/exit.
+
 		if initializerImpl.getLogger().IsTrace() {
 			entryTime := time.Now()
 			initializerImpl.traceEntry(40)
 			defer func() { initializerImpl.traceExit(traceExitMessageNumber, logLevelName, err, time.Since(entryTime)) }()
 		}
+
+		// If DEBUG, log input parameters. Must be done after establishing DEBUG and TRACE logging.
+
 		asJson, err := json.Marshal(initializerImpl)
 		if err != nil {
 			debugMessageNumber = 1041
@@ -540,11 +567,17 @@ func (initializerImpl *InitializerImpl) UnregisterObserver(ctx context.Context, 
 	debugMessageNumber := 0
 	traceExitMessageNumber := 59
 	if initializerImpl.getLogger().IsDebug() {
+
+		// If DEBUG, log error exit.
+
 		defer func() {
 			if debugMessageNumber > 0 {
 				initializerImpl.debug(debugMessageNumber, err)
 			}
 		}()
+
+		// If TRACE, Log on entry/exit.
+
 		if initializerImpl.getLogger().IsTrace() {
 			entryTime := time.Now()
 			initializerImpl.traceEntry(50)
@@ -552,6 +585,9 @@ func (initializerImpl *InitializerImpl) UnregisterObserver(ctx context.Context, 
 				initializerImpl.traceExit(traceExitMessageNumber, observer.GetObserverId(ctx), err, time.Since(entryTime))
 			}()
 		}
+
+		// If DEBUG, log input parameters. Must be done after establishing DEBUG and TRACE logging.
+
 		asJson, err := json.Marshal(initializerImpl)
 		if err != nil {
 			debugMessageNumber = 1051
