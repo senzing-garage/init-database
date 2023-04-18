@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/senzing/go-common/g2engineconfigurationjson"
-	"github.com/senzing/go-logging/logger"
+	"github.com/senzing/go-logging/logging"
 	"github.com/senzing/go-observing/observer"
 )
 
@@ -52,8 +52,8 @@ func TestSenzingSchemaImpl_Initialize(test *testing.T) {
 	testObject := &SenzingSchemaImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
-	testObject.SetLogLevel(ctx, logger.LevelInfo)
-	testObject.Initialize(ctx)
+	testObject.SetLogLevel(ctx, logging.LevelInfoName)
+	testObject.InitializeSenzing(ctx)
 }
 
 func TestSenzingSchemaImpl_RegisterObserver(test *testing.T) {
@@ -71,9 +71,9 @@ func TestSenzingSchemaImpl_RegisterObserver(test *testing.T) {
 	testObject := &SenzingSchemaImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
-	testObject.SetLogLevel(ctx, logger.LevelInfo)
+	testObject.SetLogLevel(ctx, logging.LevelInfoName)
 	testObject.RegisterObserver(ctx, observer1)
-	testObject.Initialize(ctx)
+	testObject.InitializeSenzing(ctx)
 }
 
 func TestSenzingSchemaImpl_UnregisterObserver(test *testing.T) {
@@ -91,9 +91,9 @@ func TestSenzingSchemaImpl_UnregisterObserver(test *testing.T) {
 	testObject := &SenzingSchemaImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
-	testObject.SetLogLevel(ctx, logger.LevelInfo)
+	testObject.SetLogLevel(ctx, logging.LevelInfoName)
 	testObject.RegisterObserver(ctx, observer1)
-	testObject.Initialize(ctx)
+	testObject.InitializeSenzing(ctx)
 	testObject.UnregisterObserver(ctx, observer1)
 }
 
@@ -101,7 +101,7 @@ func TestSenzingSchemaImpl_UnregisterObserver(test *testing.T) {
 // Examples for godoc documentation
 // ----------------------------------------------------------------------------
 
-func ExampleSenzingSchemaImpl_Initialize() {
+func ExampleSenzingSchemaImpl_InitializeSenzing() {
 	// For more information, visit https://github.com/Senzing/init-database/blob/main/senzingschema/senzingschema_test.go
 	ctx := context.TODO()
 	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
@@ -111,11 +111,11 @@ func ExampleSenzingSchemaImpl_Initialize() {
 	senzingSchema := &SenzingSchemaImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
-	err = senzingSchema.SetLogLevel(ctx, logger.LevelInfo)
+	err = senzingSchema.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		fmt.Println(err)
 	}
-	err = senzingSchema.Initialize(ctx)
+	err = senzingSchema.InitializeSenzing(ctx)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -153,7 +153,7 @@ func ExampleSenzingSchemaImpl_SetLogLevel() {
 	senzingSchema := &SenzingSchemaImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
-	err = senzingSchema.SetLogLevel(ctx, logger.LevelInfo)
+	err = senzingSchema.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		fmt.Print(err)
 	}

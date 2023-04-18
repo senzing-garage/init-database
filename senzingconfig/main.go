@@ -3,7 +3,6 @@ package senzingconfig
 import (
 	"context"
 
-	"github.com/senzing/go-logging/logger"
 	"github.com/senzing/go-observing/observer"
 )
 
@@ -12,9 +11,9 @@ import (
 // ----------------------------------------------------------------------------
 
 type SenzingConfig interface {
-	Initialize(ctx context.Context) error
+	InitializeSenzing(ctx context.Context) error
 	RegisterObserver(ctx context.Context, observer observer.Observer) error
-	SetLogLevel(ctx context.Context, logLevel logger.Level) error
+	SetLogLevel(ctx context.Context, logLevelName string) error
 	UnregisterObserver(ctx context.Context, observer observer.Observer) error
 }
 
@@ -25,33 +24,83 @@ type SenzingConfig interface {
 // Identfier of the  package found messages having the format "senzing-6502xxxx".
 const ProductId = 6502
 
+// Log message prefix.
+const Prefix = "init-database.senzingconfig."
+
 // ----------------------------------------------------------------------------
 // Variables
 // ----------------------------------------------------------------------------
 
 // Message templates for sqlfiler implementation.
 var IdMessages = map[int]string{
-	1:    "Enter Initialize().",
-	2:    "Exit  Initialize() returned (%v).",
-	3:    "Enter RegisterObserver(%s).",
-	4:    "Exit  RegisterObserver(%s) returned (%v).",
-	5:    "Enter SetLogLevel(%v).",
-	6:    "Exit  SetLogLevel(%v) returned (%v).",
-	7:    "Enter UnregisterObserver(%s).",
-	8:    "Exit  UnregisterObserver(%s) returned (%v).",
-	901:  "Exit  InitializeSenzingConfiguration() returned (%v).",
-	1000: "Entry: %+v",
-	2001: "SENZING_ENGINE_CONFIGURATION_JSON: %v",
+	10:   "Enter " + Prefix + "InitializeSenzing().",
+	11:   "Exit  " + Prefix + "InitializeSenzing(); json.Marshal failed; returned (%v).",
+	12:   "Exit  " + Prefix + "InitializeSenzing(); senzingConfig.getDependentServices failed; returned (%v).",
+	13:   "Exit  " + Prefix + "InitializeSenzing(); g2Configmgr.GetDefaultConfigID failed; returned (%v).",
+	14:   "Exit  " + Prefix + "InitializeSenzing(); Senzing configuration already exists; returned (%v).",
+	15:   "Exit  " + Prefix + "InitializeSenzing(); g2Config.Create failed; returned (%v).",
+	16:   "Exit  " + Prefix + "InitializeSenzing(); senzingConfig.addDatasources failed; returned (%v).",
+	17:   "Exit  " + Prefix + "InitializeSenzing(); g2Config.Save failed; returned (%v).",
+	18:   "Exit  " + Prefix + "InitializeSenzing(); g2Configmgr.AddConfig failed; returned (%v).",
+	19:   "Exit  " + Prefix + "InitializeSenzing(); g2Configmgr.SetDefaultConfigID failed; returned (%v).",
+	29:   "Exit  " + Prefix + "InitializeSenzing() returned (%v).",
+	30:   "Enter " + Prefix + "RegisterObserver(%s).",
+	31:   "Exit  " + Prefix + "RegisterObserver(%s); json.Marshal failed; returned (%v).",
+	32:   "Exit  " + Prefix + "RegisterObserver(%s); senzingConfig.observers.RegisterObserver failed; returned (%v).",
+	33:   "Exit  " + Prefix + "RegisterObserver(%s); senzingConfig.getDependentServices failed; returned (%v).",
+	34:   "Exit  " + Prefix + "RegisterObserver(%s); g2Config.RegisterObserver failed; returned (%v).",
+	35:   "Exit  " + Prefix + "RegisterObserver(%s); g2Configmgr.RegisterObserver failed; returned (%v).",
+	39:   "Exit  " + Prefix + "RegisterObserver(%s) returned (%v).",
+	40:   "Enter " + Prefix + "SetLogLevel(%s).",
+	41:   "Exit  " + Prefix + "SetLogLevel(%s); json.Marshal failed; returned (%v).",
+	42:   "Exit  " + Prefix + "SetLogLevel(%s); logging.IsValidLogLevelName failed; returned (%v).",
+	43:   "Exit  " + Prefix + "SetLogLevel(%s); senzingConfig.getLogger().SetLogLevel failed; returned (%v).",
+	44:   "Exit  " + Prefix + "SetLogLevel(%s); senzingConfig.getDependentServices failed; returned (%v).",
+	45:   "Exit  " + Prefix + "SetLogLevel(%s); g2Config.SetLogLevel failed; returned (%v).",
+	46:   "Exit  " + Prefix + "SetLogLevel(%s); g2Configmgr.SetLogLevel failed; returned (%v).",
+	49:   "Exit  " + Prefix + "SetLogLevel(%s) returned (%v).",
+	50:   "Enter " + Prefix + "UnregisterObserver(%s).",
+	51:   "Exit  " + Prefix + "UnregisterObserver(%s); json.Marshal failed; returned (%v).",
+	52:   "Exit  " + Prefix + "UnregisterObserver(%s); g2Config.UnregisterObserver failed; returned (%v).",
+	53:   "Exit  " + Prefix + "UnregisterObserver(%s); g2Configmgr.UnregisterObserver failed; returned (%v).",
+	54:   "Exit  " + Prefix + "UnregisterObserver(%s); senzingConfig.observers.UnregisterObserver failed; returned (%v).",
+	59:   "Exit  " + Prefix + "UnregisterObserver(%s) returned (%v).",
+	1001: Prefix + "InitializeSenzing parameters: %+v",
+	1002: Prefix + "RegisterObserver parameters: %+v",
+	1003: Prefix + "SetLogLevel parameters: %+v",
+	1004: Prefix + "UnregisterObserver parameters: %+v",
+	1011: Prefix + "Initialize(); json.Marshal failed; Error: %v.",
+	1012: Prefix + "Initialize(); senzingConfig.getDependentServices failed; Error: %v.",
+	1013: Prefix + "Initialize(); g2Configmgr.GetDefaultConfigID failed; Error: %v.",
+	1014: Prefix + "Initialize(); senzingSchema.InitializeSenzing failed; Error: %v.",
+	1015: Prefix + "Initialize(); g2Config.Create failed; Error: %v.",
+	1016: Prefix + "Initialize(); senzingConfig.addDatasources failed; Error: %v.",
+	1017: Prefix + "Initialize(); g2Config.Save failed; Error: %v.",
+	1018: Prefix + "Initialize(); g2Configmgr.AddConfig failed; Error: %v.",
+	1019: Prefix + "Initialize(); g2Configmgr.SetDefaultConfigID failed; Error: %v.",
+	1031: Prefix + "RegisterObserver(%s); json.Marshal failed; returned (%v).",
+	1032: Prefix + "RegisterObserver(%s); senzingConfig.observers.RegisterObserver failed; returned (%v).",
+	1033: Prefix + "RegisterObserver(%s); senzingConfig.getDependentServices failed; returned (%v).",
+	1034: Prefix + "RegisterObserver(%s); g2Config.RegisterObserver failed; returned (%v).",
+	1035: Prefix + "RegisterObserver(%s); g2Configmgr.RegisterObserver failed; returned (%v).",
+	1041: Prefix + "SetLogLevel(%s); json.Marshal failed; returned (%v).",
+	1042: Prefix + "SetLogLevel(%s); logging.IsValidLogLevelName failed; returned (%v).",
+	1043: Prefix + "SetLogLevel(%s); senzingConfig.getLogger().SetLogLevel failed; returned (%v).",
+	1044: Prefix + "SetLogLevel(%s); senzingConfig.getDependentServices failed; returned (%v).",
+	1045: Prefix + "SetLogLevel(%s); g2Config.SetLogLevel failed; returned (%v).",
+	1046: Prefix + "SetLogLevel(%s); g2Configmgr.SetLogLevel failed; returned (%v).",
+	1051: Prefix + "UnregisterObserver(%s); json.Marshal failed; returned (%v).",
+	1052: Prefix + "UnregisterObserver(%s); g2Config.UnregisterObserver failed; returned (%v).",
+	1053: Prefix + "UnregisterObserver(%s); g2Configmgr.UnregisterObserver failed; returned (%v).",
+	1054: Prefix + "UnregisterObserver(%s); senzingConfig.observers.UnregisterObserver failed; returned (%v).",
+	2001: "Added Datasource: %s",
 	2002: "No new Senzing configuration created.  One already exists (%d).",
-	2003: "Added datasource: %s",
-	2004: "Created Senzing configuration: %d named: %s",
-	4001: "Call to net.Listen(tcp, %s) failed.",
-	5001: "Failed to serve.",
-	8001: "Initialize - config exists",
-	8002: "Initialize",
-	8003: "RegisterObserver",
-	8004: "SetLogLevel",
-	8005: "UnregisterObserver",
+	2003: "Created Senzing configuration: %d named: %s",
+	8001: Prefix + "InitializeSenzing - config exists",
+	8002: Prefix + "InitializeSenzing",
+	8003: Prefix + "RegisterObserver",
+	8004: Prefix + "SetLogLevel",
+	8005: Prefix + "UnregisterObserver",
 }
 
 // Status strings for specific messages.

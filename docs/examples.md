@@ -8,6 +8,8 @@
    Example:
 
     ```console
+    rm -rf /tmp/sqlite
+    touch /tmp/sqlite/G2C.db
     senzing-tools init-database --database-url sqlite3://na:na@/tmp/sqlite/G2C.db
 
     ```

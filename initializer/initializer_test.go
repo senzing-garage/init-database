@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/senzing/go-common/g2engineconfigurationjson"
-	"github.com/senzing/go-logging/logger"
+	"github.com/senzing/go-logging/logging"
 	"github.com/senzing/go-observing/observer"
 )
 
@@ -52,7 +52,7 @@ func TestInitializerImpl_Initialize(test *testing.T) {
 	testObject := &InitializerImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
-	testObject.SetLogLevel(ctx, logger.LevelInfo)
+	testObject.SetLogLevel(ctx, logging.LevelInfoName)
 	testObject.Initialize(ctx)
 }
 
@@ -71,7 +71,7 @@ func TestInitializerImpl_RegisterObserver(test *testing.T) {
 	testObject := &InitializerImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
-	testObject.SetLogLevel(ctx, logger.LevelInfo)
+	testObject.SetLogLevel(ctx, logging.LevelInfoName)
 	testObject.RegisterObserver(ctx, observer1)
 	testObject.Initialize(ctx)
 }
@@ -91,7 +91,7 @@ func TestInitializerImpl_UnregisterObserver(test *testing.T) {
 	testObject := &InitializerImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
-	testObject.SetLogLevel(ctx, logger.LevelInfo)
+	testObject.SetLogLevel(ctx, logging.LevelInfoName)
 	testObject.RegisterObserver(ctx, observer1)
 	testObject.Initialize(ctx)
 	testObject.UnregisterObserver(ctx, observer1)
@@ -111,7 +111,7 @@ func ExampleInitializerImpl_Initialize() {
 	anInitializer := &InitializerImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
-	err = anInitializer.SetLogLevel(ctx, logger.LevelInfo)
+	err = anInitializer.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -153,7 +153,7 @@ func ExampleInitializerImpl_SetLogLevel() {
 	anInitializer := &InitializerImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
-	err = anInitializer.SetLogLevel(ctx, logger.LevelInfo)
+	err = anInitializer.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		fmt.Println(err)
 	}

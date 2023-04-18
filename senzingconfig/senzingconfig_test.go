@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/senzing/go-common/g2engineconfigurationjson"
-	"github.com/senzing/go-logging/logger"
+	"github.com/senzing/go-logging/logging"
 	"github.com/senzing/go-observing/observer"
 	"github.com/senzing/init-database/senzingschema"
 )
@@ -39,11 +39,11 @@ func setup() error {
 	senzingSchema := &senzingschema.SenzingSchemaImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
-	err = senzingSchema.SetLogLevel(ctx, logger.LevelInfo)
+	err = senzingSchema.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		fmt.Println(err)
 	}
-	err = senzingSchema.Initialize(ctx)
+	err = senzingSchema.InitializeSenzing(ctx)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -63,7 +63,7 @@ func teardown() error {
 // Examples for godoc documentation
 // ----------------------------------------------------------------------------
 
-func ExampleSenzingConfigImpl_Initialize_withDatasources() {
+func ExampleSenzingConfigImpl_InitializeSenzing_withDatasources() {
 	// For more information, visit https://github.com/Senzing/init-database/blob/main/senzingconfig/senzingconfig_test.go
 	ctx := context.TODO()
 	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
@@ -74,18 +74,18 @@ func ExampleSenzingConfigImpl_Initialize_withDatasources() {
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 		DataSources:                    []string{"CUSTOMERS", "REFERENCE", "WATCHLIST"},
 	}
-	err = senzingConfig.SetLogLevel(ctx, logger.LevelInfo)
+	err = senzingConfig.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		fmt.Println(err)
 	}
-	err = senzingConfig.Initialize(ctx)
+	err = senzingConfig.InitializeSenzing(ctx)
 	if err != nil {
 		fmt.Println(err)
 	}
 	// Output:
 }
 
-func ExampleSenzingConfigImpl_Initialize() {
+func ExampleSenzingConfigImpl_InitializeSenzing() {
 	// For more information, visit https://github.com/Senzing/init-database/blob/main/senzingconfig/senzingconfig_test.go
 	ctx := context.TODO()
 	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
@@ -95,11 +95,11 @@ func ExampleSenzingConfigImpl_Initialize() {
 	senzingConfig := &SenzingConfigImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
-	err = senzingConfig.SetLogLevel(ctx, logger.LevelInfo)
+	err = senzingConfig.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		fmt.Println(err)
 	}
-	err = senzingConfig.Initialize(ctx)
+	err = senzingConfig.InitializeSenzing(ctx)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -137,7 +137,7 @@ func ExampleSenzingConfigImpl_SetLogLevel() {
 	senzingConfig := &SenzingConfigImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
-	err = senzingConfig.SetLogLevel(ctx, logger.LevelInfo)
+	err = senzingConfig.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		fmt.Println(err)
 	}
