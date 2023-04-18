@@ -26,7 +26,7 @@ This command initialize databases with a Senzing schema and a default Senzing co
    The file chosen depends on the database engine specified in the protocol section of `SENZING_TOOLS_DATABASE_URL`
    or the database(s) specified in `SENZING_TOOLS_ENGINE_CONFIGURATION_JSON`.
 1. Creates a Senzing configuration in the database based on the contents of `/opt/senzing/g2/resources/templates/g2config.json`
-1. *Optionally:* Adds datasources to the Senzing configuration.
+1. *Optionally:* Adds datasources to the initial Senzing configuration.
 
 ## Install
 
