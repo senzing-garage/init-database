@@ -355,23 +355,21 @@ func (senzingConfig *SenzingConfigImpl) RegisterObserver(ctx context.Context, ob
 		traceExitMessageNumber, debugMessageNumber = 32, 1032
 		return err
 	}
-
-	// FIXME: Need issue to fix registering observers with g2-sdk-go-*
-	// g2Config, g2Configmgr, err := senzingConfig.getDependentServices(ctx)
-	// if err != nil {
-	// 	traceExitMessageNumber, debugMessageNumber = 33, 1033
-	// 	return err
-	// }
-	// err = g2Config.RegisterObserver(ctx, observer)
-	// if err != nil {
-	// 	traceExitMessageNumber, debugMessageNumber = 34, 1034
-	// 	return err
-	// }
-	// err = g2Configmgr.RegisterObserver(ctx, observer)
-	// if err != nil {
-	// 	traceExitMessageNumber, debugMessageNumber = 35, 1035
-	// 	return err
-	// }
+	g2Config, g2Configmgr, err := senzingConfig.getDependentServices(ctx)
+	if err != nil {
+		traceExitMessageNumber, debugMessageNumber = 33, 1033
+		return err
+	}
+	err = g2Config.RegisterObserver(ctx, observer)
+	if err != nil {
+		traceExitMessageNumber, debugMessageNumber = 34, 1034
+		return err
+	}
+	err = g2Configmgr.RegisterObserver(ctx, observer)
+	if err != nil {
+		traceExitMessageNumber, debugMessageNumber = 35, 1035
+		return err
+	}
 
 	// Notify observers.
 
@@ -529,19 +527,19 @@ func (senzingConfig *SenzingConfigImpl) UnregisterObserver(ctx context.Context, 
 		senzingConfig.log(1004, senzingConfig, string(asJson))
 	}
 
-	// FIXME: Need issue to fix registering observers with g2-sdk-go-*
 	// Unregister observers in dependencies.
-	// g2Config, g2Configmgr, err := senzingConfig.getDependentServices(ctx)
-	// err = g2Config.UnregisterObserver(ctx, observer)
-	// if err != nil {
-	// 	traceExitMessageNumber, debugMessageNumber = 52, 1052
-	// 	return err
-	// }
-	// err = g2Configmgr.UnregisterObserver(ctx, observer)
-	// if err != nil {
-	// 	traceExitMessageNumber, debugMessageNumber = 53, 1053
-	// 	return err
-	// }
+
+	g2Config, g2Configmgr, err := senzingConfig.getDependentServices(ctx)
+	err = g2Config.UnregisterObserver(ctx, observer)
+	if err != nil {
+		traceExitMessageNumber, debugMessageNumber = 52, 1052
+		return err
+	}
+	err = g2Configmgr.UnregisterObserver(ctx, observer)
+	if err != nil {
+		traceExitMessageNumber, debugMessageNumber = 53, 1053
+		return err
+	}
 
 	// Remove observer from this service.
 

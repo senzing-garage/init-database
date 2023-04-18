@@ -581,18 +581,18 @@ func (initializerImpl *InitializerImpl) UnregisterObserver(ctx context.Context, 
 		initializerImpl.log(1004, initializerImpl, string(asJson))
 	}
 
-	// Unregister observer in dependencies.
+	// Unregister observers in dependencies.
 
-	// err = initializerImpl.getSenzingConfig().UnregisterObserver(ctx, observer)
-	// if err != nil {
-	// 	traceExitMessageNumber, debugMessageNumber = 52, 1052
-	// 	return err
-	// }
-	// err = initializerImpl.getSenzingSchema().UnregisterObserver(ctx, observer)
-	// if err != nil {
-	// 	traceExitMessageNumber, debugMessageNumber = 53, 1053
-	// 	return err
-	// }
+	err = initializerImpl.getSenzingConfig().UnregisterObserver(ctx, observer)
+	if err != nil {
+		traceExitMessageNumber, debugMessageNumber = 52, 1052
+		return err
+	}
+	err = initializerImpl.getSenzingSchema().UnregisterObserver(ctx, observer)
+	if err != nil {
+		traceExitMessageNumber, debugMessageNumber = 53, 1053
+		return err
+	}
 
 	// Remove observer from this service.
 
