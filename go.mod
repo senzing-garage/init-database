@@ -3,7 +3,7 @@ module github.com/senzing/init-database
 go 1.20
 
 require (
-	github.com/senzing/g2-sdk-go v0.5.1
+	github.com/senzing/g2-sdk-go v0.6.0
 	github.com/senzing/go-common v0.1.2
 	github.com/senzing/go-databasing v0.2.3
 	github.com/senzing/go-logging v1.2.1
