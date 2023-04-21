@@ -448,20 +448,17 @@ func (senzingConfig *SenzingConfigImpl) SetLogLevel(ctx context.Context, logLeve
 
 	// Set log level for dependent services.
 
-	// TODO: Remove once g2configmgr.SetLogLevel(context.Context, string)
-	logLevel := logging.TextToLoggerLevelMap[logLevelName]
-
 	g2Config, g2Configmgr, err := senzingConfig.getDependentServices(ctx)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 44, 1044
 		return err
 	}
-	err = g2Config.SetLogLevel(ctx, logLevel)
+	err = g2Config.SetLogLevel(ctx, logLevelName)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 45, 1045
 		return err
 	}
-	err = g2Configmgr.SetLogLevel(ctx, logLevel)
+	err = g2Configmgr.SetLogLevel(ctx, logLevelName)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 46, 1046
 		return err
