@@ -22,7 +22,7 @@ type SenzingConfig interface {
 // ----------------------------------------------------------------------------
 
 // Identfier of the  package found messages having the format "senzing-6502xxxx".
-const ProductId = 6502
+const ComponentId = 6502
 
 // Log message prefix.
 const Prefix = "init-database.senzingconfig."

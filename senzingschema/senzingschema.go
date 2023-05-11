@@ -25,6 +25,7 @@ import (
 type SenzingSchemaImpl struct {
 	logger                         logging.LoggingInterface
 	logLevelName                   string
+	observerOrigin                 string
 	observers                      subject.Subject
 	SenzingEngineConfigurationJson string
 }
@@ -54,7 +55,7 @@ func (senzingSchema *SenzingSchemaImpl) getLogger() logging.LoggingInterface {
 		options := []interface{}{
 			&logging.OptionCallerSkip{Value: 4},
 		}
-		senzingSchema.logger, err = logging.NewSenzingToolsLogger(ProductId, IdMessages, options...)
+		senzingSchema.logger, err = logging.NewSenzingToolsLogger(ComponentId, IdMessages, options...)
 		if err != nil {
 			panic(err)
 		}
@@ -265,7 +266,7 @@ func (senzingSchema *SenzingSchemaImpl) InitializeSenzing(ctx context.Context) e
 	if senzingSchema.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, senzingSchema.observers, ProductId, 8001, err, details)
+			notifier.Notify(ctx, senzingSchema.observers, senzingSchema.observerOrigin, ComponentId, 8001, err, details)
 		}()
 	}
 
@@ -336,7 +337,7 @@ func (senzingSchema *SenzingSchemaImpl) RegisterObserver(ctx context.Context, ob
 		details := map[string]string{
 			"observerID": observer.GetObserverId(ctx),
 		}
-		notifier.Notify(ctx, senzingSchema.observers, ProductId, 8002, err, details)
+		notifier.Notify(ctx, senzingSchema.observers, senzingSchema.observerOrigin, ComponentId, 8002, err, details)
 	}()
 
 	return err
@@ -405,7 +406,7 @@ func (senzingSchema *SenzingSchemaImpl) SetLogLevel(ctx context.Context, logLeve
 			details := map[string]string{
 				"logLevelName": logLevelName,
 			}
-			notifier.Notify(ctx, senzingSchema.observers, ProductId, 8003, err, details)
+			notifier.Notify(ctx, senzingSchema.observers, senzingSchema.observerOrigin, ComponentId, 8003, err, details)
 		}()
 	}
 
@@ -467,7 +468,7 @@ func (senzingSchema *SenzingSchemaImpl) UnregisterObserver(ctx context.Context, 
 		details := map[string]string{
 			"observerID": observer.GetObserverId(ctx),
 		}
-		notifier.Notify(ctx, senzingSchema.observers, ProductId, 8004, err, details)
+		notifier.Notify(ctx, senzingSchema.observers, senzingSchema.observerOrigin, ComponentId, 8004, err, details)
 
 		err = senzingSchema.observers.UnregisterObserver(ctx, observer)
 		if err != nil {

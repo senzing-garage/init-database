@@ -31,6 +31,7 @@ type SenzingConfigImpl struct {
 	isTrace                        bool
 	logger                         logging.LoggingInterface
 	logLevel                       string
+	observerOrigin                 string
 	observers                      subject.Subject
 	SenzingEngineConfigurationJson string
 	SenzingModuleName              string
@@ -64,7 +65,7 @@ func (senzingConfig *SenzingConfigImpl) getLogger() logging.LoggingInterface {
 		options := []interface{}{
 			&logging.OptionCallerSkip{Value: 4},
 		}
-		senzingConfig.logger, err = logging.NewSenzingToolsLogger(ProductId, IdMessages, options...)
+		senzingConfig.logger, err = logging.NewSenzingToolsLogger(ComponentId, IdMessages, options...)
 		if err != nil {
 			panic(err)
 		}
@@ -237,7 +238,7 @@ func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) e
 		if senzingConfig.observers != nil {
 			go func() {
 				details := map[string]string{}
-				notifier.Notify(ctx, senzingConfig.observers, ProductId, 8001, err, details)
+				notifier.Notify(ctx, senzingConfig.observers, senzingConfig.observerOrigin, ComponentId, 8001, err, details)
 			}()
 		}
 		senzingConfig.log(2002, configID)
@@ -291,7 +292,7 @@ func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) e
 	if senzingConfig.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, senzingConfig.observers, ProductId, 8002, err, details)
+			notifier.Notify(ctx, senzingConfig.observers, senzingConfig.observerOrigin, ComponentId, 8002, err, details)
 		}()
 	}
 
@@ -377,7 +378,7 @@ func (senzingConfig *SenzingConfigImpl) RegisterObserver(ctx context.Context, ob
 		details := map[string]string{
 			"observerID": observer.GetObserverId(ctx),
 		}
-		notifier.Notify(ctx, senzingConfig.observers, ProductId, 8003, err, details)
+		notifier.Notify(ctx, senzingConfig.observers, senzingConfig.observerOrigin, ComponentId, 8003, err, details)
 	}()
 
 	return err
@@ -471,7 +472,7 @@ func (senzingConfig *SenzingConfigImpl) SetLogLevel(ctx context.Context, logLeve
 			details := map[string]string{
 				"logLevelName": logLevelName,
 			}
-			notifier.Notify(ctx, senzingConfig.observers, ProductId, 8004, err, details)
+			notifier.Notify(ctx, senzingConfig.observers, senzingConfig.observerOrigin, ComponentId, 8004, err, details)
 		}()
 	}
 
@@ -549,7 +550,7 @@ func (senzingConfig *SenzingConfigImpl) UnregisterObserver(ctx context.Context, 
 		details := map[string]string{
 			"observerID": observer.GetObserverId(ctx),
 		}
-		notifier.Notify(ctx, senzingConfig.observers, ProductId, 8005, err, details)
+		notifier.Notify(ctx, senzingConfig.observers, senzingConfig.observerOrigin, ComponentId, 8005, err, details)
 
 		err = senzingConfig.observers.UnregisterObserver(ctx, observer)
 		if err != nil {

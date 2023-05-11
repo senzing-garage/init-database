@@ -27,6 +27,7 @@ import (
 type InitializerImpl struct {
 	DataSources                    []string
 	logger                         logging.LoggingInterface
+	observerOrigin                 string
 	observers                      subject.Subject
 	senzingConfigSingleton         senzingconfig.SenzingConfig
 	SenzingEngineConfigurationJson string
@@ -61,7 +62,7 @@ func (initializerImpl *InitializerImpl) getLogger() logging.LoggingInterface {
 		options := []interface{}{
 			&logging.OptionCallerSkip{Value: 4},
 		}
-		initializerImpl.logger, err = logging.NewSenzingToolsLogger(ProductId, IdMessages, options...)
+		initializerImpl.logger, err = logging.NewSenzingToolsLogger(ComponentId, IdMessages, options...)
 		if err != nil {
 			panic(err)
 		}
@@ -174,7 +175,7 @@ func (initializerImpl *InitializerImpl) initializeSpecificDatabaseSqlite(ctx con
 			details := map[string]string{
 				"sqliteFile": filename,
 			}
-			notifier.Notify(ctx, initializerImpl.observers, ProductId, 8005, err, details)
+			notifier.Notify(ctx, initializerImpl.observers, initializerImpl.observerOrigin, ComponentId, 8005, err, details)
 		}()
 	}
 	return err
@@ -278,7 +279,7 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 	if initializerImpl.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, initializerImpl.observers, ProductId, 8001, err, details)
+			notifier.Notify(ctx, initializerImpl.observers, initializerImpl.observerOrigin, ComponentId, 8001, err, details)
 		}()
 	}
 	return err
@@ -447,7 +448,7 @@ func (initializerImpl *InitializerImpl) RegisterObserver(ctx context.Context, ob
 		details := map[string]string{
 			"observerID": observer.GetObserverId(ctx),
 		}
-		notifier.Notify(ctx, initializerImpl.observers, ProductId, 8002, err, details)
+		notifier.Notify(ctx, initializerImpl.observers, initializerImpl.observerOrigin, ComponentId, 8002, err, details)
 	}()
 	return err
 }
@@ -531,7 +532,7 @@ func (initializerImpl *InitializerImpl) SetLogLevel(ctx context.Context, logLeve
 			details := map[string]string{
 				"logLevelName": logLevelName,
 			}
-			notifier.Notify(ctx, initializerImpl.observers, ProductId, 8003, err, details)
+			notifier.Notify(ctx, initializerImpl.observers, initializerImpl.observerOrigin, ComponentId, 8003, err, details)
 		}()
 	}
 	return err
@@ -605,7 +606,7 @@ func (initializerImpl *InitializerImpl) UnregisterObserver(ctx context.Context, 
 		details := map[string]string{
 			"observerID": observer.GetObserverId(ctx),
 		}
-		notifier.Notify(ctx, initializerImpl.observers, ProductId, 8004, err, details)
+		notifier.Notify(ctx, initializerImpl.observers, initializerImpl.observerOrigin, ComponentId, 8004, err, details)
 
 		err = initializerImpl.observers.UnregisterObserver(ctx, observer)
 		if err != nil {

@@ -22,7 +22,7 @@ type Initializer interface {
 // ----------------------------------------------------------------------------
 
 // Identfier of the  package found messages having the format "senzing-6501xxxx".
-const ProductId = 6501
+const ComponentId = 6501
 
 // Log message prefix.
 const Prefix = "init-database.initializer."
