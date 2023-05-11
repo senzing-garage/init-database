@@ -12,7 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed in 0.2.3
 
+- In `Dockerfile`
+  - `golang:1.20.4@sha256:31a8f92b17829b3ccddf0add184f18203acfd79ccc1bcb5c43803ab1c4836cca`
+  - `senzing/senzingapi-runtime:3.5.2`
 - Update dependencies
+  - github.com/senzing/senzing-tools v0.2.4
 
 ## [0.2.2] - 2023-04-21
 
