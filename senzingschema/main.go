@@ -14,6 +14,7 @@ type SenzingSchema interface {
 	InitializeSenzing(ctx context.Context) error
 	RegisterObserver(ctx context.Context, observer observer.Observer) error
 	SetLogLevel(ctx context.Context, logLevelName string) error
+	SetObserverOrigin(ctx context.Context, origin string)
 	UnregisterObserver(ctx context.Context, observer observer.Observer) error
 }
 
@@ -22,7 +23,7 @@ type SenzingSchema interface {
 // ----------------------------------------------------------------------------
 
 // Identfier of the  package found messages having the format "senzing-6503xxxx".
-const ProductId = 6503
+const ComponentId = 6503
 
 // Log message prefix.
 const Prefix = "init-database.senzingconfig."
@@ -52,6 +53,9 @@ var IdMessages = map[int]string{
 	41:   "Exit  " + Prefix + "UnregisterObserver(%s); json.Marshal failed; returned (%v).",
 	42:   "Exit  " + Prefix + "UnregisterObserver(%s); senzingSchema.observers.UnregisterObserver failed; returned (%v).",
 	49:   "Exit  " + Prefix + "UnregisterObserver(%s) returned (%v).",
+	50:   "Enter " + Prefix + "SetObserverOrigin(%s).",
+	51:   "Exit  " + Prefix + "SetObserverOrigin(%s); json.Marshal failed; returned (%v).",
+	59:   "Exit  " + Prefix + "SetObserverOrigin(%s).",
 	100:  "Enter " + Prefix + "processDatabase(%s, %s).",
 	101:  "Exit  " + Prefix + "processDatabase(%s, %s); url.Parse failed; returned (%v).",
 	102:  "Exit  " + Prefix + "processDatabase(%s, %s); connector.NewConnector failed; returned (%v).",
@@ -62,7 +66,8 @@ var IdMessages = map[int]string{
 	1001: Prefix + "InitializeSenzing parameters: %+v",
 	1002: Prefix + "RegisterObserver parameters: %+v",
 	1003: Prefix + "SetLogLevel parameters: %+v",
-	1004: Prefix + "UnregisterObserver parameters: %+v",
+	1004: Prefix + "SetObserverOrigin parameters: %+v",
+	1005: Prefix + "UnregisterObserver parameters: %+v",
 	1011: Prefix + "InitializeSenzing(); json.Marshal failed; returned (%v).",
 	1012: Prefix + "InitializeSenzing(); engineconfigurationjsonparser.New failed; returned (%v).",
 	1013: Prefix + "InitializeSenzing(); parser.GetResourcePath failed; returned (%v).",
@@ -78,7 +83,8 @@ var IdMessages = map[int]string{
 	8001: Prefix + "InitializeSenzing",
 	8002: Prefix + "RegisterObserver",
 	8003: Prefix + "SetLogLevel",
-	8004: Prefix + "UnregisterObserver",
+	8004: Prefix + "SetObserverOrigin",
+	8005: Prefix + "UnregisterObserver",
 }
 
 // Status strings for specific messages.

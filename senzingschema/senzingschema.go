@@ -25,6 +25,7 @@ import (
 type SenzingSchemaImpl struct {
 	logger                         logging.LoggingInterface
 	logLevelName                   string
+	observerOrigin                 string
 	observers                      subject.Subject
 	SenzingEngineConfigurationJson string
 }
@@ -54,7 +55,7 @@ func (senzingSchema *SenzingSchemaImpl) getLogger() logging.LoggingInterface {
 		options := []interface{}{
 			&logging.OptionCallerSkip{Value: 4},
 		}
-		senzingSchema.logger, err = logging.NewSenzingToolsLogger(ProductId, IdMessages, options...)
+		senzingSchema.logger, err = logging.NewSenzingToolsLogger(ComponentId, IdMessages, options...)
 		if err != nil {
 			panic(err)
 		}
@@ -176,6 +177,9 @@ func (senzingSchema *SenzingSchemaImpl) processDatabase(ctx context.Context, res
 		}
 	}
 
+	// TODO: add following when it becomes available.
+	// sqlExecutor.SetObserverOrigin(ctx, senzingSchema.observerOrigin)
+
 	// Process file of SQL
 
 	err = sqlExecutor.ProcessFileName(ctx, sqlFilename)
@@ -265,7 +269,7 @@ func (senzingSchema *SenzingSchemaImpl) InitializeSenzing(ctx context.Context) e
 	if senzingSchema.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, senzingSchema.observers, ProductId, 8001, err, details)
+			notifier.Notify(ctx, senzingSchema.observers, senzingSchema.observerOrigin, ComponentId, 8001, err, details)
 		}()
 	}
 
@@ -281,6 +285,10 @@ Input
 */
 func (senzingSchema *SenzingSchemaImpl) RegisterObserver(ctx context.Context, observer observer.Observer) error {
 	var err error = nil
+
+	if observer == nil {
+		return err
+	}
 
 	// Prolog.
 
@@ -336,7 +344,7 @@ func (senzingSchema *SenzingSchemaImpl) RegisterObserver(ctx context.Context, ob
 		details := map[string]string{
 			"observerID": observer.GetObserverId(ctx),
 		}
-		notifier.Notify(ctx, senzingSchema.observers, ProductId, 8002, err, details)
+		notifier.Notify(ctx, senzingSchema.observers, senzingSchema.observerOrigin, ComponentId, 8002, err, details)
 	}()
 
 	return err
@@ -393,7 +401,7 @@ func (senzingSchema *SenzingSchemaImpl) SetLogLevel(ctx context.Context, logLeve
 		return fmt.Errorf("invalid error level: %s", logLevelName)
 	}
 
-	// Set senzingConfig log level.
+	// Set senzingSchema log level.
 
 	senzingSchema.logLevelName = logLevelName
 	senzingSchema.getLogger().SetLogLevel(logLevelName)
@@ -405,11 +413,74 @@ func (senzingSchema *SenzingSchemaImpl) SetLogLevel(ctx context.Context, logLeve
 			details := map[string]string{
 				"logLevelName": logLevelName,
 			}
-			notifier.Notify(ctx, senzingSchema.observers, ProductId, 8003, err, details)
+			notifier.Notify(ctx, senzingSchema.observers, senzingSchema.observerOrigin, ComponentId, 8003, err, details)
 		}()
 	}
 
 	return err
+}
+
+/*
+The SetObserverOrigin method sets the "origin" value in future Observer messages.
+
+Input
+  - ctx: A context to control lifecycle.
+  - origin: The value sent in the Observer's "origin" key/value pair.
+*/
+func (senzingSchema *SenzingSchemaImpl) SetObserverOrigin(ctx context.Context, origin string) {
+	var err error = nil
+
+	// Prolog.
+
+	debugMessageNumber := 0
+	traceExitMessageNumber := 59
+	if senzingSchema.getLogger().IsDebug() {
+
+		// If DEBUG, log error exit.
+
+		defer func() {
+			if debugMessageNumber > 0 {
+				senzingSchema.debug(debugMessageNumber, err)
+			}
+		}()
+
+		// If TRACE, Log on entry/exit.
+
+		if senzingSchema.getLogger().IsTrace() {
+			entryTime := time.Now()
+			senzingSchema.traceEntry(50, origin)
+			defer func() {
+				senzingSchema.traceExit(traceExitMessageNumber, origin, err, time.Since(entryTime))
+			}()
+		}
+
+		// If DEBUG, log input parameters. Must be done after establishing DEBUG and TRACE logging.
+
+		asJson, err := json.Marshal(senzingSchema)
+		if err != nil {
+			debugMessageNumber = 1051
+			traceExitMessageNumber = 51
+			traceExitMessageNumber, debugMessageNumber = 51, 1051
+			return
+		}
+		senzingSchema.log(1004, senzingSchema, string(asJson))
+	}
+
+	// Set origin in dependent services.
+
+	senzingSchema.observerOrigin = origin
+
+	// Notify observers.
+
+	if senzingSchema.observers != nil {
+		go func() {
+			details := map[string]string{
+				"origin": origin,
+			}
+			notifier.Notify(ctx, senzingSchema.observers, senzingSchema.observerOrigin, ComponentId, 8004, err, details)
+		}()
+	}
+
 }
 
 /*
@@ -421,6 +492,10 @@ Input
 */
 func (senzingSchema *SenzingSchemaImpl) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
 	var err error = nil
+
+	if observer == nil {
+		return err
+	}
 
 	// Prolog.
 
@@ -453,7 +528,7 @@ func (senzingSchema *SenzingSchemaImpl) UnregisterObserver(ctx context.Context, 
 			traceExitMessageNumber, debugMessageNumber = 41, 1041
 			return err
 		}
-		senzingSchema.log(1004, senzingSchema, string(asJson))
+		senzingSchema.log(1005, senzingSchema, string(asJson))
 	}
 
 	// Remove observer from this service.
@@ -467,7 +542,7 @@ func (senzingSchema *SenzingSchemaImpl) UnregisterObserver(ctx context.Context, 
 		details := map[string]string{
 			"observerID": observer.GetObserverId(ctx),
 		}
-		notifier.Notify(ctx, senzingSchema.observers, ProductId, 8004, err, details)
+		notifier.Notify(ctx, senzingSchema.observers, senzingSchema.observerOrigin, ComponentId, 8005, err, details)
 
 		err = senzingSchema.observers.UnregisterObserver(ctx, observer)
 		if err != nil {

@@ -31,6 +31,7 @@ type SenzingConfigImpl struct {
 	isTrace                        bool
 	logger                         logging.LoggingInterface
 	logLevel                       string
+	observerOrigin                 string
 	observers                      subject.Subject
 	SenzingEngineConfigurationJson string
 	SenzingModuleName              string
@@ -64,7 +65,7 @@ func (senzingConfig *SenzingConfigImpl) getLogger() logging.LoggingInterface {
 		options := []interface{}{
 			&logging.OptionCallerSkip{Value: 4},
 		}
-		senzingConfig.logger, err = logging.NewSenzingToolsLogger(ProductId, IdMessages, options...)
+		senzingConfig.logger, err = logging.NewSenzingToolsLogger(ComponentId, IdMessages, options...)
 		if err != nil {
 			panic(err)
 		}
@@ -237,7 +238,7 @@ func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) e
 		if senzingConfig.observers != nil {
 			go func() {
 				details := map[string]string{}
-				notifier.Notify(ctx, senzingConfig.observers, ProductId, 8001, err, details)
+				notifier.Notify(ctx, senzingConfig.observers, senzingConfig.observerOrigin, ComponentId, 8001, err, details)
 			}()
 		}
 		senzingConfig.log(2002, configID)
@@ -291,7 +292,7 @@ func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) e
 	if senzingConfig.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, senzingConfig.observers, ProductId, 8002, err, details)
+			notifier.Notify(ctx, senzingConfig.observers, senzingConfig.observerOrigin, ComponentId, 8002, err, details)
 		}()
 	}
 
@@ -307,6 +308,10 @@ Input
 */
 func (senzingConfig *SenzingConfigImpl) RegisterObserver(ctx context.Context, observer observer.Observer) error {
 	var err error = nil
+
+	if observer == nil {
+		return err
+	}
 
 	// Prolog.
 
@@ -377,7 +382,7 @@ func (senzingConfig *SenzingConfigImpl) RegisterObserver(ctx context.Context, ob
 		details := map[string]string{
 			"observerID": observer.GetObserverId(ctx),
 		}
-		notifier.Notify(ctx, senzingConfig.observers, ProductId, 8003, err, details)
+		notifier.Notify(ctx, senzingConfig.observers, senzingConfig.observerOrigin, ComponentId, 8003, err, details)
 	}()
 
 	return err
@@ -471,11 +476,79 @@ func (senzingConfig *SenzingConfigImpl) SetLogLevel(ctx context.Context, logLeve
 			details := map[string]string{
 				"logLevelName": logLevelName,
 			}
-			notifier.Notify(ctx, senzingConfig.observers, ProductId, 8004, err, details)
+			notifier.Notify(ctx, senzingConfig.observers, senzingConfig.observerOrigin, ComponentId, 8004, err, details)
 		}()
 	}
 
 	return err
+}
+
+/*
+The SetObserverOrigin method sets the "origin" value in future Observer messages.
+
+Input
+  - ctx: A context to control lifecycle.
+  - origin: The value sent in the Observer's "origin" key/value pair.
+*/
+func (senzingConfig *SenzingConfigImpl) SetObserverOrigin(ctx context.Context, origin string) {
+	var err error = nil
+
+	// Prolog.
+
+	debugMessageNumber := 0
+	traceExitMessageNumber := 69
+	if senzingConfig.getLogger().IsDebug() {
+
+		// If DEBUG, log error exit.
+
+		defer func() {
+			if debugMessageNumber > 0 {
+				senzingConfig.debug(debugMessageNumber, err)
+			}
+		}()
+
+		// If TRACE, Log on entry/exit.
+
+		if senzingConfig.getLogger().IsTrace() {
+			entryTime := time.Now()
+			senzingConfig.traceEntry(60, origin)
+			defer func() {
+				senzingConfig.traceExit(traceExitMessageNumber, origin, err, time.Since(entryTime))
+			}()
+		}
+
+		// If DEBUG, log input parameters. Must be done after establishing DEBUG and TRACE logging.
+
+		asJson, err := json.Marshal(senzingConfig)
+		if err != nil {
+			traceExitMessageNumber, debugMessageNumber = 61, 1061
+			return
+		}
+		senzingConfig.log(1004, senzingConfig, string(asJson))
+	}
+
+	// Set origin in dependent services.
+
+	senzingConfig.observerOrigin = origin
+	g2Config, g2Configmgr, err := senzingConfig.getDependentServices(ctx)
+	if err != nil {
+		traceExitMessageNumber, debugMessageNumber = 62, 1062
+		return
+	}
+	g2Config.SetObserverOrigin(ctx, origin)
+	g2Configmgr.SetObserverOrigin(ctx, origin)
+
+	// Notify observers.
+
+	if senzingConfig.observers != nil {
+		go func() {
+			details := map[string]string{
+				"origin": origin,
+			}
+			notifier.Notify(ctx, senzingConfig.observers, senzingConfig.observerOrigin, ComponentId, 8005, err, details)
+		}()
+	}
+
 }
 
 /*
@@ -487,6 +560,10 @@ Input
 */
 func (senzingConfig *SenzingConfigImpl) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
 	var err error = nil
+
+	if observer == nil {
+		return err
+	}
 
 	// Prolog.
 
@@ -521,7 +598,7 @@ func (senzingConfig *SenzingConfigImpl) UnregisterObserver(ctx context.Context, 
 			traceExitMessageNumber, debugMessageNumber = 51, 1051
 			return err
 		}
-		senzingConfig.log(1004, senzingConfig, string(asJson))
+		senzingConfig.log(1005, senzingConfig, string(asJson))
 	}
 
 	// Unregister observers in dependencies.
@@ -549,7 +626,7 @@ func (senzingConfig *SenzingConfigImpl) UnregisterObserver(ctx context.Context, 
 		details := map[string]string{
 			"observerID": observer.GetObserverId(ctx),
 		}
-		notifier.Notify(ctx, senzingConfig.observers, ProductId, 8005, err, details)
+		notifier.Notify(ctx, senzingConfig.observers, senzingConfig.observerOrigin, ComponentId, 8006, err, details)
 
 		err = senzingConfig.observers.UnregisterObserver(ctx, observer)
 		if err != nil {
