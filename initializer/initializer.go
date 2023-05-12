@@ -99,6 +99,30 @@ func (initializerImpl *InitializerImpl) traceExit(messageNumber int, details ...
 
 // --- Observing --------------------------------------------------------------
 
+func (initializerImpl *InitializerImpl) createGrpcObserver(ctx context.Context, parsedUrl url.URL) (observer.Observer, error) {
+	var err error
+	var result observer.Observer
+
+	port := DefaultGrpcObserverPort
+	if len(parsedUrl.Port()) > 0 {
+		port = parsedUrl.Port()
+	}
+	target := fmt.Sprintf("%s:%s", parsedUrl.Hostname(), port)
+
+	// TODO: Allow specification of options from ObserverUrl/parsedUrl
+	grpcOptions := grpc.WithTransportCredentials(insecure.NewCredentials())
+
+	grpcConnection, err := grpc.Dial(target, grpcOptions)
+	if err != nil {
+		return result, err
+	}
+	result = &observer.ObserverGrpc{
+		GrpcClient: observerpb.NewObserverClient(grpcConnection),
+		Id:         "init-database",
+	}
+	return result, err
+}
+
 func (initializerImpl *InitializerImpl) registerObserverLocal(ctx context.Context, observer observer.Observer) error {
 	if initializerImpl.observers == nil {
 		initializerImpl.observers = &subject.SubjectImpl{}
@@ -196,7 +220,7 @@ func (initializerImpl *InitializerImpl) initializeSpecificDatabaseSqlite(ctx con
 			details := map[string]string{
 				"sqliteFile": filename,
 			}
-			notifier.Notify(ctx, initializerImpl.observers, initializerImpl.ObserverOrigin, ComponentId, 8005, err, details)
+			notifier.Notify(ctx, initializerImpl.observers, initializerImpl.ObserverOrigin, ComponentId, 8006, err, details)
 		}()
 	}
 	return err
@@ -229,55 +253,6 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 		return err
 	}
 
-	// Initialize observing.
-
-	var anObserver observer.Observer
-	if len(initializerImpl.ObserverUrl) > 0 {
-		parsedUrl, err := url.Parse(initializerImpl.ObserverUrl)
-		if err != nil {
-			return err
-		}
-		switch parsedUrl.Scheme {
-		case "grpc":
-
-			port := DefaultGrpcObserverPort
-			if len(parsedUrl.Port()) > 0 {
-				port = parsedUrl.Port()
-			}
-			target := fmt.Sprintf("%s:%s", parsedUrl.Hostname(), port)
-			fmt.Printf(">>>> gRPC target: %s\n", target)
-
-			// TODO: Allow specification of options from ObserverUrl
-			grpcOptions := grpc.WithTransportCredentials(insecure.NewCredentials())
-
-			grpcConnection, err := grpc.Dial(target, grpcOptions)
-			if err != nil {
-				fmt.Printf("Did not connect: %v\n", err)
-			}
-			anObserver = &observer.ObserverGrpc{
-				GrpcClient: observerpb.NewObserverClient(grpcConnection),
-				Id:         "init-database",
-			}
-
-			err = initializerImpl.registerObserverLocal(ctx, anObserver)
-			if err != nil {
-				traceExitMessageNumber, debugMessageNumber = 17, 1017
-				return err
-			}
-
-			// Notify observers.
-
-			go func() {
-				details := map[string]string{
-					"observerID": anObserver.GetObserverId(ctx),
-				}
-				notifier.Notify(ctx, initializerImpl.observers, initializerImpl.ObserverOrigin, ComponentId, 8002, err, details)
-			}()
-
-		}
-		initializerImpl.SetObserverOrigin(ctx, initializerImpl.ObserverOrigin)
-	}
-
 	// Prolog.
 
 	if initializerImpl.getLogger().IsDebug() {
@@ -306,6 +281,38 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 			return err
 		}
 		initializerImpl.log(1000, initializerImpl, string(asJson))
+	}
+
+	// Initialize observing.
+
+	var anObserver observer.Observer
+	if len(initializerImpl.ObserverUrl) > 0 {
+		parsedUrl, err := url.Parse(initializerImpl.ObserverUrl)
+		if err != nil {
+			return err
+		}
+		switch parsedUrl.Scheme {
+		case "grpc":
+			anObserver, err = initializerImpl.createGrpcObserver(ctx, *parsedUrl)
+			if err != nil {
+				traceExitMessageNumber, debugMessageNumber = 00, 1000
+				return err
+			}
+		}
+		err = initializerImpl.registerObserverLocal(ctx, anObserver)
+		if err != nil {
+			traceExitMessageNumber, debugMessageNumber = 17, 1017
+			return err
+		}
+
+		// Notify observers.
+
+		go func() {
+			details := map[string]string{
+				"observerID": anObserver.GetObserverId(ctx),
+			}
+			notifier.Notify(ctx, initializerImpl.observers, initializerImpl.ObserverOrigin, ComponentId, 8001, err, details)
+		}()
 	}
 
 	// Perform initialization for specific databases.
@@ -359,7 +366,7 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 	if initializerImpl.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, initializerImpl.observers, initializerImpl.ObserverOrigin, ComponentId, 8001, err, details)
+			notifier.Notify(ctx, initializerImpl.observers, initializerImpl.ObserverOrigin, ComponentId, 8002, err, details)
 		}()
 	}
 	return err
@@ -528,7 +535,7 @@ func (initializerImpl *InitializerImpl) RegisterObserver(ctx context.Context, ob
 		details := map[string]string{
 			"observerID": observer.GetObserverId(ctx),
 		}
-		notifier.Notify(ctx, initializerImpl.observers, initializerImpl.ObserverOrigin, ComponentId, 8002, err, details)
+		notifier.Notify(ctx, initializerImpl.observers, initializerImpl.ObserverOrigin, ComponentId, 8003, err, details)
 	}()
 	return err
 }
@@ -612,7 +619,7 @@ func (initializerImpl *InitializerImpl) SetLogLevel(ctx context.Context, logLeve
 			details := map[string]string{
 				"logLevelName": logLevelName,
 			}
-			notifier.Notify(ctx, initializerImpl.observers, initializerImpl.ObserverOrigin, ComponentId, 8003, err, details)
+			notifier.Notify(ctx, initializerImpl.observers, initializerImpl.ObserverOrigin, ComponentId, 8004, err, details)
 		}()
 	}
 	return err
@@ -703,7 +710,7 @@ func (initializerImpl *InitializerImpl) UnregisterObserver(ctx context.Context, 
 		details := map[string]string{
 			"observerID": observer.GetObserverId(ctx),
 		}
-		notifier.Notify(ctx, initializerImpl.observers, initializerImpl.ObserverOrigin, ComponentId, 8004, err, details)
+		notifier.Notify(ctx, initializerImpl.observers, initializerImpl.ObserverOrigin, ComponentId, 8005, err, details)
 
 		err = initializerImpl.observers.UnregisterObserver(ctx, observer)
 		if err != nil {

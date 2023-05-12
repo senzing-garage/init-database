@@ -110,11 +110,12 @@ var IdMessages = map[int]string{
 	1102: Prefix + "initializeSpecificDatabaseSqlite(%v); os.MkdirAll failed; returned (%v).",
 	1103: Prefix + "initializeSpecificDatabaseSqlite(%v); os.Create failed; returned (%v).",
 	2001: "Created file: %s",
-	8001: Prefix + "Initialize",
-	8002: Prefix + "RegisterObserver",
-	8003: Prefix + "SetLogLevel",
-	8004: Prefix + "UnregisterObserver",
-	8005: Prefix + "InitializeFiles",
+	8001: Prefix + "Initialize Observer URL",
+	8002: Prefix + "Initialize",
+	8003: Prefix + "RegisterObserver",
+	8004: Prefix + "SetLogLevel",
+	8005: Prefix + "UnregisterObserver",
+	8006: Prefix + "initializeSpecificDatabaseSqlite",
 }
 
 // Status strings for specific messages.
