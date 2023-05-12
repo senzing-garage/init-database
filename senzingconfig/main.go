@@ -66,10 +66,14 @@ var IdMessages = map[int]string{
 	53:   "Exit  " + Prefix + "UnregisterObserver(%s); g2Configmgr.UnregisterObserver failed; returned (%v).",
 	54:   "Exit  " + Prefix + "UnregisterObserver(%s); senzingConfig.observers.UnregisterObserver failed; returned (%v).",
 	59:   "Exit  " + Prefix + "UnregisterObserver(%s) returned (%v).",
+	60:   "Enter " + Prefix + "SetObserverOrigin(%s).",
+	61:   "Exit  " + Prefix + "SetObserverOrigin(%s); json.Marshal failed; returned (%v).",
+	69:   "Exit  " + Prefix + "SetObserverOrigin(%s).",
 	1001: Prefix + "InitializeSenzing parameters: %+v",
 	1002: Prefix + "RegisterObserver parameters: %+v",
 	1003: Prefix + "SetLogLevel parameters: %+v",
-	1004: Prefix + "UnregisterObserver parameters: %+v",
+	1004: Prefix + "SetObserverOrigin parameters: %+v",
+	1005: Prefix + "UnregisterObserver parameters: %+v",
 	1011: Prefix + "Initialize(); json.Marshal failed; Error: %v.",
 	1012: Prefix + "Initialize(); senzingConfig.getDependentServices failed; Error: %v.",
 	1013: Prefix + "Initialize(); g2Configmgr.GetDefaultConfigID failed; Error: %v.",
@@ -101,7 +105,8 @@ var IdMessages = map[int]string{
 	8002: Prefix + "InitializeSenzing",
 	8003: Prefix + "RegisterObserver",
 	8004: Prefix + "SetLogLevel",
-	8005: Prefix + "UnregisterObserver",
+	8005: Prefix + "SetObserverOrigin",
+	8006: Prefix + "UnregisterObserver",
 }
 
 // Status strings for specific messages.

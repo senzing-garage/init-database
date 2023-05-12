@@ -492,7 +492,7 @@ func (senzingConfig *SenzingConfigImpl) SetObserverOrigin(ctx context.Context, o
 	// Prolog.
 
 	debugMessageNumber := 0
-	traceExitMessageNumber := 0
+	traceExitMessageNumber := 69
 	if senzingConfig.getLogger().IsDebug() {
 
 		// If DEBUG, log error exit.
@@ -507,7 +507,7 @@ func (senzingConfig *SenzingConfigImpl) SetObserverOrigin(ctx context.Context, o
 
 		if senzingConfig.getLogger().IsTrace() {
 			entryTime := time.Now()
-			senzingConfig.traceEntry(0, origin)
+			senzingConfig.traceEntry(60, origin)
 			defer func() {
 				senzingConfig.traceExit(traceExitMessageNumber, origin, err, time.Since(entryTime))
 			}()
@@ -517,12 +517,10 @@ func (senzingConfig *SenzingConfigImpl) SetObserverOrigin(ctx context.Context, o
 
 		asJson, err := json.Marshal(senzingConfig)
 		if err != nil {
-			debugMessageNumber = 1051
-			traceExitMessageNumber = 51
-			traceExitMessageNumber, debugMessageNumber = 51, 1051
+			traceExitMessageNumber, debugMessageNumber = 61, 1061
 			return
 		}
-		senzingConfig.log(0, senzingConfig, string(asJson))
+		senzingConfig.log(1004, senzingConfig, string(asJson))
 	}
 
 	// Set origin in dependent services.
@@ -530,11 +528,23 @@ func (senzingConfig *SenzingConfigImpl) SetObserverOrigin(ctx context.Context, o
 	senzingConfig.observerOrigin = origin
 	g2Config, g2Configmgr, err := senzingConfig.getDependentServices(ctx)
 	if err != nil {
-		traceExitMessageNumber, debugMessageNumber = 0, 1000
+		traceExitMessageNumber, debugMessageNumber = 62, 1062
 		return
 	}
 	g2Config.SetObserverOrigin(ctx, origin)
 	g2Configmgr.SetObserverOrigin(ctx, origin)
+
+	// Notify observers.
+
+	if senzingConfig.observers != nil {
+		go func() {
+			details := map[string]string{
+				"origin": origin,
+			}
+			notifier.Notify(ctx, senzingConfig.observers, senzingConfig.observerOrigin, ComponentId, 8005, err, details)
+		}()
+	}
+
 }
 
 /*
@@ -580,7 +590,7 @@ func (senzingConfig *SenzingConfigImpl) UnregisterObserver(ctx context.Context, 
 			traceExitMessageNumber, debugMessageNumber = 51, 1051
 			return err
 		}
-		senzingConfig.log(1004, senzingConfig, string(asJson))
+		senzingConfig.log(1005, senzingConfig, string(asJson))
 	}
 
 	// Unregister observers in dependencies.
@@ -608,7 +618,7 @@ func (senzingConfig *SenzingConfigImpl) UnregisterObserver(ctx context.Context, 
 		details := map[string]string{
 			"observerID": observer.GetObserverId(ctx),
 		}
-		notifier.Notify(ctx, senzingConfig.observers, senzingConfig.observerOrigin, ComponentId, 8005, err, details)
+		notifier.Notify(ctx, senzingConfig.observers, senzingConfig.observerOrigin, ComponentId, 8006, err, details)
 
 		err = senzingConfig.observers.UnregisterObserver(ctx, observer)
 		if err != nil {

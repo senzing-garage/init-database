@@ -429,7 +429,7 @@ func (senzingSchema *SenzingSchemaImpl) SetObserverOrigin(ctx context.Context, o
 	// Prolog.
 
 	debugMessageNumber := 0
-	traceExitMessageNumber := 0
+	traceExitMessageNumber := 59
 	if senzingSchema.getLogger().IsDebug() {
 
 		// If DEBUG, log error exit.
@@ -444,7 +444,7 @@ func (senzingSchema *SenzingSchemaImpl) SetObserverOrigin(ctx context.Context, o
 
 		if senzingSchema.getLogger().IsTrace() {
 			entryTime := time.Now()
-			senzingSchema.traceEntry(0, origin)
+			senzingSchema.traceEntry(50, origin)
 			defer func() {
 				senzingSchema.traceExit(traceExitMessageNumber, origin, err, time.Since(entryTime))
 			}()
@@ -459,12 +459,23 @@ func (senzingSchema *SenzingSchemaImpl) SetObserverOrigin(ctx context.Context, o
 			traceExitMessageNumber, debugMessageNumber = 51, 1051
 			return
 		}
-		senzingSchema.log(0, senzingSchema, string(asJson))
+		senzingSchema.log(1004, senzingSchema, string(asJson))
 	}
 
 	// Set origin in dependent services.
 
 	senzingSchema.observerOrigin = origin
+
+	// Notify observers.
+
+	if senzingSchema.observers != nil {
+		go func() {
+			details := map[string]string{
+				"origin": origin,
+			}
+			notifier.Notify(ctx, senzingSchema.observers, senzingSchema.observerOrigin, ComponentId, 8004, err, details)
+		}()
+	}
 
 }
 
@@ -509,7 +520,7 @@ func (senzingSchema *SenzingSchemaImpl) UnregisterObserver(ctx context.Context, 
 			traceExitMessageNumber, debugMessageNumber = 41, 1041
 			return err
 		}
-		senzingSchema.log(1004, senzingSchema, string(asJson))
+		senzingSchema.log(1005, senzingSchema, string(asJson))
 	}
 
 	// Remove observer from this service.
@@ -523,7 +534,7 @@ func (senzingSchema *SenzingSchemaImpl) UnregisterObserver(ctx context.Context, 
 		details := map[string]string{
 			"observerID": observer.GetObserverId(ctx),
 		}
-		notifier.Notify(ctx, senzingSchema.observers, senzingSchema.observerOrigin, ComponentId, 8004, err, details)
+		notifier.Notify(ctx, senzingSchema.observers, senzingSchema.observerOrigin, ComponentId, 8005, err, details)
 
 		err = senzingSchema.observers.UnregisterObserver(ctx, observer)
 		if err != nil {
