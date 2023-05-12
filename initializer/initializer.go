@@ -473,6 +473,10 @@ Input
 func (initializerImpl *InitializerImpl) RegisterObserver(ctx context.Context, observer observer.Observer) error {
 	var err error = nil
 
+	if observer == nil {
+		return err
+	}
+
 	// Prolog.
 
 	debugMessageNumber := 0
@@ -703,6 +707,10 @@ Input
 */
 func (initializerImpl *InitializerImpl) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
 	var err error = nil
+
+	if observer == nil {
+		return err
+	}
 
 	// Prolog.
 

@@ -309,6 +309,10 @@ Input
 func (senzingConfig *SenzingConfigImpl) RegisterObserver(ctx context.Context, observer observer.Observer) error {
 	var err error = nil
 
+	if observer == nil {
+		return err
+	}
+
 	// Prolog.
 
 	debugMessageNumber := 0
@@ -556,6 +560,10 @@ Input
 */
 func (senzingConfig *SenzingConfigImpl) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
 	var err error = nil
+
+	if observer == nil {
+		return err
+	}
 
 	// Prolog.
 

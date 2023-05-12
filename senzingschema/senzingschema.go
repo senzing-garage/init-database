@@ -286,6 +286,10 @@ Input
 func (senzingSchema *SenzingSchemaImpl) RegisterObserver(ctx context.Context, observer observer.Observer) error {
 	var err error = nil
 
+	if observer == nil {
+		return err
+	}
+
 	// Prolog.
 
 	debugMessageNumber := 0
@@ -488,6 +492,10 @@ Input
 */
 func (senzingSchema *SenzingSchemaImpl) UnregisterObserver(ctx context.Context, observer observer.Observer) error {
 	var err error = nil
+
+	if observer == nil {
+		return err
+	}
 
 	// Prolog.
 

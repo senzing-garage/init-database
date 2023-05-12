@@ -7,7 +7,7 @@ require (
 	github.com/senzing/go-common v0.1.3
 	github.com/senzing/go-databasing v0.2.4
 	github.com/senzing/go-logging v1.2.3
-	github.com/senzing/go-observing v0.2.2
+	github.com/senzing/go-observing v0.2.3
 	github.com/senzing/go-sdk-abstract-factory v0.2.3
 	github.com/senzing/senzing-tools v0.2.4
 	github.com/spf13/cobra v1.7.0
