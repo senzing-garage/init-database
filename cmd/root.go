@@ -53,13 +53,12 @@ func init() {
 	RootCmd.Flags().String(option.EngineModuleName, defaultEngineModuleName, fmt.Sprintf("Identifier given to the Senzing engine [%s]", envar.EngineModuleName))
 	RootCmd.Flags().String(option.LogLevel, defaultLogLevel, fmt.Sprintf("Log level of TRACE, DEBUG, INFO, WARN, ERROR, FATAL, or PANIC [%s]", envar.LogLevel))
 	RootCmd.Flags().StringSlice(option.Datasources, defaultDatasources, fmt.Sprintf("Datasources to be added to initial Senzing configuration [%s]", envar.Datasources))
-
-	RootCmd.Flags().String("observer-url", defaultObserverUrl, fmt.Sprintf("URL of Observer [%s]", "SENZING_TOOLS_OBSERVER_URL"))                                   // FIXME: use "option." and "envar." when available.
-	RootCmd.Flags().String("observer-origin", defaultObserverOrigin, fmt.Sprintf("Identify this invocation to the Observer [%s]", "SENZING_TOOLS_OBSERVER_ORIGIN")) // FIXME: use "option." and "envar." when available.
+	RootCmd.Flags().String("observer-url", defaultObserverUrl, fmt.Sprintf("URL of Observer [%s]", "SENZING_TOOLS_OBSERVER_URL"))                                 // FIXME: use "option." and "envar." when available.
+	RootCmd.Flags().String("observer-origin", defaultObserverOrigin, fmt.Sprintf("Identify this instance to the Observer [%s]", "SENZING_TOOLS_OBSERVER_ORIGIN")) // FIXME: use "option." and "envar." when available.
 
 	// TODO: Update when available.
 	// RootCmd.Flags().String(option.ObserverUrl, defaultObserverUrl, fmt.Sprintf("URL of Observer [%s]", envar.ObserverUrl"))
-	// RootCmd.Flags().String(option.ObserverOrigin, defaultObserverOrigin, fmt.Sprintf("Identify this invocation to the Observer [%s]", envar.ObserverOrigin))
+	// RootCmd.Flags().String(option.ObserverOrigin, defaultObserverOrigin, fmt.Sprintf("Identify this instance to the Observer [%s]", envar.ObserverOrigin))
 
 }
 

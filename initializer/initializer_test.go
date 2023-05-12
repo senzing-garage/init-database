@@ -76,6 +76,19 @@ func TestInitializerImpl_RegisterObserver(test *testing.T) {
 	testObject.Initialize(ctx)
 }
 
+func TestInitializerImpl_SetObserverOrigin(test *testing.T) {
+	ctx := context.TODO()
+
+	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	if err != nil {
+		fmt.Print(err)
+	}
+	testObject := &InitializerImpl{
+		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
+	}
+	testObject.SetObserverOrigin(ctx, "TestObserver")
+}
+
 func TestInitializerImpl_UnregisterObserver(test *testing.T) {
 	ctx := context.TODO()
 
@@ -157,6 +170,19 @@ func ExampleInitializerImpl_SetLogLevel() {
 	if err != nil {
 		fmt.Println(err)
 	}
+	// Output:
+}
+
+func ExampleInitializerImpl_SetObserverOrigin() {
+	ctx := context.TODO()
+	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	if err != nil {
+		fmt.Print(err)
+	}
+	anInitializer := &InitializerImpl{
+		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
+	}
+	anInitializer.SetObserverOrigin(ctx, "TestObserver")
 	// Output:
 }
 

@@ -144,6 +144,20 @@ func ExampleSenzingConfigImpl_SetLogLevel() {
 	// Output:
 }
 
+func ExampleSenzingConfigImpl_SetObserverOrigin() {
+	// For more information, visit https://github.com/Senzing/init-database/blob/main/senzingconfig/senzingconfig_test.go
+	ctx := context.TODO()
+	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	if err != nil {
+		fmt.Print(err)
+	}
+	senzingConfig := &SenzingConfigImpl{
+		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
+	}
+	senzingConfig.SetObserverOrigin(ctx, "TestObserver")
+	// Output:
+}
+
 func ExampleSenzingConfigImpl_UnregisterObserver() {
 	// For more information, visit https://github.com/Senzing/init-database/blob/main/senzingconfig/senzingconfig_test.go
 	ctx := context.TODO()
