@@ -131,10 +131,12 @@ func (initializerImpl *InitializerImpl) registerObserverLocal(ctx context.Contex
 }
 
 func (initializerImpl *InitializerImpl) registerObserverSenzingConfig(ctx context.Context, observer observer.Observer) error {
+	initializerImpl.getSenzingConfig().SetObserverOrigin(ctx, initializerImpl.ObserverOrigin)
 	return initializerImpl.getSenzingConfig().RegisterObserver(ctx, observer)
 }
 
 func (initializerImpl *InitializerImpl) registerObserverSenzingSchema(ctx context.Context, observer observer.Observer) error {
+	initializerImpl.getSenzingSchema().SetObserverOrigin(ctx, initializerImpl.ObserverOrigin)
 	return initializerImpl.getSenzingSchema().RegisterObserver(ctx, observer)
 }
 

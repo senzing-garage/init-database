@@ -177,6 +177,9 @@ func (senzingSchema *SenzingSchemaImpl) processDatabase(ctx context.Context, res
 		}
 	}
 
+	// TODO: add following when it becomes available.
+	// sqlExecutor.SetObserverOrigin(ctx, senzingSchema.observerOrigin)
+
 	// Process file of SQL
 
 	err = sqlExecutor.ProcessFileName(ctx, sqlFilename)
@@ -394,7 +397,7 @@ func (senzingSchema *SenzingSchemaImpl) SetLogLevel(ctx context.Context, logLeve
 		return fmt.Errorf("invalid error level: %s", logLevelName)
 	}
 
-	// Set senzingConfig log level.
+	// Set senzingSchema log level.
 
 	senzingSchema.logLevelName = logLevelName
 	senzingSchema.getLogger().SetLogLevel(logLevelName)
@@ -421,7 +424,48 @@ Input
   - origin: The value sent in the Observer's "origin" key/value pair.
 */
 func (senzingSchema *SenzingSchemaImpl) SetObserverOrigin(ctx context.Context, origin string) {
+	var err error = nil
+
+	// Prolog.
+
+	debugMessageNumber := 0
+	traceExitMessageNumber := 0
+	if senzingSchema.getLogger().IsDebug() {
+
+		// If DEBUG, log error exit.
+
+		defer func() {
+			if debugMessageNumber > 0 {
+				senzingSchema.debug(debugMessageNumber, err)
+			}
+		}()
+
+		// If TRACE, Log on entry/exit.
+
+		if senzingSchema.getLogger().IsTrace() {
+			entryTime := time.Now()
+			senzingSchema.traceEntry(0, origin)
+			defer func() {
+				senzingSchema.traceExit(traceExitMessageNumber, origin, err, time.Since(entryTime))
+			}()
+		}
+
+		// If DEBUG, log input parameters. Must be done after establishing DEBUG and TRACE logging.
+
+		asJson, err := json.Marshal(senzingSchema)
+		if err != nil {
+			debugMessageNumber = 1051
+			traceExitMessageNumber = 51
+			traceExitMessageNumber, debugMessageNumber = 51, 1051
+			return
+		}
+		senzingSchema.log(0, senzingSchema, string(asJson))
+	}
+
+	// Set origin in dependent services.
+
 	senzingSchema.observerOrigin = origin
+
 }
 
 /*

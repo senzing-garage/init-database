@@ -56,6 +56,11 @@ func init() {
 
 	RootCmd.Flags().String("observer-url", defaultObserverUrl, fmt.Sprintf("URL of Observer [%s]", "SENZING_TOOLS_OBSERVER_URL"))                                   // FIXME: use "option." and "envar." when available.
 	RootCmd.Flags().String("observer-origin", defaultObserverOrigin, fmt.Sprintf("Identify this invocation to the Observer [%s]", "SENZING_TOOLS_OBSERVER_ORIGIN")) // FIXME: use "option." and "envar." when available.
+
+	// TODO: Update when available.
+	// RootCmd.Flags().String(option.ObserverUrl, defaultObserverUrl, fmt.Sprintf("URL of Observer [%s]", envar.ObserverUrl"))
+	// RootCmd.Flags().String(option.ObserverOrigin, defaultObserverOrigin, fmt.Sprintf("Identify this invocation to the Observer [%s]", envar.ObserverOrigin))
+
 }
 
 // If a configuration file is present, load it.
@@ -119,6 +124,10 @@ func loadOptions(cobraCommand *cobra.Command) {
 		option.LogLevel:                defaultLogLevel,
 		"observer-url":                 defaultObserverUrl,
 		"observer-origin":              defaultObserverOrigin,
+
+		// TODO: Update when available.
+		// option.ObserverUrl:                 defaultObserverUrl,
+		// option.ObserverOrigin:              defaultObserverOrigin,
 	}
 	for optionKey, optionValue := range stringOptions {
 		viper.SetDefault(optionKey, optionValue)
@@ -172,6 +181,9 @@ func RunE(_ *cobra.Command, _ []string) error {
 		SenzingLogLevel:                viper.GetString(option.LogLevel),
 		SenzingModuleName:              viper.GetString(option.EngineModuleName),
 		SenzingVerboseLogging:          viper.GetInt(option.EngineLogLevel),
+		// TODO: Update when available.
+		// ObserverOrigin:                 viper.GetString(option.ObserverOrigin),
+		// ObserverUrl:                    viper.GetString(option.ObserverUrl),
 	}
 
 	err = initializer.Initialize(ctx)

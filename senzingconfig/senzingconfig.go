@@ -487,7 +487,54 @@ Input
   - origin: The value sent in the Observer's "origin" key/value pair.
 */
 func (senzingConfig *SenzingConfigImpl) SetObserverOrigin(ctx context.Context, origin string) {
+	var err error = nil
+
+	// Prolog.
+
+	debugMessageNumber := 0
+	traceExitMessageNumber := 0
+	if senzingConfig.getLogger().IsDebug() {
+
+		// If DEBUG, log error exit.
+
+		defer func() {
+			if debugMessageNumber > 0 {
+				senzingConfig.debug(debugMessageNumber, err)
+			}
+		}()
+
+		// If TRACE, Log on entry/exit.
+
+		if senzingConfig.getLogger().IsTrace() {
+			entryTime := time.Now()
+			senzingConfig.traceEntry(0, origin)
+			defer func() {
+				senzingConfig.traceExit(traceExitMessageNumber, origin, err, time.Since(entryTime))
+			}()
+		}
+
+		// If DEBUG, log input parameters. Must be done after establishing DEBUG and TRACE logging.
+
+		asJson, err := json.Marshal(senzingConfig)
+		if err != nil {
+			debugMessageNumber = 1051
+			traceExitMessageNumber = 51
+			traceExitMessageNumber, debugMessageNumber = 51, 1051
+			return
+		}
+		senzingConfig.log(0, senzingConfig, string(asJson))
+	}
+
+	// Set origin in dependent services.
+
 	senzingConfig.observerOrigin = origin
+	g2Config, g2Configmgr, err := senzingConfig.getDependentServices(ctx)
+	if err != nil {
+		traceExitMessageNumber, debugMessageNumber = 0, 1000
+		return
+	}
+	g2Config.SetObserverOrigin(ctx, origin)
+	g2Configmgr.SetObserverOrigin(ctx, origin)
 }
 
 /*
