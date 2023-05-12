@@ -27,6 +27,9 @@ const ComponentId = 6501
 // Log message prefix.
 const Prefix = "init-database.initializer."
 
+// Default gRPC Observer port
+const DefaultGrpcObserverPort = "8260"
+
 // ----------------------------------------------------------------------------
 // Variables
 // ----------------------------------------------------------------------------

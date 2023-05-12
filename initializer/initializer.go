@@ -14,9 +14,12 @@ import (
 	"github.com/senzing/go-logging/logging"
 	"github.com/senzing/go-observing/notifier"
 	"github.com/senzing/go-observing/observer"
+	"github.com/senzing/go-observing/observerpb"
 	"github.com/senzing/go-observing/subject"
 	"github.com/senzing/init-database/senzingconfig"
 	"github.com/senzing/init-database/senzingschema"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 // ----------------------------------------------------------------------------
@@ -27,8 +30,9 @@ import (
 type InitializerImpl struct {
 	DataSources                    []string
 	logger                         logging.LoggingInterface
-	observerOrigin                 string
+	ObserverOrigin                 string
 	observers                      subject.Subject
+	ObserverUrl                    string
 	senzingConfigSingleton         senzingconfig.SenzingConfig
 	SenzingEngineConfigurationJson string
 	SenzingLogLevel                string
@@ -175,7 +179,7 @@ func (initializerImpl *InitializerImpl) initializeSpecificDatabaseSqlite(ctx con
 			details := map[string]string{
 				"sqliteFile": filename,
 			}
-			notifier.Notify(ctx, initializerImpl.observers, initializerImpl.observerOrigin, ComponentId, 8005, err, details)
+			notifier.Notify(ctx, initializerImpl.observers, initializerImpl.ObserverOrigin, ComponentId, 8005, err, details)
 		}()
 	}
 	return err
@@ -204,6 +208,42 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 	err = initializerImpl.SetLogLevel(ctx, logLevel)
 	if err != nil {
 		return err
+	}
+
+	// Initialize observing.
+
+	if len(initializerImpl.ObserverUrl) > 0 {
+		parsedUrl, err := url.Parse(initializerImpl.ObserverUrl)
+		if err != nil {
+			return err
+		}
+		switch parsedUrl.Scheme {
+		case "grpc":
+
+			port := DefaultGrpcObserverPort
+			if len(parsedUrl.Port()) > 0 {
+				port = parsedUrl.Port()
+			}
+			target := fmt.Sprintf("%s:%s", parsedUrl.Hostname(), port)
+			fmt.Printf(">>>> gRPC target: %s\n", target)
+
+			// TODO: Allow specification of options from ObserverUrl
+			grpcOptions := grpc.WithTransportCredentials(insecure.NewCredentials())
+
+			grpcConnection, err := grpc.Dial(target, grpcOptions)
+			if err != nil {
+				fmt.Printf("Did not connect: %v\n", err)
+			}
+			anObserver := &observer.ObserverGrpc{
+				GrpcClient: observerpb.NewObserverClient(grpcConnection),
+				Id:         "init-database",
+			}
+			initializerImpl.RegisterObserver(ctx, anObserver)
+			if err != nil {
+				return err
+			}
+		}
+		initializerImpl.SetObserverOrigin(ctx, initializerImpl.ObserverOrigin)
 	}
 
 	// Prolog.
@@ -279,7 +319,7 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 	if initializerImpl.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, initializerImpl.observers, initializerImpl.observerOrigin, ComponentId, 8001, err, details)
+			notifier.Notify(ctx, initializerImpl.observers, initializerImpl.ObserverOrigin, ComponentId, 8001, err, details)
 		}()
 	}
 	return err
@@ -448,7 +488,7 @@ func (initializerImpl *InitializerImpl) RegisterObserver(ctx context.Context, ob
 		details := map[string]string{
 			"observerID": observer.GetObserverId(ctx),
 		}
-		notifier.Notify(ctx, initializerImpl.observers, initializerImpl.observerOrigin, ComponentId, 8002, err, details)
+		notifier.Notify(ctx, initializerImpl.observers, initializerImpl.ObserverOrigin, ComponentId, 8002, err, details)
 	}()
 	return err
 }
@@ -532,10 +572,27 @@ func (initializerImpl *InitializerImpl) SetLogLevel(ctx context.Context, logLeve
 			details := map[string]string{
 				"logLevelName": logLevelName,
 			}
-			notifier.Notify(ctx, initializerImpl.observers, initializerImpl.observerOrigin, ComponentId, 8003, err, details)
+			notifier.Notify(ctx, initializerImpl.observers, initializerImpl.ObserverOrigin, ComponentId, 8003, err, details)
 		}()
 	}
 	return err
+}
+
+/*
+The SetObserverOrigin method sets the "origin" value in future Observer messages.
+
+Input
+  - ctx: A context to control lifecycle.
+  - origin: The value sent in the Observer's "origin" key/value pair.
+*/
+func (initializerImpl *InitializerImpl) SetObserverOrigin(ctx context.Context, origin string) {
+	initializerImpl.ObserverOrigin = origin
+
+	senzingSchema := initializerImpl.getSenzingSchema()
+	senzingSchema.SetObserverOrigin(ctx, initializerImpl.ObserverOrigin)
+
+	senzingConfig := initializerImpl.getSenzingConfig()
+	senzingConfig.SetObserverOrigin(ctx, origin)
 }
 
 /*
@@ -606,7 +663,7 @@ func (initializerImpl *InitializerImpl) UnregisterObserver(ctx context.Context, 
 		details := map[string]string{
 			"observerID": observer.GetObserverId(ctx),
 		}
-		notifier.Notify(ctx, initializerImpl.observers, initializerImpl.observerOrigin, ComponentId, 8004, err, details)
+		notifier.Notify(ctx, initializerImpl.observers, initializerImpl.ObserverOrigin, ComponentId, 8004, err, details)
 
 		err = initializerImpl.observers.UnregisterObserver(ctx, observer)
 		if err != nil {

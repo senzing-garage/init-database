@@ -480,6 +480,17 @@ func (senzingConfig *SenzingConfigImpl) SetLogLevel(ctx context.Context, logLeve
 }
 
 /*
+The SetObserverOrigin method sets the "origin" value in future Observer messages.
+
+Input
+  - ctx: A context to control lifecycle.
+  - origin: The value sent in the Observer's "origin" key/value pair.
+*/
+func (senzingConfig *SenzingConfigImpl) SetObserverOrigin(ctx context.Context, origin string) {
+	senzingConfig.observerOrigin = origin
+}
+
+/*
 The UnregisterObserver method removes the observer to the list of observers notified.
 
 Input

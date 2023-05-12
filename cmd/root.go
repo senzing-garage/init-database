@@ -25,6 +25,8 @@ const (
 	defaultEngineConfigurationJson string = ""
 	defaultEngineLogLevel          int    = 0
 	defaultLogLevel                string = "INFO"
+	defaultObserverUrl             string = ""
+	defaultObserverOrigin          string = ""
 	Short                          string = "Initialize a database with the Senzing schema and configuration"
 	Use                            string = "init-database"
 	Long                           string = `
@@ -51,6 +53,9 @@ func init() {
 	RootCmd.Flags().String(option.EngineModuleName, defaultEngineModuleName, fmt.Sprintf("Identifier given to the Senzing engine [%s]", envar.EngineModuleName))
 	RootCmd.Flags().String(option.LogLevel, defaultLogLevel, fmt.Sprintf("Log level of TRACE, DEBUG, INFO, WARN, ERROR, FATAL, or PANIC [%s]", envar.LogLevel))
 	RootCmd.Flags().StringSlice(option.Datasources, defaultDatasources, fmt.Sprintf("Datasources to be added to initial Senzing configuration [%s]", envar.Datasources))
+
+	RootCmd.Flags().String("observer-url", defaultObserverUrl, fmt.Sprintf("URL of Observer [%s]", "SENZING_TOOLS_OBSERVER_URL"))                                   // FIXME: use "option." and "envar." when available.
+	RootCmd.Flags().String("observer-origin", defaultObserverOrigin, fmt.Sprintf("Identify this invocation to the Observer [%s]", "SENZING_TOOLS_OBSERVER_ORIGIN")) // FIXME: use "option." and "envar." when available.
 }
 
 // If a configuration file is present, load it.
@@ -112,6 +117,8 @@ func loadOptions(cobraCommand *cobra.Command) {
 		option.EngineConfigurationJson: defaultEngineConfigurationJson,
 		option.EngineModuleName:        defaultEngineModuleName,
 		option.LogLevel:                defaultLogLevel,
+		"observer-url":                 defaultObserverUrl,
+		"observer-origin":              defaultObserverOrigin,
 	}
 	for optionKey, optionValue := range stringOptions {
 		viper.SetDefault(optionKey, optionValue)
@@ -159,6 +166,8 @@ func RunE(_ *cobra.Command, _ []string) error {
 
 	initializer := &initializer.InitializerImpl{
 		DataSources:                    viper.GetStringSlice(option.Datasources),
+		ObserverOrigin:                 viper.GetString("observer-origin"),
+		ObserverUrl:                    viper.GetString("observer-url"),
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 		SenzingLogLevel:                viper.GetString(option.LogLevel),
 		SenzingModuleName:              viper.GetString(option.EngineModuleName),
