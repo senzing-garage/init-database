@@ -97,6 +97,23 @@ func (initializerImpl *InitializerImpl) traceExit(messageNumber int, details ...
 	initializerImpl.getLogger().Log(messageNumber, details...)
 }
 
+// --- Observing --------------------------------------------------------------
+
+func (initializerImpl *InitializerImpl) registerObserverLocal(ctx context.Context, observer observer.Observer) error {
+	if initializerImpl.observers == nil {
+		initializerImpl.observers = &subject.SubjectImpl{}
+	}
+	return initializerImpl.observers.RegisterObserver(ctx, observer)
+}
+
+func (initializerImpl *InitializerImpl) registerObserverSenzingConfig(ctx context.Context, observer observer.Observer) error {
+	return initializerImpl.getSenzingConfig().RegisterObserver(ctx, observer)
+}
+
+func (initializerImpl *InitializerImpl) registerObserverSenzingSchema(ctx context.Context, observer observer.Observer) error {
+	return initializerImpl.getSenzingSchema().RegisterObserver(ctx, observer)
+}
+
 // --- Dependent services -----------------------------------------------------
 
 func (initializerImpl *InitializerImpl) getSenzingConfig() senzingconfig.SenzingConfig {
@@ -198,6 +215,8 @@ Input
 */
 func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 	var err error = nil
+	debugMessageNumber := 0
+	traceExitMessageNumber := 19
 
 	// Initialize logging.
 
@@ -212,6 +231,7 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 
 	// Initialize observing.
 
+	var anObserver observer.Observer
 	if len(initializerImpl.ObserverUrl) > 0 {
 		parsedUrl, err := url.Parse(initializerImpl.ObserverUrl)
 		if err != nil {
@@ -234,22 +254,32 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 			if err != nil {
 				fmt.Printf("Did not connect: %v\n", err)
 			}
-			anObserver := &observer.ObserverGrpc{
+			anObserver = &observer.ObserverGrpc{
 				GrpcClient: observerpb.NewObserverClient(grpcConnection),
 				Id:         "init-database",
 			}
-			initializerImpl.RegisterObserver(ctx, anObserver)
+
+			err = initializerImpl.registerObserverLocal(ctx, anObserver)
 			if err != nil {
+				traceExitMessageNumber, debugMessageNumber = 17, 1017
 				return err
 			}
+
+			// Notify observers.
+
+			go func() {
+				details := map[string]string{
+					"observerID": anObserver.GetObserverId(ctx),
+				}
+				notifier.Notify(ctx, initializerImpl.observers, initializerImpl.ObserverOrigin, ComponentId, 8002, err, details)
+			}()
+
 		}
 		initializerImpl.SetObserverOrigin(ctx, initializerImpl.ObserverOrigin)
 	}
 
 	// Prolog.
 
-	debugMessageNumber := 0
-	traceExitMessageNumber := 19
 	if initializerImpl.getLogger().IsDebug() {
 
 		// If DEBUG, log error exit.
@@ -294,6 +324,11 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 		traceExitMessageNumber, debugMessageNumber = 13, 1013
 		return err
 	}
+	err = initializerImpl.registerObserverSenzingSchema(ctx, anObserver)
+	if err != nil {
+		traceExitMessageNumber, debugMessageNumber = 00, 1000
+		return err
+	}
 	err = senzingSchema.InitializeSenzing(ctx)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 14, 1014
@@ -306,6 +341,11 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 	senzingConfig.SetLogLevel(ctx, logLevel)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 15, 1015
+		return err
+	}
+	err = initializerImpl.registerObserverSenzingConfig(ctx, anObserver)
+	if err != nil {
+		traceExitMessageNumber, debugMessageNumber = 00, 1000
 		return err
 	}
 	err = senzingConfig.InitializeSenzing(ctx)
