@@ -194,6 +194,7 @@ func (initializerImpl *InitializerImpl) initializeSpecificDatabaseSqlite(ctx con
 	// If file exists, no more to do.
 
 	filename := parsedUrl.Path
+	filename = filepath.Clean(filename) // See https://securego.io/docs/rules/g304.html
 	_, err = os.Stat(filename)
 	if err == nil {
 		traceExitMessageNumber, debugMessageNumber = 101, 0 // debugMessageNumber=0 because it's not an error.
@@ -347,7 +348,7 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 	// Create initial Senzing configuration.
 
 	senzingConfig := initializerImpl.getSenzingConfig()
-	senzingConfig.SetLogLevel(ctx, logLevel)
+	err = senzingConfig.SetLogLevel(ctx, logLevel)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 15, 1015
 		return err
