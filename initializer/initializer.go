@@ -213,7 +213,7 @@ func (initializerImpl *InitializerImpl) initializeSpecificDatabaseSqlite(ctx con
 		traceExitMessageNumber, debugMessageNumber = 103, 1103
 		return err
 	}
-	initializerImpl.log(4001, filename)
+	initializerImpl.log(2001, filename)
 
 	// Notify observers.
 
