@@ -52,6 +52,10 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
+replace (
+	github.com/senzing/senzing-tools v0.2.4 => /home/senzing/senzing.git/senzing-tools
+)
+
 retract (
 	v0.1.8
 	v0.1.7
