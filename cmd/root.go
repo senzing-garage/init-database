@@ -99,6 +99,7 @@ func loadConfigurationFile(cobraCommand *cobra.Command) {
 
 // Configure Viper with user-specified options.
 func loadOptions(cobraCommand *cobra.Command) {
+	var err error = nil
 	viper.AutomaticEnv()
 	replacer := strings.NewReplacer("-", "_")
 	viper.SetEnvKeyReplacer(replacer)
@@ -111,7 +112,10 @@ func loadOptions(cobraCommand *cobra.Command) {
 	}
 	for optionKey, optionValue := range intOptions {
 		viper.SetDefault(optionKey, optionValue)
-		viper.BindPFlag(optionKey, cobraCommand.Flags().Lookup(optionKey))
+		err = viper.BindPFlag(optionKey, cobraCommand.Flags().Lookup(optionKey))
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	// Strings
@@ -130,13 +134,19 @@ func loadOptions(cobraCommand *cobra.Command) {
 	}
 	for optionKey, optionValue := range stringOptions {
 		viper.SetDefault(optionKey, optionValue)
-		viper.BindPFlag(optionKey, cobraCommand.Flags().Lookup(optionKey))
+		err = viper.BindPFlag(optionKey, cobraCommand.Flags().Lookup(optionKey))
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	// StringSlice
 
 	viper.SetDefault(option.Datasources, defaultDatasources)
-	viper.BindPFlag(option.Datasources, cobraCommand.Flags().Lookup(option.Datasources))
+	err = viper.BindPFlag(option.Datasources, cobraCommand.Flags().Lookup(option.Datasources))
+	if err != nil {
+		panic(err)
+	}
 }
 
 // ----------------------------------------------------------------------------

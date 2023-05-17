@@ -404,7 +404,11 @@ func (senzingSchema *SenzingSchemaImpl) SetLogLevel(ctx context.Context, logLeve
 	// Set senzingSchema log level.
 
 	senzingSchema.logLevelName = logLevelName
-	senzingSchema.getLogger().SetLogLevel(logLevelName)
+	err = senzingSchema.getLogger().SetLogLevel(logLevelName)
+	if err != nil {
+		traceExitMessageNumber, debugMessageNumber = 33, 1033
+		return err
+	}
 
 	// Notify observers.
 
