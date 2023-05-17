@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.4] - 2023-05-17
+
+### Changed in 0.2.4
+
+- Added `gosec`
+- Updated dependencies
+  - github.com/senzing/go-observing v0.2.5
+
 ## [0.2.3] - 2023-05-12
 
 ### Changed in 0.2.3
