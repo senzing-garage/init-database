@@ -192,8 +192,8 @@ github.com/rogpeppe/go-internal v1.3.0/go.mod h1:M8bDsm7K2OlrFYOpmOWEs/qY81heoFR
 github.com/rogpeppe/go-internal v1.10.0 h1:TMyTOH3F/DB16zRVcYyreMH6GnZZrwQVAoYjRBZyWFQ=
 github.com/russross/blackfriday/v2 v2.1.0 h1:JIOH55/0cWyOuilr9/qlrm0BSXldqnqwMsf35Ld67mk=
 github.com/russross/blackfriday/v2 v2.1.0/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
-github.com/senzing/g2-sdk-go v0.6.2 h1:y+TTLm2/5c6Zp863Bb+E1Ae7edEkiQr+U6k8aZ2ABw8=
-github.com/senzing/g2-sdk-go v0.6.2/go.mod h1:pYFBdS8R1K7PWmNLzdeU9ibRtpX9WJmOB2aqqdsT3VU=
+github.com/senzing/g2-sdk-go v0.6.3 h1:aW8373Xb5kChHE+0ufB0VW8cqyEho1aCFDptWrIYDag=
+github.com/senzing/g2-sdk-go v0.6.3/go.mod h1:VLmAQ8qHT6FmSmFrI0sLLmIfkeH1oj6YIgxBakZJAaM=
 github.com/senzing/g2-sdk-go-base v0.1.10 h1:0fMw097/wx1SYU6Og5cyj/eQ0yeVzDlFlsBr7OYDN2s=
 github.com/senzing/g2-sdk-go-base v0.1.10/go.mod h1:JtawNytxzniPGY4cj6ASSo2pDal+0CBV3HYSMxOW/Mc=
 github.com/senzing/g2-sdk-go-grpc v0.2.6 h1:01aukry6MnQ1qrLUgC0dd9uW+1LmWk/OvrCd5thAfu4=
@@ -237,7 +237,7 @@ github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/
 github.com/stretchr/testify v1.7.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.8.0/go.mod h1:yNjHg4UonilssWZ8iaSj1OCr/vHnekPRkoO+kdMU+MU=
 github.com/stretchr/testify v1.8.1/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o6fzry7u4=
-github.com/stretchr/testify v1.8.2 h1:+h33VjcLVPDHtOdpUCuF+7gSuG3yGIftsP1YvFihtJ8=
+github.com/stretchr/testify v1.8.3 h1:RP3t2pwF7cMEbC1dqtB6poj3niw/9gnV4Cjg5oW5gtY=
 github.com/subosito/gotenv v1.4.2 h1:X1TuBLAMDFbaTAChgCBLu3DU3UPyELpnF2jjJ2cz/S8=
 github.com/subosito/gotenv v1.4.2/go.mod h1:ayKnFf/c6rvx/2iiLrJUk1e6plDbT3edrFNGqEflhK0=
 github.com/yuin/goldmark v1.1.25/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
