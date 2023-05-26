@@ -3,7 +3,7 @@ module github.com/senzing/init-database
 go 1.20
 
 require (
-	github.com/senzing/g2-sdk-go v0.6.3
+	github.com/senzing/g2-sdk-go v0.6.4
 	github.com/senzing/go-common v0.1.3
 	github.com/senzing/go-databasing v0.2.4
 	github.com/senzing/go-logging v1.2.5
@@ -28,13 +28,13 @@ require (
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mattn/go-sqlite3 v1.14.16 // indirect
-	github.com/microsoft/go-mssqldb v0.21.0 // indirect
+	github.com/microsoft/go-mssqldb v1.0.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/pelletier/go-toml/v2 v2.0.7 // indirect
+	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
-	github.com/senzing/g2-sdk-go-base v0.1.11 // indirect
-	github.com/senzing/g2-sdk-go-grpc v0.2.7 // indirect
-	github.com/senzing/g2-sdk-proto/go v0.0.0-20230315125947-e4aea8f381eb // indirect
+	github.com/senzing/g2-sdk-go-base v0.2.0 // indirect
+	github.com/senzing/g2-sdk-go-grpc v0.3.0 // indirect
+	github.com/senzing/g2-sdk-proto/go v0.0.0-20230526140633-b44eb0f20e1b // indirect
 	github.com/senzing/go-messaging v0.2.1 // indirect
 	github.com/spf13/afero v1.9.5 // indirect
 	github.com/spf13/cast v1.5.1 // indirect
@@ -46,7 +46,7 @@ require (
 	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/sys v0.8.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
-	google.golang.org/genproto v0.0.0-20230524185152-1884fd1fac28 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20230526161137-0005af68ea54 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
