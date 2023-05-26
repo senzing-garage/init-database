@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.5] - 2023-05-26
+
+### Changed in 0.2.5
+
+- Update dependencies
+  - github.com/senzing/g2-sdk-go v0.6.4
+
 ## [0.2.4] - 2023-05-17
 
 ### Changed in 0.2.4
