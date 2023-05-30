@@ -8,8 +8,8 @@ require (
 	github.com/senzing/go-databasing v0.2.4
 	github.com/senzing/go-logging v1.2.5
 	github.com/senzing/go-observing v0.2.5
-	github.com/senzing/go-sdk-abstract-factory v0.2.4
-	github.com/senzing/senzing-tools v0.2.6
+	github.com/senzing/go-sdk-abstract-factory v0.3.0
+	github.com/senzing/senzing-tools v0.2.8
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.15.0
 	google.golang.org/grpc v1.55.0
@@ -46,7 +46,7 @@ require (
 	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/sys v0.8.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20230526161137-0005af68ea54 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20230526203410-71b5a4ffd15e // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
