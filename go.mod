@@ -11,7 +11,7 @@ require (
 	github.com/senzing/go-sdk-abstract-factory v0.3.0
 	github.com/senzing/senzing-tools v0.2.8
 	github.com/spf13/cobra v1.7.0
-	github.com/spf13/viper v1.15.0
+	github.com/spf13/viper v1.16.0
 	google.golang.org/grpc v1.55.0
 
 )
