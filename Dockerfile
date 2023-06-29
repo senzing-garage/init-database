@@ -2,15 +2,15 @@
 # Stages
 # -----------------------------------------------------------------------------
 
-ARG IMAGE_GO_BUILDER=golang:1.20.4@sha256:31a8f92b17829b3ccddf0add184f18203acfd79ccc1bcb5c43803ab1c4836cca
-ARG IMAGE_FINAL=senzing/senzingapi-runtime:3.5.3
+ARG IMAGE_GO_BUILDER=golang:1.20.4@sha256:690e4135bf2a4571a572bfd5ddfa806b1cb9c3dea0446ebadaf32bc2ea09d4f9
+ARG IMAGE_FINAL=senzing/senzingapi-runtime:3.6.0
 
 # -----------------------------------------------------------------------------
 # Stage: go_builder
 # -----------------------------------------------------------------------------
 
 FROM ${IMAGE_GO_BUILDER} as go_builder
-ENV REFRESHED_AT=2023-06-15
+ENV REFRESHED_AT=2023-06-29
 LABEL Name="senzing/init-database-builder" \
       Maintainer="support@senzing.com" \
       Version="0.2.6"
@@ -54,7 +54,7 @@ RUN mkdir -p /output \
 # -----------------------------------------------------------------------------
 
 FROM ${IMAGE_FINAL} as final
-ENV REFRESHED_AT=2023-06-15
+ENV REFRESHED_AT=2023-06-29
 LABEL Name="senzing/init-database" \
       Maintainer="support@senzing.com" \
       Version="0.2.6"
