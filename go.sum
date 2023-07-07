@@ -199,8 +199,8 @@ github.com/senzing/g2-sdk-go-grpc v0.3.1 h1:Xjlvkh26Gf0KeZBe3wtWmqiZfUNcZI7Ybh/Q
 github.com/senzing/g2-sdk-go-grpc v0.3.1/go.mod h1:EoV8e5a2//iwoMQSh5zBuhWG5e4doGJAICOqU9cbtBU=
 github.com/senzing/g2-sdk-proto/go v0.0.0-20230608182106-25c8cdc02e3c h1:jNOwfVczSPsD42TLj/+/Tn5CxzsPfoSpRYm+XB2iKH0=
 github.com/senzing/g2-sdk-proto/go v0.0.0-20230608182106-25c8cdc02e3c/go.mod h1:xAllYm5U1m8CBnK7pkn3CZ87kd3nXxEfGt2Wims4+Ic=
-github.com/senzing/go-common v0.1.4 h1:LkebMWQ9Wp0D+BxZInPF0B43ukRKugLRGFi5tBOuW5U=
-github.com/senzing/go-common v0.1.4/go.mod h1:4BRqA7sNxeUbY7Hlhz9ehyrpxxxoDPDruxRIj0QZmsw=
+github.com/senzing/go-common v0.1.5 h1:8GoIHjNmrrv12MjiXXb+eAk+XM/5qfMWmrcZAACMo64=
+github.com/senzing/go-common v0.1.5/go.mod h1:3nA6TEVw634INkn8Jfe6AIkNSLWA/VLuq0DjI7qWdBE=
 github.com/senzing/go-databasing v0.2.5 h1:aeYKJhqFxmUT3rB8tf7iP/dbKgOy4cF7CT/oEHgFgOI=
 github.com/senzing/go-databasing v0.2.5/go.mod h1:2TATh45Ajk/mYXWBF0mhMoIQqLwTGMRh54yxFgQSk50=
 github.com/senzing/go-logging v1.3.0 h1:CPDqW22eM5Zjz+dieyt4IYQm64r8NlNaaahxlSXuSP4=
