@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/senzing/g2-sdk-go v0.6.7
-	github.com/senzing/go-common v0.2.0
+	github.com/senzing/go-common v0.2.2
 	github.com/senzing/go-databasing v0.2.6
 	github.com/senzing/go-logging v1.3.1
 	github.com/senzing/go-observing v0.2.6
@@ -30,9 +30,9 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.17 // indirect
 	github.com/microsoft/go-mssqldb v1.3.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
+	github.com/pelletier/go-toml/v2 v2.0.9 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
-	github.com/senzing/g2-sdk-go-base v0.2.1 // indirect
+	github.com/senzing/g2-sdk-go-base v0.2.2 // indirect
 	github.com/senzing/g2-sdk-go-grpc v0.3.1 // indirect
 	github.com/senzing/g2-sdk-proto/go v0.0.0-20230608182106-25c8cdc02e3c // indirect
 	github.com/senzing/go-messaging v1.3.1 // indirect
@@ -42,7 +42,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
 	golang.org/x/crypto v0.11.0 // indirect
-	golang.org/x/exp v0.0.0-20230711153332-06a737ee72cb // indirect
+	golang.org/x/exp v0.0.0-20230713183714-613f0c0eb8a1 // indirect
 	golang.org/x/net v0.12.0 // indirect
 	golang.org/x/sys v0.10.0 // indirect
 	golang.org/x/text v0.11.0 // indirect
