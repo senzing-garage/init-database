@@ -9,7 +9,7 @@ require (
 	github.com/senzing/go-logging v1.3.1
 	github.com/senzing/go-observing v0.2.6
 	github.com/senzing/go-sdk-abstract-factory v0.3.1
-	github.com/senzing/senzing-tools v0.3.0
+	github.com/senzing/senzing-tools v0.3.1-0.20230713235126-9b84c4e632b4
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.16.0
 	google.golang.org/grpc v1.56.2
