@@ -45,7 +45,7 @@ func teardown() error {
 
 func TestSenzingSchemaImpl_InitializeSenzing(test *testing.T) {
 	ctx := context.TODO()
-	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 	if err != nil {
 		fmt.Print(err)
 	}
@@ -64,7 +64,7 @@ func TestSenzingSchemaImpl_RegisterObserver(test *testing.T) {
 		IsSilent: true,
 	}
 
-	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 	if err != nil {
 		fmt.Print(err)
 	}
@@ -78,7 +78,7 @@ func TestSenzingSchemaImpl_RegisterObserver(test *testing.T) {
 
 func TestSenzingSchemaImpl_SetObserverOrigin(test *testing.T) {
 	ctx := context.TODO()
-	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 	if err != nil {
 		fmt.Print(err)
 	}
@@ -96,7 +96,7 @@ func TestSenzingSchemaImpl_UnregisterObserver(test *testing.T) {
 		IsSilent: true,
 	}
 
-	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 	if err != nil {
 		fmt.Print(err)
 	}
@@ -116,7 +116,7 @@ func TestSenzingSchemaImpl_UnregisterObserver(test *testing.T) {
 func ExampleSenzingSchemaImpl_InitializeSenzing() {
 	// For more information, visit https://github.com/Senzing/init-database/blob/main/senzingschema/senzingschema_test.go
 	ctx := context.TODO()
-	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 	if err != nil {
 		fmt.Print(err)
 	}
@@ -141,7 +141,7 @@ func ExampleSenzingSchemaImpl_RegisterObserver() {
 		Id:       "Observer 1",
 		IsSilent: true,
 	}
-	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 	if err != nil {
 		fmt.Print(err)
 	}
@@ -158,7 +158,7 @@ func ExampleSenzingSchemaImpl_RegisterObserver() {
 func ExampleSenzingSchemaImpl_SetLogLevel() {
 	// For more information, visit https://github.com/Senzing/init-database/blob/main/senzingschema/senzingschema_test.go
 	ctx := context.TODO()
-	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 	if err != nil {
 		fmt.Print(err)
 	}
@@ -175,7 +175,7 @@ func ExampleSenzingSchemaImpl_SetLogLevel() {
 func ExampleSenzingSchemaImpl_SetObserverOrigin() {
 	// For more information, visit https://github.com/Senzing/init-database/blob/main/senzingschema/senzingschema_test.go
 	ctx := context.TODO()
-	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 	if err != nil {
 		fmt.Print(err)
 	}
@@ -193,7 +193,7 @@ func ExampleSenzingSchemaImpl_UnregisterObserver() {
 		Id:       "Observer 1",
 		IsSilent: true,
 	}
-	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJson("")
+	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 	if err != nil {
 		fmt.Print(err)
 	}

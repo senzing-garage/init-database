@@ -132,12 +132,26 @@ func RunE(_ *cobra.Command, _ []string) error {
 	var err error = nil
 	ctx := context.Background()
 
+	// Build senzingEngineConfigurationJson.
+
 	senzingEngineConfigurationJson := viper.GetString(option.EngineConfigurationJson)
 	if len(senzingEngineConfigurationJson) == 0 {
-		senzingEngineConfigurationJson, err = g2engineconfigurationjson.BuildSimpleSystemConfigurationJson(viper.GetString(option.DatabaseUrl))
+		options := map[string]string{
+			"configPath":          viper.GetString(option.ConfigPath),
+			"databaseUrl":         viper.GetString(option.DatabaseUrl),
+			"licenseStringBase64": viper.GetString(option.LicenseStringBase64),
+			"resourcePath":        viper.GetString(option.ResourcePath),
+			"senzingDirectory":    viper.GetString(option.SenzingDirectory),
+			"supportPath":         viper.GetString(option.SupportPath),
+		}
+		senzingEngineConfigurationJson, err = g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(options)
 		if err != nil {
 			return err
 		}
+	}
+	err = g2engineconfigurationjson.VerifySenzingEngineConfigurationJson(ctx, senzingEngineConfigurationJson)
+	if err != nil {
+		return err
 	}
 
 	initializer := &initializer.InitializerImpl{
@@ -149,9 +163,7 @@ func RunE(_ *cobra.Command, _ []string) error {
 		SenzingModuleName:              viper.GetString(option.EngineModuleName),
 		SenzingVerboseLogging:          viper.GetInt(option.EngineLogLevel),
 	}
-
-	err = initializer.Initialize(ctx)
-	return err
+	return initializer.Initialize(ctx)
 }
 
 // Used in construction of cobra.Command
