@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/senzing/g2-sdk-go v0.6.7
-	github.com/senzing/go-common v0.2.2
+	github.com/senzing/go-common v0.2.3
 	github.com/senzing/go-databasing v0.2.6
 	github.com/senzing/go-logging v1.3.1
 	github.com/senzing/go-observing v0.2.6
