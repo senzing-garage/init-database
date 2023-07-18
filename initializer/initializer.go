@@ -39,6 +39,7 @@ type InitializerImpl struct {
 	SenzingModuleName              string
 	senzingSchemaSingleton         senzingschema.SenzingSchema
 	SenzingVerboseLogging          int
+	SqlFile                        string
 }
 
 // ----------------------------------------------------------------------------
@@ -158,6 +159,7 @@ func (initializerImpl *InitializerImpl) getSenzingSchema() senzingschema.Senzing
 	if initializerImpl.senzingSchemaSingleton == nil {
 		initializerImpl.senzingSchemaSingleton = &senzingschema.SenzingSchemaImpl{
 			SenzingEngineConfigurationJson: initializerImpl.SenzingEngineConfigurationJson,
+			SqlFile:                        initializerImpl.SqlFile,
 		}
 	}
 	return initializerImpl.senzingSchemaSingleton

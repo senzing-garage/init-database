@@ -5,7 +5,9 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/senzing/go-common/g2engineconfigurationjson"
@@ -31,6 +33,20 @@ For more information, visit https://github.com/Senzing/init-database
 // Context variables
 // ----------------------------------------------------------------------------
 
+var OptionSqlFile = cmdhelper.ContextString{
+	Default: "bob",
+	Envar:   "SENZING_TOOLS_SQL_FILE",
+	Help:    "Path to file of SQL to process [%s]",
+	Option:  "sql-file",
+}
+
+var OptionDatabaseUrl = cmdhelper.ContextString{
+	Default: cmdhelper.OsLookupEnvString(envar.DatabaseUrl, "Jane"),
+	Envar:   envar.DatabaseUrl,
+	Help:    help.DatabaseUrl,
+	Option:  option.DatabaseUrl,
+}
+
 var ContextInts = []cmdhelper.ContextInt{
 	{
 		Default: cmdhelper.OsLookupEnvInt(envar.EngineLogLevel, 0),
@@ -46,12 +62,6 @@ var ContextStrings = []cmdhelper.ContextString{
 		Envar:   envar.Configuration,
 		Help:    help.Configuration,
 		Option:  option.Configuration,
-	},
-	{
-		Default: cmdhelper.OsLookupEnvString(envar.DatabaseUrl, ""),
-		Envar:   envar.DatabaseUrl,
-		Help:    help.DatabaseUrl,
-		Option:  option.DatabaseUrl,
 	},
 	{
 		Default: cmdhelper.OsLookupEnvString(envar.EngineConfigurationJson, ""),
@@ -104,9 +114,61 @@ var ContextVariables = &cmdhelper.ContextVariables{
 // Private functions
 // ----------------------------------------------------------------------------
 
+func viperizeString(cobraCommand *cobra.Command, option cmdhelper.ContextString) error {
+	cobraCommand.Flags().String(option.Option, option.Default, fmt.Sprintf(option.Help, option.Envar))
+	viper.SetDefault(option.Option, option.Default)
+	err := viper.BindPFlag(option.Option, cobraCommand.Flags().Lookup(option.Option))
+	return err
+}
+
+func findSqlFile(resourcePath string, databaseUrl string) string {
+	var result string = ""
+	// Determine which SQL file to process.
+
+	parsedUrl, err := url.Parse(databaseUrl)
+	if err != nil {
+		if strings.HasPrefix(databaseUrl, "postgresql") {
+			index := strings.LastIndex(databaseUrl, ":")
+			newDatabaseUrl := databaseUrl[:index] + "/" + databaseUrl[index+1:]
+			parsedUrl, err = url.Parse(newDatabaseUrl)
+		}
+		if err != nil {
+			return ""
+		}
+	}
+
+	switch parsedUrl.Scheme {
+	case "sqlite3":
+		result = resourcePath + "/schema/g2core-schema-sqlite-create.sql"
+	case "postgresql":
+		result = resourcePath + "/schema/g2core-schema-postgresql-create.sql"
+	case "mysql":
+		result = resourcePath + "/schema/g2core-schema-mysql-create.sql"
+	case "mssql":
+		result = resourcePath + "/schema/g2core-schema-mssql-create.sql"
+	}
+	return result
+}
+
 // Since init() is always invoked, define command line parameters.
 func init() {
 	cmdhelper.Init(RootCmd, *ContextVariables)
+
+	fmt.Printf(">>>> 1.0 >>>> %s\n", viper.GetString(option.DatabaseUrl))
+
+	// Tailor the "sql-file" option.
+
+	err := viperizeString(RootCmd, OptionDatabaseUrl)
+	if err != nil {
+		panic(nil)
+	}
+
+	OptionSqlFile.Default = findSqlFile("bob", viper.GetString(OptionDatabaseUrl.Option))
+	err = viperizeString(RootCmd, OptionSqlFile)
+	if err != nil {
+		panic(nil)
+	}
+
 }
 
 // ----------------------------------------------------------------------------
@@ -116,14 +178,23 @@ func init() {
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the RootCmd.
 func Execute() {
+	fmt.Printf(">>>> 2.0 >>>> %s\n", viper.GetString(option.DatabaseUrl))
+	fmt.Printf(">>>> 2.1 >>>> %+v\n", viper.AllKeys())
+
 	err := RootCmd.Execute()
+	fmt.Printf(">>>> 2.2 >>>> %+v\n", viper.AllKeys())
+
 	if err != nil {
 		os.Exit(1)
 	}
+	fmt.Printf(">>>> 2.3 >>>> %+v\n", viper.AllKeys())
+
 }
 
 // Used in construction of cobra.Command
 func PreRun(cobraCommand *cobra.Command, args []string) {
+	fmt.Printf(">>>> 3.0 >>>> %s\n", viper.GetString(option.DatabaseUrl))
+
 	cmdhelper.PreRun(cobraCommand, args, Use, *ContextVariables)
 }
 
@@ -131,6 +202,8 @@ func PreRun(cobraCommand *cobra.Command, args []string) {
 func RunE(_ *cobra.Command, _ []string) error {
 	var err error = nil
 	ctx := context.Background()
+
+	fmt.Printf(">>>> 4.0 >>>> %s\n", viper.GetString(option.DatabaseUrl))
 
 	// Build senzingEngineConfigurationJson.
 
@@ -162,6 +235,7 @@ func RunE(_ *cobra.Command, _ []string) error {
 		SenzingLogLevel:                viper.GetString(option.LogLevel),
 		SenzingModuleName:              viper.GetString(option.EngineModuleName),
 		SenzingVerboseLogging:          viper.GetInt(option.EngineLogLevel),
+		SqlFile:                        viper.GetString(OptionSqlFile.Option),
 	}
 	return initializer.Initialize(ctx)
 }

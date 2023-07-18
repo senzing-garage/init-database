@@ -28,6 +28,7 @@ type SenzingSchemaImpl struct {
 	observerOrigin                 string
 	observers                      subject.Subject
 	SenzingEngineConfigurationJson string
+	SqlFile                        string
 }
 
 // ----------------------------------------------------------------------------
@@ -91,7 +92,6 @@ func (senzingSchema *SenzingSchemaImpl) traceExit(messageNumber int, details ...
 // Given a database URL, detemine the correct SQL file and send the statements to the database.
 func (senzingSchema *SenzingSchemaImpl) processDatabase(ctx context.Context, resourcePath string, databaseUrl string) error {
 	var err error = nil
-	var sqlFilename string
 
 	// Prolog.
 
@@ -133,17 +133,19 @@ func (senzingSchema *SenzingSchemaImpl) processDatabase(ctx context.Context, res
 		}
 	}
 
-	switch parsedUrl.Scheme {
-	case "sqlite3":
-		sqlFilename = resourcePath + "/schema/g2core-schema-sqlite-create.sql"
-	case "postgresql":
-		sqlFilename = resourcePath + "/schema/g2core-schema-postgresql-create.sql"
-	case "mysql":
-		sqlFilename = resourcePath + "/schema/g2core-schema-mysql-create.sql"
-	case "mssql":
-		sqlFilename = resourcePath + "/schema/g2core-schema-mssql-create.sql"
-	default:
-		return fmt.Errorf("unknown database scheme: %s", parsedUrl.Scheme)
+	if len(senzingSchema.SqlFile) == 0 {
+		switch parsedUrl.Scheme {
+		case "sqlite3":
+			senzingSchema.SqlFile = resourcePath + "/schema/g2core-schema-sqlite-create.sql"
+		case "postgresql":
+			senzingSchema.SqlFile = resourcePath + "/schema/g2core-schema-postgresql-create.sql"
+		case "mysql":
+			senzingSchema.SqlFile = resourcePath + "/schema/g2core-schema-mysql-create.sql"
+		case "mssql":
+			senzingSchema.SqlFile = resourcePath + "/schema/g2core-schema-mssql-create.sql"
+		default:
+			return fmt.Errorf("unknown database scheme: %s", parsedUrl.Scheme)
+		}
 	}
 
 	// Connect to the database.
@@ -182,12 +184,12 @@ func (senzingSchema *SenzingSchemaImpl) processDatabase(ctx context.Context, res
 
 	// Process file of SQL
 
-	err = sqlExecutor.ProcessFileName(ctx, sqlFilename)
+	err = sqlExecutor.ProcessFileName(ctx, senzingSchema.SqlFile)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 105, 1105
 		return err
 	}
-	senzingSchema.log(2001, sqlFilename, parsedUrl.Redacted())
+	senzingSchema.log(2001, senzingSchema.SqlFile, parsedUrl.Redacted())
 	return err
 }
 
