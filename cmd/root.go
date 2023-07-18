@@ -123,6 +123,11 @@ func viperizeString(cobraCommand *cobra.Command, option cmdhelper.ContextString)
 
 func findSqlFile(resourcePath string, databaseUrl string) string {
 	var result string = ""
+
+	result, isSet := os.LookupEnv(OptionSqlFile.Envar)
+	if isSet {
+		return result
+	}
 	// Determine which SQL file to process.
 
 	parsedUrl, err := url.Parse(databaseUrl)
