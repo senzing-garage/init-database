@@ -10,9 +10,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/senzing/go-common/engineconfigurationjsonparser"
 	"github.com/senzing/go-common/g2engineconfigurationjson"
 	"github.com/senzing/init-database/initializer"
 	"github.com/senzing/senzing-tools/cmdhelper"
+	"github.com/senzing/senzing-tools/constant"
 	"github.com/senzing/senzing-tools/envar"
 	"github.com/senzing/senzing-tools/help"
 	"github.com/senzing/senzing-tools/option"
@@ -34,17 +36,10 @@ For more information, visit https://github.com/Senzing/init-database
 // ----------------------------------------------------------------------------
 
 var OptionSqlFile = cmdhelper.ContextString{
-	Default: "bob",
+	Default: "",
 	Envar:   "SENZING_TOOLS_SQL_FILE",
 	Help:    "Path to file of SQL to process [%s]",
 	Option:  "sql-file",
-}
-
-var OptionDatabaseUrl = cmdhelper.ContextString{
-	Default: cmdhelper.OsLookupEnvString(envar.DatabaseUrl, "Jane"),
-	Envar:   envar.DatabaseUrl,
-	Help:    help.DatabaseUrl,
-	Option:  option.DatabaseUrl,
 }
 
 var ContextInts = []cmdhelper.ContextInt{
@@ -62,6 +57,12 @@ var ContextStrings = []cmdhelper.ContextString{
 		Envar:   envar.Configuration,
 		Help:    help.Configuration,
 		Option:  option.Configuration,
+	},
+	{
+		Default: cmdhelper.OsLookupEnvString(envar.DatabaseUrl, "Jane"),
+		Envar:   envar.DatabaseUrl,
+		Help:    help.DatabaseUrl,
+		Option:  option.DatabaseUrl,
 	},
 	{
 		Default: cmdhelper.OsLookupEnvString(envar.EngineConfigurationJson, ""),
@@ -114,21 +115,79 @@ var ContextVariables = &cmdhelper.ContextVariables{
 // Private functions
 // ----------------------------------------------------------------------------
 
-func viperizeString(cobraCommand *cobra.Command, option cmdhelper.ContextString) error {
-	cobraCommand.Flags().String(option.Option, option.Default, fmt.Sprintf(option.Help, option.Envar))
-	viper.SetDefault(option.Option, option.Default)
-	err := viper.BindPFlag(option.Option, cobraCommand.Flags().Lookup(option.Option))
-	return err
+func buildSenzingEngineConfigurationJson(ctx context.Context, aViper *viper.Viper) (string, error) {
+	var err error = nil
+	var result string = ""
+	result = aViper.GetString(option.EngineConfigurationJson)
+	if len(result) == 0 {
+		options := map[string]string{
+			"configPath":          aViper.GetString(option.ConfigPath),
+			"databaseUrl":         aViper.GetString(option.DatabaseUrl),
+			"licenseStringBase64": aViper.GetString(option.LicenseStringBase64),
+			"resourcePath":        aViper.GetString(option.ResourcePath),
+			"senzingDirectory":    aViper.GetString(option.SenzingDirectory),
+			"supportPath":         aViper.GetString(option.SupportPath),
+		}
+		result, err = g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(options)
+		if err != nil {
+			return result, err
+		}
+	}
+	err = g2engineconfigurationjson.VerifySenzingEngineConfigurationJson(ctx, result)
+	if err != nil {
+		return result, err
+	}
+	return result, err
 }
 
-func findSqlFile(resourcePath string, databaseUrl string) string {
+func getSqlFileDefault(contextVariables cmdhelper.ContextVariables) (string, error) {
 	var result string = ""
+	var err error = nil
+	ctx := context.Background()
+
+	// Early exit.  Environment variable is set.
 
 	result, isSet := os.LookupEnv(OptionSqlFile.Envar)
 	if isSet {
-		return result
+		return result, err
 	}
-	// Determine which SQL file to process.
+
+	// Create a local Viper.
+
+	myViper := viper.New()
+	myViper.AutomaticEnv()
+	replacer := strings.NewReplacer("-", "_")
+	myViper.SetEnvKeyReplacer(replacer)
+	myViper.SetEnvPrefix(constant.SetEnvPrefix)
+
+	for _, contextVariable := range contextVariables.Strings {
+		myViper.SetDefault(contextVariable.Option, contextVariable.Default)
+	}
+
+	// Build and parse Senzing engine configuration JSON.
+
+	senzingEngineConfigurationJson, err := buildSenzingEngineConfigurationJson(ctx, myViper)
+	if err != nil {
+		return result, err
+	}
+	parsedSenzingEngineConfigurationJson, err := engineconfigurationjsonparser.New(senzingEngineConfigurationJson)
+	if err != nil {
+		return result, err
+	}
+	resourcePath, err := parsedSenzingEngineConfigurationJson.GetResourcePath(ctx)
+	if err != nil {
+		return result, err
+	}
+	databaseUrls, err := parsedSenzingEngineConfigurationJson.GetDatabaseUrls(ctx)
+	if err != nil {
+		return result, err
+	}
+	databaseUrl := ""
+	if len(databaseUrls) > 0 {
+		databaseUrl = databaseUrls[0]
+	}
+
+	// Parse database URL to find which type of database is used.
 
 	parsedUrl, err := url.Parse(databaseUrl)
 	if err != nil {
@@ -138,9 +197,11 @@ func findSqlFile(resourcePath string, databaseUrl string) string {
 			parsedUrl, err = url.Parse(newDatabaseUrl)
 		}
 		if err != nil {
-			return ""
+			return result, err
 		}
 	}
+
+	// Based on database type, choose SQL file.
 
 	switch parsedUrl.Scheme {
 	case "sqlite3":
@@ -151,29 +212,35 @@ func findSqlFile(resourcePath string, databaseUrl string) string {
 		result = resourcePath + "/schema/g2core-schema-mysql-create.sql"
 	case "mssql":
 		result = resourcePath + "/schema/g2core-schema-mssql-create.sql"
+	default:
+		err = fmt.Errorf("no default SQL file for database type `%s` in %s", parsedUrl.Scheme, databaseUrl)
 	}
-	return result
+
+	return result, err
 }
 
 // Since init() is always invoked, define command line parameters.
 func init() {
 	cmdhelper.Init(RootCmd, *ContextVariables)
 
-	fmt.Printf(">>>> 1.0 >>>> %s\n", viper.GetString(option.DatabaseUrl))
-
 	// Tailor the "sql-file" option.
 
-	err := viperizeString(RootCmd, OptionDatabaseUrl)
+	sqlFileDefault, err := getSqlFileDefault(*ContextVariables)
 	if err != nil {
-		panic(nil)
+		panic(err)
 	}
-
-	OptionSqlFile.Default = findSqlFile("bob", viper.GetString(OptionDatabaseUrl.Option))
+	OptionSqlFile.Default = sqlFileDefault
 	err = viperizeString(RootCmd, OptionSqlFile)
 	if err != nil {
-		panic(nil)
+		panic(err)
 	}
+}
 
+func viperizeString(cobraCommand *cobra.Command, option cmdhelper.ContextString) error {
+	cobraCommand.Flags().String(option.Option, option.Default, fmt.Sprintf(option.Help, option.Envar))
+	viper.SetDefault(option.Option, option.Default)
+	err := viper.BindPFlag(option.Option, cobraCommand.Flags().Lookup(option.Option))
+	return err
 }
 
 // ----------------------------------------------------------------------------
@@ -183,23 +250,14 @@ func init() {
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the RootCmd.
 func Execute() {
-	fmt.Printf(">>>> 2.0 >>>> %s\n", viper.GetString(option.DatabaseUrl))
-	fmt.Printf(">>>> 2.1 >>>> %+v\n", viper.AllKeys())
-
 	err := RootCmd.Execute()
-	fmt.Printf(">>>> 2.2 >>>> %+v\n", viper.AllKeys())
-
 	if err != nil {
 		os.Exit(1)
 	}
-	fmt.Printf(">>>> 2.3 >>>> %+v\n", viper.AllKeys())
-
 }
 
 // Used in construction of cobra.Command
 func PreRun(cobraCommand *cobra.Command, args []string) {
-	fmt.Printf(">>>> 3.0 >>>> %s\n", viper.GetString(option.DatabaseUrl))
-
 	cmdhelper.PreRun(cobraCommand, args, Use, *ContextVariables)
 }
 
@@ -208,26 +266,7 @@ func RunE(_ *cobra.Command, _ []string) error {
 	var err error = nil
 	ctx := context.Background()
 
-	fmt.Printf(">>>> 4.0 >>>> %s\n", viper.GetString(option.DatabaseUrl))
-
-	// Build senzingEngineConfigurationJson.
-
-	senzingEngineConfigurationJson := viper.GetString(option.EngineConfigurationJson)
-	if len(senzingEngineConfigurationJson) == 0 {
-		options := map[string]string{
-			"configPath":          viper.GetString(option.ConfigPath),
-			"databaseUrl":         viper.GetString(option.DatabaseUrl),
-			"licenseStringBase64": viper.GetString(option.LicenseStringBase64),
-			"resourcePath":        viper.GetString(option.ResourcePath),
-			"senzingDirectory":    viper.GetString(option.SenzingDirectory),
-			"supportPath":         viper.GetString(option.SupportPath),
-		}
-		senzingEngineConfigurationJson, err = g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(options)
-		if err != nil {
-			return err
-		}
-	}
-	err = g2engineconfigurationjson.VerifySenzingEngineConfigurationJson(ctx, senzingEngineConfigurationJson)
+	senzingEngineConfigurationJson, err := buildSenzingEngineConfigurationJson(ctx, viper.GetViper())
 	if err != nil {
 		return err
 	}
