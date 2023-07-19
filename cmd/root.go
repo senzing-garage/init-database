@@ -4,20 +4,17 @@ package cmd
 
 import (
 	"context"
-	"fmt"
 	"net/url"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/senzing/go-common/engineconfigurationjsonparser"
 	"github.com/senzing/go-common/g2engineconfigurationjson"
+	"github.com/senzing/go-common/option"
+	"github.com/senzing/go-common/option/optiontype"
 	"github.com/senzing/init-database/initializer"
 	"github.com/senzing/senzing-tools/cmdhelper"
 	"github.com/senzing/senzing-tools/constant"
-	"github.com/senzing/senzing-tools/envar"
-	"github.com/senzing/senzing-tools/help"
-	"github.com/senzing/senzing-tools/option"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -31,85 +28,45 @@ For more information, visit https://github.com/Senzing/init-database
     `
 )
 
+const (
+	envarEngineConfigurationFile = "SENZING_TOOLS_ENGINE_CONFIGURATION_FILE"
+	envarSqlFile                 = "SENZING_TOOLS_SQL_FILE"
+)
+
 // ----------------------------------------------------------------------------
 // Context variables
 // ----------------------------------------------------------------------------
 
-var OptionSqlFile = cmdhelper.ContextString{
-	Default: "",
-	Envar:   "SENZING_TOOLS_SQL_FILE",
-	Help:    "Path to file of SQL to process [%s]",
-	Option:  "sql-file",
+var OptionEngineConfigurationFile = option.ContextVariable{
+	Arg:     "engine-configuration-file",
+	Default: getEngineConfigurationFileDefault(),
+	Envar:   envarEngineConfigurationFile,
+	Help:    "Path to file of JSON used to configure Senzing engine [%s]",
+	Type:    optiontype.String,
 }
 
-var ContextInts = []cmdhelper.ContextInt{
-	{
-		Default: cmdhelper.OsLookupEnvInt(envar.EngineLogLevel, 0),
-		Envar:   envar.EngineLogLevel,
-		Help:    help.EngineLogLevel,
-		Option:  option.EngineLogLevel,
-	},
+var OptionSqlFile = option.ContextVariable{
+	Arg:     "sql-file",
+	Default: getSqlFileDefault(),
+	Envar:   envarSqlFile,
+	Help:    "Path to file of SQL used to create Senzing database schema [%s]",
+	Type:    optiontype.String,
 }
 
-var ContextStrings = []cmdhelper.ContextString{
-	{
-		Default: cmdhelper.OsLookupEnvString(envar.Configuration, ""),
-		Envar:   envar.Configuration,
-		Help:    help.Configuration,
-		Option:  option.Configuration,
-	},
-	{
-		Default: cmdhelper.OsLookupEnvString(envar.DatabaseUrl, "Jane"),
-		Envar:   envar.DatabaseUrl,
-		Help:    help.DatabaseUrl,
-		Option:  option.DatabaseUrl,
-	},
-	{
-		Default: cmdhelper.OsLookupEnvString(envar.EngineConfigurationJson, ""),
-		Envar:   envar.EngineConfigurationJson,
-		Help:    help.EngineConfigurationJson,
-		Option:  option.EngineConfigurationJson,
-	},
-	{
-		Default: fmt.Sprintf("init-database-%d", time.Now().Unix()),
-		Envar:   envar.EngineModuleName,
-		Help:    help.EngineModuleName,
-		Option:  option.EngineModuleName,
-	},
-	{
-		Default: cmdhelper.OsLookupEnvString(envar.LogLevel, "INFO"),
-		Envar:   envar.LogLevel,
-		Help:    help.LogLevel,
-		Option:  option.LogLevel,
-	},
-	{
-		Default: cmdhelper.OsLookupEnvString(envar.ObserverOrigin, ""),
-		Envar:   envar.ObserverOrigin,
-		Help:    help.ObserverOrigin,
-		Option:  option.ObserverOrigin,
-	},
-	{
-		Default: cmdhelper.OsLookupEnvString(envar.ObserverUrl, ""),
-		Envar:   envar.ObserverUrl,
-		Help:    help.ObserverUrl,
-		Option:  option.ObserverUrl,
-	},
+var ContextVariablesForMultiPlatform = []option.ContextVariable{
+	option.Configuration,
+	option.DatabaseUrl,
+	option.Datasources,
+	option.EngineConfigurationJson,
+	option.EngineLogLevel,
+	option.EngineModuleName,
+	option.LicenseStringBase64,
+	option.LogLevel,
+	option.ObserverOrigin,
+	option.ObserverUrl,
 }
 
-var ContextStringSlices = []cmdhelper.ContextStringSlice{
-	{
-		Default: []string{},
-		Envar:   envar.Datasources,
-		Help:    help.Datasources,
-		Option:  option.Datasources,
-	},
-}
-
-var ContextVariables = &cmdhelper.ContextVariables{
-	Ints:         ContextInts,
-	Strings:      ContextStrings,
-	StringSlices: ContextStringSlices,
-}
+var ContextVariables = append(ContextVariablesForMultiPlatform, ContextVariablesForOsArch...)
 
 // ----------------------------------------------------------------------------
 // Private functions
@@ -118,15 +75,15 @@ var ContextVariables = &cmdhelper.ContextVariables{
 func buildSenzingEngineConfigurationJson(ctx context.Context, aViper *viper.Viper) (string, error) {
 	var err error = nil
 	var result string = ""
-	result = aViper.GetString(option.EngineConfigurationJson)
+	result = aViper.GetString(option.EngineConfigurationJson.Arg)
 	if len(result) == 0 {
 		options := map[string]string{
-			"configPath":          aViper.GetString(option.ConfigPath),
-			"databaseUrl":         aViper.GetString(option.DatabaseUrl),
-			"licenseStringBase64": aViper.GetString(option.LicenseStringBase64),
-			"resourcePath":        aViper.GetString(option.ResourcePath),
-			"senzingDirectory":    aViper.GetString(option.SenzingDirectory),
-			"supportPath":         aViper.GetString(option.SupportPath),
+			"configPath":          aViper.GetString(option.ConfigPath.Arg),
+			"databaseUrl":         aViper.GetString(option.DatabaseUrl.Arg),
+			"licenseStringBase64": aViper.GetString(option.LicenseStringBase64.Arg),
+			"resourcePath":        aViper.GetString(option.ResourcePath.Arg),
+			"senzingDirectory":    aViper.GetString(option.SenzingDirectory.Arg),
+			"supportPath":         aViper.GetString(option.SupportPath.Arg),
 		}
 		result, err = g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(options)
 		if err != nil {
@@ -140,16 +97,40 @@ func buildSenzingEngineConfigurationJson(ctx context.Context, aViper *viper.Vipe
 	return result, err
 }
 
-func getSqlFileDefault(contextVariables cmdhelper.ContextVariables) (string, error) {
+func getEngineConfigurationFileDefault() string {
 	var result string = ""
-	var err error = nil
 	ctx := context.Background()
 
 	// Early exit.  Environment variable is set.
 
-	result, isSet := os.LookupEnv(OptionSqlFile.Envar)
+	result, isSet := os.LookupEnv(envarEngineConfigurationFile)
 	if isSet {
-		return result, err
+		return result
+	}
+
+	// Find information from SENZING_TOOLS_ENGINE_CONFIGURATION_JSON.
+
+	parsedSenzingEngineConfigurationJson, err := getParsedEngineConfigurationJson()
+	if err != nil {
+		return result
+	}
+	resourcePath, err := parsedSenzingEngineConfigurationJson.GetResourcePath(ctx)
+	if err != nil {
+		return result
+	}
+	result = resourcePath + "/template/g2config.json"
+	return result
+}
+
+func getParsedEngineConfigurationJson() (engineconfigurationjsonparser.EngineConfigurationJsonParser, error) {
+	var result engineconfigurationjsonparser.EngineConfigurationJsonParser = nil
+	ctx := context.Background()
+
+	// Early exit.  Environment variable is set.
+
+	senzingEngineConfigurationJson, isSet := os.LookupEnv(option.EngineConfigurationJson.Arg)
+	if isSet {
+		return engineconfigurationjsonparser.New(senzingEngineConfigurationJson)
 	}
 
 	// Create a local Viper.
@@ -160,8 +141,10 @@ func getSqlFileDefault(contextVariables cmdhelper.ContextVariables) (string, err
 	myViper.SetEnvKeyReplacer(replacer)
 	myViper.SetEnvPrefix(constant.SetEnvPrefix)
 
-	for _, contextVariable := range contextVariables.Strings {
-		myViper.SetDefault(contextVariable.Option, contextVariable.Default)
+	for _, contextVariable := range ContextVariables {
+		if contextVariable.Type == optiontype.String {
+			myViper.SetDefault(contextVariable.Arg, contextVariable.Default)
+		}
 	}
 
 	// Build and parse Senzing engine configuration JSON.
@@ -170,22 +153,38 @@ func getSqlFileDefault(contextVariables cmdhelper.ContextVariables) (string, err
 	if err != nil {
 		return result, err
 	}
-	parsedSenzingEngineConfigurationJson, err := engineconfigurationjsonparser.New(senzingEngineConfigurationJson)
+	return engineconfigurationjsonparser.New(senzingEngineConfigurationJson)
+}
+
+func getSqlFileDefault() string {
+	var result string = ""
+	ctx := context.Background()
+
+	// Early exit.  Environment variable is set.
+
+	result, isSet := os.LookupEnv(envarSqlFile)
+	if isSet {
+		return result
+	}
+
+	// Find information from SENZING_TOOLS_ENGINE_CONFIGURATION_JSON.
+
+	parsedSenzingEngineConfigurationJson, err := getParsedEngineConfigurationJson()
 	if err != nil {
-		return result, err
+		return result
 	}
 	resourcePath, err := parsedSenzingEngineConfigurationJson.GetResourcePath(ctx)
 	if err != nil {
-		return result, err
+		return result
 	}
 	databaseUrls, err := parsedSenzingEngineConfigurationJson.GetDatabaseUrls(ctx)
 	if err != nil {
-		return result, err
+		return result
 	}
-	databaseUrl := ""
-	if len(databaseUrls) > 0 {
-		databaseUrl = databaseUrls[0]
+	if len(databaseUrls) == 0 {
+		return result
 	}
+	databaseUrl := databaseUrls[0]
 
 	// Parse database URL to find which type of database is used.
 
@@ -197,7 +196,7 @@ func getSqlFileDefault(contextVariables cmdhelper.ContextVariables) (string, err
 			parsedUrl, err = url.Parse(newDatabaseUrl)
 		}
 		if err != nil {
-			return result, err
+			return result
 		}
 	}
 
@@ -212,35 +211,14 @@ func getSqlFileDefault(contextVariables cmdhelper.ContextVariables) (string, err
 		result = resourcePath + "/schema/g2core-schema-mysql-create.sql"
 	case "mssql":
 		result = resourcePath + "/schema/g2core-schema-mssql-create.sql"
-	default:
-		err = fmt.Errorf("no default SQL file for database type `%s` in %s", parsedUrl.Scheme, databaseUrl)
 	}
 
-	return result, err
+	return result
 }
 
 // Since init() is always invoked, define command line parameters.
 func init() {
-	cmdhelper.Init(RootCmd, *ContextVariables)
-
-	// Tailor the "sql-file" option.
-
-	sqlFileDefault, err := getSqlFileDefault(*ContextVariables)
-	if err != nil {
-		panic(err)
-	}
-	OptionSqlFile.Default = sqlFileDefault
-	err = viperizeString(RootCmd, OptionSqlFile)
-	if err != nil {
-		panic(err)
-	}
-}
-
-func viperizeString(cobraCommand *cobra.Command, option cmdhelper.ContextString) error {
-	cobraCommand.Flags().String(option.Option, option.Default, fmt.Sprintf(option.Help, option.Envar))
-	viper.SetDefault(option.Option, option.Default)
-	err := viper.BindPFlag(option.Option, cobraCommand.Flags().Lookup(option.Option))
-	return err
+	cmdhelper.Init(RootCmd, append(ContextVariables, OptionSqlFile, OptionEngineConfigurationFile))
 }
 
 // ----------------------------------------------------------------------------
@@ -258,7 +236,7 @@ func Execute() {
 
 // Used in construction of cobra.Command
 func PreRun(cobraCommand *cobra.Command, args []string) {
-	cmdhelper.PreRun(cobraCommand, args, Use, *ContextVariables)
+	cmdhelper.PreRun(cobraCommand, args, Use, ContextVariables)
 }
 
 // Used in construction of cobra.Command
@@ -272,14 +250,14 @@ func RunE(_ *cobra.Command, _ []string) error {
 	}
 
 	initializer := &initializer.InitializerImpl{
-		DataSources:                    viper.GetStringSlice(option.Datasources),
-		ObserverOrigin:                 viper.GetString(option.ObserverOrigin),
-		ObserverUrl:                    viper.GetString(option.ObserverUrl),
+		DataSources:                    viper.GetStringSlice(option.Datasources.Arg),
+		ObserverOrigin:                 viper.GetString(option.ObserverOrigin.Arg),
+		ObserverUrl:                    viper.GetString(option.ObserverUrl.Arg),
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
-		SenzingLogLevel:                viper.GetString(option.LogLevel),
-		SenzingModuleName:              viper.GetString(option.EngineModuleName),
-		SenzingVerboseLogging:          viper.GetInt(option.EngineLogLevel),
-		SqlFile:                        viper.GetString(OptionSqlFile.Option),
+		SenzingLogLevel:                viper.GetString(option.LogLevel.Arg),
+		SenzingModuleName:              viper.GetString(option.EngineModuleName.Arg),
+		SenzingVerboseLogging:          viper.GetInt(option.EngineLogLevel.Arg),
+		SqlFile:                        viper.GetString(OptionSqlFile.Arg),
 	}
 	return initializer.Initialize(ctx)
 }
