@@ -29,7 +29,8 @@ This command initialize databases with a Senzing schema and a default Senzing co
    or the database(s) specified in `SENZING_TOOLS_ENGINE_CONFIGURATION_JSON`.
 1. Creates a Senzing configuration in the database based on the contents
    of the file specified by the `SENZING_TOOLS_ENGINE_CONFIGURATION_FILE` parameter.
-1. *Optionally:* Adds datasources to the initial Senzing configuration.
+1. *Optionally:* Adds datasources to the initial Senzing configuration
+   via the `SENZING_TOOLS_DATASOURCES` parameter.
 
 ## Install
 
