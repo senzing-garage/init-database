@@ -23,16 +23,23 @@ This command initialize databases with a Senzing schema and a default Senzing co
 `init-database` performs the following:
 
 1. Creates a Senzing database schema from a file of SQL statements.
-   The SQL file is identified by the `SENZING_TOOLS_SQL_FILE` parameter.
+   The SQL file is identified by the
+   [SENZING_TOOLS_SQL_FILE](https://github.com/Senzing/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_sql_file)
+   parameter.
    The default file name depends on the database engine specified in the
-   protocol section of `SENZING_TOOLS_DATABASE_URL`
-   or the database(s) specified in `SENZING_TOOLS_ENGINE_CONFIGURATION_JSON`.
+   protocol section of
+   [SENZING_TOOLS_DATABASE_URL](https://github.com/Senzing/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_database_url)
+   or the database(s) specified in
+   [SENZING_TOOLS_ENGINE_CONFIGURATION_JSON](https://github.com/Senzing/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_engine_configuration_json).
    The default file location depends on the Senzing engine configuration JSON's `PIPELINE`.`RESOURCEPATH` value.
 1. Creates a Senzing configuration in the database based on the contents
-   of the file specified by the `SENZING_TOOLS_ENGINE_CONFIGURATION_FILE` parameter.
+   of the file specified by the
+   [SENZING_TOOLS_ENGINE_CONFIGURATION_FILE](https://github.com/Senzing/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_engine_configuration_file)
+    parameter.
    The default file location is based on the Senzing engine configuration JSON's `PIPELINE`.`RESOURCEPATH` value.
-1. *Optionally:* Adds datasources to the initial Senzing configuration
-   via the `SENZING_TOOLS_DATASOURCES` parameter.
+1. *Optionally:* Adds datasources to the initial Senzing configuration via the
+   [SENZING_TOOLS_DATASOURCES](https://github.com/Senzing/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_datasources)
+   parameter.
 
 ## Install
 
