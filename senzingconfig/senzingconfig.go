@@ -1,9 +1,11 @@
 package senzingconfig
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"sync"
 	"time"
@@ -54,10 +56,6 @@ var traceOptions []interface{} = []interface{}{
 }
 
 var defaultModuleName string = "init-database"
-
-// ----------------------------------------------------------------------------
-// Internal functions
-// ----------------------------------------------------------------------------
 
 // ----------------------------------------------------------------------------
 // Internal methods
@@ -181,10 +179,83 @@ func (senzingConfig *SenzingConfigImpl) addDatasources(ctx context.Context, g2Co
 }
 
 func (senzingConfig *SenzingConfigImpl) copyFile(sourceFilename string, targetFilename string) error {
-	var err error = nil
+	sourceFile, err := os.Open(sourceFilename)
+	if err != nil {
+		return err
+	}
+	defer sourceFile.Close()
+	targetFile, err := os.Create(targetFilename)
+	if err != nil {
+		return err
+	}
+	defer targetFile.Close()
+	_, err = io.Copy(targetFile, sourceFile)
+	if err != nil {
+		return err
+	}
 	senzingConfig.log(2004, sourceFilename, targetFilename)
-
 	return err
+}
+
+func (senzingConfig *SenzingConfigImpl) filesAreEqual(sourceFilename string, targetFilename string) bool {
+	var (
+		chunkSize        int  = 64000
+		shortCircuitExit bool = false
+	)
+
+	// If file sizes differ, then files differ.
+
+	sourceStat, err := os.Stat(sourceFilename)
+	if err != nil {
+		return false
+	}
+	targetStat, err := os.Stat(targetFilename)
+	if err != nil {
+		return false
+	}
+
+	if sourceStat.Size() != targetStat.Size() {
+		return false
+	}
+
+	// Final check: If file contents differ, then files differ.
+
+	sourceFile, err := os.Open(sourceFilename)
+	if err != nil {
+		shortCircuitExit = true
+	}
+	defer sourceFile.Close()
+
+	targetFile, err := os.Open(targetFilename)
+	if err != nil {
+		shortCircuitExit = true
+	}
+	defer targetFile.Close()
+
+	if shortCircuitExit {
+		return false
+	}
+
+	for {
+		sourceBytes := make([]byte, chunkSize)
+		_, sourceError := sourceFile.Read(sourceBytes)
+
+		targetBytes := make([]byte, chunkSize)
+		_, targetError := targetFile.Read(targetBytes)
+
+		if sourceError != nil || targetError != nil {
+			if sourceError == io.EOF && targetError == io.EOF {
+				return true
+			} else if sourceError == io.EOF || targetError == io.EOF {
+				return false
+			} else {
+				senzingConfig.log(4001, sourceFilename, targetFilename, sourceError, targetError)
+			}
+		}
+		if !bytes.Equal(sourceBytes, targetBytes) {
+			return false
+		}
+	}
 }
 
 // ----------------------------------------------------------------------------
@@ -265,12 +336,12 @@ func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) e
 	if len(senzingConfig.SenzingEngineConfigurationFile) > 0 {
 		parsedJson, err := engineconfigurationjsonparser.New(senzingConfig.SenzingEngineConfigurationJson)
 		if err != nil {
-			traceExitMessageNumber, debugMessageNumber = 9999, 9999
+			traceExitMessageNumber, debugMessageNumber = 20, 1020
 			return err
 		}
 		resourcePath, err := parsedJson.GetResourcePath(ctx)
 		if err != nil {
-			traceExitMessageNumber, debugMessageNumber = 9999, 9999
+			traceExitMessageNumber, debugMessageNumber = 21, 1021
 			return err
 		}
 
@@ -284,31 +355,38 @@ func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) e
 
 			_, err := os.Stat(sourceFilename)
 			if err != nil {
-				senzingConfig.log(3001, sourceFilename, err)
-				traceExitMessageNumber, debugMessageNumber = 9999, 9999
+				senzingConfig.log(5001, sourceFilename, err)
+				traceExitMessageNumber, debugMessageNumber = 22, 1022
 				return err
 			}
 
-			// If target file exists, back it up.
+			// Determine if target file needs to be replaced.
 
-			_, err = os.Stat(targetFilename)
-			if err == nil {
-				backupFilename := fmt.Sprintf("%s.%d", targetFilename, time.Now().Unix())
-				err = senzingConfig.copyFile(targetFilename, backupFilename)
+			if senzingConfig.filesAreEqual(sourceFilename, targetFilename) {
+				senzingConfig.log(2005, sourceFilename, targetFilename)
+			} else {
+
+				// If target file exists, back it up.
+
+				_, err = os.Stat(targetFilename)
+				if err == nil {
+					backupFilename := fmt.Sprintf("%s.%d", targetFilename, time.Now().Unix())
+					err = senzingConfig.copyFile(targetFilename, backupFilename)
+					if err != nil {
+						senzingConfig.log(5002, targetFilename, backupFilename, err)
+						traceExitMessageNumber, debugMessageNumber = 23, 1023
+						return err
+					}
+				}
+
+				// Copy source file to target to "fake out" Senzing's G2Engine.Create().
+
+				err = senzingConfig.copyFile(sourceFilename, targetFilename)
 				if err != nil {
-					senzingConfig.log(3002, targetFilename, backupFilename, err)
-					traceExitMessageNumber, debugMessageNumber = 9999, 9999
+					senzingConfig.log(5003, sourceFilename, targetFilename, err)
+					traceExitMessageNumber, debugMessageNumber = 24, 1024
 					return err
 				}
-			}
-
-			// Copy source file to target to "fake out" Senzing's G2Engine.Create().
-
-			err = senzingConfig.copyFile(sourceFilename, targetFilename)
-			if err != nil {
-				senzingConfig.log(3003, sourceFilename, targetFilename, err)
-				traceExitMessageNumber, debugMessageNumber = 9999, 9999
-				return err
 			}
 		}
 	}
