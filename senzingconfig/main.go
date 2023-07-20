@@ -112,7 +112,7 @@ var IdMessages = map[int]string{
 	2002: "No new Senzing configuration created.  One already exists (%d).",
 	2003: "Created Senzing configuration: %d named: %s",
 	2004: "Copied file %s to %s",
-	2005: "%s ando %s have same content.  No file manipulation needed.",
+	2005: "%s and %s have same content.  No file manipulation needed.",
 	4001: "When comparing %s and %s, an error occurred. Assuming files not equal.",
 	5001: "File does not exist: %s [SENZING_TOOLS_ENGINE_CONFIGURATION_FILE]",
 	5002: "Could not backup %s to %s",
