@@ -84,6 +84,11 @@ Prefixes:
 - Trace the exiting of initializer.Initialize(); initializerImpl.registerObserverSenzingConfig; returned (%v).
 - See <https://github.com/Senzing/init-database/blob/main/initializer/initializer.go>
 
+### senzing-65010021
+
+- Trace the exiting of initializer.Initialize(); os.Stat; returned (%v).
+- See <https://github.com/Senzing/init-database/blob/main/initializer/initializer.go>
+
 ### senzing-65010029
 
 - Trace the exiting of initializer.Initialize() returned (%v).
@@ -419,6 +424,11 @@ Prefixes:
 - initializer.UnregisterObserver(%s); initializerImpl.observers.UnregisterObserver failed; Error: %v.
 - See <https://github.com/Senzing/init-database/blob/main/initializer/initializer.go>
 
+### senzing-65011075
+
+- initializer.UnregisterObserver(%s); os.Stat failed; Error: %v.
+- See <https://github.com/Senzing/init-database/blob/main/initializer/initializer.go>
+
 ### senzing-65011081
 
 - initializer.SetObserverOrigin(%s); json.Marshal failed; Error: %v.
@@ -442,6 +452,11 @@ Prefixes:
 ### senzing-65012001
 
 - Created file: %s
+- See <https://github.com/Senzing/init-database/blob/main/initializer/initializer.go>
+
+### senzing-65013001
+
+- SQL file does not exit: %s
 - See <https://github.com/Senzing/init-database/blob/main/initializer/initializer.go>
 
 ### senzing-65020010
@@ -492,6 +507,31 @@ Prefixes:
 ### senzing-65020019
 
 - Trace the exiting of senzingconfig.InitializeSenzing(); g2Configmgr.SetDefaultConfigID failed; returned (%v).
+- See <https://github.com/Senzing/init-database/blob/main/senzingconfig/senzingconfig.go>
+
+### senzing-65020020
+
+- Trace the exiting of senzingconfig.InitializeSenzing(); engineconfigurationjsonparser.New failed; returned (%v).
+- See <https://github.com/Senzing/init-database/blob/main/senzingconfig/senzingconfig.go>
+
+### senzing-65020021
+
+- Trace the exiting of senzingconfig.InitializeSenzing(); engineconfigurationjsonparser.GetResourcePath failed; returned (%v).
+- See <https://github.com/Senzing/init-database/blob/main/senzingconfig/senzingconfig.go>
+
+### senzing-65020022
+
+- Trace the exiting of senzingconfig.InitializeSenzing(); os.Stat failed; returned (%v).
+- See <https://github.com/Senzing/init-database/blob/main/senzingconfig/senzingconfig.go>
+
+### senzing-65020023
+
+- Trace the exiting of senzingconfig.InitializeSenzing(); copyFile when backing up failed; returned (%v).
+- See <https://github.com/Senzing/init-database/blob/main/senzingconfig/senzingconfig.go>
+
+### senzing-65020024
+
+- Trace the exiting of senzingconfig.InitializeSenzing(); copyFile when replacing template/g2config.json failed; returned (%v).
 - See <https://github.com/Senzing/init-database/blob/main/senzingconfig/senzingconfig.go>
 
 ### senzing-65020029
@@ -689,6 +729,31 @@ Prefixes:
 - senzingconfig.Initialize(); g2Configmgr.SetDefaultConfigID failed; Error: %v.
 - See <https://github.com/Senzing/init-database/blob/main/senzingconfig/senzingconfig.go>
 
+### senzing-65021020
+
+- senzingconfig.Initialize(); engineconfigurationjsonparser.New failed; Error: %v.
+- See <https://github.com/Senzing/init-database/blob/main/senzingconfig/senzingconfig.go>
+
+### senzing-65021021
+
+- senzingconfig.Initialize(); engineconfigurationjsonparser.GetResourcePath failed; Error: %v.
+- See <https://github.com/Senzing/init-database/blob/main/senzingconfig/senzingconfig.go>
+
+### senzing-65021022
+
+- senzingconfig.Initialize(); os.Stat failed; Error: %v.
+- See <https://github.com/Senzing/init-database/blob/main/senzingconfig/senzingconfig.go>
+
+### senzing-65021023
+
+- senzingconfig.Initialize(); copyFile when backing up failed; Error: %v.
+- See <https://github.com/Senzing/init-database/blob/main/senzingconfig/senzingconfig.go>
+
+### senzing-65021024
+
+- senzingconfig.Initialize(); copyFile when replacing template/g2config.json failed; Error: %v.
+- See <https://github.com/Senzing/init-database/blob/main/senzingconfig/senzingconfig.go>
+
 ### senzing-65021031
 
 - senzingconfig.RegisterObserver(%s); json.Marshal failed; returned (%v).
@@ -777,6 +842,36 @@ Prefixes:
 ### senzing-65022003
 
 - "Created Senzing configuration: %d named: %s"
+- See <https://github.com/Senzing/init-database/blob/main/senzingconfig/senzingconfig.go>
+
+### senzing-65022004
+
+- "Copied file %s to %s",
+- See <https://github.com/Senzing/init-database/blob/main/senzingconfig/senzingconfig.go>
+
+### senzing-65022005
+
+- "%s and %s have same content.  No file manipulation needed.",
+- See <https://github.com/Senzing/init-database/blob/main/senzingconfig/senzingconfig.go>
+
+### senzing-65024001
+
+- "When comparing %s and %s, an error occurred. Assuming files not equal.",
+- See <https://github.com/Senzing/init-database/blob/main/senzingconfig/senzingconfig.go>
+
+### senzing-65025001
+
+- "File does not exist: %s [SENZING_TOOLS_ENGINE_CONFIGURATION_FILE]",
+- See <https://github.com/Senzing/init-database/blob/main/senzingconfig/senzingconfig.go>
+
+### senzing-65025002
+
+- "Could not backup %s to %s",
+- See <https://github.com/Senzing/init-database/blob/main/senzingconfig/senzingconfig.go>
+
+### senzing-65025003
+
+- "Could not copy %s to %s [SENZING_TOOLS_ENGINE_CONFIGURATION_FILE]",
 - See <https://github.com/Senzing/init-database/blob/main/senzingconfig/senzingconfig.go>
 
 ### senzing-65028001

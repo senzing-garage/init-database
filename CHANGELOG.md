@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.0] - 2023-07-20
 
+### Added in 0.3.0
+
+- Support for
+  [SENZING_TOOLS_ENGINE_CONFIGURATION_FILE](https://github.com/Senzing/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_engine_configuration_file) and
+  [SENZING_TOOLS_SQL_FILE](https://github.com/Senzing/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_sql_file)
+
 ### Changed in 0.3.0
 
 - Update `Dockerfile` to senzing/senzingapi-runtime:3.6.0
