@@ -24,11 +24,13 @@ This command initialize databases with a Senzing schema and a default Senzing co
 
 1. Creates a Senzing database schema from a file of SQL statements.
    The SQL file is identified by the `SENZING_TOOLS_SQL_FILE` parameter.
-   The default file depends on the database engine specified in the
+   The default file name depends on the database engine specified in the
    protocol section of `SENZING_TOOLS_DATABASE_URL`
    or the database(s) specified in `SENZING_TOOLS_ENGINE_CONFIGURATION_JSON`.
+   The default file location depends on the Senzing engine configuration JSON's `PIPELINE`.`RESOURCEPATH` value.
 1. Creates a Senzing configuration in the database based on the contents
    of the file specified by the `SENZING_TOOLS_ENGINE_CONFIGURATION_FILE` parameter.
+   The default file location is based on the Senzing engine configuration JSON's `PIPELINE`.`RESOURCEPATH` value.
 1. *Optionally:* Adds datasources to the initial Senzing configuration
    via the `SENZING_TOOLS_DATASOURCES` parameter.
 
