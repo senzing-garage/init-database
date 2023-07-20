@@ -20,30 +20,18 @@ import (
 )
 
 const (
-	Short string = "Initialize a database with the Senzing schema and configuration"
-	Use   string = "init-database"
-	Long  string = `
+	envarSqlFile        = "SENZING_TOOLS_SQL_FILE"
+	Short        string = "Initialize a database with the Senzing schema and configuration"
+	Use          string = "init-database"
+	Long         string = `
 Initialize a database with the Senzing schema and configuration.
 For more information, visit https://github.com/Senzing/init-database
     `
 )
 
-const (
-	envarEngineConfigurationFile = "SENZING_TOOLS_ENGINE_CONFIGURATION_FILE"
-	envarSqlFile                 = "SENZING_TOOLS_SQL_FILE"
-)
-
 // ----------------------------------------------------------------------------
 // Context variables
 // ----------------------------------------------------------------------------
-
-var OptionEngineConfigurationFile = option.ContextVariable{
-	Arg:     "engine-configuration-file",
-	Default: getEngineConfigurationFileDefault(),
-	Envar:   envarEngineConfigurationFile,
-	Help:    "Path to file of JSON used to configure Senzing engine [%s]",
-	Type:    optiontype.String,
-}
 
 var OptionSqlFile = option.ContextVariable{
 	Arg:     "sql-file",
@@ -95,31 +83,6 @@ func buildSenzingEngineConfigurationJson(ctx context.Context, aViper *viper.Vipe
 		return result, err
 	}
 	return result, err
-}
-
-func getEngineConfigurationFileDefault() string {
-	var result string = ""
-	ctx := context.Background()
-
-	// Early exit.  Environment variable is set.
-
-	result, isSet := os.LookupEnv(envarEngineConfigurationFile)
-	if isSet {
-		return result
-	}
-
-	// Find information from SENZING_TOOLS_ENGINE_CONFIGURATION_JSON.
-
-	parsedSenzingEngineConfigurationJson, err := getParsedEngineConfigurationJson()
-	if err != nil {
-		return result
-	}
-	resourcePath, err := parsedSenzingEngineConfigurationJson.GetResourcePath(ctx)
-	if err != nil {
-		return result
-	}
-	result = resourcePath + "/template/g2config.json"
-	return result
 }
 
 func getParsedEngineConfigurationJson() (engineconfigurationjsonparser.EngineConfigurationJsonParser, error) {
@@ -218,7 +181,7 @@ func getSqlFileDefault() string {
 
 // Since init() is always invoked, define command line parameters.
 func init() {
-	cmdhelper.Init(RootCmd, append(ContextVariables, OptionSqlFile, OptionEngineConfigurationFile))
+	cmdhelper.Init(RootCmd, append(ContextVariables, OptionSqlFile))
 }
 
 // ----------------------------------------------------------------------------
