@@ -10,6 +10,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [0.3.0] - 2023-07-20
+
+### Changed in 0.3.0
+
+- Update `Dockerfile` to senzing/senzingapi-runtime:3.6.0
+- Begin work on multi-platform support
+- Update dependencies
+  - github.com/senzing/g2-sdk-go v0.6.7
+  - github.com/senzing/go-common v0.2.4
+  - github.com/senzing/go-databasing v0.2.6
+  - github.com/senzing/go-logging v1.3.1
+  - github.com/senzing/senzing-tools v0.3.1-0.20230713235126-9b84c4e632b4
+  - google.golang.org/grpc v1.56.2
+
 ## [0.2.6] - 2023-06-16
 
 ### Changed in 0.2.6
