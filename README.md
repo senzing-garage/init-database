@@ -89,20 +89,22 @@ senzing-tools init-database [flags]
 
 This usage shows how to initialze a database with a Docker container.
 
-1. :pencil2: Run `senzing/init-database`.
+1. :pencil2: Run `senzing/senzing-tools`.
    Example:
 
     ```console
     docker run \
+        --env SENZING_TOOLS_COMMAND=init-database \
         --env SENZING_TOOLS_DATABASE_URL=postgresql://username:password@postgres.example.com:5432/G2 \
         --rm \
-        senzing/senzing-tools init-database
+        senzing/senzing-tools
     ```
 
 1. See [Parameters](#parameters) for additional parameters.
 
 ### Parameters
 
+- **[SENZING_TOOLS_COMMAND](https://github.com/Senzing/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_command)**
 - **[SENZING_TOOLS_CONFIG_PATH](https://github.com/Senzing/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_config_path)**
 - **[SENZING_TOOLS_CONFIGURATION](https://github.com/Senzing/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_configuration)**
 - **[SENZING_TOOLS_DATABASE_URL](https://github.com/Senzing/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_database_url)**
