@@ -1,13 +1,18 @@
 package senzingconfig
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
+	"os"
+	"path/filepath"
 	"sync"
 	"time"
 
 	"github.com/senzing/g2-sdk-go/g2api"
+	"github.com/senzing/go-common/engineconfigurationjsonparser"
 	"github.com/senzing/go-logging/logging"
 	"github.com/senzing/go-observing/notifier"
 	"github.com/senzing/go-observing/observer"
@@ -33,6 +38,7 @@ type SenzingConfigImpl struct {
 	logLevel                       string
 	observerOrigin                 string
 	observers                      subject.Subject
+	SenzingEngineConfigurationFile string
 	SenzingEngineConfigurationJson string
 	SenzingModuleName              string
 	SenzingVerboseLogging          int
@@ -173,6 +179,106 @@ func (senzingConfig *SenzingConfigImpl) addDatasources(ctx context.Context, g2Co
 	return err
 }
 
+func (senzingConfig *SenzingConfigImpl) copyFile(sourceFilename string, targetFilename string) error {
+	sourceFilename = filepath.Clean(sourceFilename)
+	sourceFile, err := os.Open(sourceFilename)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err := sourceFile.Close(); err != nil {
+			senzingConfig.log(9999, sourceFilename, err)
+		}
+	}()
+	targetFilename = filepath.Clean(targetFilename)
+	targetFile, err := os.Create(targetFilename)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err := targetFile.Close(); err != nil {
+			senzingConfig.log(9999, targetFilename, err)
+		}
+	}()
+	_, err = io.Copy(targetFile, sourceFile)
+	if err != nil {
+		return err
+	}
+	senzingConfig.log(2004, sourceFilename, targetFilename)
+	return err
+}
+
+func (senzingConfig *SenzingConfigImpl) filesAreEqual(sourceFilename string, targetFilename string) bool {
+	var (
+		chunkSize        int  = 64000
+		shortCircuitExit bool = false
+	)
+
+	// If file sizes differ, then files differ.
+
+	sourceStat, err := os.Stat(sourceFilename)
+	if err != nil {
+		return false
+	}
+	targetStat, err := os.Stat(targetFilename)
+	if err != nil {
+		return false
+	}
+
+	if sourceStat.Size() != targetStat.Size() {
+		return false
+	}
+
+	// Final check: If file contents differ, then files differ.
+
+	sourceFilename = filepath.Clean(sourceFilename)
+	sourceFile, err := os.Open(sourceFilename)
+	if err != nil {
+		shortCircuitExit = true
+	}
+	defer func() {
+		if err := sourceFile.Close(); err != nil {
+			senzingConfig.log(9999, sourceFilename, err)
+		}
+	}()
+
+	targetFilename = filepath.Clean(targetFilename)
+	targetFile, err := os.Open(targetFilename)
+	if err != nil {
+		shortCircuitExit = true
+	}
+	defer func() {
+		if err := targetFile.Close(); err != nil {
+			senzingConfig.log(9999, targetFilename, err)
+		}
+	}()
+
+	if shortCircuitExit {
+		return false
+	}
+
+	for {
+		sourceBytes := make([]byte, chunkSize)
+		_, sourceError := sourceFile.Read(sourceBytes)
+
+		targetBytes := make([]byte, chunkSize)
+		_, targetError := targetFile.Read(targetBytes)
+
+		if sourceError != nil || targetError != nil {
+			if sourceError == io.EOF && targetError == io.EOF {
+				return true
+			} else if sourceError == io.EOF || targetError == io.EOF {
+				return false
+			} else {
+				senzingConfig.log(4001, sourceFilename, targetFilename, sourceError, targetError)
+			}
+		}
+		if !bytes.Equal(sourceBytes, targetBytes) {
+			return false
+		}
+	}
+}
+
 // ----------------------------------------------------------------------------
 // Interface methods
 // ----------------------------------------------------------------------------
@@ -244,6 +350,66 @@ func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) e
 		senzingConfig.log(2002, configID)
 		traceExitMessageNumber, debugMessageNumber = 14, 0 // debugMessageNumber=0 because it's not an error.
 		return err
+	}
+
+	// If engine configuration file specified, swap it in.
+
+	if len(senzingConfig.SenzingEngineConfigurationFile) > 0 {
+		parsedJson, err := engineconfigurationjsonparser.New(senzingConfig.SenzingEngineConfigurationJson)
+		if err != nil {
+			traceExitMessageNumber, debugMessageNumber = 20, 1020
+			return err
+		}
+		resourcePath, err := parsedJson.GetResourcePath(ctx)
+		if err != nil {
+			traceExitMessageNumber, debugMessageNumber = 21, 1021
+			return err
+		}
+
+		// Compare file names.
+
+		sourceFilename := senzingConfig.SenzingEngineConfigurationFile
+		targetFilename := fmt.Sprintf("%s/templates/g2config.json", resourcePath)
+		if sourceFilename != targetFilename {
+
+			// Verify source file exists.
+
+			_, err := os.Stat(sourceFilename)
+			if err != nil {
+				senzingConfig.log(5001, sourceFilename, err)
+				traceExitMessageNumber, debugMessageNumber = 22, 1022
+				return err
+			}
+
+			// Determine if target file needs to be replaced.
+
+			if senzingConfig.filesAreEqual(sourceFilename, targetFilename) {
+				senzingConfig.log(2005, sourceFilename, targetFilename)
+			} else {
+
+				// If target file exists, back it up.
+
+				_, err = os.Stat(targetFilename)
+				if err == nil {
+					backupFilename := fmt.Sprintf("%s.%d", targetFilename, time.Now().Unix())
+					err = senzingConfig.copyFile(targetFilename, backupFilename)
+					if err != nil {
+						senzingConfig.log(5002, targetFilename, backupFilename, err)
+						traceExitMessageNumber, debugMessageNumber = 23, 1023
+						return err
+					}
+				}
+
+				// Copy source file to target to "fake out" Senzing's G2Engine.Create().
+
+				err = senzingConfig.copyFile(sourceFilename, targetFilename)
+				if err != nil {
+					senzingConfig.log(5003, sourceFilename, targetFilename, err)
+					traceExitMessageNumber, debugMessageNumber = 24, 1024
+					return err
+				}
+			}
+		}
 	}
 
 	// Create a fresh Senzing configuration.
@@ -426,8 +592,6 @@ func (senzingConfig *SenzingConfigImpl) SetLogLevel(ctx context.Context, logLeve
 
 		asJson, err := json.Marshal(senzingConfig)
 		if err != nil {
-			debugMessageNumber = 1041
-			traceExitMessageNumber = 41
 			traceExitMessageNumber, debugMessageNumber = 41, 1041
 			return err
 		}
@@ -593,8 +757,6 @@ func (senzingConfig *SenzingConfigImpl) UnregisterObserver(ctx context.Context, 
 
 		asJson, err := json.Marshal(senzingConfig)
 		if err != nil {
-			debugMessageNumber = 1051
-			traceExitMessageNumber = 51
 			traceExitMessageNumber, debugMessageNumber = 51, 1051
 			return err
 		}

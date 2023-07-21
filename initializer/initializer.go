@@ -34,11 +34,13 @@ type InitializerImpl struct {
 	observers                      subject.Subject
 	ObserverUrl                    string
 	senzingConfigSingleton         senzingconfig.SenzingConfig
+	SenzingEngineConfigurationFile string
 	SenzingEngineConfigurationJson string
 	SenzingLogLevel                string
 	SenzingModuleName              string
 	senzingSchemaSingleton         senzingschema.SenzingSchema
 	SenzingVerboseLogging          int
+	SqlFile                        string
 }
 
 // ----------------------------------------------------------------------------
@@ -146,6 +148,7 @@ func (initializerImpl *InitializerImpl) getSenzingConfig() senzingconfig.Senzing
 	if initializerImpl.senzingConfigSingleton == nil {
 		initializerImpl.senzingConfigSingleton = &senzingconfig.SenzingConfigImpl{
 			DataSources:                    initializerImpl.DataSources,
+			SenzingEngineConfigurationFile: initializerImpl.SenzingEngineConfigurationFile,
 			SenzingEngineConfigurationJson: initializerImpl.SenzingEngineConfigurationJson,
 			SenzingModuleName:              initializerImpl.SenzingModuleName,
 			SenzingVerboseLogging:          initializerImpl.SenzingVerboseLogging,
@@ -158,6 +161,7 @@ func (initializerImpl *InitializerImpl) getSenzingSchema() senzingschema.Senzing
 	if initializerImpl.senzingSchemaSingleton == nil {
 		initializerImpl.senzingSchemaSingleton = &senzingschema.SenzingSchemaImpl{
 			SenzingEngineConfigurationJson: initializerImpl.SenzingEngineConfigurationJson,
+			SqlFile:                        initializerImpl.SqlFile,
 		}
 	}
 	return initializerImpl.senzingSchemaSingleton
@@ -316,6 +320,17 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 			}
 			notifier.Notify(ctx, initializerImpl.observers, initializerImpl.ObserverOrigin, ComponentId, 8001, err, details)
 		}()
+	}
+
+	// Verify database file exists.
+
+	if len(initializerImpl.SqlFile) > 0 {
+		_, err = os.Stat(initializerImpl.SqlFile)
+		if err != nil {
+			initializerImpl.log(3001, initializerImpl.SqlFile)
+			traceExitMessageNumber, debugMessageNumber = 21, 1075
+			return err
+		}
 	}
 
 	// Perform initialization for specific databases.
