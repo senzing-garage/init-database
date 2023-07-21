@@ -1,11 +1,13 @@
-// 0.2.7
-// Created by make-go-github-file.yaml on Sun Jun 18 19:44:32 UTC 2023
+// 0.3.1
+// Created by make-go-github-file.yaml on Fri Jul 21 19:41:22 UTC 2023
 package cmd
 
-var githubDate string = "2023-07-21"
-var githubIteration string = "0"
-var githubRef string = "refs/tags/0.2.7"
-var githubRefName string = "0.2.7"
-var githubRepository string = "Senzing/init-database"
-var githubRepositoryName string = "init-database"
-var githubVersion string = "0.2.7"
+var (
+	githubDate           string = "2023-07-21"
+	githubIteration      string = "0"
+	githubRef            string = "refs/tags/0.3.1"
+	githubRefName        string = "0.3.1"
+	githubRepository     string = "Senzing/init-database"
+	githubRepositoryName string = "init-database"
+	githubVersion        string = "0.3.1"
+)
