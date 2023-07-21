@@ -9,13 +9,13 @@ import (
 	"os"
 	"strings"
 
+	"github.com/senzing/go-cmdhelping/cmdhelper"
+	"github.com/senzing/go-cmdhelping/constant"
+	"github.com/senzing/go-cmdhelping/option"
+	"github.com/senzing/go-cmdhelping/option/optiontype"
 	"github.com/senzing/go-common/engineconfigurationjsonparser"
 	"github.com/senzing/go-common/g2engineconfigurationjson"
-	"github.com/senzing/go-common/option"
-	"github.com/senzing/go-common/option/optiontype"
 	"github.com/senzing/init-database/initializer"
-	"github.com/senzing/senzing-tools/cmdhelper"
-	"github.com/senzing/senzing-tools/constant"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

@@ -2,6 +2,6 @@
 
 package cmd
 
-import "github.com/senzing/go-common/option"
+import "github.com/senzing/go-cmdhelping/option"
 
 var ContextVariablesForOsArch = []option.ContextVariable{}
