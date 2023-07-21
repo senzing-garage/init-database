@@ -4,12 +4,12 @@ go 1.20
 
 require (
 	github.com/senzing/g2-sdk-go v0.6.7
+	github.com/senzing/go-cmdhelping v0.1.0
 	github.com/senzing/go-common v0.2.4
 	github.com/senzing/go-databasing v0.2.6
 	github.com/senzing/go-logging v1.3.1
 	github.com/senzing/go-observing v0.2.6
 	github.com/senzing/go-sdk-abstract-factory v0.3.1
-	github.com/senzing/senzing-tools v0.3.1-0.20230719212257-44451f75612b
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.16.0
 	google.golang.org/grpc v1.56.2
@@ -48,7 +48,6 @@ require (
 	golang.org/x/text v0.11.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230720185612-659f7aaaa771 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
-	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
