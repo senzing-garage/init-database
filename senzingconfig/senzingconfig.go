@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"sync"
 	"time"
 
@@ -179,16 +180,26 @@ func (senzingConfig *SenzingConfigImpl) addDatasources(ctx context.Context, g2Co
 }
 
 func (senzingConfig *SenzingConfigImpl) copyFile(sourceFilename string, targetFilename string) error {
+	sourceFilename = filepath.Clean(sourceFilename)
 	sourceFile, err := os.Open(sourceFilename)
 	if err != nil {
 		return err
 	}
-	defer sourceFile.Close()
+	defer func() {
+		if err := sourceFile.Close(); err != nil {
+			senzingConfig.log(9999, sourceFilename, err)
+		}
+	}()
+	targetFilename = filepath.Clean(targetFilename)
 	targetFile, err := os.Create(targetFilename)
 	if err != nil {
 		return err
 	}
-	defer targetFile.Close()
+	defer func() {
+		if err := targetFile.Close(); err != nil {
+			senzingConfig.log(9999, targetFilename, err)
+		}
+	}()
 	_, err = io.Copy(targetFile, sourceFile)
 	if err != nil {
 		return err
@@ -220,17 +231,27 @@ func (senzingConfig *SenzingConfigImpl) filesAreEqual(sourceFilename string, tar
 
 	// Final check: If file contents differ, then files differ.
 
+	sourceFilename = filepath.Clean(sourceFilename)
 	sourceFile, err := os.Open(sourceFilename)
 	if err != nil {
 		shortCircuitExit = true
 	}
-	defer sourceFile.Close()
+	defer func() {
+		if err := sourceFile.Close(); err != nil {
+			senzingConfig.log(9999, sourceFilename, err)
+		}
+	}()
 
+	targetFilename = filepath.Clean(targetFilename)
 	targetFile, err := os.Open(targetFilename)
 	if err != nil {
 		shortCircuitExit = true
 	}
-	defer targetFile.Close()
+	defer func() {
+		if err := targetFile.Close(); err != nil {
+			senzingConfig.log(9999, targetFilename, err)
+		}
+	}()
 
 	if shortCircuitExit {
 		return false
