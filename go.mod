@@ -4,15 +4,15 @@ go 1.20
 
 require (
 	github.com/senzing/g2-sdk-go v0.6.7
-	github.com/senzing/go-cmdhelping v0.1.0
-	github.com/senzing/go-common v0.2.4
+	github.com/senzing/go-cmdhelping v0.1.4
+	github.com/senzing/go-common v0.2.8
 	github.com/senzing/go-databasing v0.2.6
 	github.com/senzing/go-logging v1.3.1
 	github.com/senzing/go-observing v0.2.6
 	github.com/senzing/go-sdk-abstract-factory v0.3.1
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.16.0
-	google.golang.org/grpc v1.56.2
+	google.golang.org/grpc v1.57.0
 
 )
 

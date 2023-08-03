@@ -198,10 +198,10 @@ github.com/senzing/g2-sdk-go-grpc v0.3.1 h1:Xjlvkh26Gf0KeZBe3wtWmqiZfUNcZI7Ybh/Q
 github.com/senzing/g2-sdk-go-grpc v0.3.1/go.mod h1:EoV8e5a2//iwoMQSh5zBuhWG5e4doGJAICOqU9cbtBU=
 github.com/senzing/g2-sdk-proto/go v0.0.0-20230608182106-25c8cdc02e3c h1:jNOwfVczSPsD42TLj/+/Tn5CxzsPfoSpRYm+XB2iKH0=
 github.com/senzing/g2-sdk-proto/go v0.0.0-20230608182106-25c8cdc02e3c/go.mod h1:xAllYm5U1m8CBnK7pkn3CZ87kd3nXxEfGt2Wims4+Ic=
-github.com/senzing/go-cmdhelping v0.1.0 h1:iGNfeZLkiE5g1mhZXs4PV2Spt/49chCTikK/CRtUg1I=
-github.com/senzing/go-cmdhelping v0.1.0/go.mod h1:NlVTa41fSP4e6a7OLUSXwEJW3zQklNq+eUSN+NinCbo=
-github.com/senzing/go-common v0.2.4 h1:aWMZrdfzql8KzjsB/pbRLTbu7RgLx9jXWkfJfKlsg2k=
-github.com/senzing/go-common v0.2.4/go.mod h1:6qV7VjigHkBnx/kNicAbfavg/Lt4ssPYiILsaeRHk5c=
+github.com/senzing/go-cmdhelping v0.1.4 h1:t0/B7VwePkbLv7T5+pgS2riMM049jmefaLuAyFmD34M=
+github.com/senzing/go-cmdhelping v0.1.4/go.mod h1:iZwkEV5UOZHBAfVHxborsccy291PxTCKkxbq4pl9shU=
+github.com/senzing/go-common v0.2.8 h1:NX58gqSN7k/NzAGrGdfOCu/aImq2H3BfGBI+NaZsrcU=
+github.com/senzing/go-common v0.2.8/go.mod h1:6qV7VjigHkBnx/kNicAbfavg/Lt4ssPYiILsaeRHk5c=
 github.com/senzing/go-databasing v0.2.6 h1:tPaEGWdEdyaMXgugCZKG/lRoO1SvSvrxNSpUJTPrN8c=
 github.com/senzing/go-databasing v0.2.6/go.mod h1:OBQu86up0zMQ5PvJiUVWveAAc+J/ASEP0XYTXFEc+aU=
 github.com/senzing/go-logging v1.3.1 h1:/isKaa+e2XQ/Mvp7z9cXxN36GvEF4sUwMQNuSBpwbTQ=
@@ -557,8 +557,8 @@ google.golang.org/grpc v1.31.1/go.mod h1:N36X2cJ7JwdamYAgDz+s+rVMFjt3numwzf/HckM
 google.golang.org/grpc v1.33.2/go.mod h1:JMHMWHQWaTccqQQlmk3MJZS+GWXOdAesneDmEnv2fbc=
 google.golang.org/grpc v1.34.0/go.mod h1:WotjhfgOW/POjDeRt8vscBtXq+2VjORFy659qA51WJ8=
 google.golang.org/grpc v1.35.0/go.mod h1:qjiiYl8FncCW8feJPdyg3v6XW24KsRHe+dy9BAGRRjU=
-google.golang.org/grpc v1.56.2 h1:fVRFRnXvU+x6C4IlHZewvJOVHoOv1TUuQyoRsYnB4bI=
-google.golang.org/grpc v1.56.2/go.mod h1:I9bI3vqKfayGqPUAwGdOSu7kt6oIJLixfffKrpXqQ9s=
+google.golang.org/grpc v1.57.0 h1:kfzNeI/klCGD2YPMUlaGNT3pxvYfga7smW3Vth8Zsiw=
+google.golang.org/grpc v1.57.0/go.mod h1:Sd+9RMTACXwmub0zcNY2c4arhtrbBYD1AUHI/dt16Mo=
 google.golang.org/protobuf v0.0.0-20200109180630-ec00e32a8dfd/go.mod h1:DFci5gLYBciE7Vtevhsrf46CRTquxDuWsQurQQe4oz8=
 google.golang.org/protobuf v0.0.0-20200221191635-4d8936d0db64/go.mod h1:kwYJMbMJ01Woi6D6+Kah6886xMZcty6N08ah7+eCXa0=
 google.golang.org/protobuf v0.0.0-20200228230310-ab0ca4ff8a60/go.mod h1:cfTl7dwQJ+fmap5saPgwCLgHXTUD7jkjRqWcaiX5VyM=
