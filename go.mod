@@ -3,12 +3,12 @@ module github.com/senzing/init-database
 go 1.20
 
 require (
-	github.com/senzing/g2-sdk-go v0.6.7
+	github.com/senzing/g2-sdk-go v0.6.8
 	github.com/senzing/go-cmdhelping v0.1.4
 	github.com/senzing/go-common v0.2.10
 	github.com/senzing/go-databasing v0.2.6
 	github.com/senzing/go-logging v1.3.1
-	github.com/senzing/go-observing v0.2.6
+	github.com/senzing/go-observing v0.2.7
 	github.com/senzing/go-sdk-abstract-factory v0.3.1
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.16.0
@@ -43,10 +43,10 @@ require (
 	github.com/subosito/gotenv v1.4.2 // indirect
 	golang.org/x/crypto v0.11.0 // indirect
 	golang.org/x/exp v0.0.0-20230801115018-d63ba01acd4b // indirect
-	golang.org/x/net v0.12.0 // indirect
-	golang.org/x/sys v0.10.0 // indirect
-	golang.org/x/text v0.11.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20230720185612-659f7aaaa771 // indirect
+	golang.org/x/net v0.13.0 // indirect
+	golang.org/x/sys v0.11.0 // indirect
+	golang.org/x/text v0.12.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20230803162519-f966b187b2e5 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
