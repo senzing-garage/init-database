@@ -80,11 +80,6 @@ $(PLATFORMS):
 	@GOOS=$(GO_OS) GOARCH=$(GO_ARCH) go build -o $(TARGET_DIRECTORY)/$(GO_OS)-$(GO_ARCH)/$(PROGRAM_NAME)
 
 
-.PHONY: build-all $(PLATFORMS)
-build-all: $(PLATFORMS)
-	@mv $(TARGET_DIRECTORY)/windows-amd64/$(PROGRAM_NAME) $(TARGET_DIRECTORY)/windows-amd64/$(PROGRAM_NAME).exe
-
-
 .PHONY: docker-build
 docker-build:
 	@docker build \
