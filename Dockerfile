@@ -63,7 +63,7 @@ LABEL Name="senzing/init-database" \
       Maintainer="support@senzing.com" \
       Version="0.2.6"
 
-# Copy files from repository.
+# Copy local files from the Git repository.
 
 COPY ./rootfs /
 
