@@ -99,14 +99,9 @@ docker-build:
 
 # -----------------------------------------------------------------------------
 # Test
+#  - The "test" target is implemented in Makefile.OS.ARCH files.
 # -----------------------------------------------------------------------------
 
-.PHONY: test
-test:
-	@go test -v -p 1 ./...
-#	@go test -v ./initializer
-#	@go test -v ./senzingconfig
-#	@go test -v ./senzingschema
 
 # -----------------------------------------------------------------------------
 # Run
