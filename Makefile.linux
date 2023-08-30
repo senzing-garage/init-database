@@ -43,6 +43,16 @@ package: docker-build-package
 	docker rm -v $$CONTAINER_ID
 
 # -----------------------------------------------------------------------------
+# Utility targets
+# -----------------------------------------------------------------------------
+
+.PHONY: setup
+setup:
+	@rm -rf /tmp/sqlite
+	@mkdir  /tmp/sqlite
+	@touch  /tmp/sqlite/G2C.db
+
+# -----------------------------------------------------------------------------
 # Makefile targets supported only by this platform.
 # -----------------------------------------------------------------------------
 

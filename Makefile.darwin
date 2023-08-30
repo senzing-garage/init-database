@@ -40,7 +40,17 @@ test:
 .PHONY: run
 run:
 	@go run -exec macos_exec_dyld.sh main.go
-	
+
+# -----------------------------------------------------------------------------
+# Utility targets
+# -----------------------------------------------------------------------------
+
+.PHONY: setup
+setup:
+	@rm -rf /tmp/sqlite
+	@mkdir  /tmp/sqlite
+	@touch  /tmp/sqlite/G2C.db
+
 # -----------------------------------------------------------------------------
 # Makefile targets supported only by this platform.
 # -----------------------------------------------------------------------------
