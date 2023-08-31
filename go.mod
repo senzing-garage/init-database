@@ -8,7 +8,7 @@ require (
 	github.com/senzing/g2-sdk-go v0.6.8
 	github.com/senzing/go-cmdhelping v0.1.8
 	github.com/senzing/go-common v0.2.14
-	github.com/senzing/go-databasing v0.2.7
+	github.com/senzing/go-databasing v0.2.8
 	github.com/senzing/go-logging v1.3.2
 	github.com/senzing/go-observing v0.2.7
 	github.com/senzing/go-sdk-abstract-factory v0.3.2
@@ -48,7 +48,7 @@ require (
 	golang.org/x/net v0.14.0 // indirect
 	golang.org/x/sys v0.11.0 // indirect
 	golang.org/x/text v0.12.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20230815205213-6bfd019c3878 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20230822172742-b8732ec3820d // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
