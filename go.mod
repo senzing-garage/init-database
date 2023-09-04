@@ -5,7 +5,7 @@ go 1.21
 toolchain go1.21.0
 
 require (
-	github.com/senzing/g2-sdk-go v0.6.9
+	github.com/senzing/g2-sdk-go v0.7.0
 	github.com/senzing/go-cmdhelping v0.1.8
 	github.com/senzing/go-common v0.3.0
 	github.com/senzing/go-databasing v0.2.9
