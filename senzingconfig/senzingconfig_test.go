@@ -10,7 +10,19 @@ import (
 	"github.com/senzing/go-logging/logging"
 	"github.com/senzing/go-observing/observer"
 	"github.com/senzing/init-database/senzingschema"
+	"github.com/stretchr/testify/assert"
 )
+
+// ----------------------------------------------------------------------------
+// Internal functions
+// ----------------------------------------------------------------------------
+
+func testError(test *testing.T, err error) {
+	if err != nil {
+		test.Log("Error:", err.Error())
+		assert.FailNow(test, err.Error())
+	}
+}
 
 // ----------------------------------------------------------------------------
 // Test harness
@@ -62,40 +74,28 @@ func teardown() error {
 func TestSenzingConfigImpl_InitializeSenzing_withDatasources(test *testing.T) {
 	ctx := context.TODO()
 	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
-	if err != nil {
-		fmt.Print(err)
-	}
+	testError(test, err)
 	senzingConfig := &SenzingConfigImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 		DataSources:                    []string{"CUSTOMERS", "REFERENCE", "WATCHLIST"},
 	}
 	err = senzingConfig.SetLogLevel(ctx, logging.LevelInfoName)
-	if err != nil {
-		fmt.Println(err)
-	}
+	testError(test, err)
 	err = senzingConfig.InitializeSenzing(ctx)
-	if err != nil {
-		fmt.Println(err)
-	}
+	testError(test, err)
 }
 
 func TestSenzingConfigImpl_InitializeSenzing(test *testing.T) {
 	ctx := context.TODO()
 	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
-	if err != nil {
-		fmt.Print(err)
-	}
+	testError(test, err)
 	senzingConfig := &SenzingConfigImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
 	err = senzingConfig.SetLogLevel(ctx, logging.LevelInfoName)
-	if err != nil {
-		fmt.Println(err)
-	}
+	testError(test, err)
 	err = senzingConfig.InitializeSenzing(ctx)
-	if err != nil {
-		fmt.Println(err)
-	}
+	testError(test, err)
 }
 
 func TestSenzingConfigImpl_RegisterObserver(test *testing.T) {
@@ -105,39 +105,29 @@ func TestSenzingConfigImpl_RegisterObserver(test *testing.T) {
 		IsSilent: true,
 	}
 	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
-	if err != nil {
-		fmt.Print(err)
-	}
+	testError(test, err)
 	senzingConfig := &SenzingConfigImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
 	err = senzingConfig.RegisterObserver(ctx, anObserver)
-	if err != nil {
-		fmt.Print(err)
-	}
+	testError(test, err)
 }
 
 func TestSenzingConfigImpl_SetLogLevel(test *testing.T) {
 	ctx := context.TODO()
 	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
-	if err != nil {
-		fmt.Print(err)
-	}
+	testError(test, err)
 	senzingConfig := &SenzingConfigImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
 	err = senzingConfig.SetLogLevel(ctx, logging.LevelInfoName)
-	if err != nil {
-		fmt.Println(err)
-	}
+	testError(test, err)
 }
 
 func TestSenzingConfigImpl_SetObserverOrigin(test *testing.T) {
 	ctx := context.TODO()
 	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
-	if err != nil {
-		fmt.Print(err)
-	}
+	testError(test, err)
 	senzingConfig := &SenzingConfigImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
@@ -151,18 +141,12 @@ func TestSenzingConfigImpl_UnregisterObserver(test *testing.T) {
 		IsSilent: true,
 	}
 	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
-	if err != nil {
-		fmt.Print(err)
-	}
+	testError(test, err)
 	senzingConfig := &SenzingConfigImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 	}
 	err = senzingConfig.RegisterObserver(ctx, anObserver)
-	if err != nil {
-		fmt.Print(err)
-	}
+	testError(test, err)
 	err = senzingConfig.UnregisterObserver(ctx, anObserver)
-	if err != nil {
-		fmt.Print(err)
-	}
+	testError(test, err)
 }

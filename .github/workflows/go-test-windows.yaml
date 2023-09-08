@@ -31,5 +31,10 @@ jobs:
           senzingapi-version: ${{ matrix.senzingapi-version }}
       - name: Add to "Path" environment variable
         run: echo "C:\Program Files\Senzing\g2\lib" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - name: Create empty database
+        run: |
+          mkdir C:\Temp
+          mkdir C:\Temp\sqlite
+          type nul > C:\Temp\sqlite\G2C.db
       - name: Run go test
         run: go test -v -p 1 ./...
