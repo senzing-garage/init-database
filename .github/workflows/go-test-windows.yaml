@@ -33,6 +33,6 @@ jobs:
         run: echo "C:\Program Files\Senzing\g2\lib" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
       - name: Create empty database file
         run: |
-          New-Item -Name C:\Temp\sqlite\G2C.db -ItemType File
+          New-Item -Path "C:\Temp\sqlite\G2C.db" -ItemType File
       - name: Run go test
         run: go test -v -p 1 ./...
