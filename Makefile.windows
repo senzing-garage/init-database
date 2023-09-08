@@ -39,7 +39,7 @@ run-osarch-specific:
 .PHONY: setup-osarch-specific
 setup-osarch-specific:
 	@rmdir /S /Q C:\Temp\sqlite || mkdir C:\Temp\sqlite
-	@copy testdata\sqlite\G2C.db C:\Temp\sqlite\G2C.db
+	@type nul > C:\Temp\sqlite\G2C.db
 
 .PHONY: test-osarch-specific
 test-osarch-specific:
