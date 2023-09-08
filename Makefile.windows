@@ -38,7 +38,8 @@ run-osarch-specific:
 
 .PHONY: setup-osarch-specific
 setup-osarch-specific:
-	rmdir /S /Q C:\Temp\sqlite; mkdir C:\Temp\sqlite
+	rmdir /S /Q C:\Temp\sqlite || echo "not there"
+	mkdir C:\Temp\sqlite
 	type nul > C:\Temp\sqlite\G2C.db
 
 .PHONY: test-osarch-specific
