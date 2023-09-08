@@ -38,7 +38,7 @@ run-osarch-specific:
 
 .PHONY: setup-osarch-specific
 setup-osarch-specific:
-	@rmdir /S /Q C:\Temp\sqlite || echo ""
+	@rmdir /S /Q C:\Temp\sqlite || echo "...but it is not an error."
 	@mkdir C:\Temp\sqlite
 	@type nul > C:\Temp\sqlite\G2C.db
 
