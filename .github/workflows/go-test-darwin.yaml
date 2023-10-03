@@ -11,12 +11,12 @@ env:
   SENZING_TOOLS_DATABASE_URL: "sqlite3://na:na@/tmp/sqlite/G2C.db"
 
 jobs:
-  build:
+  go-test-darwin:
     runs-on: macos-latest
     strategy:
       matrix:
-        senzingapi-version: ["latest"]
         go: ["1.21"]
+        senzingapi-version: ["staging"]
     name: Go ${{ matrix.go }} using Senzing API ${{ matrix.senzingapi-version }} on darwin
     steps:
       - name: Checkout repository

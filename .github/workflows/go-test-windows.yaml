@@ -9,12 +9,12 @@ env:
   SENZING_TOOLS_DATABASE_URL: 'sqlite3://na:na@nowhere/C:\Temp\sqlite\G2C.db'
 
 jobs:
-  build:
+  go-test-windows:
     runs-on: windows-latest
     strategy:
       matrix:
-        senzingapi-version: ["latest"]
         go: ["1.21"]
+        senzingapi-version: ["latest"]
     name: Go ${{ matrix.go }} using Senzing API ${{ matrix.senzingapi-version }} on windows
     steps:
       - name: Checkout repository
