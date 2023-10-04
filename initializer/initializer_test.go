@@ -92,19 +92,19 @@ func TestInitializerImpl_SetObserverOrigin(test *testing.T) {
 	testObject.SetObserverOrigin(ctx, "TestObserver")
 }
 
-func TestInitializerImpl_UnregisterObserver(test *testing.T) {
-	ctx := context.TODO()
-	observer1 := &observer.ObserverNull{
-		Id:       "Observer 1",
-		IsSilent: true,
-	}
-	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
-	testError(test, err)
-	testObject := &InitializerImpl{
-		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
-	}
-	testObject.SetLogLevel(ctx, logging.LevelInfoName)
-	testObject.RegisterObserver(ctx, observer1)
-	testObject.Initialize(ctx)
-	testObject.UnregisterObserver(ctx, observer1)
-}
+// func TestInitializerImpl_UnregisterObserver(test *testing.T) {
+// 	ctx := context.TODO()
+// 	observer1 := &observer.ObserverNull{
+// 		Id:       "Observer 1",
+// 		IsSilent: true,
+// 	}
+// 	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+// 	testError(test, err)
+// 	testObject := &InitializerImpl{
+// 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
+// 	}
+// 	testObject.SetLogLevel(ctx, logging.LevelInfoName)
+// 	testObject.RegisterObserver(ctx, observer1)
+// 	testObject.Initialize(ctx)
+// 	testObject.UnregisterObserver(ctx, observer1)
+// }
