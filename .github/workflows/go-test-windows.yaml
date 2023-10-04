@@ -1,22 +1,22 @@
 # Based on
 # - https://github.com/marketplace/actions/setup-go-environment
 
-name: go-test-linux.yaml
+name: go-test-windows.yaml
 
 on: [push]
 
 env:
-  LD_LIBRARY_PATH: /opt/senzing/g2/lib
-  SENZING_TOOLS_DATABASE_URL: "sqlite3://na:na@/tmp/sqlite/G2C.db"
+  SENZING_TOOLS_DATABASE_URL: 'sqlite3://na:na@nowhere/C:\Temp\sqlite\G2C.db'
+  SENZING_TOOLS_LOG_LEVEL: TRACE
 
 jobs:
-  go-test-linux:
-    runs-on: ubuntu-latest
+  go-test-windows:
+    runs-on: windows-latest
     strategy:
       matrix:
         go: ["1.21"]
         senzingapi-version: ["staging"]
-    name: Go ${{ matrix.go }} using Senzing API ${{ matrix.senzingapi-version }} on linux
+    name: Go ${{ matrix.go }} using Senzing API ${{ matrix.senzingapi-version }} on windows
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -30,5 +30,11 @@ jobs:
         uses: Senzing/github-action-install-senzing-api@latest
         with:
           senzingapi-version: ${{ matrix.senzingapi-version }}
+      - name: Add to "Path" environment variable
+        run: echo "C:\Program Files\Senzing\g2\lib" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - name: Create empty database file
+        run: |
+          mkdir "C:\Temp\sqlite"
+          New-Item -Path "C:\Temp\sqlite\G2C.db" -ItemType File
       - name: Run go test
         run: go test -v -p 1 ./...
