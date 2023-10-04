@@ -2,9 +2,13 @@
 # Stages
 # -----------------------------------------------------------------------------
 
-ARG IMAGE_SENZINGAPI_RUNTIME=senzing/senzingapi-runtime:3.6.0
+# FIXME: ARG IMAGE_SENZINGAPI_RUNTIME=senzing/senzingapi-runtime:3.7.1
+ARG IMAGE_SENZINGAPI_RUNTIME=senzing/senzingapi-runtime:staging
+
 ARG IMAGE_GO_BUILDER=golang:1.21.0-bullseye@sha256:02f350d8452d3f9693a450586659ecdc6e40e9be8f8dfc6d402300d87223fdfa
-ARG IMAGE_FINAL=senzing/senzingapi-runtime:3.7.1
+
+# FIXME: ARG IMAGE_FINAL=senzing/senzingapi-runtime:3.7.1
+ARG IMAGE_FINAL=senzing/senzingapi-runtime:staging
 
 # -----------------------------------------------------------------------------
 # Stage: senzingapi_runtime
@@ -51,7 +55,7 @@ RUN make build
 # Copy binaries to /output.
 
 RUN mkdir -p /output \
- && cp -R ${GOPATH}/src/${GO_PACKAGE_NAME}/target/*  /output/
+      && cp -R ${GOPATH}/src/${GO_PACKAGE_NAME}/target/*  /output/
 
 # -----------------------------------------------------------------------------
 # Stage: final
