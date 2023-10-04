@@ -26,17 +26,10 @@ LABEL Name="senzing/init-database-builder" \
       Maintainer="support@senzing.com" \
       Version="0.2.6"
 
-# Build arguments.
-
-ARG PROGRAM_NAME="unknown"
-ARG BUILD_VERSION=0.0.0
-ARG BUILD_ITERATION=0
-ARG GO_PACKAGE_NAME="unknown"
-
 # Copy local files from the Git repository.
 
 COPY ./rootfs /
-COPY . ${GOPATH}/src/${GO_PACKAGE_NAME}
+COPY . ${GOPATH}/src/init-database
 
 # Copy files from prior stage.
 
@@ -49,13 +42,13 @@ ENV LD_LIBRARY_PATH=/opt/senzing/g2/lib/
 
 # Build go program.
 
-WORKDIR ${GOPATH}/src/${GO_PACKAGE_NAME}
+WORKDIR ${GOPATH}/src/init-database
 RUN make build
 
 # Copy binaries to /output.
 
 RUN mkdir -p /output \
-      && cp -R ${GOPATH}/src/${GO_PACKAGE_NAME}/target/*  /output/
+      && cp -R ${GOPATH}/src/init-database/target/*  /output/
 
 # -----------------------------------------------------------------------------
 # Stage: final
