@@ -277,7 +277,7 @@ func RunE(_ *cobra.Command, _ []string) error {
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
 		SenzingLogLevel:                viper.GetString(option.LogLevel.Arg),
 		SenzingModuleName:              viper.GetString(option.EngineModuleName.Arg),
-		SenzingVerboseLogging:          viper.GetInt(option.EngineLogLevel.Arg),
+		SenzingVerboseLogging:          viper.GetInt64(option.EngineLogLevel.Arg),
 		SqlFile:                        viper.GetString(OptionSqlFile.Arg),
 	}
 	return initializer.Initialize(ctx)
