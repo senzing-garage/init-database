@@ -41,7 +41,7 @@ type SenzingConfigImpl struct {
 	SenzingEngineConfigurationFile string
 	SenzingEngineConfigurationJson string
 	SenzingModuleName              string
-	SenzingVerboseLogging          int
+	SenzingVerboseLogging          int64
 }
 
 // ----------------------------------------------------------------------------

@@ -39,7 +39,7 @@ type InitializerImpl struct {
 	SenzingLogLevel                string
 	SenzingModuleName              string
 	senzingSchemaSingleton         senzingschema.SenzingSchema
-	SenzingVerboseLogging          int
+	SenzingVerboseLogging          int64
 	SqlFile                        string
 }
 
