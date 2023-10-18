@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/senzing/g2-sdk-go v0.7.4
 	github.com/senzing/go-cmdhelping v0.1.8
-	github.com/senzing/go-common v0.3.0
+	github.com/senzing/go-common v0.3.1
 	github.com/senzing/go-databasing v0.3.0
 	github.com/senzing/go-logging v1.3.3
 	github.com/senzing/go-observing v0.2.8
