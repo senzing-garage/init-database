@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update `Dockerfile` to senzing/senzingapi-runtime:3.8.0
 - Update SQL files in `/opt/senzing/g2/resources/schema`
 - Update `/opt/senzing/g2/resources/templates/g2config.json`
-- GitHub action to push to DockerHub
+- GitHub action to push to DockerHub and ECR
 - Update dependencies
   - github.com/spf13/cobra v1.8.0
 
