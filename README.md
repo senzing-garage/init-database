@@ -15,8 +15,12 @@ This command initialize databases with a Senzing schema and a default Senzing co
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/senzing/init-database.svg)](https://pkg.go.dev/github.com/senzing/init-database)
 [![Go Report Card](https://goreportcard.com/badge/github.com/senzing/init-database)](https://goreportcard.com/report/github.com/senzing/init-database)
-[![go-test.yaml](https://github.com/Senzing/init-database/actions/workflows/go-test.yaml/badge.svg)](https://github.com/Senzing/init-database/actions/workflows/go-test.yaml)
 [![License](https://img.shields.io/badge/License-Apache2-brightgreen.svg)](https://github.com/Senzing/init-database/blob/main/LICENSE)
+
+[![gosec.yaml](https://github.com/Senzing/init-database/actions/workflows/gosec.yaml/badge.svg)](https://github.com/Senzing/init-database/actions/workflows/gosec.yaml)
+[![go-test-linux.yaml](https://github.com/Senzing/init-database/actions/workflows/go-test-linux.yaml/badge.svg)](https://github.com/Senzing/init-database/actions/workflows/go-test-linux.yaml)
+[![go-test-darwin.yaml](https://github.com/Senzing/init-database/actions/workflows/go-test-darwin.yaml/badge.svg)](https://github.com/Senzing/init-database/actions/workflows/go-test-darwin.yaml)
+[![go-test-windows.yaml](https://github.com/Senzing/init-database/actions/workflows/go-test-windows.yaml/badge.svg)](https://github.com/Senzing/init-database/actions/workflows/go-test-windows.yaml)
 
 ## Overview
 
