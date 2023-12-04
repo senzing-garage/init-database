@@ -10,6 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [0.4.3] - 2023-12-04
+
+### Changed in 0.4.3
+
+- Update `Dockerfile` to senzing/senzingapi-runtime:3.8.0
+- GitHub action to push to DockerHub
+- Update dependencies
+  - github.com/spf13/cobra v1.8.0
+
 ## [0.4.2] - 2023-11-02
 
 ### Changed in 0.4.2
