@@ -651,6 +651,17 @@
                 "INTERNAL": "Yes"
             },
             {
+                "ATTR_ID": 1356,
+                "ATTR_CODE": "NATIONAL_ID_TYPE",
+                "ATTR_CLASS": "IDENTIFIER",
+                "FTYPE_CODE": "NATIONAL_ID",
+                "FELEM_CODE": "ID_TYPE",
+                "FELEM_REQ": "Desired",
+                "DEFAULT_VALUE": null,
+                "ADVANCED": "No",
+                "INTERNAL": "No"
+            },
+            {
                 "ATTR_ID": 1360,
                 "ATTR_CODE": "TAX_ID_PREHASHED",
                 "ATTR_CLASS": "IDENTIFIER",
@@ -2624,7 +2635,7 @@
             {
                 "CFCALL_ID": 34,
                 "FTYPE_ID": 11,
-                "CFUNC_ID": 3,
+                "CFUNC_ID": 9,
                 "EXEC_ORDER": 1
             },
             {
@@ -2899,7 +2910,7 @@
                 "FTYPE_ID": 0,
                 "CFUNC_RTNVAL": "FULL_SCORE",
                 "EXEC_ORDER": 1,
-                "SAME_SCORE": 100,
+                "SAME_SCORE": 98,
                 "CLOSE_SCORE": 90,
                 "LIKELY_SCORE": 80,
                 "PLAUSIBLE_SCORE": 70,
@@ -3036,6 +3047,42 @@
                 "LIKELY_SCORE": 80,
                 "PLAUSIBLE_SCORE": 70,
                 "UN_LIKELY_SCORE": 60
+            },
+            {
+                "CFRTN_ID": 24,
+                "CFUNC_ID": 9,
+                "FTYPE_ID": 12,
+                "CFUNC_RTNVAL": "FULL_SCORE",
+                "EXEC_ORDER": 1,
+                "SAME_SCORE": 100,
+                "CLOSE_SCORE": 95,
+                "LIKELY_SCORE": 95,
+                "PLAUSIBLE_SCORE": 95,
+                "UN_LIKELY_SCORE": 95
+            },
+            {
+                "CFRTN_ID": 25,
+                "CFUNC_ID": 9,
+                "FTYPE_ID": 52,
+                "CFUNC_RTNVAL": "FULL_SCORE",
+                "EXEC_ORDER": 1,
+                "SAME_SCORE": 100,
+                "CLOSE_SCORE": 95,
+                "LIKELY_SCORE": 95,
+                "PLAUSIBLE_SCORE": 95,
+                "UN_LIKELY_SCORE": 95
+            },
+            {
+                "CFRTN_ID": 26,
+                "CFUNC_ID": 9,
+                "FTYPE_ID": 11,
+                "CFUNC_RTNVAL": "FULL_SCORE",
+                "EXEC_ORDER": 1,
+                "SAME_SCORE": 100,
+                "CLOSE_SCORE": 95,
+                "LIKELY_SCORE": 95,
+                "PLAUSIBLE_SCORE": 95,
+                "UN_LIKELY_SCORE": 95
             }
         ],
         "CFG_CFUNC": [
@@ -3759,84 +3806,6 @@
                 "FTYPE_ID": 37,
                 "FELEM_ID": 69,
                 "EXEC_ORDER": 3
-            },
-            {
-                "DFCALL_ID": 52,
-                "FTYPE_ID": 52,
-                "FELEM_ID": 37,
-                "EXEC_ORDER": 1
-            },
-            {
-                "DFCALL_ID": 52,
-                "FTYPE_ID": 52,
-                "FELEM_ID": 28,
-                "EXEC_ORDER": 2
-            },
-            {
-                "DFCALL_ID": 52,
-                "FTYPE_ID": 52,
-                "FELEM_ID": 38,
-                "EXEC_ORDER": 3
-            },
-            {
-                "DFCALL_ID": 52,
-                "FTYPE_ID": 52,
-                "FELEM_ID": 69,
-                "EXEC_ORDER": 4
-            },
-            {
-                "DFCALL_ID": 52,
-                "FTYPE_ID": 52,
-                "FELEM_ID": 97,
-                "EXEC_ORDER": 5
-            },
-            {
-                "DFCALL_ID": 52,
-                "FTYPE_ID": 52,
-                "FELEM_ID": 98,
-                "EXEC_ORDER": 6
-            },
-            {
-                "DFCALL_ID": 52,
-                "FTYPE_ID": 52,
-                "FELEM_ID": 117,
-                "EXEC_ORDER": 7
-            },
-            {
-                "DFCALL_ID": 53,
-                "FTYPE_ID": 53,
-                "FELEM_ID": 37,
-                "EXEC_ORDER": 1
-            },
-            {
-                "DFCALL_ID": 53,
-                "FTYPE_ID": 53,
-                "FELEM_ID": 38,
-                "EXEC_ORDER": 2
-            },
-            {
-                "DFCALL_ID": 56,
-                "FTYPE_ID": 56,
-                "FELEM_ID": 18,
-                "EXEC_ORDER": 1
-            },
-            {
-                "DFCALL_ID": 56,
-                "FTYPE_ID": 56,
-                "FELEM_ID": 99,
-                "EXEC_ORDER": 2
-            },
-            {
-                "DFCALL_ID": 57,
-                "FTYPE_ID": 57,
-                "FELEM_ID": 18,
-                "EXEC_ORDER": 1
-            },
-            {
-                "DFCALL_ID": 57,
-                "FTYPE_ID": 57,
-                "FELEM_ID": 3,
-                "EXEC_ORDER": 2
             }
         ],
         "CFG_DFCALL": [
@@ -3921,30 +3890,6 @@
             {
                 "DFCALL_ID": 37,
                 "FTYPE_ID": 37,
-                "DFUNC_ID": 1,
-                "EXEC_ORDER": 1
-            },
-            {
-                "DFCALL_ID": 52,
-                "FTYPE_ID": 52,
-                "DFUNC_ID": 3,
-                "EXEC_ORDER": 1
-            },
-            {
-                "DFCALL_ID": 53,
-                "FTYPE_ID": 53,
-                "DFUNC_ID": 3,
-                "EXEC_ORDER": 1
-            },
-            {
-                "DFCALL_ID": 56,
-                "FTYPE_ID": 56,
-                "DFUNC_ID": 1,
-                "EXEC_ORDER": 1
-            },
-            {
-                "DFCALL_ID": 57,
-                "FTYPE_ID": 57,
                 "DFUNC_ID": 1,
                 "EXEC_ORDER": 1
             }
@@ -4036,260 +3981,6 @@
             }
         ],
         "CFG_DSRC_INTEREST": [],
-        "CFG_EBOM": [
-            {
-                "ETYPE_ID": 1,
-                "EXEC_ORDER": 1,
-                "FTYPE_ID": 16,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 1,
-                "EXEC_ORDER": 4,
-                "FTYPE_ID": 1,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 1,
-                "EXEC_ORDER": 5,
-                "FTYPE_ID": 2,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 1,
-                "EXEC_ORDER": 6,
-                "FTYPE_ID": 3,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 1,
-                "EXEC_ORDER": 7,
-                "FTYPE_ID": 4,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 1,
-                "EXEC_ORDER": 8,
-                "FTYPE_ID": 55,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 1,
-                "EXEC_ORDER": 9,
-                "FTYPE_ID": 54,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 1,
-                "EXEC_ORDER": 10,
-                "FTYPE_ID": 7,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 1,
-                "EXEC_ORDER": 12,
-                "FTYPE_ID": 9,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 1,
-                "EXEC_ORDER": 13,
-                "FTYPE_ID": 10,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 1,
-                "EXEC_ORDER": 14,
-                "FTYPE_ID": 12,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 1,
-                "EXEC_ORDER": 15,
-                "FTYPE_ID": 11,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 1,
-                "EXEC_ORDER": 16,
-                "FTYPE_ID": 52,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 1,
-                "EXEC_ORDER": 17,
-                "FTYPE_ID": 5,
-                "UTYPE_CODE": "PRIMARY"
-            },
-            {
-                "ETYPE_ID": 1,
-                "EXEC_ORDER": 18,
-                "FTYPE_ID": 5,
-                "UTYPE_CODE": "SECONDARY"
-            },
-            {
-                "ETYPE_ID": 1,
-                "EXEC_ORDER": 19,
-                "FTYPE_ID": 6,
-                "UTYPE_CODE": "PRIMARY"
-            },
-            {
-                "ETYPE_ID": 1,
-                "EXEC_ORDER": 20,
-                "FTYPE_ID": 6,
-                "UTYPE_CODE": "SECONDARY"
-            },
-            {
-                "ETYPE_ID": 1,
-                "EXEC_ORDER": 21,
-                "FTYPE_ID": 14,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 1,
-                "EXEC_ORDER": 22,
-                "FTYPE_ID": 15,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 1,
-                "EXEC_ORDER": 23,
-                "FTYPE_ID": 23,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 1,
-                "EXEC_ORDER": 24,
-                "FTYPE_ID": 53,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 3,
-                "EXEC_ORDER": 1,
-                "FTYPE_ID": 16,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 3,
-                "EXEC_ORDER": 4,
-                "FTYPE_ID": 1,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 3,
-                "EXEC_ORDER": 5,
-                "FTYPE_ID": 2,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 3,
-                "EXEC_ORDER": 6,
-                "FTYPE_ID": 3,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 3,
-                "EXEC_ORDER": 7,
-                "FTYPE_ID": 4,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 3,
-                "EXEC_ORDER": 8,
-                "FTYPE_ID": 55,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 3,
-                "EXEC_ORDER": 9,
-                "FTYPE_ID": 54,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 3,
-                "EXEC_ORDER": 10,
-                "FTYPE_ID": 7,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 3,
-                "EXEC_ORDER": 12,
-                "FTYPE_ID": 9,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 3,
-                "EXEC_ORDER": 13,
-                "FTYPE_ID": 10,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 3,
-                "EXEC_ORDER": 14,
-                "FTYPE_ID": 12,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 3,
-                "EXEC_ORDER": 15,
-                "FTYPE_ID": 11,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 3,
-                "EXEC_ORDER": 16,
-                "FTYPE_ID": 52,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 3,
-                "EXEC_ORDER": 17,
-                "FTYPE_ID": 5,
-                "UTYPE_CODE": "PRIMARY"
-            },
-            {
-                "ETYPE_ID": 3,
-                "EXEC_ORDER": 18,
-                "FTYPE_ID": 5,
-                "UTYPE_CODE": "SECONDARY"
-            },
-            {
-                "ETYPE_ID": 3,
-                "EXEC_ORDER": 19,
-                "FTYPE_ID": 6,
-                "UTYPE_CODE": "PRIMARY"
-            },
-            {
-                "ETYPE_ID": 3,
-                "EXEC_ORDER": 20,
-                "FTYPE_ID": 6,
-                "UTYPE_CODE": "SECONDARY"
-            },
-            {
-                "ETYPE_ID": 3,
-                "EXEC_ORDER": 21,
-                "FTYPE_ID": 14,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 3,
-                "EXEC_ORDER": 22,
-                "FTYPE_ID": 15,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 3,
-                "EXEC_ORDER": 23,
-                "FTYPE_ID": 23,
-                "UTYPE_CODE": null
-            },
-            {
-                "ETYPE_ID": 3,
-                "EXEC_ORDER": 24,
-                "FTYPE_ID": 53,
-                "UTYPE_CODE": null
-            }
-        ],
         "CFG_ECLASS": [
             {
                 "ECLASS_ID": 1,
@@ -7039,7 +6730,7 @@
                 "FTYPE_ID": 24,
                 "FELEM_ID": 51,
                 "EXEC_ORDER": 1,
-                "DISPLAY_LEVEL": 1,
+                "DISPLAY_LEVEL": 2,
                 "DISPLAY_DELIM": null,
                 "DERIVED": "No"
             },
@@ -7047,7 +6738,7 @@
                 "FTYPE_ID": 24,
                 "FELEM_ID": 52,
                 "EXEC_ORDER": 2,
-                "DISPLAY_LEVEL": 1,
+                "DISPLAY_LEVEL": 2,
                 "DISPLAY_DELIM": null,
                 "DERIVED": "No"
             },
@@ -7055,7 +6746,7 @@
                 "FTYPE_ID": 24,
                 "FELEM_ID": 53,
                 "EXEC_ORDER": 3,
-                "DISPLAY_LEVEL": 1,
+                "DISPLAY_LEVEL": 0,
                 "DISPLAY_DELIM": null,
                 "DERIVED": "No"
             },
@@ -7063,7 +6754,7 @@
                 "FTYPE_ID": 24,
                 "FELEM_ID": 75,
                 "EXEC_ORDER": 4,
-                "DISPLAY_LEVEL": 1,
+                "DISPLAY_LEVEL": 0,
                 "DISPLAY_DELIM": null,
                 "DERIVED": "No"
             },
@@ -7071,7 +6762,7 @@
                 "FTYPE_ID": 24,
                 "FELEM_ID": 76,
                 "EXEC_ORDER": 5,
-                "DISPLAY_LEVEL": 1,
+                "DISPLAY_LEVEL": 0,
                 "DISPLAY_DELIM": null,
                 "DERIVED": "No"
             },
@@ -7787,6 +7478,14 @@
                 "UTYPE_CODE": "MOBILE",
                 "FTYPE_FREQ": "F1",
                 "FTYPE_EXCL": "No",
+                "FTYPE_STAB": "No"
+            },
+            {
+                "FTYPE_ID": 24,
+                "ECLASS_ID": 0,
+                "UTYPE_CODE": "BUSINESS",
+                "FTYPE_FREQ": "FF",
+                "FTYPE_EXCL": "Yes",
                 "FTYPE_STAB": "No"
             }
         ],
@@ -9016,7 +8715,7 @@
                 "FTYPE_DESC": "Geo location",
                 "FCLASS_ID": 11,
                 "FTYPE_FREQ": "FF",
-                "FTYPE_EXCL": "Yes",
+                "FTYPE_EXCL": "No",
                 "FTYPE_STAB": "No",
                 "PERSIST_HISTORY": "Yes",
                 "USED_FOR_CAND": "Yes",
@@ -9025,7 +8724,7 @@
                 "RTYPE_ID": 0,
                 "ANONYMIZE": "No",
                 "VERSION": 1,
-                "SHOW_IN_MATCH_KEY": "Confirm"
+                "SHOW_IN_MATCH_KEY": "Yes"
             },
             {
                 "FTYPE_ID": 26,
@@ -9698,7 +9397,7 @@
                 "FTYPE_ID": 0,
                 "CANDIDATE_CAP": 10,
                 "SCORING_CAP": -1,
-                "SEND_TO_REDO": "No"
+                "SEND_TO_REDO": "Yes"
             },
             {
                 "GPLAN_ID": 1,
@@ -9911,11 +9610,6 @@
                 "GPLAN_ID": 2,
                 "GPLAN_CODE": "SEARCH",
                 "GPLAN_DESC": "Standard Search"
-            },
-            {
-                "GPLAN_ID": 3,
-                "GPLAN_CODE": "SEARCH-EXHAUSTIVE",
-                "GPLAN_DESC": "Exhaustive Search"
             }
         ],
         "CFG_LENS": [
@@ -10258,10 +9952,10 @@
             }
         ],
         "CONFIG_BASE_VERSION": {
-            "VERSION": "3.5.0",
-            "BUILD_VERSION": "3.5.0.23041",
-            "BUILD_DATE": "2023-02-09",
-            "BUILD_NUMBER": "23041",
+            "VERSION": "3.8.0",
+            "BUILD_VERSION": "3.8.0.23303",
+            "BUILD_DATE": "2023-10-30",
+            "BUILD_NUMBER": "23303",
             "COMPATIBILITY_VERSION": {
                 "CONFIG_VERSION": "10"
             }

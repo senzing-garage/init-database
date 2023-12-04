@@ -16,10 +16,10 @@ FROM ${IMAGE_FINAL} as senzingapi_runtime
 # -----------------------------------------------------------------------------
 
 FROM ${IMAGE_GO_BUILDER} as go_builder
-ENV REFRESHED_AT=2023-11-14
+ENV REFRESHED_AT=2023-12-04
 LABEL Name="senzing/init-database-builder" \
       Maintainer="support@senzing.com" \
-      Version="0.2.6"
+      Version="0.4.3"
 
 # Copy local files from the Git repository.
 
@@ -50,10 +50,10 @@ RUN mkdir -p /output \
 # -----------------------------------------------------------------------------
 
 FROM ${IMAGE_FINAL} as final
-ENV REFRESHED_AT=2023-11-14
+ENV REFRESHED_AT=2023-12-04
 LABEL Name="senzing/init-database" \
       Maintainer="support@senzing.com" \
-      Version="0.2.6"
+      Version="0.4.3"
 
 # Copy local files from the Git repository.
 
