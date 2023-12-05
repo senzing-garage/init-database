@@ -9,4 +9,7 @@ ifeq ($(OS),Windows_NT)
 else
     OSTYPE = $(shell uname -s | tr '[:upper:]' '[:lower:]')
     OSARCH = $(shell uname -m | tr '[:upper:]' '[:lower:]')
+    ifeq ($(OSARCH),aarch64)
+        OSARCH = arm64
+    endif
 endif
