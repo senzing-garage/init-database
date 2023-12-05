@@ -1,40 +1,35 @@
-# Makefile extensions for linux.
+# Makefile extensions for windows.
 
 # -----------------------------------------------------------------------------
 # Variables
 # -----------------------------------------------------------------------------
 
-LD_LIBRARY_PATH ?= /opt/senzing/g2/lib
-SENZING_TOOLS_DATABASE_URL ?= sqlite3://na:na@/tmp/sqlite/G2C.db
+SENZING_TOOLS_DATABASE_URL ?= sqlite3://na:na@nowhere/C:\Temp\sqlite\G2C.db
 
 # -----------------------------------------------------------------------------
-# OS-ARCH specific targets
+# OS specific targets
 # -----------------------------------------------------------------------------
 
 .PHONY: build-osarch-specific
-build-osarch-specific: linux/amd64
+build-osarch-specific: windows/amd64
+	@mv $(TARGET_DIRECTORY)/windows-amd64/$(PROGRAM_NAME) $(TARGET_DIRECTORY)/windows-amd64/$(PROGRAM_NAME).exe
 
 
 .PHONY: clean-osarch-specific
 clean-osarch-specific:
-	@docker rm --force $(DOCKER_CONTAINER_NAME) 2> /dev/null || true
-	@docker rmi --force $(DOCKER_IMAGE_NAME) $(DOCKER_BUILD_IMAGE_NAME) 2> /dev/null || true
-	@rm -rf $(TARGET_DIRECTORY) || true
-	@rm -f $(GOPATH)/bin/$(PROGRAM_NAME) || true
-	@rm -rf /tmp/sqlite || true
+	del /F /S /Q $(TARGET_DIRECTORY)
+	del /F /S /Q $(GOPATH)/bin/$(PROGRAM_NAME)
+	del /F /S /Q C:\Temp\sqlite
 
 
 .PHONY: hello-world-osarch-specific
 hello-world-osarch-specific:
-	@echo "Hello World, from linux."
+	@echo "Hello World, from windows."
 
 
 .PHONY: package-osarch-specific
-package-osarch-specific: docker-build-package
-	@mkdir -p $(TARGET_DIRECTORY) || true
-	@CONTAINER_ID=$$(docker create $(DOCKER_BUILD_IMAGE_NAME)); \
-	docker cp $$CONTAINER_ID:/output/. $(TARGET_DIRECTORY)/; \
-	docker rm -v $$CONTAINER_ID
+package-osarch-specific:
+	@echo No packaging for windows.
 
 
 .PHONY: run-osarch-specific
@@ -44,10 +39,9 @@ run-osarch-specific:
 
 .PHONY: setup-osarch-specific
 setup-osarch-specific:
-	@rm -rf /tmp/sqlite
-	@mkdir  /tmp/sqlite
-	@touch  /tmp/sqlite/G2C.db
-
+	@rmdir /S /Q C:\Temp\sqlite || echo ...but it is not an error.
+	@mkdir C:\Temp\sqlite
+	@type nul > C:\Temp\sqlite\G2C.db
 
 .PHONY: test-osarch-specific
 test-osarch-specific:
@@ -57,6 +51,6 @@ test-osarch-specific:
 # Makefile targets supported only by this platform.
 # -----------------------------------------------------------------------------
 
-.PHONY: only-linux
-only-linux:
-	@echo "Only linux has this Makefile target."
+.PHONY: only-windows
+only-windows:
+	@echo "Only windows has this Makefile target."
