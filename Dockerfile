@@ -38,12 +38,13 @@ ENV LD_LIBRARY_PATH=/opt/senzing/g2/lib/
 # Build go program.
 
 WORKDIR ${GOPATH}/src/init-database
+RUN make
 RUN make build
 
 # Copy binaries to /output.
 
 RUN mkdir -p /output \
- && cp -R ${GOPATH}/src/init-database/target/*  /output/
+      && cp -R ${GOPATH}/src/init-database/target/*  /output/
 
 # -----------------------------------------------------------------------------
 # Stage: final
