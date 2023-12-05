@@ -38,6 +38,8 @@ ENV LD_LIBRARY_PATH=/opt/senzing/g2/lib/
 # Build go program.
 
 WORKDIR ${GOPATH}/src/init-database
+RUN uname -s
+RUN uname -m
 RUN make
 RUN make build
 
