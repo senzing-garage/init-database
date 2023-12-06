@@ -84,7 +84,7 @@ build: build-osarch-specific
 
 .PHONY: docker-build
 docker-build:
-	@DOCKER_BUILDKIT=0 docker build \
+	@docker build \
 		--tag $(DOCKER_IMAGE_NAME) \
 		--tag $(DOCKER_IMAGE_NAME):$(BUILD_VERSION) \
 		.
