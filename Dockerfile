@@ -61,7 +61,7 @@ COPY ./rootfs /
 
 # Copy files from prior stage.
 
-COPY --from=go_builder "/output/linux-amd64/init-database" "/app/init-database"
+COPY --from=go_builder "/output/linux/init-database" "/app/init-database"
 
 # Runtime environment variables.
 
