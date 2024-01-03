@@ -3,7 +3,7 @@ module github.com/senzing/init-database
 go 1.21
 
 require (
-	github.com/senzing/g2-sdk-go v0.7.6
+	github.com/senzing/g2-sdk-go v0.8.0
 	github.com/senzing/go-cmdhelping v0.1.9
 	github.com/senzing/go-common v0.3.2-0.20231018174900-c1895fb44c30
 	github.com/senzing/go-databasing v0.3.1
@@ -37,6 +37,7 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
+	github.com/senzing-garage/go-observing v0.3.0 // indirect
 	github.com/senzing/g2-sdk-go-base v0.3.4 // indirect
 	github.com/senzing/g2-sdk-go-grpc v0.4.4 // indirect
 	github.com/senzing/g2-sdk-proto/go v0.0.0-20231016131354-0d0fba649357 // indirect
@@ -53,7 +54,7 @@ require (
 	golang.org/x/sys v0.15.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20231212172506-995d672761c0 // indirect
-	google.golang.org/protobuf v1.31.0 // indirect
+	google.golang.org/protobuf v1.32.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
