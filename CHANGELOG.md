@@ -10,6 +10,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [0.5.0] - 2024-01-04
+
+### Changed in 0.5.0
+
+- Renamed module to `github.com/senzing-garage/init-database`
+- Refactor to [template-go](https://github.com/senzing-garage/template-go)
+- Update dependencies
+  - github.com/senzing-garage/go-cmdhelping v0.2.0
+  - github.com/senzing-garage/go-common v0.4.0
+  - github.com/senzing-garage/go-databasing v0.4.0
+  - github.com/senzing-garage/go-logging v1.4.0
+  - github.com/senzing-garage/go-observing v0.3.0
+  - github.com/senzing/g2-sdk-go v0.8.0
+  - github.com/senzing/go-sdk-abstract-factory v0.5.0
+  - github.com/spf13/viper v1.18.2
+  - google.golang.org/grpc v1.60.1
+
 ## [0.4.3] - 2023-12-06
 
 ### Changed in 0.4.3
@@ -26,21 +43,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed in 0.4.2
 
 - Update dependencies
-  - github.com/senzing/go-common v0.3.2-0.20231018174900-c1895fb44c30
+  - github.com/senzing-garage/go-common v0.3.2-0.20231018174900-c1895fb44c30
   - github.com/senzing/go-sdk-abstract-factory v0.4.3
 
 ## [0.4.1] - 2023-10-25
 
 ### Changed in 0.4.1
 
-- Refactor to [template-go](https://github.com/Senzing/template-go)
+- Refactor to [template-go](https://github.com/senzing-garage/template-go)
 - Update dependencies
   - github.com/senzing/g2-sdk-go v0.7.4
-  - github.com/senzing/go-cmdhelping v0.1.9
-  - github.com/senzing/go-common v0.3.1
-  - github.com/senzing/go-databasing v0.3.1
-  - github.com/senzing/go-logging v1.3.3
-  - github.com/senzing/go-observing v0.2.8
+  - github.com/senzing-garage/go-cmdhelping v0.1.9
+  - github.com/senzing-garage/go-common v0.3.1
+  - github.com/senzing-garage/go-databasing v0.3.1
+  - github.com/senzing-garage/go-logging v1.3.3
+  - github.com/senzing-garage/go-observing v0.2.8
   - github.com/senzing/go-sdk-abstract-factory v0.4.2
   - github.com/spf13/viper v1.17.0
   - google.golang.org/grpc v1.59.0
@@ -69,11 +86,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactor to `template-go`
 - Update dependencies
   - github.com/senzing/g2-sdk-go v0.6.8
-  - github.com/senzing/go-cmdhelping v0.1.5
-  - github.com/senzing/go-common v0.2.11
-  - github.com/senzing/go-databasing v0.2.7
-  - github.com/senzing/go-logging v1.3.2
-  - github.com/senzing/go-observing v0.2.7
+  - github.com/senzing-garage/go-cmdhelping v0.1.5
+  - github.com/senzing-garage/go-common v0.2.11
+  - github.com/senzing-garage/go-databasing v0.2.7
+  - github.com/senzing-garage/go-logging v1.3.2
+  - github.com/senzing-garage/go-observing v0.2.7
   - github.com/senzing/go-sdk-abstract-factory v0.3.2
   - google.golang.org/grpc v1.57.0
 
@@ -82,8 +99,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added in 0.3.0
 
 - Support for
-  [SENZING_TOOLS_ENGINE_CONFIGURATION_FILE](https://github.com/Senzing/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_engine_configuration_file) and
-  [SENZING_TOOLS_SQL_FILE](https://github.com/Senzing/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_sql_file)
+  [SENZING_TOOLS_ENGINE_CONFIGURATION_FILE](https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_engine_configuration_file) and
+  [SENZING_TOOLS_SQL_FILE](https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_sql_file)
 
 ### Changed in 0.3.0
 
@@ -91,10 +108,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Begin work on multi-platform support
 - Update dependencies
   - github.com/senzing/g2-sdk-go v0.6.7
-  - github.com/senzing/go-common v0.2.4
-  - github.com/senzing/go-databasing v0.2.6
-  - github.com/senzing/go-logging v1.3.1
-  - github.com/senzing/senzing-tools v0.3.1-0.20230713235126-9b84c4e632b4
+  - github.com/senzing-garage/go-common v0.2.4
+  - github.com/senzing-garage/go-databasing v0.2.6
+  - github.com/senzing-garage/go-logging v1.3.1
+  - github.com/senzing-garage/senzing-tools v0.3.1-0.20230713235126-9b84c4e632b4
   - google.golang.org/grpc v1.56.2
 
 ## [0.2.6] - 2023-06-16
@@ -103,12 +120,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Update dependencies
   - github.com/senzing/g2-sdk-go v0.6.6
-  - github.com/senzing/go-common v0.1.4
-  - github.com/senzing/go-databasing v0.2.5
-  - github.com/senzing/go-logging v1.2.6
-  - github.com/senzing/go-observing v0.2.6
+  - github.com/senzing-garage/go-common v0.1.4
+  - github.com/senzing-garage/go-databasing v0.2.5
+  - github.com/senzing-garage/go-logging v1.2.6
+  - github.com/senzing-garage/go-observing v0.2.6
   - github.com/senzing/go-sdk-abstract-factory v0.3.1
-  - github.com/senzing/senzing-tools v0.2.9-0.20230613173043-18f1bd4cafdb
+  - github.com/senzing-garage/senzing-tools v0.2.9-0.20230613173043-18f1bd4cafdb
   - github.com/spf13/viper v1.16.0
   - google.golang.org/grpc v1.56.0
 
@@ -125,7 +142,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added `gosec`
 - Updated dependencies
-  - github.com/senzing/go-observing v0.2.5
+  - github.com/senzing-garage/go-observing v0.2.5
 
 ## [0.2.3] - 2023-05-12
 
@@ -136,12 +153,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `senzing/senzingapi-runtime:3.5.2`
 - Update dependencies
   - github.com/senzing/g2-sdk-go v0.6.2
-  - github.com/senzing/go-common v0.1.3
-  - github.com/senzing/go-databasing v0.2.4
-  - github.com/senzing/go-logging v1.2.3
-  - github.com/senzing/go-observing v0.2.3
+  - github.com/senzing-garage/go-common v0.1.3
+  - github.com/senzing-garage/go-databasing v0.2.4
+  - github.com/senzing-garage/go-logging v1.2.3
+  - github.com/senzing-garage/go-observing v0.2.3
   - github.com/senzing/go-sdk-abstract-factory v0.2.3
-  - github.com/senzing/senzing-tools v0.2.4
+  - github.com/senzing-garage/senzing-tools v0.2.4
   - google.golang.org/grpc v1.55.0
 
 ## [0.2.2] - 2023-04-21
@@ -157,7 +174,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed in 0.2.1
 
 - Updated dependencies
-- Migrated from `github.com/senzing/go-logging/logger` to `github.com/senzing/go-logging/logging`
+- Migrated from `github.com/senzing-garage/go-logging/logger` to `github.com/senzing-garage/go-logging/logging`
 
 ## [0.2.0] - 2023-03-28
 
