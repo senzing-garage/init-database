@@ -9,13 +9,13 @@ import (
 	"os"
 	"strings"
 
-	"github.com/senzing/go-cmdhelping/cmdhelper"
-	"github.com/senzing/go-cmdhelping/constant"
-	"github.com/senzing/go-cmdhelping/option"
-	"github.com/senzing/go-cmdhelping/option/optiontype"
-	"github.com/senzing/go-common/engineconfigurationjsonparser"
-	"github.com/senzing/go-common/g2engineconfigurationjson"
-	"github.com/senzing/init-database/initializer"
+	"github.com/senzing-garage/go-cmdhelping/cmdhelper"
+	"github.com/senzing-garage/go-cmdhelping/constant"
+	"github.com/senzing-garage/go-cmdhelping/option"
+	"github.com/senzing-garage/go-cmdhelping/option/optiontype"
+	"github.com/senzing-garage/go-common/engineconfigurationjsonparser"
+	"github.com/senzing-garage/go-common/g2engineconfigurationjson"
+	"github.com/senzing-garage/init-database/initializer"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -126,7 +126,7 @@ func getEngineConfigurationFileDefault() string {
 func getLong() string {
 	var result string = `
 Initialize a database with the Senzing schema and configuration.
-For more information, visit https://github.com/Senzing/init-database
+For more information, visit https://github.com/senzing-garage/init-database
 	`
 
 	sqlFileDefault := getSqlFileDefault()

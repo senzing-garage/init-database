@@ -71,7 +71,7 @@ In these examples, datasources are added to the initial Senzing configuration.
     ```
 
 1. :pencil2: Specify datasources to create using
-   [SENZING_TOOLS_DATASOURCES](https://github.com/Senzing/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_datasources)
+   [SENZING_TOOLS_DATASOURCES](https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_datasources)
    environment variable.
    Example:
 
@@ -148,7 +148,7 @@ In these examples, datasources are added to the initial Senzing configuration.
 Using `SENZING_TOOLS_ENGINE_CONFIGURATION_JSON` superceeds use of `SENZING_TOOLS_DATABASE_URL`.
 It can be used to specify multiple databases or non-system locations of senzing binaries.
 For more information, see
-[SENZING_TOOLS_ENGINE_CONFIGURATION_JSON](https://github.com/Senzing/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_engine_configuration_json).
+[SENZING_TOOLS_ENGINE_CONFIGURATION_JSON](https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_engine_configuration_json).
 
 1. :pencil2: Set `SENZING_TOOLS_ENGINE_CONFIGURATION_JSON`.
     Example:
@@ -181,7 +181,7 @@ For more information, see
 Datasources can be added to the initial Senzing configuration.
 
 1. :pencil2: Specify datasources to create using
-   [SENZING_TOOLS_DATASOURCES](https://github.com/Senzing/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_datasources)
+   [SENZING_TOOLS_DATASOURCES](https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_datasources)
    environment variable.
    Example:
 

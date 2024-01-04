@@ -5,7 +5,7 @@ package main
 import (
 	"log"
 
-	"github.com/senzing/init-database/cmd"
+	"github.com/senzing-garage/init-database/cmd"
 )
 
 func main() {

@@ -8,13 +8,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/senzing/go-common/engineconfigurationjsonparser"
-	"github.com/senzing/go-databasing/connector"
-	"github.com/senzing/go-databasing/sqlexecutor"
-	"github.com/senzing/go-logging/logging"
-	"github.com/senzing/go-observing/notifier"
-	"github.com/senzing/go-observing/observer"
-	"github.com/senzing/go-observing/subject"
+	"github.com/senzing-garage/go-common/engineconfigurationjsonparser"
+	"github.com/senzing-garage/go-databasing/connector"
+	"github.com/senzing-garage/go-databasing/sqlexecutor"
+	"github.com/senzing-garage/go-logging/logging"
+	"github.com/senzing-garage/go-observing/notifier"
+	"github.com/senzing-garage/go-observing/observer"
+	"github.com/senzing-garage/go-observing/subject"
 )
 
 // ----------------------------------------------------------------------------
