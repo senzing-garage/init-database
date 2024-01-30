@@ -3,18 +3,17 @@ module github.com/senzing-garage/init-database
 go 1.21
 
 require (
+	github.com/senzing-garage/g2-sdk-go v0.9.0
 	github.com/senzing-garage/go-cmdhelping v0.2.0
 	github.com/senzing-garage/go-common v0.4.0
 	github.com/senzing-garage/go-databasing v0.4.0
 	github.com/senzing-garage/go-logging v1.4.0
 	github.com/senzing-garage/go-observing v0.3.0
-	github.com/senzing/g2-sdk-go v0.9.0
-	github.com/senzing/go-sdk-abstract-factory v0.5.0
+	github.com/senzing-garage/go-sdk-abstract-factory v0.6.0
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.18.2
 	github.com/stretchr/testify v1.8.4
 	google.golang.org/grpc v1.61.0
-
 )
 
 require (
@@ -29,7 +28,7 @@ require (
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
-	github.com/mattn/go-sqlite3 v1.14.19 // indirect
+	github.com/mattn/go-sqlite3 v1.14.20 // indirect
 	github.com/microsoft/go-mssqldb v1.6.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.1.1 // indirect
@@ -37,10 +36,10 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
+	github.com/senzing-garage/g2-sdk-go-base v0.5.0 // indirect
+	github.com/senzing-garage/g2-sdk-go-grpc v0.6.0 // indirect
+	github.com/senzing-garage/g2-sdk-proto/go v0.0.0-20240126210601-d02d3beb81d4 // indirect
 	github.com/senzing-garage/go-messaging v1.4.0 // indirect
-	github.com/senzing/g2-sdk-go-base v0.4.0 // indirect
-	github.com/senzing/g2-sdk-go-grpc v0.5.0 // indirect
-	github.com/senzing/g2-sdk-proto/go v0.0.0-20231016131354-0d0fba649357 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.11.0 // indirect
 	github.com/spf13/cast v1.6.0 // indirect
@@ -48,7 +47,7 @@ require (
 	github.com/subosito/gotenv v1.6.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/crypto v0.18.0 // indirect
-	golang.org/x/exp v0.0.0-20240103183307-be819d1f06fc // indirect
+	golang.org/x/exp v0.0.0-20240119083558-1b970713d09a // indirect
 	golang.org/x/net v0.20.0 // indirect
 	golang.org/x/sys v0.16.0 // indirect
 	golang.org/x/text v0.14.0 // indirect

@@ -127,7 +127,7 @@ In these examples, datasources are added to the initial Senzing configuration.
    Example:
 
     ```console
-    export LOCAL_IP_ADDRESS=$(curl --silent https://raw.githubusercontent.com/Senzing/knowledge-base/main/gists/find-local-ip-address/find-local-ip-address.py | python3 -)
+    export LOCAL_IP_ADDRESS=$(curl --silent https://raw.githubusercontent.com/senzing-garage/knowledge-base/main/gists/find-local-ip-address/find-local-ip-address.py | python3 -)
     export SENZING_TOOLS_DATABASE_URL=postgresql://postgres:postgres@${LOCAL_IP_ADDRESS}:5432/G2/?sslmode=disable
 
     ```
@@ -223,11 +223,11 @@ Datasources can be added to the initial Senzing configuration.
 
     curl -X GET \
         --output ${SENZING_DEMO_DIR}/docker-versions-stable.sh \
-        https://raw.githubusercontent.com/Senzing/knowledge-base/main/lists/docker-versions-stable.sh
+        https://raw.githubusercontent.com/senzing-garage/knowledge-base/main/lists/docker-versions-stable.sh
     source ${SENZING_DEMO_DIR}/docker-versions-stable.sh
     curl -X GET \
         --output ${SENZING_DEMO_DIR}/docker-compose.yaml \
-        "https://raw.githubusercontent.com/Senzing/docker-compose-demo/main/resources/postgresql/docker-compose-postgresql-uninitialized.yaml"
+        "https://raw.githubusercontent.com/senzing-garage/docker-compose-demo/main/resources/postgresql/docker-compose-postgresql-uninitialized.yaml"
 
     cd ${SENZING_DEMO_DIR}
     sudo --preserve-env docker-compose up

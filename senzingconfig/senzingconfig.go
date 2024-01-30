@@ -11,13 +11,13 @@ import (
 	"sync"
 	"time"
 
+	"github.com/senzing-garage/g2-sdk-go/g2api"
 	"github.com/senzing-garage/go-common/engineconfigurationjsonparser"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/notifier"
 	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/go-observing/subject"
-	"github.com/senzing/g2-sdk-go/g2api"
-	"github.com/senzing/go-sdk-abstract-factory/factory"
+	"github.com/senzing-garage/go-sdk-abstract-factory/factory"
 )
 
 // ----------------------------------------------------------------------------
