@@ -5,7 +5,7 @@
 package cmd
 
 var (
-	githubDate           string = "2024-01-30"
+	githubDate           string = "2024-03-19"
 	githubIteration      string = "0"
 	githubRef            string = "refs/tags/0.5.2"
 	githubRefName        string = "0.5.2"
