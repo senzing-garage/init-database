@@ -19,7 +19,7 @@ FROM ${IMAGE_GO_BUILDER} as go_builder
 ENV REFRESHED_AT=2024-03-18
 LABEL Name="senzing/init-database-builder" \
       Maintainer="support@senzing.com" \
-      Version="0.5.0"
+      Version="0.5.2"
 
 # Copy local files from the Git repository.
 
@@ -53,7 +53,7 @@ FROM ${IMAGE_FINAL} as final
 ENV REFRESHED_AT=2024-03-18
 LABEL Name="senzing/init-database" \
       Maintainer="support@senzing.com" \
-      Version="0.5.0"
+      Version="0.5.2"
 
 # Copy local files from the Git repository.
 

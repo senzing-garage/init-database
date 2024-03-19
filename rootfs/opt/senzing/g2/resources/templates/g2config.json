@@ -8770,7 +8770,7 @@
                 "FTYPE_STAB": "No",
                 "PERSIST_HISTORY": "No",
                 "USED_FOR_CAND": "No",
-                "DERIVED": "Yes",
+                "DERIVED": "No",
                 "DERIVATION": null,
                 "RTYPE_ID": 0,
                 "ANONYMIZE": "No",
@@ -8923,7 +8923,7 @@
                 "FTYPE_STAB": "No",
                 "PERSIST_HISTORY": "No",
                 "USED_FOR_CAND": "No",
-                "DERIVED": "Yes",
+                "DERIVED": "No",
                 "DERIVATION": null,
                 "RTYPE_ID": 0,
                 "ANONYMIZE": "No",
@@ -9952,10 +9952,10 @@
             }
         ],
         "CONFIG_BASE_VERSION": {
-            "VERSION": "3.8.0",
-            "BUILD_VERSION": "3.8.0.23303",
-            "BUILD_DATE": "2023-10-30",
-            "BUILD_NUMBER": "23303",
+            "VERSION": "3.9.0",
+            "BUILD_VERSION": "3.9.0.24071",
+            "BUILD_DATE": "2024-03-11",
+            "BUILD_NUMBER": "24071",
             "COMPATIBILITY_VERSION": {
                 "CONFIG_VERSION": "10"
             }
