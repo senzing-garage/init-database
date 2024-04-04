@@ -13,7 +13,7 @@ require (
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.18.2
 	github.com/stretchr/testify v1.9.0
-	google.golang.org/grpc v1.62.1
+	google.golang.org/grpc v1.63.0
 )
 
 require (
@@ -23,7 +23,6 @@ require (
 	github.com/go-sql-driver/mysql v1.7.1 // indirect
 	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect
 	github.com/golang-sql/sqlexp v0.1.0 // indirect
-	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/lib/pq v1.10.9 // indirect
