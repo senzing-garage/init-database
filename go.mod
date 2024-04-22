@@ -6,7 +6,7 @@ require (
 	github.com/senzing-garage/g2-sdk-go v0.10.1
 	github.com/senzing-garage/go-cmdhelping v0.2.1
 	github.com/senzing-garage/go-common v0.4.0
-	github.com/senzing-garage/go-databasing v0.4.0
+	github.com/senzing-garage/go-databasing v0.4.1
 	github.com/senzing-garage/go-logging v1.4.1
 	github.com/senzing-garage/go-observing v0.3.1
 	github.com/senzing-garage/go-sdk-abstract-factory v0.7.0
@@ -17,18 +17,19 @@ require (
 )
 
 require (
+	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.3 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
-	github.com/go-sql-driver/mysql v1.7.1 // indirect
+	github.com/go-sql-driver/mysql v1.8.1 // indirect
 	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect
 	github.com/golang-sql/sqlexp v0.1.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
-	github.com/mattn/go-sqlite3 v1.14.20 // indirect
-	github.com/microsoft/go-mssqldb v1.6.0 // indirect
+	github.com/mattn/go-sqlite3 v1.14.22 // indirect
+	github.com/microsoft/go-mssqldb v1.7.1 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
