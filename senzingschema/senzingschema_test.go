@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/senzing-garage/go-common/g2engineconfigurationjson"
+	"github.com/senzing-garage/go-helpers/engineconfigurationjson"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/observer"
 	"github.com/stretchr/testify/assert"
@@ -57,7 +57,7 @@ func teardown() error {
 
 func TestSenzingSchemaImpl_InitializeSenzing(test *testing.T) {
 	ctx := context.TODO()
-	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	senzingEngineConfigurationJson, err := engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 	testError(test, err)
 	testObject := &SenzingSchemaImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
@@ -72,7 +72,7 @@ func TestSenzingSchemaImpl_RegisterObserver(test *testing.T) {
 		Id:       "Observer 1",
 		IsSilent: true,
 	}
-	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	senzingEngineConfigurationJson, err := engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 	testError(test, err)
 	testObject := &SenzingSchemaImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
@@ -84,7 +84,7 @@ func TestSenzingSchemaImpl_RegisterObserver(test *testing.T) {
 
 func TestSenzingSchemaImpl_SetObserverOrigin(test *testing.T) {
 	ctx := context.TODO()
-	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	senzingEngineConfigurationJson, err := engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 	testError(test, err)
 	testObject := &SenzingSchemaImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
@@ -98,7 +98,7 @@ func TestSenzingSchemaImpl_UnregisterObserver(test *testing.T) {
 		Id:       "Observer 1",
 		IsSilent: true,
 	}
-	senzingEngineConfigurationJson, err := g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	senzingEngineConfigurationJson, err := engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 	testError(test, err)
 	testObject := &SenzingSchemaImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
