@@ -89,7 +89,7 @@ Since the Senzing library is a prerequisite, it must be installed first.
 ## Test using Docker-compose stack with PostgreSql database
 
 The following instructions show how to bring up a test stack to be used
-in testing the `g2-sdk-go-base` packages.
+in testing the `sz-sdk-go-core` packages.
 
 1. Identify a directory to place docker-compose artifacts.
    The directory specified will be deleted and re-created.

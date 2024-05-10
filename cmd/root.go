@@ -13,8 +13,8 @@ import (
 	"github.com/senzing-garage/go-cmdhelping/constant"
 	"github.com/senzing-garage/go-cmdhelping/option"
 	"github.com/senzing-garage/go-cmdhelping/option/optiontype"
-	"github.com/senzing-garage/go-common/engineconfigurationjsonparser"
-	"github.com/senzing-garage/go-common/g2engineconfigurationjson"
+	"github.com/senzing-garage/go-helpers/engineconfigurationjson"
+	"github.com/senzing-garage/go-helpers/engineconfigurationjsonparser"
 	"github.com/senzing-garage/init-database/initializer"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -84,12 +84,12 @@ func buildSenzingEngineConfigurationJson(ctx context.Context, aViper *viper.Vipe
 			"senzingDirectory":    aViper.GetString(option.SenzingDirectory.Arg),
 			"supportPath":         aViper.GetString(option.SupportPath.Arg),
 		}
-		result, err = g2engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(options)
+		result, err = engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(options)
 		if err != nil {
 			return result, err
 		}
 	}
-	err = g2engineconfigurationjson.VerifySenzingEngineConfigurationJson(ctx, result)
+	err = engineconfigurationjson.VerifySenzingEngineConfigurationJson(ctx, result)
 	if err != nil {
 		return result, err
 	}
