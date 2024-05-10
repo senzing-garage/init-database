@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/senzing-garage/go-common/engineconfigurationjsonparser"
+	"github.com/senzing-garage/go-helpers/engineconfigurationjsonparser"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/notifier"
 	"github.com/senzing-garage/go-observing/observer"

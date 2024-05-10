@@ -11,13 +11,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/senzing-garage/g2-sdk-go/g2api"
-	"github.com/senzing-garage/go-common/engineconfigurationjsonparser"
+	"github.com/senzing-garage/go-helpers/engineconfigurationjsonparser"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/notifier"
 	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/go-observing/subject"
-	"github.com/senzing-garage/go-sdk-abstract-factory/factory"
+	"github.com/senzing-garage/go-sdk-abstract-factory/szfactorycreator"
+	"github.com/senzing-garage/sz-sdk-go/sz"
+	"google.golang.org/grpc"
 )
 
 // ----------------------------------------------------------------------------
@@ -27,12 +28,8 @@ import (
 // SenzingConfigImpl is the default implementation of the SenzingConfig interface.
 type SenzingConfigImpl struct {
 	DataSources                    []string
-	g2configmgrSingleton           g2api.G2configmgr
-	g2configmgrSyncOnce            sync.Once
-	g2configSingleton              g2api.G2config
-	g2configSyncOnce               sync.Once
-	g2factorySingleton             factory.SdkAbstractFactory
-	g2factorySyncOnce              sync.Once
+	GrpcDialOptions                []grpc.DialOption
+	GrpcTarget                     string
 	isTrace                        bool
 	logger                         logging.LoggingInterface
 	logLevel                       string
@@ -42,6 +39,12 @@ type SenzingConfigImpl struct {
 	SenzingEngineConfigurationJson string
 	SenzingModuleName              string
 	SenzingVerboseLogging          int64
+	szAbstractFactorySingleton     sz.SzAbstractFactory
+	szAbstractFactorySyncOnce      sync.Once
+	szConfigManagerSingleton       sz.SzConfigManager
+	szConfigManagerSyncOnce        sync.Once
+	szConfigSingleton              sz.SzConfig
+	szConfigSyncOnce               sync.Once
 }
 
 // ----------------------------------------------------------------------------
@@ -105,72 +108,72 @@ func (senzingConfig *SenzingConfigImpl) traceExit(messageNumber int, details ...
 // --- Dependent services -----------------------------------------------------
 
 // Create an abstract factory singleton and return it.
-func (senzingConfig *SenzingConfigImpl) getG2Factory(ctx context.Context) factory.SdkAbstractFactory {
-	senzingConfig.g2factorySyncOnce.Do(func() {
-		senzingConfig.g2factorySingleton = &factory.SdkAbstractFactoryImpl{}
-	})
-	return senzingConfig.g2factorySingleton
-}
-
-// Create a G2Config singleton and return it.
-func (senzingConfig *SenzingConfigImpl) getG2config(ctx context.Context) (g2api.G2config, error) {
+func (senzingConfig *SenzingConfigImpl) getAbstractFactory(ctx context.Context) sz.SzAbstractFactory {
 	var err error = nil
-	senzingConfig.g2configSyncOnce.Do(func() {
-		senzingConfig.g2configSingleton, err = senzingConfig.getG2Factory(ctx).GetG2config(ctx)
-		if err != nil {
-			return
-		}
-		if senzingConfig.g2configSingleton.GetSdkId(ctx) == "base" {
-			moduleName := senzingConfig.SenzingModuleName
-			if len(moduleName) == 0 {
-				moduleName = defaultModuleName
+	senzingConfig.szAbstractFactorySyncOnce.Do(func() {
+		if len(senzingConfig.GrpcTarget) == 0 {
+			senzingConfig.szAbstractFactorySingleton, err = szfactorycreator.CreateCoreAbstractFactory(senzingConfig.SenzingModuleName, senzingConfig.SenzingEngineConfigurationJson, senzingConfig.SenzingVerboseLogging, sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION)
+			if err != nil {
+				panic(err)
 			}
-			err = senzingConfig.g2configSingleton.Init(ctx, moduleName, senzingConfig.SenzingEngineConfigurationJson, senzingConfig.SenzingVerboseLogging)
+		} else {
+			grpcConnection, err := grpc.DialContext(ctx, senzingConfig.GrpcTarget, senzingConfig.GrpcDialOptions...)
+			if err != nil {
+				panic(err)
+			}
+			senzingConfig.szAbstractFactorySingleton, err = szfactorycreator.CreateGrpcAbstractFactory(grpcConnection)
+			if err != nil {
+				panic(err)
+			}
 		}
 	})
-	return senzingConfig.g2configSingleton, err
+	return senzingConfig.szAbstractFactorySingleton
 }
 
-// Create a G2Configmgr singleton and return it.
-func (senzingConfig *SenzingConfigImpl) getG2configmgr(ctx context.Context) (g2api.G2configmgr, error) {
+// Create a SzConfig singleton and return it.
+func (senzingConfig *SenzingConfigImpl) getSzConfig(ctx context.Context) (sz.SzConfig, error) {
 	var err error = nil
-	senzingConfig.g2configmgrSyncOnce.Do(func() {
-		senzingConfig.g2configmgrSingleton, err = senzingConfig.getG2Factory(ctx).GetG2configmgr(ctx)
+	senzingConfig.szConfigSyncOnce.Do(func() {
+		senzingConfig.szConfigSingleton, err = senzingConfig.getAbstractFactory(ctx).CreateSzConfig(ctx)
 		if err != nil {
-			return
-		}
-		if senzingConfig.g2configmgrSingleton.GetSdkId(ctx) == "base" {
-			moduleName := senzingConfig.SenzingModuleName
-			if len(moduleName) == 0 {
-				moduleName = defaultModuleName
-			}
-			err = senzingConfig.g2configmgrSingleton.Init(ctx, moduleName, senzingConfig.SenzingEngineConfigurationJson, senzingConfig.SenzingVerboseLogging)
+			panic(err)
 		}
 	})
-	return senzingConfig.g2configmgrSingleton, err
+	return senzingConfig.szConfigSingleton, err
 }
 
-// Get dependent services: G2config, G2configmgr
-func (senzingConfig *SenzingConfigImpl) getDependentServices(ctx context.Context) (g2api.G2config, g2api.G2configmgr, error) {
-	g2Config, err := senzingConfig.getG2config(ctx)
+// Create a SzConfigManager singleton and return it.
+func (senzingConfig *SenzingConfigImpl) getSzConfigmgr(ctx context.Context) (sz.SzConfigManager, error) {
+	var err error = nil
+	senzingConfig.szConfigManagerSyncOnce.Do(func() {
+		senzingConfig.szConfigManagerSingleton, err = senzingConfig.getAbstractFactory(ctx).CreateSzConfigManager(ctx)
+		if err != nil {
+			panic(err)
+		}
+	})
+	return senzingConfig.szConfigManagerSingleton, err
+}
+
+// Get dependent services: SzConfig, SzConfigManager
+func (senzingConfig *SenzingConfigImpl) getDependentServices(ctx context.Context) (sz.SzConfig, sz.SzConfigManager, error) {
+	szConfig, err := senzingConfig.getSzConfig(ctx)
 	if err != nil {
 		return nil, nil, err
 	}
-	g2Configmgr, err := senzingConfig.getG2configmgr(ctx)
+	szConfigManager, err := senzingConfig.getSzConfigmgr(ctx)
 	if err != nil {
-		return g2Config, nil, err
+		return szConfig, nil, err
 	}
-	return g2Config, g2Configmgr, err
+	return szConfig, szConfigManager, err
 }
 
 // --- Misc -------------------------------------------------------------------
 
 // Add datasources to Senzing configuration.
-func (senzingConfig *SenzingConfigImpl) addDatasources(ctx context.Context, g2Config g2api.G2config, configHandle uintptr) error {
+func (senzingConfig *SenzingConfigImpl) addDatasources(ctx context.Context, szConfig sz.SzConfig, configHandle uintptr) error {
 	var err error = nil
 	for _, datasource := range senzingConfig.DataSources {
-		inputJson := `{"DSRC_CODE": "` + datasource + `"}`
-		_, err = g2Config.AddDataSource(ctx, configHandle, inputJson)
+		_, err = szConfig.AddDataSource(ctx, configHandle, datasource)
 		if err != nil {
 			return err
 		}
@@ -327,7 +330,7 @@ func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) e
 
 	// Create Senzing objects.
 
-	g2Config, g2Configmgr, err := senzingConfig.getDependentServices(ctx)
+	szConfig, szConfigManager, err := senzingConfig.getDependentServices(ctx)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 12, 1012
 		return err
@@ -335,7 +338,7 @@ func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) e
 
 	// Determine if configuration already exists. If so, return.
 
-	configID, err = g2Configmgr.GetDefaultConfigID(ctx)
+	configID, err = szConfigManager.GetDefaultConfigId(ctx)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 13, 1013
 		return err
@@ -414,7 +417,7 @@ func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) e
 
 	// Create a fresh Senzing configuration.
 
-	configHandle, err := g2Config.Create(ctx)
+	configHandle, err := szConfig.CreateConfig(ctx)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 15, 1015
 		return err
@@ -423,7 +426,7 @@ func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) e
 	// If requested, add DataSources to fresh Senzing configuration.
 
 	if len(senzingConfig.DataSources) > 0 {
-		err = senzingConfig.addDatasources(ctx, g2Config, configHandle)
+		err = senzingConfig.addDatasources(ctx, szConfig, configHandle)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 16, 1016
 			return err
@@ -432,7 +435,7 @@ func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) e
 
 	// Create a JSON string from the in-memory configuration.
 
-	configStr, err := g2Config.Save(ctx, configHandle)
+	configStr, err := szConfig.ExportConfig(ctx, configHandle)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 17, 1017
 		return err
@@ -441,12 +444,12 @@ func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) e
 	// Persist the Senzing configuration to the Senzing repository and set as default configuration.
 
 	configComments := fmt.Sprintf("Created by %s at %s", defaultModuleName, entryTime.Format(time.RFC3339Nano))
-	configID, err = g2Configmgr.AddConfig(ctx, configStr, configComments)
+	configID, err = szConfigManager.AddConfig(ctx, configStr, configComments)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 18, 1018
 		return err
 	}
-	err = g2Configmgr.SetDefaultConfigID(ctx, configID)
+	err = szConfigManager.SetDefaultConfigId(ctx, configID)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 19, 1019
 		return err
@@ -517,29 +520,6 @@ func (senzingConfig *SenzingConfigImpl) RegisterObserver(ctx context.Context, ob
 
 	if senzingConfig.observers == nil {
 		senzingConfig.observers = &subject.SubjectImpl{}
-	}
-
-	// Register observer with senzingConfig and dependent services.
-
-	err = senzingConfig.observers.RegisterObserver(ctx, observer)
-	if err != nil {
-		traceExitMessageNumber, debugMessageNumber = 32, 1032
-		return err
-	}
-	g2Config, g2Configmgr, err := senzingConfig.getDependentServices(ctx)
-	if err != nil {
-		traceExitMessageNumber, debugMessageNumber = 33, 1033
-		return err
-	}
-	err = g2Config.RegisterObserver(ctx, observer)
-	if err != nil {
-		traceExitMessageNumber, debugMessageNumber = 34, 1034
-		return err
-	}
-	err = g2Configmgr.RegisterObserver(ctx, observer)
-	if err != nil {
-		traceExitMessageNumber, debugMessageNumber = 35, 1035
-		return err
 	}
 
 	// Notify observers.
@@ -615,24 +595,6 @@ func (senzingConfig *SenzingConfigImpl) SetLogLevel(ctx context.Context, logLeve
 	}
 	senzingConfig.isTrace = (logLevelName == logging.LevelTraceName)
 
-	// Set log level for dependent services.
-
-	g2Config, g2Configmgr, err := senzingConfig.getDependentServices(ctx)
-	if err != nil {
-		traceExitMessageNumber, debugMessageNumber = 44, 1044
-		return err
-	}
-	err = g2Config.SetLogLevel(ctx, logLevelName)
-	if err != nil {
-		traceExitMessageNumber, debugMessageNumber = 45, 1045
-		return err
-	}
-	err = g2Configmgr.SetLogLevel(ctx, logLevelName)
-	if err != nil {
-		traceExitMessageNumber, debugMessageNumber = 46, 1046
-		return err
-	}
-
 	// Notify observers.
 
 	if senzingConfig.observers != nil {
@@ -690,17 +652,6 @@ func (senzingConfig *SenzingConfigImpl) SetObserverOrigin(ctx context.Context, o
 		}
 		senzingConfig.log(1004, senzingConfig, string(asJson))
 	}
-
-	// Set origin in dependent services.
-
-	senzingConfig.observerOrigin = origin
-	g2Config, g2Configmgr, err := senzingConfig.getDependentServices(ctx)
-	if err != nil {
-		traceExitMessageNumber, debugMessageNumber = 62, 1062
-		return
-	}
-	g2Config.SetObserverOrigin(ctx, origin)
-	g2Configmgr.SetObserverOrigin(ctx, origin)
 
 	// Notify observers.
 
@@ -761,20 +712,6 @@ func (senzingConfig *SenzingConfigImpl) UnregisterObserver(ctx context.Context, 
 			return err
 		}
 		senzingConfig.log(1005, senzingConfig, string(asJson))
-	}
-
-	// Unregister observers in dependencies.
-
-	g2Config, g2Configmgr, err := senzingConfig.getDependentServices(ctx)
-	err = g2Config.UnregisterObserver(ctx, observer)
-	if err != nil {
-		traceExitMessageNumber, debugMessageNumber = 52, 1052
-		return err
-	}
-	err = g2Configmgr.UnregisterObserver(ctx, observer)
-	if err != nil {
-		traceExitMessageNumber, debugMessageNumber = 53, 1053
-		return err
 	}
 
 	// Remove observer from this service.
