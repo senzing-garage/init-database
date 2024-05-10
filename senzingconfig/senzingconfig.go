@@ -173,8 +173,7 @@ func (senzingConfig *SenzingConfigImpl) getDependentServices(ctx context.Context
 func (senzingConfig *SenzingConfigImpl) addDatasources(ctx context.Context, szConfig sz.SzConfig, configHandle uintptr) error {
 	var err error = nil
 	for _, datasource := range senzingConfig.DataSources {
-		inputJson := `{"DSRC_CODE": "` + datasource + `"}`
-		_, err = szConfig.AddDataSource(ctx, configHandle, inputJson)
+		_, err = szConfig.AddDataSource(ctx, configHandle, datasource)
 		if err != nil {
 			return err
 		}
