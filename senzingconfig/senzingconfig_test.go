@@ -44,7 +44,7 @@ func TestMain(m *testing.M) {
 
 func setup() error {
 	ctx := context.TODO()
-	senzingEngineConfigurationJson, err := settings.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	senzingEngineConfigurationJson, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
 		fmt.Print(err)
 	}
@@ -73,7 +73,7 @@ func teardown() error {
 
 func TestSenzingConfigImpl_InitializeSenzing_withDatasources(test *testing.T) {
 	ctx := context.TODO()
-	senzingEngineConfigurationJson, err := settings.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	senzingEngineConfigurationJson, err := settings.BuildSimpleSettingsUsingEnvVars()
 	testError(test, err)
 	senzingConfig := &SenzingConfigImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
@@ -87,7 +87,7 @@ func TestSenzingConfigImpl_InitializeSenzing_withDatasources(test *testing.T) {
 
 func TestSenzingConfigImpl_InitializeSenzing(test *testing.T) {
 	ctx := context.TODO()
-	senzingEngineConfigurationJson, err := settings.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	senzingEngineConfigurationJson, err := settings.BuildSimpleSettingsUsingEnvVars()
 	testError(test, err)
 	senzingConfig := &SenzingConfigImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
@@ -100,11 +100,11 @@ func TestSenzingConfigImpl_InitializeSenzing(test *testing.T) {
 
 func TestSenzingConfigImpl_RegisterObserver(test *testing.T) {
 	ctx := context.TODO()
-	anObserver := &observer.ObserverNull{
-		Id:       "Observer 1",
+	anObserver := &observer.NullObserver{
+		ID:       "Observer 1",
 		IsSilent: true,
 	}
-	senzingEngineConfigurationJson, err := settings.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	senzingEngineConfigurationJson, err := settings.BuildSimpleSettingsUsingEnvVars()
 	testError(test, err)
 	senzingConfig := &SenzingConfigImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
@@ -115,7 +115,7 @@ func TestSenzingConfigImpl_RegisterObserver(test *testing.T) {
 
 func TestSenzingConfigImpl_SetLogLevel(test *testing.T) {
 	ctx := context.TODO()
-	senzingEngineConfigurationJson, err := settings.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	senzingEngineConfigurationJson, err := settings.BuildSimpleSettingsUsingEnvVars()
 	testError(test, err)
 	senzingConfig := &SenzingConfigImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
@@ -126,7 +126,7 @@ func TestSenzingConfigImpl_SetLogLevel(test *testing.T) {
 
 func TestSenzingConfigImpl_SetObserverOrigin(test *testing.T) {
 	ctx := context.TODO()
-	senzingEngineConfigurationJson, err := settings.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	senzingEngineConfigurationJson, err := settings.BuildSimpleSettingsUsingEnvVars()
 	testError(test, err)
 	senzingConfig := &SenzingConfigImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
@@ -136,11 +136,11 @@ func TestSenzingConfigImpl_SetObserverOrigin(test *testing.T) {
 
 func TestSenzingConfigImpl_UnregisterObserver(test *testing.T) {
 	ctx := context.TODO()
-	anObserver := &observer.ObserverNull{
-		Id:       "Observer 1",
+	anObserver := &observer.NullObserver{
+		ID:       "Observer 1",
 		IsSilent: true,
 	}
-	senzingEngineConfigurationJson, err := settings.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	senzingEngineConfigurationJson, err := settings.BuildSimpleSettingsUsingEnvVars()
 	testError(test, err)
 	senzingConfig := &SenzingConfigImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,

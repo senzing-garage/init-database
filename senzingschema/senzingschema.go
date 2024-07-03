@@ -23,7 +23,7 @@ import (
 
 // SenzingSchemaImpl is the default implementation of the SenzingSchema interface.
 type SenzingSchemaImpl struct {
-	logger                         logging.LoggingInterface
+	logger                         logging.Logging
 	logLevelName                   string
 	observerOrigin                 string
 	observers                      subject.Subject
@@ -50,13 +50,13 @@ var traceOptions []interface{} = []interface{}{
 // --- Logging ----------------------------------------------------------------
 
 // Get the Logger singleton.
-func (senzingSchema *SenzingSchemaImpl) getLogger() logging.LoggingInterface {
+func (senzingSchema *SenzingSchemaImpl) getLogger() logging.Logging {
 	var err error = nil
 	if senzingSchema.logger == nil {
 		options := []interface{}{
 			&logging.OptionCallerSkip{Value: 4},
 		}
-		senzingSchema.logger, err = logging.NewSenzingToolsLogger(ComponentId, IdMessages, options...)
+		senzingSchema.logger, err = logging.NewSenzingLogger(ComponentId, IdMessages, options...)
 		if err != nil {
 			panic(err)
 		}
@@ -158,7 +158,7 @@ func (senzingSchema *SenzingSchemaImpl) processDatabase(ctx context.Context, res
 
 	// Create sqlExecutor to process file of SQL.
 
-	sqlExecutor := &sqlexecutor.SqlExecutorImpl{
+	sqlExecutor := &sqlexecutor.BasicSQLExecutor{
 		DatabaseConnector: databaseConnector,
 	}
 	err = sqlExecutor.SetLogLevel(ctx, senzingSchema.logLevelName)
@@ -250,7 +250,7 @@ func (senzingSchema *SenzingSchemaImpl) InitializeSenzing(ctx context.Context) e
 		traceExitMessageNumber, debugMessageNumber = 13, 1013
 		return err
 	}
-	databaseUrls, err := parser.GetDatabaseUrls(ctx)
+	databaseUrls, err := parser.GetDatabaseURLs(ctx)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 14, 1014
 		return err
@@ -302,7 +302,7 @@ func (senzingSchema *SenzingSchemaImpl) RegisterObserver(ctx context.Context, ob
 
 		defer func() {
 			if debugMessageNumber > 0 {
-				senzingSchema.debug(debugMessageNumber, observer.GetObserverId(ctx), err)
+				senzingSchema.debug(debugMessageNumber, observer.GetObserverID(ctx), err)
 			}
 		}()
 
@@ -310,9 +310,9 @@ func (senzingSchema *SenzingSchemaImpl) RegisterObserver(ctx context.Context, ob
 
 		if senzingSchema.getLogger().IsTrace() {
 			entryTime := time.Now()
-			senzingSchema.traceEntry(20, observer.GetObserverId(ctx))
+			senzingSchema.traceEntry(20, observer.GetObserverID(ctx))
 			defer func() {
-				senzingSchema.traceExit(traceExitMessageNumber, observer.GetObserverId(ctx), err, time.Since(entryTime))
+				senzingSchema.traceExit(traceExitMessageNumber, observer.GetObserverID(ctx), err, time.Since(entryTime))
 			}()
 		}
 
@@ -329,7 +329,7 @@ func (senzingSchema *SenzingSchemaImpl) RegisterObserver(ctx context.Context, ob
 	// Create empty list of observers.
 
 	if senzingSchema.observers == nil {
-		senzingSchema.observers = &subject.SubjectImpl{}
+		senzingSchema.observers = &subject.SimpleSubject{}
 	}
 
 	// Register observer with senzingSchema.
@@ -344,7 +344,7 @@ func (senzingSchema *SenzingSchemaImpl) RegisterObserver(ctx context.Context, ob
 
 	go func() {
 		details := map[string]string{
-			"observerID": observer.GetObserverId(ctx),
+			"observerID": observer.GetObserverID(ctx),
 		}
 		notifier.Notify(ctx, senzingSchema.observers, senzingSchema.observerOrigin, ComponentId, 8002, err, details)
 	}()
@@ -513,7 +513,7 @@ func (senzingSchema *SenzingSchemaImpl) UnregisterObserver(ctx context.Context, 
 
 		defer func() {
 			if debugMessageNumber > 0 {
-				senzingSchema.debug(debugMessageNumber, observer.GetObserverId(ctx), err)
+				senzingSchema.debug(debugMessageNumber, observer.GetObserverID(ctx), err)
 			}
 		}()
 
@@ -521,9 +521,9 @@ func (senzingSchema *SenzingSchemaImpl) UnregisterObserver(ctx context.Context, 
 
 		if senzingSchema.getLogger().IsTrace() {
 			entryTime := time.Now()
-			senzingSchema.traceEntry(40, observer.GetObserverId(ctx))
+			senzingSchema.traceEntry(40, observer.GetObserverID(ctx))
 			defer func() {
-				senzingSchema.traceExit(traceExitMessageNumber, observer.GetObserverId(ctx), err, time.Since(entryTime))
+				senzingSchema.traceExit(traceExitMessageNumber, observer.GetObserverID(ctx), err, time.Since(entryTime))
 			}()
 		}
 
@@ -546,7 +546,7 @@ func (senzingSchema *SenzingSchemaImpl) UnregisterObserver(ctx context.Context, 
 		// In client.notify, each observer will get notified in a goroutine.
 		// Then client.observers may be set to nil, but observer goroutines will be OK.
 		details := map[string]string{
-			"observerID": observer.GetObserverId(ctx),
+			"observerID": observer.GetObserverID(ctx),
 		}
 		notifier.Notify(ctx, senzingSchema.observers, senzingSchema.observerOrigin, ComponentId, 8005, err, details)
 

@@ -29,7 +29,7 @@ import (
 // InitializerImpl is the default implementation of the Initializer interface.
 type InitializerImpl struct {
 	DataSources                    []string
-	logger                         logging.LoggingInterface
+	logger                         logging.Logging
 	ObserverOrigin                 string
 	observers                      subject.Subject
 	ObserverUrl                    string
@@ -62,13 +62,13 @@ var traceOptions []interface{} = []interface{}{
 // --- Logging ----------------------------------------------------------------
 
 // Get the Logger singleton.
-func (initializerImpl *InitializerImpl) getLogger() logging.LoggingInterface {
+func (initializerImpl *InitializerImpl) getLogger() logging.Logging {
 	var err error = nil
 	if initializerImpl.logger == nil {
 		options := []interface{}{
 			&logging.OptionCallerSkip{Value: 4},
 		}
-		initializerImpl.logger, err = logging.NewSenzingToolsLogger(ComponentId, IdMessages, options...)
+		initializerImpl.logger, err = logging.NewSenzingLogger(ComponentId, IdMessages, options...)
 		if err != nil {
 			panic(err)
 		}
@@ -118,16 +118,16 @@ func (initializerImpl *InitializerImpl) createGrpcObserver(ctx context.Context, 
 	if err != nil {
 		return result, err
 	}
-	result = &observer.ObserverGrpc{
+	result = &observer.GrpcObserver{
 		GrpcClient: observerpb.NewObserverClient(grpcConnection),
-		Id:         "init-database",
+		ID:         "init-database",
 	}
 	return result, err
 }
 
 func (initializerImpl *InitializerImpl) registerObserverLocal(ctx context.Context, observer observer.Observer) error {
 	if initializerImpl.observers == nil {
-		initializerImpl.observers = &subject.SubjectImpl{}
+		initializerImpl.observers = &subject.SimpleSubject{}
 	}
 	return initializerImpl.observers.RegisterObserver(ctx, observer)
 }
@@ -316,7 +316,7 @@ func (initializerImpl *InitializerImpl) Initialize(ctx context.Context) error {
 
 		go func() {
 			details := map[string]string{
-				"observerID": anObserver.GetObserverId(ctx),
+				"observerID": anObserver.GetObserverID(ctx),
 			}
 			notifier.Notify(ctx, initializerImpl.observers, initializerImpl.ObserverOrigin, ComponentId, 8001, err, details)
 		}()
@@ -440,7 +440,7 @@ func (initializerImpl *InitializerImpl) InitializeSpecificDatabase(ctx context.C
 		traceExitMessageNumber, debugMessageNumber = 42, 1042
 		return err
 	}
-	databaseUrls, err = parser.GetDatabaseUrls(ctx)
+	databaseUrls, err = parser.GetDatabaseURLs(ctx)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 43, 1043
 		return err
@@ -503,7 +503,7 @@ func (initializerImpl *InitializerImpl) RegisterObserver(ctx context.Context, ob
 
 		defer func() {
 			if debugMessageNumber > 0 {
-				initializerImpl.debug(debugMessageNumber, observer.GetObserverId(ctx), err)
+				initializerImpl.debug(debugMessageNumber, observer.GetObserverID(ctx), err)
 			}
 		}()
 
@@ -511,9 +511,9 @@ func (initializerImpl *InitializerImpl) RegisterObserver(ctx context.Context, ob
 
 		if initializerImpl.getLogger().IsTrace() {
 			entryTime := time.Now()
-			initializerImpl.traceEntry(50, observer.GetObserverId(ctx))
+			initializerImpl.traceEntry(50, observer.GetObserverID(ctx))
 			defer func() {
-				initializerImpl.traceExit(traceExitMessageNumber, observer.GetObserverId(ctx), err, time.Since(entryTime))
+				initializerImpl.traceExit(traceExitMessageNumber, observer.GetObserverID(ctx), err, time.Since(entryTime))
 			}()
 		}
 
@@ -530,7 +530,7 @@ func (initializerImpl *InitializerImpl) RegisterObserver(ctx context.Context, ob
 	// Create empty list of observers.
 
 	if initializerImpl.observers == nil {
-		initializerImpl.observers = &subject.SubjectImpl{}
+		initializerImpl.observers = &subject.SimpleSubject{}
 	}
 
 	// Register observer with initializerImpl and dependent services.
@@ -555,7 +555,7 @@ func (initializerImpl *InitializerImpl) RegisterObserver(ctx context.Context, ob
 
 	go func() {
 		details := map[string]string{
-			"observerID": observer.GetObserverId(ctx),
+			"observerID": observer.GetObserverID(ctx),
 		}
 		notifier.Notify(ctx, initializerImpl.observers, initializerImpl.ObserverOrigin, ComponentId, 8003, err, details)
 	}()
@@ -738,7 +738,7 @@ func (initializerImpl *InitializerImpl) UnregisterObserver(ctx context.Context, 
 
 		defer func() {
 			if debugMessageNumber > 0 {
-				initializerImpl.debug(debugMessageNumber, observer.GetObserverId(ctx), err)
+				initializerImpl.debug(debugMessageNumber, observer.GetObserverID(ctx), err)
 			}
 		}()
 
@@ -746,9 +746,9 @@ func (initializerImpl *InitializerImpl) UnregisterObserver(ctx context.Context, 
 
 		if initializerImpl.getLogger().IsTrace() {
 			entryTime := time.Now()
-			initializerImpl.traceEntry(70, observer.GetObserverId(ctx))
+			initializerImpl.traceEntry(70, observer.GetObserverID(ctx))
 			defer func() {
-				initializerImpl.traceExit(traceExitMessageNumber, observer.GetObserverId(ctx), err, time.Since(entryTime))
+				initializerImpl.traceExit(traceExitMessageNumber, observer.GetObserverID(ctx), err, time.Since(entryTime))
 			}()
 		}
 
@@ -784,7 +784,7 @@ func (initializerImpl *InitializerImpl) UnregisterObserver(ctx context.Context, 
 		// In client.notify, each observer will get notified in a goroutine.
 		// Then client.observers may be set to nil, but observer goroutines will be OK.
 		details := map[string]string{
-			"observerID": observer.GetObserverId(ctx),
+			"observerID": observer.GetObserverID(ctx),
 		}
 		notifier.Notify(ctx, initializerImpl.observers, initializerImpl.ObserverOrigin, ComponentId, 8006, err, details)
 

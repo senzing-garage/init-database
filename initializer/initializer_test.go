@@ -57,7 +57,7 @@ func teardown() error {
 
 func TestInitializerImpl_Initialize(test *testing.T) {
 	ctx := context.TODO()
-	senzingEngineConfigurationJson, err := settings.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	senzingEngineConfigurationJson, err := settings.BuildSimpleSettingsUsingEnvVars()
 	testError(test, err)
 	testObject := &InitializerImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
@@ -68,11 +68,11 @@ func TestInitializerImpl_Initialize(test *testing.T) {
 
 func TestInitializerImpl_RegisterObserver(test *testing.T) {
 	ctx := context.TODO()
-	observer1 := &observer.ObserverNull{
-		Id:       "Observer 1",
+	observer1 := &observer.NullObserver{
+		ID:       "Observer 1",
 		IsSilent: true,
 	}
-	senzingEngineConfigurationJson, err := settings.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	senzingEngineConfigurationJson, err := settings.BuildSimpleSettingsUsingEnvVars()
 	testError(test, err)
 	testObject := &InitializerImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
@@ -84,7 +84,7 @@ func TestInitializerImpl_RegisterObserver(test *testing.T) {
 
 func TestInitializerImpl_SetObserverOrigin(test *testing.T) {
 	ctx := context.TODO()
-	senzingEngineConfigurationJson, err := settings.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	senzingEngineConfigurationJson, err := settings.BuildSimpleSettingsUsingEnvVars()
 	testError(test, err)
 	testObject := &InitializerImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
@@ -94,11 +94,11 @@ func TestInitializerImpl_SetObserverOrigin(test *testing.T) {
 
 // func TestInitializerImpl_UnregisterObserver(test *testing.T) {
 // 	ctx := context.TODO()
-// 	observer1 := &observer.ObserverNull{
+// 	observer1 := &observer.NullObserver{
 // 		Id:       "Observer 1",
 // 		IsSilent: true,
 // 	}
-// 	senzingEngineConfigurationJson, err := settings.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+// 	senzingEngineConfigurationJson, err := settings.BuildSimpleSettingsUsingEnvVars()
 // 	testError(test, err)
 // 	testObject := &InitializerImpl{
 // 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,

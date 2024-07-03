@@ -18,7 +18,7 @@ import (
 func ExampleSenzingSchemaImpl_InitializeSenzing() {
 	// For more information, visit https://github.com/senzing-garage/init-database/blob/main/senzingschema/senzingschema_examples_test.go
 	ctx := context.TODO()
-	senzingEngineConfigurationJson, err := settings.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	senzingEngineConfigurationJson, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
 		fmt.Print(err)
 	}
@@ -39,11 +39,11 @@ func ExampleSenzingSchemaImpl_InitializeSenzing() {
 func ExampleSenzingSchemaImpl_RegisterObserver() {
 	// For more information, visit https://github.com/senzing-garage/init-database/blob/main/senzingschema/senzingschema_examples_test.go
 	ctx := context.TODO()
-	anObserver := &observer.ObserverNull{
-		Id:       "Observer 1",
+	anObserver := &observer.NullObserver{
+		ID:       "Observer 1",
 		IsSilent: true,
 	}
-	senzingEngineConfigurationJson, err := settings.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	senzingEngineConfigurationJson, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
 		fmt.Print(err)
 	}
@@ -60,7 +60,7 @@ func ExampleSenzingSchemaImpl_RegisterObserver() {
 func ExampleSenzingSchemaImpl_SetLogLevel() {
 	// For more information, visit https://github.com/senzing-garage/init-database/blob/main/senzingschema/senzingschema_examples_test.go
 	ctx := context.TODO()
-	senzingEngineConfigurationJson, err := settings.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	senzingEngineConfigurationJson, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
 		fmt.Print(err)
 	}
@@ -77,7 +77,7 @@ func ExampleSenzingSchemaImpl_SetLogLevel() {
 func ExampleSenzingSchemaImpl_SetObserverOrigin() {
 	// For more information, visit https://github.com/senzing-garage/init-database/blob/main/senzingschema/senzingschema_examples_test.go
 	ctx := context.TODO()
-	senzingEngineConfigurationJson, err := settings.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	senzingEngineConfigurationJson, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
 		fmt.Print(err)
 	}
@@ -91,11 +91,11 @@ func ExampleSenzingSchemaImpl_SetObserverOrigin() {
 func ExampleSenzingSchemaImpl_UnregisterObserver() {
 	// For more information, visit https://github.com/senzing-garage/init-database/blob/main/senzingschema/senzingschema_examples_test.go
 	ctx := context.TODO()
-	anObserver := &observer.ObserverNull{
-		Id:       "Observer 1",
+	anObserver := &observer.NullObserver{
+		ID:       "Observer 1",
 		IsSilent: true,
 	}
-	senzingEngineConfigurationJson, err := settings.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	senzingEngineConfigurationJson, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
 		fmt.Print(err)
 	}

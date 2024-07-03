@@ -31,7 +31,7 @@ type SenzingConfigImpl struct {
 	GrpcDialOptions                []grpc.DialOption
 	GrpcTarget                     string
 	isTrace                        bool
-	logger                         logging.LoggingInterface
+	logger                         logging.Logging
 	logLevel                       string
 	observerOrigin                 string
 	observers                      subject.Subject
@@ -68,13 +68,13 @@ var defaultModuleName string = "init-database"
 // --- Logging ----------------------------------------------------------------
 
 // Get the Logger singleton.
-func (senzingConfig *SenzingConfigImpl) getLogger() logging.LoggingInterface {
+func (senzingConfig *SenzingConfigImpl) getLogger() logging.Logging {
 	var err error = nil
 	if senzingConfig.logger == nil {
 		options := []interface{}{
 			&logging.OptionCallerSkip{Value: 4},
 		}
-		senzingConfig.logger, err = logging.NewSenzingToolsLogger(ComponentId, IdMessages, options...)
+		senzingConfig.logger, err = logging.NewSenzingLogger(ComponentId, IdMessages, options...)
 		if err != nil {
 			panic(err)
 		}
@@ -109,15 +109,16 @@ func (senzingConfig *SenzingConfigImpl) traceExit(messageNumber int, details ...
 
 // Create an abstract factory singleton and return it.
 func (senzingConfig *SenzingConfigImpl) getAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
+	_ = ctx
 	var err error = nil
 	senzingConfig.szAbstractFactorySyncOnce.Do(func() {
 		if len(senzingConfig.GrpcTarget) == 0 {
-			senzingConfig.szAbstractFactorySingleton, err = szfactorycreator.CreateCoreAbstractFactory(senzingConfig.SenzingModuleName, senzingConfig.SenzingEngineConfigurationJson, senzingConfig.SenzingVerboseLogging, senzing.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION)
+			senzingConfig.szAbstractFactorySingleton, err = szfactorycreator.CreateCoreAbstractFactory(senzingConfig.SenzingModuleName, senzingConfig.SenzingEngineConfigurationJson, senzingConfig.SenzingVerboseLogging, senzing.SzInitializeWithDefaultConfiguration)
 			if err != nil {
 				panic(err)
 			}
 		} else {
-			grpcConnection, err := grpc.DialContext(ctx, senzingConfig.GrpcTarget, senzingConfig.GrpcDialOptions...)
+			grpcConnection, err := grpc.NewClient(senzingConfig.GrpcTarget, senzingConfig.GrpcDialOptions...)
 			if err != nil {
 				panic(err)
 			}
@@ -338,7 +339,7 @@ func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) e
 
 	// Determine if configuration already exists. If so, return.
 
-	configID, err = szConfigManager.GetDefaultConfigId(ctx)
+	configID, err = szConfigManager.GetDefaultConfigID(ctx)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 13, 1013
 		return err
@@ -449,7 +450,7 @@ func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) e
 		traceExitMessageNumber, debugMessageNumber = 18, 1018
 		return err
 	}
-	err = szConfigManager.SetDefaultConfigId(ctx, configID)
+	err = szConfigManager.SetDefaultConfigID(ctx, configID)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 19, 1019
 		return err
@@ -500,9 +501,9 @@ func (senzingConfig *SenzingConfigImpl) RegisterObserver(ctx context.Context, ob
 
 		if senzingConfig.getLogger().IsTrace() {
 			entryTime := time.Now()
-			senzingConfig.traceEntry(30, observer.GetObserverId(ctx))
+			senzingConfig.traceEntry(30, observer.GetObserverID(ctx))
 			defer func() {
-				senzingConfig.traceExit(traceExitMessageNumber, observer.GetObserverId(ctx), err, time.Since(entryTime))
+				senzingConfig.traceExit(traceExitMessageNumber, observer.GetObserverID(ctx), err, time.Since(entryTime))
 			}()
 		}
 
@@ -519,14 +520,14 @@ func (senzingConfig *SenzingConfigImpl) RegisterObserver(ctx context.Context, ob
 	// Create empty list of observers.
 
 	if senzingConfig.observers == nil {
-		senzingConfig.observers = &subject.SubjectImpl{}
+		senzingConfig.observers = &subject.SimpleSubject{}
 	}
 
 	// Notify observers.
 
 	go func() {
 		details := map[string]string{
-			"observerID": observer.GetObserverId(ctx),
+			"observerID": observer.GetObserverID(ctx),
 		}
 		notifier.Notify(ctx, senzingConfig.observers, senzingConfig.observerOrigin, ComponentId, 8003, err, details)
 	}()
@@ -698,9 +699,9 @@ func (senzingConfig *SenzingConfigImpl) UnregisterObserver(ctx context.Context, 
 
 		if senzingConfig.getLogger().IsTrace() {
 			entryTime := time.Now()
-			senzingConfig.traceEntry(50, observer.GetObserverId(ctx))
+			senzingConfig.traceEntry(50, observer.GetObserverID(ctx))
 			defer func() {
-				senzingConfig.traceExit(traceExitMessageNumber, observer.GetObserverId(ctx), err, time.Since(entryTime))
+				senzingConfig.traceExit(traceExitMessageNumber, observer.GetObserverID(ctx), err, time.Since(entryTime))
 			}()
 		}
 
@@ -723,7 +724,7 @@ func (senzingConfig *SenzingConfigImpl) UnregisterObserver(ctx context.Context, 
 		// In client.notify, each observer will get notified in a goroutine.
 		// Then client.observers may be set to nil, but observer goroutines will be OK.
 		details := map[string]string{
-			"observerID": observer.GetObserverId(ctx),
+			"observerID": observer.GetObserverID(ctx),
 		}
 		notifier.Notify(ctx, senzingConfig.observers, senzingConfig.observerOrigin, ComponentId, 8006, err, details)
 
