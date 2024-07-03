@@ -13,8 +13,8 @@ import (
 	"github.com/senzing-garage/go-cmdhelping/constant"
 	"github.com/senzing-garage/go-cmdhelping/option"
 	"github.com/senzing-garage/go-cmdhelping/option/optiontype"
-	"github.com/senzing-garage/go-helpers/engineconfigurationjson"
-	"github.com/senzing-garage/go-helpers/engineconfigurationjsonparser"
+	"github.com/senzing-garage/go-helpers/settings"
+	"github.com/senzing-garage/go-helpers/settingsparser"
 	"github.com/senzing-garage/init-database/initializer"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -84,12 +84,12 @@ func buildSenzingEngineConfigurationJson(ctx context.Context, aViper *viper.Vipe
 			"senzingDirectory":    aViper.GetString(option.SenzingDirectory.Arg),
 			"supportPath":         aViper.GetString(option.SupportPath.Arg),
 		}
-		result, err = engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingMap(options)
+		result, err = settings.BuildSimpleSystemConfigurationJsonUsingMap(options)
 		if err != nil {
 			return result, err
 		}
 	}
-	err = engineconfigurationjson.VerifySenzingEngineConfigurationJson(ctx, result)
+	err = settings.VerifySenzingEngineConfigurationJson(ctx, result)
 	if err != nil {
 		return result, err
 	}
@@ -141,15 +141,15 @@ For more information, visit https://github.com/senzing-garage/init-database
 }
 
 // Create a temporary parsed Senzing engine configuration.
-func getParsedEngineConfigurationJson() (engineconfigurationjsonparser.EngineConfigurationJsonParser, error) {
-	var result engineconfigurationjsonparser.EngineConfigurationJsonParser = nil
+func getParsedEngineConfigurationJson() (settingsparser.EngineConfigurationJsonParser, error) {
+	var result settingsparser.EngineConfigurationJsonParser = nil
 	ctx := context.Background()
 
 	// Early exit.  Environment variable is set.
 
 	senzingEngineConfigurationJson, isSet := os.LookupEnv(option.EngineConfigurationJson.Arg)
 	if isSet {
-		return engineconfigurationjsonparser.New(senzingEngineConfigurationJson)
+		return settingsparser.New(senzingEngineConfigurationJson)
 	}
 
 	// Create a local Viper.
@@ -172,7 +172,7 @@ func getParsedEngineConfigurationJson() (engineconfigurationjsonparser.EngineCon
 	if err != nil {
 		return result, err
 	}
-	return engineconfigurationjsonparser.New(senzingEngineConfigurationJson)
+	return settingsparser.New(senzingEngineConfigurationJson)
 }
 
 // Get the path to the SQL file used to create the Senzing database schema.

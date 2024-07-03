@@ -36,7 +36,7 @@ const Prefix = "init-database.senzingconfig."
 var IdMessages = map[int]string{
 	10:   "Enter " + Prefix + "InitializeSenzing().",
 	11:   "Exit  " + Prefix + "InitializeSenzing(); json.Marshal failed; returned (%v).",
-	12:   "Exit  " + Prefix + "InitializeSenzing(); engineconfigurationjsonparser.New failed; returned (%v).",
+	12:   "Exit  " + Prefix + "InitializeSenzing(); settingsparser.New failed; returned (%v).",
 	13:   "Exit  " + Prefix + "InitializeSenzing(); parser.GetResourcePath failed; returned (%v).",
 	14:   "Exit  " + Prefix + "InitializeSenzing(); parser.GetDatabaseUrls failed; returned (%v).",
 	15:   "Exit  " + Prefix + "InitializeSenzing(); senzingSchema.processDatabase failed; returned (%v).",
@@ -70,7 +70,7 @@ var IdMessages = map[int]string{
 	1004: Prefix + "SetObserverOrigin parameters: %+v",
 	1005: Prefix + "UnregisterObserver parameters: %+v",
 	1011: Prefix + "InitializeSenzing(); json.Marshal failed; returned (%v).",
-	1012: Prefix + "InitializeSenzing(); engineconfigurationjsonparser.New failed; returned (%v).",
+	1012: Prefix + "InitializeSenzing(); settingsparser.New failed; returned (%v).",
 	1013: Prefix + "InitializeSenzing(); parser.GetResourcePath failed; returned (%v).",
 	1014: Prefix + "InitializeSenzing(); parser.GetDatabaseUrls failed; returned (%v).",
 	1015: Prefix + "InitializeSenzing(); senzingSchema.processDatabase failed; returned (%v).",

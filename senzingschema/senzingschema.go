@@ -10,7 +10,7 @@ import (
 
 	"github.com/senzing-garage/go-databasing/connector"
 	"github.com/senzing-garage/go-databasing/sqlexecutor"
-	"github.com/senzing-garage/go-helpers/engineconfigurationjsonparser"
+	"github.com/senzing-garage/go-helpers/settingsparser"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/notifier"
 	"github.com/senzing-garage/go-observing/observer"
@@ -240,7 +240,7 @@ func (senzingSchema *SenzingSchemaImpl) InitializeSenzing(ctx context.Context) e
 
 	// Pull values out of SenzingEngineConfigurationJson.
 
-	parser, err := engineconfigurationjsonparser.New(senzingSchema.SenzingEngineConfigurationJson)
+	parser, err := settingsparser.New(senzingSchema.SenzingEngineConfigurationJson)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 12, 1012
 		return err

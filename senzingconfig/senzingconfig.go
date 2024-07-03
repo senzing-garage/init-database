@@ -11,13 +11,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/senzing-garage/go-helpers/engineconfigurationjsonparser"
+	"github.com/senzing-garage/go-helpers/settingsparser"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/notifier"
 	"github.com/senzing-garage/go-observing/observer"
 	"github.com/senzing-garage/go-observing/subject"
 	"github.com/senzing-garage/go-sdk-abstract-factory/szfactorycreator"
-	"github.com/senzing-garage/sz-sdk-go/sz"
+	"github.com/senzing-garage/sz-sdk-go/senzing"
 	"google.golang.org/grpc"
 )
 
@@ -39,11 +39,11 @@ type SenzingConfigImpl struct {
 	SenzingEngineConfigurationJson string
 	SenzingModuleName              string
 	SenzingVerboseLogging          int64
-	szAbstractFactorySingleton     sz.SzAbstractFactory
+	szAbstractFactorySingleton     senzing.SzAbstractFactory
 	szAbstractFactorySyncOnce      sync.Once
-	szConfigManagerSingleton       sz.SzConfigManager
+	szConfigManagerSingleton       senzing.SzConfigManager
 	szConfigManagerSyncOnce        sync.Once
-	szConfigSingleton              sz.SzConfig
+	szConfigSingleton              senzing.SzConfig
 	szConfigSyncOnce               sync.Once
 }
 
@@ -108,11 +108,11 @@ func (senzingConfig *SenzingConfigImpl) traceExit(messageNumber int, details ...
 // --- Dependent services -----------------------------------------------------
 
 // Create an abstract factory singleton and return it.
-func (senzingConfig *SenzingConfigImpl) getAbstractFactory(ctx context.Context) sz.SzAbstractFactory {
+func (senzingConfig *SenzingConfigImpl) getAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
 	var err error = nil
 	senzingConfig.szAbstractFactorySyncOnce.Do(func() {
 		if len(senzingConfig.GrpcTarget) == 0 {
-			senzingConfig.szAbstractFactorySingleton, err = szfactorycreator.CreateCoreAbstractFactory(senzingConfig.SenzingModuleName, senzingConfig.SenzingEngineConfigurationJson, senzingConfig.SenzingVerboseLogging, sz.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION)
+			senzingConfig.szAbstractFactorySingleton, err = szfactorycreator.CreateCoreAbstractFactory(senzingConfig.SenzingModuleName, senzingConfig.SenzingEngineConfigurationJson, senzingConfig.SenzingVerboseLogging, senzing.SZ_INITIALIZE_WITH_DEFAULT_CONFIGURATION)
 			if err != nil {
 				panic(err)
 			}
@@ -131,7 +131,7 @@ func (senzingConfig *SenzingConfigImpl) getAbstractFactory(ctx context.Context) 
 }
 
 // Create a SzConfig singleton and return it.
-func (senzingConfig *SenzingConfigImpl) getSzConfig(ctx context.Context) (sz.SzConfig, error) {
+func (senzingConfig *SenzingConfigImpl) getSzConfig(ctx context.Context) (senzing.SzConfig, error) {
 	var err error = nil
 	senzingConfig.szConfigSyncOnce.Do(func() {
 		senzingConfig.szConfigSingleton, err = senzingConfig.getAbstractFactory(ctx).CreateSzConfig(ctx)
@@ -143,7 +143,7 @@ func (senzingConfig *SenzingConfigImpl) getSzConfig(ctx context.Context) (sz.SzC
 }
 
 // Create a SzConfigManager singleton and return it.
-func (senzingConfig *SenzingConfigImpl) getSzConfigmgr(ctx context.Context) (sz.SzConfigManager, error) {
+func (senzingConfig *SenzingConfigImpl) getSzConfigmgr(ctx context.Context) (senzing.SzConfigManager, error) {
 	var err error = nil
 	senzingConfig.szConfigManagerSyncOnce.Do(func() {
 		senzingConfig.szConfigManagerSingleton, err = senzingConfig.getAbstractFactory(ctx).CreateSzConfigManager(ctx)
@@ -155,7 +155,7 @@ func (senzingConfig *SenzingConfigImpl) getSzConfigmgr(ctx context.Context) (sz.
 }
 
 // Get dependent services: SzConfig, SzConfigManager
-func (senzingConfig *SenzingConfigImpl) getDependentServices(ctx context.Context) (sz.SzConfig, sz.SzConfigManager, error) {
+func (senzingConfig *SenzingConfigImpl) getDependentServices(ctx context.Context) (senzing.SzConfig, senzing.SzConfigManager, error) {
 	szConfig, err := senzingConfig.getSzConfig(ctx)
 	if err != nil {
 		return nil, nil, err
@@ -170,7 +170,7 @@ func (senzingConfig *SenzingConfigImpl) getDependentServices(ctx context.Context
 // --- Misc -------------------------------------------------------------------
 
 // Add datasources to Senzing configuration.
-func (senzingConfig *SenzingConfigImpl) addDatasources(ctx context.Context, szConfig sz.SzConfig, configHandle uintptr) error {
+func (senzingConfig *SenzingConfigImpl) addDatasources(ctx context.Context, szConfig senzing.SzConfig, configHandle uintptr) error {
 	var err error = nil
 	for _, datasource := range senzingConfig.DataSources {
 		_, err = szConfig.AddDataSource(ctx, configHandle, datasource)
@@ -358,7 +358,7 @@ func (senzingConfig *SenzingConfigImpl) InitializeSenzing(ctx context.Context) e
 	// If engine configuration file specified, swap it in.
 
 	if len(senzingConfig.SenzingEngineConfigurationFile) > 0 {
-		parsedJson, err := engineconfigurationjsonparser.New(senzingConfig.SenzingEngineConfigurationJson)
+		parsedJson, err := settingsparser.New(senzingConfig.SenzingEngineConfigurationJson)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 20, 1020
 			return err

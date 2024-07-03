@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/senzing-garage/go-helpers/engineconfigurationjson"
+	"github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/observer"
 	"github.com/stretchr/testify/assert"
@@ -57,7 +57,7 @@ func teardown() error {
 
 func TestInitializerImpl_Initialize(test *testing.T) {
 	ctx := context.TODO()
-	senzingEngineConfigurationJson, err := engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	senzingEngineConfigurationJson, err := settings.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 	testError(test, err)
 	testObject := &InitializerImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
@@ -72,7 +72,7 @@ func TestInitializerImpl_RegisterObserver(test *testing.T) {
 		Id:       "Observer 1",
 		IsSilent: true,
 	}
-	senzingEngineConfigurationJson, err := engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	senzingEngineConfigurationJson, err := settings.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 	testError(test, err)
 	testObject := &InitializerImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
@@ -84,7 +84,7 @@ func TestInitializerImpl_RegisterObserver(test *testing.T) {
 
 func TestInitializerImpl_SetObserverOrigin(test *testing.T) {
 	ctx := context.TODO()
-	senzingEngineConfigurationJson, err := engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+	senzingEngineConfigurationJson, err := settings.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 	testError(test, err)
 	testObject := &InitializerImpl{
 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
@@ -98,7 +98,7 @@ func TestInitializerImpl_SetObserverOrigin(test *testing.T) {
 // 		Id:       "Observer 1",
 // 		IsSilent: true,
 // 	}
-// 	senzingEngineConfigurationJson, err := engineconfigurationjson.BuildSimpleSystemConfigurationJsonUsingEnvVars()
+// 	senzingEngineConfigurationJson, err := settings.BuildSimpleSystemConfigurationJsonUsingEnvVars()
 // 	testError(test, err)
 // 	testObject := &InitializerImpl{
 // 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,

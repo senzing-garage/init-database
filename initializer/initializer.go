@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/senzing-garage/go-helpers/engineconfigurationjsonparser"
+	"github.com/senzing-garage/go-helpers/settingsparser"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/notifier"
 	"github.com/senzing-garage/go-observing/observer"
@@ -435,7 +435,7 @@ func (initializerImpl *InitializerImpl) InitializeSpecificDatabase(ctx context.C
 
 	// Pull values out of SenzingEngineConfigurationJson.
 
-	parser, err := engineconfigurationjsonparser.New(initializerImpl.SenzingEngineConfigurationJson)
+	parser, err := settingsparser.New(initializerImpl.SenzingEngineConfigurationJson)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 42, 1042
 		return err
