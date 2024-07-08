@@ -22,7 +22,7 @@ type Initializer interface {
 // ----------------------------------------------------------------------------
 
 // Identfier of the  package found messages having the format "senzing-6501xxxx".
-const ComponentId = 6501
+const ComponentID = 6501
 
 // Log message prefix.
 const Prefix = "init-database.initializer."
@@ -35,7 +35,7 @@ const DefaultGrpcObserverPort = "8260"
 // ----------------------------------------------------------------------------
 
 // Message templates for g2config implementations.
-var IdMessages = map[int]string{
+var IDMessages = map[int]string{
 	10:   "Enter " + Prefix + "Initialize().",
 	11:   "Exit  " + Prefix + "Initialize(); json.Marshal failed; returned (%v).",
 	12:   "Exit  " + Prefix + "Initialize(); initializerImpl.InitializeSpecificDatabase failed; returned (%v).",
@@ -51,7 +51,7 @@ var IdMessages = map[int]string{
 	29:   "Exit  " + Prefix + "Initialize() returned (%v).",
 	40:   "Enter " + Prefix + "InitializeSpecificDatabase().",
 	41:   "Exit  " + Prefix + "InitializeSpecificDatabase(); json.Marshal failed; returned (%v).",
-	42:   "Exit  " + Prefix + "InitializeSpecificDatabase(); engineconfigurationjsonparser.New failed; returned (%v).",
+	42:   "Exit  " + Prefix + "InitializeSpecificDatabase(); settingsparser.New failed; returned (%v).",
 	43:   "Exit  " + Prefix + "InitializeSpecificDatabase(); parser.GetDatabaseUrls failed; returned (%v).",
 	44:   "Exit  " + Prefix + "InitializeSpecificDatabase(); url.Parse failed; returned (%v).",
 	45:   "Exit  " + Prefix + "InitializeSpecificDatabase(); initializerImpl.initializeSpecificDatabaseSqlite; returned (%v).",
@@ -98,7 +98,7 @@ var IdMessages = map[int]string{
 	1017: Prefix + "Initialize(); initializerImpl.observers.RegisterObserver; returned (%v).",
 	1018: Prefix + "Initialize(); initializerImpl.createGrpcObserver; returned (%v).",
 	1041: Prefix + "InitializeSpecificDatabase(); json.Marshal failed; Error: %v.",
-	1042: Prefix + "InitializeSpecificDatabase(); engineconfigurationjsonparser.New failed; Error: %v.",
+	1042: Prefix + "InitializeSpecificDatabase(); settingsparser.New failed; Error: %v.",
 	1043: Prefix + "InitializeSpecificDatabase(); parser.GetDatabaseUrls failed; Error: %v.",
 	1044: Prefix + "InitializeSpecificDatabase(); url.Parse failed; Error: %v.",
 	1045: Prefix + "InitializeSpecificDatabase(); initializerImpl.initializeSpecificDatabaseSqlite; Error: %v.",
@@ -132,4 +132,4 @@ var IdMessages = map[int]string{
 }
 
 // Status strings for specific messages.
-var IdStatuses = map[int]string{}
+var IDStatuses = map[int]string{}
