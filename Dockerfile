@@ -18,8 +18,8 @@ FROM ${IMAGE_FINAL} as senzingapi_runtime
 FROM ${IMAGE_GO_BUILDER} as go_builder
 ENV REFRESHED_AT=2024-03-18
 LABEL Name="senzing/init-database-builder" \
-  Maintainer="support@senzing.com" \
-  Version="0.5.2"
+      Maintainer="support@senzing.com" \
+      Version="0.5.2"
 
 # Copy local files from the Git repository.
 
@@ -43,7 +43,7 @@ RUN make build
 # Copy binaries to /output.
 
 RUN mkdir -p /output \
-  && cp -R ${GOPATH}/src/init-database/target/*  /output/
+ && cp -R ${GOPATH}/src/init-database/target/*  /output/
 
 # -----------------------------------------------------------------------------
 # Stage: final
@@ -52,8 +52,8 @@ RUN mkdir -p /output \
 FROM ${IMAGE_FINAL} as final
 ENV REFRESHED_AT=2024-03-18
 LABEL Name="senzing/init-database" \
-  Maintainer="support@senzing.com" \
-  Version="0.5.2"
+      Maintainer="support@senzing.com" \
+      Version="0.5.2"
 
 # Copy local files from the Git repository.
 
