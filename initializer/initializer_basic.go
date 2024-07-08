@@ -57,186 +57,6 @@ var traceOptions = []interface{}{
 }
 
 // ----------------------------------------------------------------------------
-// Internal methods
-// ----------------------------------------------------------------------------
-
-// --- Logging ----------------------------------------------------------------
-
-// Get the Logger singleton.
-func (initializer *BasicInitializer) getLogger() logging.Logging {
-	var err error
-	if initializer.logger == nil {
-		options := []interface{}{
-			&logging.OptionCallerSkip{Value: 4},
-		}
-		initializer.logger, err = logging.NewSenzingLogger(ComponentID, IDMessages, options...)
-		if err != nil {
-			panic(err)
-		}
-	}
-	return initializer.logger
-}
-
-// Log message.
-func (initializer *BasicInitializer) log(messageNumber int, details ...interface{}) {
-	initializer.getLogger().Log(messageNumber, details...)
-}
-
-// Debug.
-func (initializer *BasicInitializer) debug(messageNumber int, details ...interface{}) {
-	details = append(details, debugOptions...)
-	initializer.getLogger().Log(messageNumber, details...)
-}
-
-// Trace method entry.
-func (initializer *BasicInitializer) traceEntry(messageNumber int, details ...interface{}) {
-	details = append(details, traceOptions...)
-	initializer.getLogger().Log(messageNumber, details...)
-}
-
-// Trace method exit.
-func (initializer *BasicInitializer) traceExit(messageNumber int, details ...interface{}) {
-	details = append(details, traceOptions...)
-	initializer.getLogger().Log(messageNumber, details...)
-}
-
-// --- Observing --------------------------------------------------------------
-
-func (initializer *BasicInitializer) createGrpcObserver(ctx context.Context, parsedURL url.URL) (observer.Observer, error) {
-	_ = ctx
-	var err error
-
-	var result observer.Observer
-
-	port := DefaultGrpcObserverPort
-	if len(parsedURL.Port()) > 0 {
-		port = parsedURL.Port()
-	}
-	target := fmt.Sprintf("%s:%s", parsedURL.Hostname(), port)
-
-	// TODO: Allow specification of options from ObserverUrl/parsedUrl
-	grpcOptions := grpc.WithTransportCredentials(insecure.NewCredentials())
-
-	grpcConnection, err := grpc.NewClient(target, grpcOptions)
-	if err != nil {
-		return result, err
-	}
-	result = &observer.GrpcObserver{
-		GrpcClient: observerpb.NewObserverClient(grpcConnection),
-		ID:         "init-database",
-	}
-	return result, err
-}
-
-func (initializer *BasicInitializer) registerObserverLocal(ctx context.Context, observer observer.Observer) error {
-	if initializer.observers == nil {
-		initializer.observers = &subject.SimpleSubject{}
-	}
-	return initializer.observers.RegisterObserver(ctx, observer)
-}
-
-func (initializer *BasicInitializer) registerObserverSenzingConfig(ctx context.Context, observer observer.Observer) error {
-	initializer.getSenzingConfig().SetObserverOrigin(ctx, initializer.ObserverOrigin)
-	return initializer.getSenzingConfig().RegisterObserver(ctx, observer)
-}
-
-func (initializer *BasicInitializer) registerObserverSenzingSchema(ctx context.Context, observer observer.Observer) error {
-	initializer.getSenzingSchema().SetObserverOrigin(ctx, initializer.ObserverOrigin)
-	return initializer.getSenzingSchema().RegisterObserver(ctx, observer)
-}
-
-// --- Dependent services -----------------------------------------------------
-
-func (initializer *BasicInitializer) getSenzingConfig() senzingconfig.SenzingConfig {
-	if initializer.senzingConfigSingleton == nil {
-		initializer.senzingConfigSingleton = &senzingconfig.BasicSenzingConfig{
-			DataSources:           initializer.DataSources,
-			SenzingSettingsFile:   initializer.SenzingSettingsFile,
-			SenzingSettings:       initializer.SenzingSettings,
-			SenzingInstanceName:   initializer.SenzingInstanceName,
-			SenzingVerboseLogging: initializer.SenzingVerboseLogging,
-		}
-	}
-	return initializer.senzingConfigSingleton
-}
-
-func (initializer *BasicInitializer) getSenzingSchema() senzingschema.SenzingSchema {
-	if initializer.senzingSchemaSingleton == nil {
-		initializer.senzingSchemaSingleton = &senzingschema.BasicSenzingSchema{
-			SenzingSettings: initializer.SenzingSettings,
-			SQLFile:         initializer.SQLFile,
-		}
-	}
-	return initializer.senzingSchemaSingleton
-}
-
-// --- Specific database processing -------------------------------------------
-
-func (initializer *BasicInitializer) initializeSpecificDatabaseSqlite(ctx context.Context, parsedURL *url.URL) error {
-	var err error
-
-	// Prolog.
-
-	debugMessageNumber := 0
-	traceExitMessageNumber := 109
-	if initializer.getLogger().IsDebug() {
-
-		// If DEBUG, log error exit.
-
-		defer func() {
-			if debugMessageNumber > 0 {
-				initializer.debug(debugMessageNumber, err)
-			}
-		}()
-
-		// If TRACE, Log on entry/exit.
-
-		if initializer.getLogger().IsTrace() {
-			entryTime := time.Now()
-			initializer.traceEntry(100, parsedURL)
-			defer func() { initializer.traceExit(traceExitMessageNumber, parsedURL, err, time.Since(entryTime)) }()
-		}
-	}
-
-	// If file exists, no more to do.
-
-	filename := parsedURL.Path
-	filename = filepath.Clean(filename) // See https://securego.io/docs/rules/g304.html
-	_, err = os.Stat(filename)
-	if err == nil {
-		traceExitMessageNumber, debugMessageNumber = 101, 0 // debugMessageNumber=0 because it's not an error.
-		return err                                          // Nothing more to do.
-	}
-
-	// File doesn't exist, create it.
-
-	path := filepath.Dir(filename)
-	err = os.MkdirAll(path, os.ModePerm)
-	if err != nil {
-		traceExitMessageNumber, debugMessageNumber = 102, 1102
-		return err
-	}
-	_, err = os.Create(filename)
-	if err != nil {
-		traceExitMessageNumber, debugMessageNumber = 103, 1103
-		return err
-	}
-	initializer.log(2001, filename)
-
-	// Notify observers.
-
-	if initializer.observers != nil {
-		go func() {
-			details := map[string]string{
-				"sqliteFile": filename,
-			}
-			notifier.Notify(ctx, initializer.observers, initializer.ObserverOrigin, ComponentID, 8010, err, details)
-		}()
-	}
-	return err
-}
-
-// ----------------------------------------------------------------------------
 // Interface methods
 // ----------------------------------------------------------------------------
 
@@ -802,6 +622,189 @@ func (initializer *BasicInitializer) UnregisterObserver(ctx context.Context, obs
 		if !initializer.observers.HasObservers(ctx) {
 			initializer.observers = nil
 		}
+	}
+	return err
+}
+
+// ----------------------------------------------------------------------------
+// Internal methods
+// ----------------------------------------------------------------------------
+
+// --- Logging ----------------------------------------------------------------
+
+// Get the Logger singleton.
+func (initializer *BasicInitializer) getLogger() logging.Logging {
+	var err error
+	if initializer.logger == nil {
+		options := []interface{}{
+			logging.OptionCallerSkip{Value: 4},
+		}
+		if len(initializer.SenzingLogLevel) > 0 {
+			options = append(options, logging.OptionLogLevel{Value: initializer.SenzingLogLevel})
+		}
+		initializer.logger, err = logging.NewSenzingLogger(ComponentID, IDMessages, options...)
+		if err != nil {
+			panic(err)
+		}
+	}
+	return initializer.logger
+}
+
+// Log message.
+func (initializer *BasicInitializer) log(messageNumber int, details ...interface{}) {
+	initializer.getLogger().Log(messageNumber, details...)
+}
+
+// Debug.
+func (initializer *BasicInitializer) debug(messageNumber int, details ...interface{}) {
+	details = append(details, debugOptions...)
+	initializer.getLogger().Log(messageNumber, details...)
+}
+
+// Trace method entry.
+func (initializer *BasicInitializer) traceEntry(messageNumber int, details ...interface{}) {
+	details = append(details, traceOptions...)
+	initializer.getLogger().Log(messageNumber, details...)
+}
+
+// Trace method exit.
+func (initializer *BasicInitializer) traceExit(messageNumber int, details ...interface{}) {
+	details = append(details, traceOptions...)
+	initializer.getLogger().Log(messageNumber, details...)
+}
+
+// --- Observing --------------------------------------------------------------
+
+func (initializer *BasicInitializer) createGrpcObserver(ctx context.Context, parsedURL url.URL) (observer.Observer, error) {
+	_ = ctx
+	var err error
+
+	var result observer.Observer
+
+	port := DefaultGrpcObserverPort
+	if len(parsedURL.Port()) > 0 {
+		port = parsedURL.Port()
+	}
+	target := fmt.Sprintf("%s:%s", parsedURL.Hostname(), port)
+
+	// TODO: Allow specification of options from ObserverUrl/parsedUrl
+	grpcOptions := grpc.WithTransportCredentials(insecure.NewCredentials())
+
+	grpcConnection, err := grpc.NewClient(target, grpcOptions)
+	if err != nil {
+		return result, err
+	}
+	result = &observer.GrpcObserver{
+		GrpcClient: observerpb.NewObserverClient(grpcConnection),
+		ID:         "init-database",
+	}
+	return result, err
+}
+
+func (initializer *BasicInitializer) registerObserverLocal(ctx context.Context, observer observer.Observer) error {
+	if initializer.observers == nil {
+		initializer.observers = &subject.SimpleSubject{}
+	}
+	return initializer.observers.RegisterObserver(ctx, observer)
+}
+
+func (initializer *BasicInitializer) registerObserverSenzingConfig(ctx context.Context, observer observer.Observer) error {
+	initializer.getSenzingConfig().SetObserverOrigin(ctx, initializer.ObserverOrigin)
+	return initializer.getSenzingConfig().RegisterObserver(ctx, observer)
+}
+
+func (initializer *BasicInitializer) registerObserverSenzingSchema(ctx context.Context, observer observer.Observer) error {
+	initializer.getSenzingSchema().SetObserverOrigin(ctx, initializer.ObserverOrigin)
+	return initializer.getSenzingSchema().RegisterObserver(ctx, observer)
+}
+
+// --- Dependent services -----------------------------------------------------
+
+func (initializer *BasicInitializer) getSenzingConfig() senzingconfig.SenzingConfig {
+	if initializer.senzingConfigSingleton == nil {
+		initializer.senzingConfigSingleton = &senzingconfig.BasicSenzingConfig{
+			DataSources:           initializer.DataSources,
+			SenzingSettingsFile:   initializer.SenzingSettingsFile,
+			SenzingSettings:       initializer.SenzingSettings,
+			SenzingInstanceName:   initializer.SenzingInstanceName,
+			SenzingVerboseLogging: initializer.SenzingVerboseLogging,
+		}
+	}
+	return initializer.senzingConfigSingleton
+}
+
+func (initializer *BasicInitializer) getSenzingSchema() senzingschema.SenzingSchema {
+	if initializer.senzingSchemaSingleton == nil {
+		initializer.senzingSchemaSingleton = &senzingschema.BasicSenzingSchema{
+			SenzingSettings: initializer.SenzingSettings,
+			SQLFile:         initializer.SQLFile,
+		}
+	}
+	return initializer.senzingSchemaSingleton
+}
+
+// --- Specific database processing -------------------------------------------
+
+func (initializer *BasicInitializer) initializeSpecificDatabaseSqlite(ctx context.Context, parsedURL *url.URL) error {
+	var err error
+
+	// Prolog.
+
+	debugMessageNumber := 0
+	traceExitMessageNumber := 109
+	if initializer.getLogger().IsDebug() {
+
+		// If DEBUG, log error exit.
+
+		defer func() {
+			if debugMessageNumber > 0 {
+				initializer.debug(debugMessageNumber, err)
+			}
+		}()
+
+		// If TRACE, Log on entry/exit.
+
+		if initializer.getLogger().IsTrace() {
+			entryTime := time.Now()
+			initializer.traceEntry(100, parsedURL)
+			defer func() { initializer.traceExit(traceExitMessageNumber, parsedURL, err, time.Since(entryTime)) }()
+		}
+	}
+
+	// If file exists, no more to do.
+
+	filename := parsedURL.Path
+	filename = filepath.Clean(filename) // See https://securego.io/docs/rules/g304.html
+	_, err = os.Stat(filename)
+	if err == nil {
+		traceExitMessageNumber, debugMessageNumber = 101, 0 // debugMessageNumber=0 because it's not an error.
+		return err                                          // Nothing more to do.
+	}
+
+	// File doesn't exist, create it.
+
+	path := filepath.Dir(filename)
+	err = os.MkdirAll(path, os.ModePerm)
+	if err != nil {
+		traceExitMessageNumber, debugMessageNumber = 102, 1102
+		return err
+	}
+	_, err = os.Create(filename)
+	if err != nil {
+		traceExitMessageNumber, debugMessageNumber = 103, 1103
+		return err
+	}
+	initializer.log(2001, filename)
+
+	// Notify observers.
+
+	if initializer.observers != nil {
+		go func() {
+			details := map[string]string{
+				"sqliteFile": filename,
+			}
+			notifier.Notify(ctx, initializer.observers, initializer.ObserverOrigin, ComponentID, 8010, err, details)
+		}()
 	}
 	return err
 }
