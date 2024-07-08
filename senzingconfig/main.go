@@ -23,7 +23,7 @@ type SenzingConfig interface {
 // ----------------------------------------------------------------------------
 
 // Identfier of the  package found messages having the format "senzing-6502xxxx".
-const ComponentId = 6502
+const ComponentID = 6502
 
 // Log message prefix.
 const Prefix = "init-database.senzingconfig."
@@ -33,7 +33,7 @@ const Prefix = "init-database.senzingconfig."
 // ----------------------------------------------------------------------------
 
 // Message templates for sqlfiler implementation.
-var IdMessages = map[int]string{
+var IDMessages = map[int]string{
 	10:   "Enter " + Prefix + "InitializeSenzing().",
 	11:   "Exit  " + Prefix + "InitializeSenzing(); json.Marshal failed; returned (%v).",
 	12:   "Exit  " + Prefix + "InitializeSenzing(); senzingConfig.getDependentServices failed; returned (%v).",
@@ -126,4 +126,4 @@ var IdMessages = map[int]string{
 }
 
 // Status strings for specific messages.
-var IdStatuses = map[int]string{}
+var IDStatuses = map[int]string{}

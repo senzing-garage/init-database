@@ -23,7 +23,7 @@ type SenzingSchema interface {
 // ----------------------------------------------------------------------------
 
 // Identfier of the  package found messages having the format "senzing-6503xxxx".
-const ComponentId = 6503
+const ComponentID = 6503
 
 // Log message prefix.
 const Prefix = "init-database.senzingconfig."
@@ -33,7 +33,7 @@ const Prefix = "init-database.senzingconfig."
 // ----------------------------------------------------------------------------
 
 // Message templates for g2config implementations.
-var IdMessages = map[int]string{
+var IDMessages = map[int]string{
 	10:   "Enter " + Prefix + "InitializeSenzing().",
 	11:   "Exit  " + Prefix + "InitializeSenzing(); json.Marshal failed; returned (%v).",
 	12:   "Exit  " + Prefix + "InitializeSenzing(); settingsparser.New failed; returned (%v).",
@@ -90,4 +90,4 @@ var IdMessages = map[int]string{
 }
 
 // Status strings for specific messages.
-var IdStatuses = map[int]string{}
+var IDStatuses = map[int]string{}

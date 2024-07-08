@@ -22,7 +22,7 @@ type Initializer interface {
 // ----------------------------------------------------------------------------
 
 // Identfier of the  package found messages having the format "senzing-6501xxxx".
-const ComponentId = 6501
+const ComponentID = 6501
 
 // Log message prefix.
 const Prefix = "init-database.initializer."
@@ -35,7 +35,7 @@ const DefaultGrpcObserverPort = "8260"
 // ----------------------------------------------------------------------------
 
 // Message templates for g2config implementations.
-var IdMessages = map[int]string{
+var IDMessages = map[int]string{
 	10:   "Enter " + Prefix + "Initialize().",
 	11:   "Exit  " + Prefix + "Initialize(); json.Marshal failed; returned (%v).",
 	12:   "Exit  " + Prefix + "Initialize(); initializerImpl.InitializeSpecificDatabase failed; returned (%v).",
@@ -132,4 +132,4 @@ var IdMessages = map[int]string{
 }
 
 // Status strings for specific messages.
-var IdStatuses = map[int]string{}
+var IDStatuses = map[int]string{}

@@ -15,15 +15,15 @@ import (
 // Examples for godoc documentation
 // ----------------------------------------------------------------------------
 
-func ExampleInitializerImpl_Initialize() {
+func ExampleBasicInitializer_Initialize() {
 	// For more information, visit https://github.com/senzing-garage/init-database/blob/main/initializer/initializer_examples_test.go
 	ctx := context.TODO()
-	senzingEngineConfigurationJson, err := settings.BuildSimpleSettingsUsingEnvVars()
+	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
 		fmt.Print(err)
 	}
-	anInitializer := &InitializerImpl{
-		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
+	anInitializer := &BasicInitializer{
+		SenzingSettings: senzingSettings,
 	}
 	err = anInitializer.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
@@ -36,19 +36,19 @@ func ExampleInitializerImpl_Initialize() {
 	// Output:
 }
 
-func ExampleInitializerImpl_RegisterObserver() {
+func ExampleBasicInitializer_RegisterObserver() {
 	// For more information, visit https://github.com/senzing-garage/init-database/blob/main/initializer/initializer_examples_test.go
 	ctx := context.TODO()
 	anObserver := &observer.NullObserver{
 		ID:       "Observer 1",
 		IsSilent: true,
 	}
-	senzingEngineConfigurationJson, err := settings.BuildSimpleSettingsUsingEnvVars()
+	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
 		fmt.Print(err)
 	}
-	anInitializer := &InitializerImpl{
-		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
+	anInitializer := &BasicInitializer{
+		SenzingSettings: senzingSettings,
 	}
 	err = anInitializer.RegisterObserver(ctx, anObserver)
 	if err != nil {
@@ -57,15 +57,15 @@ func ExampleInitializerImpl_RegisterObserver() {
 	// Output:
 }
 
-func ExampleInitializerImpl_SetLogLevel() {
+func ExampleBasicInitializer_SetLogLevel() {
 	// For more information, visit https://github.com/senzing-garage/init-database/blob/main/initializer/initializer_examples_test.go
 	ctx := context.TODO()
-	senzingEngineConfigurationJson, err := settings.BuildSimpleSettingsUsingEnvVars()
+	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
 		fmt.Print(err)
 	}
-	anInitializer := &InitializerImpl{
-		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
+	anInitializer := &BasicInitializer{
+		SenzingSettings: senzingSettings,
 	}
 	err = anInitializer.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
@@ -74,32 +74,32 @@ func ExampleInitializerImpl_SetLogLevel() {
 	// Output:
 }
 
-func ExampleInitializerImpl_SetObserverOrigin() {
+func ExampleBasicInitializer_SetObserverOrigin() {
 	ctx := context.TODO()
-	senzingEngineConfigurationJson, err := settings.BuildSimpleSettingsUsingEnvVars()
+	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
 		fmt.Print(err)
 	}
-	anInitializer := &InitializerImpl{
-		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
+	anInitializer := &BasicInitializer{
+		SenzingSettings: senzingSettings,
 	}
 	anInitializer.SetObserverOrigin(ctx, "TestObserver")
 	// Output:
 }
 
-func ExampleInitializerImpl_UnregisterObserver() {
+func ExampleBasicInitializer_UnregisterObserver() {
 	// For more information, visit https://github.com/senzing-garage/init-database/blob/main/initializer/initializer_examples_test.go
 	ctx := context.TODO()
 	anObserver := &observer.NullObserver{
 		ID:       "Observer 1",
 		IsSilent: true,
 	}
-	senzingEngineConfigurationJson, err := settings.BuildSimpleSettingsUsingEnvVars()
+	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
 		fmt.Print(err)
 	}
-	anInitializer := &InitializerImpl{
-		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
+	anInitializer := &BasicInitializer{
+		SenzingSettings: senzingSettings,
 	}
 	err = anInitializer.RegisterObserver(ctx, anObserver)
 	if err != nil {
