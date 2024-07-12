@@ -55,9 +55,9 @@ var ContextVariablesForMultiPlatform = []option.ContextVariable{
 	option.Configuration,
 	option.DatabaseURL,
 	option.Datasources,
-	option.EngineConfigurationJSON,
+	option.EngineSettings,
 	option.EngineLogLevel,
-	option.EngineModuleName,
+	option.EngineInstanceName,
 	option.LicenseStringBase64,
 	option.LogLevel,
 	option.ObserverOrigin,
@@ -74,7 +74,7 @@ var ContextVariables = append(ContextVariablesForMultiPlatform, ContextVariables
 func buildSenzingEngineConfigurationJSON(ctx context.Context, aViper *viper.Viper) (string, error) {
 	var err error
 	var result string
-	result = aViper.GetString(option.EngineConfigurationJSON.Arg)
+	result = aViper.GetString(option.EngineSettings.Arg)
 	if len(result) == 0 {
 		options := map[string]string{
 			"configPath":          aViper.GetString(option.ConfigPath.Arg),
@@ -147,7 +147,7 @@ func getParsedEngineConfigurationJSON() (settingsparser.SettingsParser, error) {
 
 	// Early exit.  Environment variable is set.
 
-	senzingSettings, isSet := os.LookupEnv(option.EngineConfigurationJSON.Arg)
+	senzingSettings, isSet := os.LookupEnv(option.EngineSettings.Arg)
 	if isSet {
 		return settingsparser.New(senzingSettings)
 	}
@@ -273,7 +273,7 @@ func RunE(_ *cobra.Command, _ []string) error {
 		DataSources:           viper.GetStringSlice(option.Datasources.Arg),
 		ObserverOrigin:        viper.GetString(option.ObserverOrigin.Arg),
 		ObserverURL:           viper.GetString(option.ObserverURL.Arg),
-		SenzingInstanceName:   viper.GetString(option.EngineModuleName.Arg),
+		SenzingInstanceName:   viper.GetString(option.EngineInstanceName.Arg),
 		SenzingLogLevel:       viper.GetString(option.LogLevel.Arg),
 		SenzingSettings:       senzingSettings,
 		SenzingSettingsFile:   viper.GetString(OptionEngineConfigurationFile.Arg),
