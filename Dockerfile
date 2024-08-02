@@ -2,7 +2,7 @@
 # Stages
 # -----------------------------------------------------------------------------
 
-ARG IMAGE_GO_BUILDER=golang:1.22.1-bullseye@sha256:dcff0d950cb4648fec14ee51baa76bf27db3bb1e70a49f75421a8828db7b9910
+ARG IMAGE_BUILDER=golang:1.22.3-bullseye
 ARG IMAGE_FINAL=senzing/senzingapi-runtime-staging:latest
 
 # -----------------------------------------------------------------------------
@@ -12,14 +12,18 @@ ARG IMAGE_FINAL=senzing/senzingapi-runtime-staging:latest
 FROM ${IMAGE_FINAL} as senzingapi_runtime
 
 # -----------------------------------------------------------------------------
-# Stage: go_builder
+# Stage: builder
 # -----------------------------------------------------------------------------
 
-FROM ${IMAGE_GO_BUILDER} as go_builder
-ENV REFRESHED_AT=2024-03-18
-LABEL Name="senzing/init-database-builder" \
+FROM ${IMAGE_BUILDER} as builder
+ENV REFRESHED_AT=2024-07-01
+LABEL Name="senzing/go-builder" \
       Maintainer="support@senzing.com" \
-      Version="0.5.2"
+      Version="0.1.0"
+
+# Run as "root" for system installation.
+
+USER root
 
 # Copy local files from the Git repository.
 
@@ -50,20 +54,24 @@ RUN mkdir -p /output \
 # -----------------------------------------------------------------------------
 
 FROM ${IMAGE_FINAL} as final
-ENV REFRESHED_AT=2024-03-18
+ENV REFRESHED_AT=2024-07-01
 LABEL Name="senzing/init-database" \
       Maintainer="support@senzing.com" \
       Version="0.5.2"
+HEALTHCHECK CMD ["/app/healthcheck.sh"]
+USER root
 
-# Copy local files from the Git repository.
+# Install packages via apt-get.
+
+# Copy files from repository.
 
 COPY ./rootfs /
 
 # Copy files from prior stage.
 
-COPY --from=go_builder "/output/linux/init-database" "/app/init-database"
+COPY --from=builder "/output/linux/init-database" "/app/init-database"
 
-HEALTHCHECK CMD ["/healthcheck.sh"]
+# Run as non-root container
 
 USER 1001
 

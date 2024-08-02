@@ -1,32 +1,30 @@
-name: go test darwin
+name: Go test windows
 
 on: [pull_request, workflow_dispatch]
 
 env:
-  DYLD_LIBRARY_PATH: /opt/senzing/g2/lib:/opt/senzing/g2/lib/macos
-  LD_LIBRARY_PATH: /opt/senzing/g2/lib:/opt/senzing/g2/lib/macos
-  SENZING_TOOLS_DATABASE_URL: "sqlite3://na:na@/tmp/sqlite/G2C.db"
+  SENZING_TOOLS_DATABASE_URL: "sqlite3://na:na@nowhere/C:\\Temp\\sqlite\\G2C.db"
 
 permissions:
   contents: read
 
 jobs:
-  go-test-darwin:
-    name: "go test with Senzing: ${{ matrix.senzingapi-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }}"
+  go-test-windows:
+    name: "Go test with Senzing: ${{ matrix.senzingapi-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }}"
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         go: ["1.21"]
-        os: [macos-13]
+        os: [windows-latest]
         senzingapi-version: [staging-v4]
 
     steps:
-      - name: checkout repository
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: setup go
+      - name: Setup go
         uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go }}
@@ -36,31 +34,41 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: install Senzing API
+      - name: Install Senzing API
         uses: senzing-factory/github-action-install-senzing-api@v3
         with:
           senzingapi-version: ${{ matrix.senzingapi-version }}
 
-      - name: run go test
-        run: go test -exec /Users/runner/work/init-database/init-database/bin/macos_exec_dyld.sh  -json -v -p 1 -coverprofile=./cover.out -covermode=atomic -coverpkg=./... ./...  2>&1 | tee /tmp/gotest.log | gotestfmt
+      - name: Add to "Path" environment variable
+        run: echo "C:\Program Files\Senzing\g2\lib" | Out-File -FilePath "$env:GITHUB_PATH" -Encoding utf8 -Append
+
+      - name: Create empty database file
+        run: |
+          mkdir "C:\Temp\sqlite"
+          New-Item -Path "C:\Temp\sqlite\G2C.db" -ItemType File
+
+      - name: Run go test
+        run: |
+          go test -json -v -p 1 -coverprofile=cover -covermode=atomic -coverpkg=./... ./... 2>&1 | tee "C:\Temp\gotest.log" | gotestfmt
+          cp cover cover.out
 
       - name: Store coverage file
         uses: actions/upload-artifact@v4
         with:
           name: cover.out
-          path: ./cover.out
+          path: cover.out
 
       - name: Upload test log
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: test-log
-          path: /tmp/gotest.log
+          path: "C:\\Temp\\gotest.log"
           if-no-files-found: error
 
   coverage:
-    name: coverage
-    needs: go-test-darwin
+    name: Coverage
+    needs: go-test-windows
     uses: senzing-factory/build-resources/.github/workflows/go-coverage.yaml@v2
     with:
       coverage-config: ./.github/coverage/testcoverage.yaml
