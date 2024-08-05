@@ -392,6 +392,16 @@
                 "INTERNAL": "Yes"
             },
             {
+                "ATTR_ID": 1350,
+                "ATTR_CODE": "NATIONAL_ID_TYPE",
+                "ATTR_CLASS": "IDENTIFIER",
+                "FTYPE_CODE": "NATIONAL_ID",
+                "FELEM_CODE": "ID_TYPE",
+                "FELEM_REQ": "Desired",
+                "DEFAULT_VALUE": null,
+                "INTERNAL": "No"
+            },
+            {
                 "ATTR_ID": 1351,
                 "ATTR_CODE": "NATIONAL_ID_NUMBER",
                 "ATTR_CLASS": "IDENTIFIER",
@@ -922,16 +932,6 @@
                 "INTERNAL": "No"
             },
             {
-                "ATTR_ID": 1626,
-                "ATTR_CODE": "ADDR_PLACEKEY",
-                "ATTR_CLASS": "ADDRESS",
-                "FTYPE_CODE": "ADDRESS",
-                "FELEM_CODE": "PLACEKEY",
-                "FELEM_REQ": "No",
-                "DEFAULT_VALUE": null,
-                "INTERNAL": "No"
-            },
-            {
                 "ATTR_ID": 1701,
                 "ATTR_CODE": "PHONE_AREACODE",
                 "ATTR_CLASS": "PHONE",
@@ -1450,6 +1450,16 @@
                 "FELEM_REQ": "No",
                 "DEFAULT_VALUE": null,
                 "INTERNAL": "No"
+            },
+            {
+                "ATTR_ID": 2814,
+                "ATTR_CODE": "PLACEKEY",
+                "ATTR_CLASS": "PLACEKEY",
+                "FTYPE_CODE": "PLACEKEY",
+                "FELEM_CODE": "PLACEKEY",
+                "FELEM_REQ": "No",
+                "DEFAULT_VALUE": null,
+                "INTERNAL": "No"
             }
         ],
         "CFG_CFBOM": [
@@ -1796,6 +1806,12 @@
                 "EXEC_ORDER": 2
             },
             {
+                "CFCALL_ID": 12,
+                "FTYPE_ID": 12,
+                "FELEM_ID": 38,
+                "EXEC_ORDER": 3
+            },
+            {
                 "CFCALL_ID": 13,
                 "FTYPE_ID": 13,
                 "FELEM_ID": 56,
@@ -2124,6 +2140,12 @@
                 "FTYPE_ID": 87,
                 "FELEM_ID": 37,
                 "EXEC_ORDER": 1
+            },
+            {
+                "CFCALL_ID": 66,
+                "FTYPE_ID": 93,
+                "FELEM_ID": 124,
+                "EXEC_ORDER": 1
             }
         ],
         "CFG_CFCALL": [
@@ -2361,6 +2383,11 @@
                 "CFCALL_ID": 65,
                 "FTYPE_ID": 87,
                 "CFUNC_ID": 3
+            },
+            {
+                "CFCALL_ID": 66,
+                "FTYPE_ID": 93,
+                "CFUNC_ID": 14
             }
         ],
         "CFG_CFRTN": [
@@ -2557,6 +2584,18 @@
                 "UN_LIKELY_SCORE": 60
             },
             {
+                "CFRTN_ID": 19,
+                "CFUNC_ID": 14,
+                "FTYPE_ID": 0,
+                "CFUNC_RTNVAL": "FULL_SCORE",
+                "EXEC_ORDER": 1,
+                "SAME_SCORE": 100,
+                "CLOSE_SCORE": 90,
+                "LIKELY_SCORE": 80,
+                "PLAUSIBLE_SCORE": 70,
+                "UN_LIKELY_SCORE": 60
+            },
+            {
                 "CFRTN_ID": 24,
                 "CFUNC_ID": 9,
                 "FTYPE_ID": 12,
@@ -2600,8 +2639,7 @@
                 "CFUNC_DESC": "String comparison",
                 "CONNECT_STR": "g2StringComp",
                 "ANON_SUPPORT": "Yes",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "CFUNC_ID": 2,
@@ -2609,8 +2647,7 @@
                 "CFUNC_DESC": "GNR name comparison",
                 "CONNECT_STR": "g2GNRNameComp",
                 "ANON_SUPPORT": "Yes",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "CFUNC_ID": 3,
@@ -2618,8 +2655,7 @@
                 "CFUNC_DESC": "Exact match comp",
                 "CONNECT_STR": "g2ExactMatchComp",
                 "ANON_SUPPORT": "Yes",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "CFUNC_ID": 4,
@@ -2627,8 +2663,7 @@
                 "CFUNC_DESC": "Address comparison",
                 "CONNECT_STR": "g2AddressComp",
                 "ANON_SUPPORT": "Yes",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "CFUNC_ID": 5,
@@ -2636,8 +2671,7 @@
                 "CFUNC_DESC": "DOB comparison",
                 "CONNECT_STR": "g2DateComp",
                 "ANON_SUPPORT": "Yes",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "CFUNC_ID": 7,
@@ -2645,8 +2679,7 @@
                 "CFUNC_DESC": "Phone comparison",
                 "CONNECT_STR": "g2PhoneComp",
                 "ANON_SUPPORT": "Yes",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "CFUNC_ID": 8,
@@ -2654,8 +2687,7 @@
                 "CFUNC_DESC": "SSN comp",
                 "CONNECT_STR": "g2SSNComp",
                 "ANON_SUPPORT": "Yes",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "CFUNC_ID": 9,
@@ -2663,8 +2695,7 @@
                 "CFUNC_DESC": "ID Comparison",
                 "CONNECT_STR": "g2DLComp",
                 "ANON_SUPPORT": "Yes",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "CFUNC_ID": 10,
@@ -2672,8 +2703,7 @@
                 "CFUNC_DESC": "GEOLOC Comparison",
                 "CONNECT_STR": "g2GEOLOCComp",
                 "ANON_SUPPORT": "Yes",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "CFUNC_ID": 11,
@@ -2681,8 +2711,7 @@
                 "CFUNC_DESC": "Exact domain match comp",
                 "CONNECT_STR": "g2ExactDomainMatchComp",
                 "ANON_SUPPORT": "Yes",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "CFUNC_ID": 12,
@@ -2690,8 +2719,7 @@
                 "CFUNC_DESC": "Group Association comparison",
                 "CONNECT_STR": "g2GroupAssociationComp",
                 "ANON_SUPPORT": "Yes",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "CFUNC_ID": 13,
@@ -2699,8 +2727,15 @@
                 "CFUNC_DESC": "Email comp",
                 "CONNECT_STR": "g2EmailComp",
                 "ANON_SUPPORT": "Yes",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
+            },
+            {
+                "CFUNC_ID": 14,
+                "CFUNC_CODE": "PLACEKEY_COMP",
+                "CFUNC_DESC": "Placekey comp",
+                "CONNECT_STR": "g2ExactMatchComp",
+                "ANON_SUPPORT": "Yes",
+                "LANGUAGE": null
             }
         ],
         "CFG_DFBOM": [
@@ -3360,8 +3395,7 @@
                 "DFUNC_DESC": "Strict subset of felems",
                 "CONNECT_STR": "g2StrictSubsetFelems",
                 "ANON_SUPPORT": "Yes",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "DFUNC_ID": 2,
@@ -3369,8 +3403,7 @@
                 "DFUNC_DESC": "Strict subset of tokens",
                 "CONNECT_STR": "g2StrictSubsetTokens",
                 "ANON_SUPPORT": "Yes",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "DFUNC_ID": 3,
@@ -3378,8 +3411,7 @@
                 "DFUNC_DESC": "Strict subset of normalized felems",
                 "CONNECT_STR": "g2StrictSubsetNormalizedFelems",
                 "ANON_SUPPORT": "Yes",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "DFUNC_ID": 4,
@@ -3387,8 +3419,7 @@
                 "DFUNC_DESC": "Partial dates",
                 "CONNECT_STR": "g2PartialDates",
                 "ANON_SUPPORT": "Yes",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "DFUNC_ID": 5,
@@ -3396,8 +3427,7 @@
                 "DFUNC_DESC": "Partial names",
                 "CONNECT_STR": "g2PartialNames",
                 "ANON_SUPPORT": "Yes",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "DFUNC_ID": 6,
@@ -3405,8 +3435,7 @@
                 "DFUNC_DESC": "Partial addresses",
                 "CONNECT_STR": "g2PartialAddresses",
                 "ANON_SUPPORT": "Yes",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             }
         ],
         "CFG_DSRC": [
@@ -4092,66 +4121,52 @@
                 "EFUNC_CODE": "EXPRESS_BOM",
                 "EFUNC_DESC": "General BOM Hasher",
                 "CONNECT_STR": "g2GenericHasher",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "EFUNC_ID": 2,
                 "EFUNC_CODE": "NAME_HASHER",
                 "EFUNC_DESC": "Name expression",
                 "CONNECT_STR": "g2NameHasher",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "EFUNC_ID": 3,
                 "EFUNC_CODE": "ADDR_HASHER",
                 "EFUNC_DESC": "Address expression",
                 "CONNECT_STR": "g2AddressHasher",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "EFUNC_ID": 4,
                 "EFUNC_CODE": "PHONE_HASHER",
                 "EFUNC_DESC": "Phone Hasher",
                 "CONNECT_STR": "g2PhoneHasher",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "EFUNC_ID": 5,
                 "EFUNC_CODE": "EXPRESS_ID",
                 "EFUNC_DESC": "General ID Hasher",
                 "CONNECT_STR": "g2IDHasher",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "EFUNC_ID": 6,
                 "EFUNC_CODE": "STB_HASHER",
                 "EFUNC_DESC": "General STB Hasher",
                 "CONNECT_STR": "g2STBHasher",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "EFUNC_ID": 7,
                 "EFUNC_CODE": "FEAT_BUILDER",
                 "EFUNC_DESC": "FeatureBuilder",
                 "CONNECT_STR": "g2FeatBuilder",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             }
         ],
         "CFG_ERFRAG": [
-            {
-                "ERFRAG_ID": 10,
-                "ERFRAG_CODE": "TRUSTED_ID",
-                "ERFRAG_DESC": "TRUSTED_ID",
-                "ERFRAG_SOURCE": "./SCORES/TRUSTED_ID[./FULL_SCORE=100]",
-                "ERFRAG_DEPENDS": null
-            },
             {
                 "ERFRAG_ID": 11,
                 "ERFRAG_CODE": "SAME_NAME",
@@ -6863,6 +6878,14 @@
                 "DISPLAY_LEVEL": 1,
                 "DISPLAY_DELIM": null,
                 "DERIVED": "No"
+            },
+            {
+                "FTYPE_ID": 93,
+                "FELEM_ID": 124,
+                "EXEC_ORDER": 1,
+                "DISPLAY_LEVEL": 1,
+                "DISPLAY_DELIM": null,
+                "DERIVED": "No"
             }
         ],
         "CFG_FBOVR": [
@@ -8607,7 +8630,7 @@
                 "FTYPE_STAB": "No",
                 "PERSIST_HISTORY": "No",
                 "USED_FOR_CAND": "No",
-                "DERIVED": "Yes",
+                "DERIVED": "No",
                 "RTYPE_ID": 0,
                 "ANONYMIZE": "No",
                 "VERSION": 1,
@@ -8628,6 +8651,22 @@
                 "ANONYMIZE": "No",
                 "VERSION": 1,
                 "SHOW_IN_MATCH_KEY": "No"
+            },
+            {
+                "FTYPE_ID": 93,
+                "FTYPE_CODE": "PLACEKEY",
+                "FTYPE_DESC": "Placekey",
+                "FCLASS_ID": 10,
+                "FTYPE_FREQ": "F1",
+                "FTYPE_EXCL": "Yes",
+                "FTYPE_STAB": "No",
+                "PERSIST_HISTORY": "Yes",
+                "USED_FOR_CAND": "Yes",
+                "DERIVED": "Yes",
+                "RTYPE_ID": 0,
+                "ANONYMIZE": "No",
+                "VERSION": 1,
+                "SHOW_IN_MATCH_KEY": "Yes"
             }
         ],
         "CFG_GENERIC_THRESHOLD": [
@@ -9066,88 +9105,77 @@
                 "SFUNC_CODE": "PARSE_NAME",
                 "SFUNC_DESC": "Parse name",
                 "CONNECT_STR": "g2ParseName",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "SFUNC_ID": 2,
                 "SFUNC_CODE": "PARSE_DOB",
                 "SFUNC_DESC": "Parse DOB",
                 "CONNECT_STR": "g2ParseDOB",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "SFUNC_ID": 4,
                 "SFUNC_CODE": "FORMAT_SSN",
                 "SFUNC_DESC": "Parse SSN",
                 "CONNECT_STR": "g2FormatSSN",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "SFUNC_ID": 6,
                 "SFUNC_CODE": "PARSE_ID",
                 "SFUNC_DESC": "Parse ID numbers",
                 "CONNECT_STR": "g2ParseID",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "SFUNC_ID": 7,
                 "SFUNC_CODE": "PARSE_ADDR",
                 "SFUNC_DESC": "Parse address",
                 "CONNECT_STR": "g2ConfigParseAddr",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "SFUNC_ID": 8,
                 "SFUNC_CODE": "PARSE_PHONE",
                 "SFUNC_DESC": "Parse phone",
                 "CONNECT_STR": "g2ParsePhone",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "SFUNC_ID": 9,
                 "SFUNC_CODE": "STANDARDIZE_STB",
                 "SFUNC_DESC": "Standardize STB",
                 "CONNECT_STR": "SpaceTimeBoxStandardizer",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "SFUNC_ID": 10,
                 "SFUNC_CODE": "STANDARDIZE_GEOLOC",
                 "SFUNC_DESC": "Standardize Geolocation",
                 "CONNECT_STR": "g2ParseGEOLOC",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "SFUNC_ID": 11,
                 "SFUNC_CODE": "STANDARDIZE_COUNTRY",
                 "SFUNC_DESC": "Standardize Country",
                 "CONNECT_STR": "g2StdCountry",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "SFUNC_ID": 12,
                 "SFUNC_CODE": "TOKENIZE_NAME",
                 "SFUNC_DESC": "Tokenize name",
                 "CONNECT_STR": "g2StdTokenizeName",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             },
             {
                 "SFUNC_ID": 13,
                 "SFUNC_CODE": "PARSE_EMAIL",
                 "SFUNC_DESC": "Parse email",
                 "CONNECT_STR": "g2ParseEmail",
-                "LANGUAGE": null,
-                "JAVA_CLASS_NAME": null
+                "LANGUAGE": null
             }
         ],
         "SYS_OOM": [
@@ -9162,9 +9190,9 @@
         ],
         "CONFIG_BASE_VERSION": {
             "VERSION": "4.0.0",
-            "BUILD_VERSION": "4.0.0.24124",
-            "BUILD_DATE": "2024-05-03",
-            "BUILD_NUMBER": "24124",
+            "BUILD_VERSION": "4.0.0.24211",
+            "BUILD_DATE": "2024-07-29",
+            "BUILD_NUMBER": "24211",
             "COMPATIBILITY_VERSION": {
                 "CONFIG_VERSION": "11"
             }

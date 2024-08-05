@@ -67,6 +67,67 @@ var ContextVariablesForMultiPlatform = []option.ContextVariable{
 var ContextVariables = append(ContextVariablesForMultiPlatform, ContextVariablesForOsArch...)
 
 // ----------------------------------------------------------------------------
+// Command
+// ----------------------------------------------------------------------------
+
+// RootCmd represents the command.
+var RootCmd = &cobra.Command{
+	Use:     Use,
+	Short:   Short,
+	Long:    Long,
+	PreRun:  PreRun,
+	RunE:    RunE,
+	Version: Version(),
+}
+
+// ----------------------------------------------------------------------------
+// Public functions
+// ----------------------------------------------------------------------------
+
+// Execute adds all child commands to the root command and sets flags appropriately.
+// This is called by main.main(). It only needs to happen once to the RootCmd.
+func Execute() {
+	err := RootCmd.Execute()
+	if err != nil {
+		os.Exit(1)
+	}
+}
+
+// Used in construction of cobra.Command
+func PreRun(cobraCommand *cobra.Command, args []string) {
+	cmdhelper.PreRun(cobraCommand, args, Use, append(ContextVariables, OptionSQLFile, OptionEngineConfigurationFile))
+}
+
+// Used in construction of cobra.Command
+func RunE(_ *cobra.Command, _ []string) error {
+	var err error
+	ctx := context.Background()
+
+	senzingSettings, err := buildSenzingEngineConfigurationJSON(ctx, viper.GetViper())
+	if err != nil {
+		return err
+	}
+
+	initializer := &initializer.BasicInitializer{
+		DataSources:           viper.GetStringSlice(option.Datasources.Arg),
+		ObserverOrigin:        viper.GetString(option.ObserverOrigin.Arg),
+		ObserverURL:           viper.GetString(option.ObserverURL.Arg),
+		SenzingInstanceName:   viper.GetString(option.EngineInstanceName.Arg),
+		SenzingLogLevel:       viper.GetString(option.LogLevel.Arg),
+		SenzingSettings:       senzingSettings,
+		SenzingSettingsFile:   viper.GetString(OptionEngineConfigurationFile.Arg),
+		SenzingVerboseLogging: viper.GetInt64(option.EngineLogLevel.Arg),
+		SQLFile:               viper.GetString(OptionSQLFile.Arg),
+	}
+	return initializer.Initialize(ctx)
+}
+
+// Used in construction of cobra.Command
+func Version() string {
+	return cmdhelper.Version(githubVersion, githubIteration)
+}
+
+// ----------------------------------------------------------------------------
 // Private functions
 // ----------------------------------------------------------------------------
 
@@ -239,65 +300,4 @@ func getSQLFileDefault() string {
 // Since init() is always invoked, define command line parameters.
 func init() {
 	cmdhelper.Init(RootCmd, append(ContextVariables, OptionSQLFile, OptionEngineConfigurationFile))
-}
-
-// ----------------------------------------------------------------------------
-// Public functions
-// ----------------------------------------------------------------------------
-
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the RootCmd.
-func Execute() {
-	err := RootCmd.Execute()
-	if err != nil {
-		os.Exit(1)
-	}
-}
-
-// Used in construction of cobra.Command
-func PreRun(cobraCommand *cobra.Command, args []string) {
-	cmdhelper.PreRun(cobraCommand, args, Use, append(ContextVariables, OptionSQLFile, OptionEngineConfigurationFile))
-}
-
-// Used in construction of cobra.Command
-func RunE(_ *cobra.Command, _ []string) error {
-	var err error
-	ctx := context.Background()
-
-	senzingSettings, err := buildSenzingEngineConfigurationJSON(ctx, viper.GetViper())
-	if err != nil {
-		return err
-	}
-
-	initializer := &initializer.BasicInitializer{
-		DataSources:           viper.GetStringSlice(option.Datasources.Arg),
-		ObserverOrigin:        viper.GetString(option.ObserverOrigin.Arg),
-		ObserverURL:           viper.GetString(option.ObserverURL.Arg),
-		SenzingInstanceName:   viper.GetString(option.EngineInstanceName.Arg),
-		SenzingLogLevel:       viper.GetString(option.LogLevel.Arg),
-		SenzingSettings:       senzingSettings,
-		SenzingSettingsFile:   viper.GetString(OptionEngineConfigurationFile.Arg),
-		SenzingVerboseLogging: viper.GetInt64(option.EngineLogLevel.Arg),
-		SQLFile:               viper.GetString(OptionSQLFile.Arg),
-	}
-	return initializer.Initialize(ctx)
-}
-
-// Used in construction of cobra.Command
-func Version() string {
-	return cmdhelper.Version(githubVersion, githubIteration)
-}
-
-// ----------------------------------------------------------------------------
-// Command
-// ----------------------------------------------------------------------------
-
-// RootCmd represents the command.
-var RootCmd = &cobra.Command{
-	Use:     Use,
-	Short:   Short,
-	Long:    Long,
-	PreRun:  PreRun,
-	RunE:    RunE,
-	Version: Version(),
 }

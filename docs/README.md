@@ -1,13 +1,8 @@
-# init-database
+# template-go
 
-## Commands
+Placeholder for [GitHub pages].
 
-1. [senzing-tools init-database](https://hub.senzing.com/senzing-tools/senzing-tools_init-database)
+See [GitHub page].
 
-## Examples
-
-1. [examples](examples.md)
-
-## Errors
-
-1. [errors](errors.md)
+[GitHub page]: https://garage.senzing.com/init-database
+[GitHub pages]: https://pages.github.com/
