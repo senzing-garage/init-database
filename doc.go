@@ -31,22 +31,22 @@ Examples of use can be seen in the main_test.go files.
 
 	package main
 	import (
-	    fmt
+		fmt
 
-	    "github.com/senzing-garage/init-database/examplepackage"
-	    "github.com/senzing-garage/init-database/anotherpackage"
+		"github.com/senzing-garage/init-database/examplepackage"
+		"github.com/senzing-garage/init-database/anotherpackage"
 	)
 
 	func main() {
-	    ctx := context.TODO()
-	    testObject := &ExamplePackageImpl{
-	        Something: "I'm here",
-	    }
-	    err := testObject.SaySomething(ctx)
-	    if err != nil {
-	        fmt.Println("whoops")
-	    }
-	    anotherpackage.DoSomething(ctx)...
+		ctx := context.TODO()
+		testObject := &ExamplePackageImpl{
+			Something: "I'm here",
+		}
+		err := testObject.SaySomething(ctx)
+		if err != nil {
+			fmt.Println("whoops")
+		}
+		anotherpackage.DoSomething(ctx)...
 	}
 */
 package main

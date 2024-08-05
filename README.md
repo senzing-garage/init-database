@@ -29,34 +29,25 @@ This command initialize databases with a Senzing schema and a default Senzing co
 [![go-test-windows.yaml Badge]][go-test-windows.yaml]
 
 [![golangci-lint.yaml Badge]][golangci-lint.yaml]
+
 ## Overview
 
 `init-database` performs the following:
 
 1. Creates a Senzing database schema from a file of SQL statements.
-   The SQL file is identified by the
-   [SENZING_TOOLS_SQL_FILE]
-   parameter.
+   The SQL file is identified by the [SENZING_TOOLS_SQL_FILE] parameter.
    The default file name depends on the database engine specified in the
-   protocol section of
-   [SENZING_TOOLS_DATABASE_URL]
-   or the database(s) specified in
-   [SENZING_TOOLS_ENGINE_CONFIGURATION_JSON].
+   protocol section of [SENZING_TOOLS_DATABASE_URL]
+   or the database(s) specified in [SENZING_TOOLS_ENGINE_CONFIGURATION_JSON].
    The default file location depends on the Senzing engine configuration JSON's `PIPELINE`.`RESOURCEPATH` value.
 1. Creates a Senzing configuration in the database based on the contents
-   of the file specified by the
-   [SENZING_TOOLS_ENGINE_CONFIGURATION_FILE]
-    parameter.
+   of the file specified by the [SENZING_TOOLS_ENGINE_CONFIGURATION_FILE] parameter.
    The default file location is based on the Senzing engine configuration JSON's `PIPELINE`.`RESOURCEPATH` value.
-1. *Optionally:* Adds datasources to the initial Senzing configuration via the
-   [SENZING_TOOLS_DATASOURCES]
-   parameter.
+1. *Optionally:* Adds datasources to the initial Senzing configuration via the [SENZING_TOOLS_DATASOURCES] parameter.
 
 ## Install
 
-1. The `init-database` command is installed with the
-   [senzing-tools]
-   suite of tools.
+1. The `init-database` command is installed with the [senzing-tools] suite of tools.
    See senzing-tools [install].
 
 ## Use
@@ -147,13 +138,9 @@ This usage shows how to initialze a database with a Docker container.
 - [Errors]
 - [Examples]
 
-[API documentation]: https://pkg.go.dev/github.com/senzing-garage/template-go
 [Development]: docs/development.md
-[DockerHub]: https://hub.docker.com/r/senzing/template-go
 [Errors]: docs/errors.md
 [Examples]: docs/examples.md
-[Examples]: docs/examples.md
-[Go Package library]: https://pkg.go.dev
 [Go Reference Badge]: https://pkg.go.dev/badge/github.com/senzing-garage/template-go.svg
 [Go Report Card Badge]: https://goreportcard.com/badge/github.com/senzing-garage/template-go
 [Go Report Card]: https://goreportcard.com/report/github.com/senzing-garage/template-go
@@ -166,12 +153,8 @@ This usage shows how to initialze a database with a Docker container.
 [SENZING_TOOLS_CONFIGURATION]: https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_configuration
 [SENZING_TOOLS_CONFIG_PATH]: https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_config_path
 [SENZING_TOOLS_DATABASE_URL]: https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_database_url
-[SENZING_TOOLS_DATABASE_URL]: https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_database_url
-[SENZING_TOOLS_DATASOURCES]: https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_datasources
 [SENZING_TOOLS_DATASOURCES]: https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_datasources
 [SENZING_TOOLS_ENGINE_CONFIGURATION_FILE]: https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_engine_configuration_file
-[SENZING_TOOLS_ENGINE_CONFIGURATION_FILE]: https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_engine_configuration_file
-[SENZING_TOOLS_ENGINE_CONFIGURATION_JSON]: https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_engine_configuration_json
 [SENZING_TOOLS_ENGINE_CONFIGURATION_JSON]: https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_engine_configuration_json
 [SENZING_TOOLS_ENGINE_LOG_LEVEL]: https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_engine_log_level
 [SENZING_TOOLS_ENGINE_MODULE_NAME]: https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_engine_module_name
@@ -181,7 +164,6 @@ This usage shows how to initialze a database with a Docker container.
 [SENZING_TOOLS_OBSERVER_URL]: https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_observer_url
 [SENZING_TOOLS_RESOURCE_PATH]: https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_resource_path
 [SENZING_TOOLS_SENZING_DIRECTORY]: https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_senzing_directory
-[SENZING_TOOLS_SQL_FILE]: https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_sql_file
 [SENZING_TOOLS_SQL_FILE]: https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_sql_file
 [SENZING_TOOLS_SUPPORT_PATH]: https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_support_path
 [Senzing Garage]: https://github.com/senzing-garage
@@ -196,6 +178,4 @@ This usage shows how to initialze a database with a Docker container.
 [golangci-lint.yaml Badge]: https://github.com/senzing-garage/template-go/actions/workflows/golangci-lint.yaml/badge.svg
 [golangci-lint.yaml]: https://github.com/senzing-garage/template-go/actions/workflows/golangci-lint.yaml
 [install]: https://github.com/senzing-garage/senzing-tools#install
-[main.go]: main.go
-[senzing-tools]: https://github.com/senzing-garage/senzing-tools
 [senzing-tools]: https://github.com/senzing-garage/senzing-tools
