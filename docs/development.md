@@ -127,7 +127,7 @@ Since the Senzing library is a prerequisite, it must be installed first.
 
     ```
 
-## Test using SQLite database
+## Test
 
 1. Run tests.
    Example:
@@ -155,7 +155,7 @@ Since the Senzing library is a prerequisite, it must be installed first.
 
    Visit [localhost:9174](http://localhost:9174).
 
-## Test using Docker-compose stack with PostgreSql database
+### Test using Docker-compose stack with PostgreSql database
 
 The following instructions show how to bring up a test stack to be used
 in testing the `sz-sdk-go-core` packages.
@@ -234,6 +234,52 @@ in testing the `sz-sdk-go-core` packages.
 
     ```
 
+## Coverage
+
+Create a code coverage map.
+
+1. Run Go tests.
+   Example:
+
+    ```console
+    cd ${GIT_REPOSITORY_DIR}
+    make clean setup coverage
+
+    ```
+
+   A web-browser will show the results of the coverage.
+   The goal is to have over 80% coverage.
+   Anything less needs to be reflected in [testcoverage.yaml].
+
+## Documentation
+
+1. View documentation.
+   Example:
+
+    ```console
+    cd ${GIT_REPOSITORY_DIR}
+    make clean documentation
+
+    ```
+
+1. If a web page doesn't appear, visit [localhost:6060].
+1. Senzing documentation will be in the "Third party" section.
+   `github.com` > `senzing-garage` > `template-go`
+
+1. When a versioned release is published with a `v0.0.0` format tag,
+the reference can be found by clicking on the following badge at the top of the README.md page.
+Example:
+
+    [![Go Reference Badge]][Go Reference]
+
+1. To stop the `godoc` server, run
+
+    ```console
+    cd ${GIT_REPOSITORY_DIR}
+    make clean
+
+    ```
+
 ## Package
 
 ### Package RPM and DEB files
@@ -299,99 +345,6 @@ in testing the `sz-sdk-go-core` packages.
 
     ```console
     sudo apt-get remove init-database
-
-    ```
-
-### Test RPM package on Centos
-
-1. Determine if `init-database` is installed.
-   Example:
-
-    ```console
-    yum list installed | grep init-database
-
-    ```
-
-1. :pencil2: Install `init-database`.
-   The `init-database...` filename will need modification.
-   Example:
-
-    ```console
-    cd ${GIT_REPOSITORY_DIR}/target
-    sudo yum install ./init-database-0.0.0.rpm
-
-    ```
-
-1. :pencil2: Identify database.
-   One option is to bring up PostgreSql as see in
-   [Test using Docker-compose stack with PostgreSql database](#test-using-docker-compose-stack-with-postgresql-database).
-   Example:
-
-    ```console
-    export SENZING_TOOLS_DATABASE_URL=sqlite3://na:na@/tmp/sqlite/G2C.db
-
-    ```
-
-1. Run command.
-   Example:
-
-    ```console
-    export LD_LIBRARY_PATH=/opt/senzing/er/lib/
-    init-database
-
-    ```
-
-1. Remove `init-database` from system.
-   Example:
-
-    ```console
-    sudo yum remove init-database
-
-    ```
-
-## Coverage
-
-Create a code coverage map.
-
-1. Run Go tests.
-   Example:
-
-    ```console
-    cd ${GIT_REPOSITORY_DIR}
-    make clean setup coverage
-
-    ```
-
-   A web-browser will show the results of the coverage.
-   The goal is to have over 80% coverage.
-   Anything less needs to be reflected in [testcoverage.yaml].
-
-## Documentation
-
-1. View documentation.
-   Example:
-
-    ```console
-    cd ${GIT_REPOSITORY_DIR}
-    make clean documentation
-
-    ```
-
-1. If a web page doesn't appear, visit [localhost:6060].
-1. Senzing documentation will be in the "Third party" section.
-   `github.com` > `senzing` > `go-cmdhelping`
-
-1. When a versioned release is published with a `v0.0.0` format tag,
-the reference can be found by clicking on the following badge at the top of the README.md page.
-Example:
-
-    [![Go Reference Badge]][Go Reference]
-
-1. To stop the `godoc` server, run
-
-    ```console
-    cd ${GIT_REPOSITORY_DIR}
-    make clean
 
     ```
 
