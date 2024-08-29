@@ -3,7 +3,7 @@ name: Go test linux
 on: [push]
 
 env:
-  LD_LIBRARY_PATH: /opt/senzing/g2/lib
+  LD_LIBRARY_PATH: /opt/senzing/er/lib
   SENZING_LOG_LEVEL: TRACE
   SENZING_TOOLS_DATABASE_URL: sqlite3://na:na@nowhere/tmp/sqlite/G2C.db
 
@@ -36,13 +36,20 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Copy /opt/senzing/g2/resources/ files
+      - name: Copy /opt/senzing/er/resources/ files
         run: sudo cp --verbose --recursive rootfs/* /
 
       - name: Install Senzing API
         uses: senzing-factory/github-action-install-senzing-api@v3
         with:
           senzingapi-runtime-version: ${{ matrix.senzingapi-version }}
+
+      - name: install senzingapi-setup
+        run: |
+          sudo SENZING_ACCEPT_EULA=I_ACCEPT_THE_SENZING_EULA apt-get -y install senzingapi-setup
+          sudo apt list | grep senzing
+          owner="$(whoami)"
+          sudo chown -R "${owner}":"${owner}" /opt/senzing
 
       - name: Run go test
         run: go test -json -v -p 1 -coverprofile=./cover.out -covermode=atomic -coverpkg=./... ./...  2>&1 | tee /tmp/gotest.log | gotestfmt

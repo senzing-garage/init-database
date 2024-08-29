@@ -4,13 +4,17 @@
 # Variables
 # -----------------------------------------------------------------------------
 
-LD_LIBRARY_PATH ?= /opt/senzing/g2/lib
+LD_LIBRARY_PATH ?= /opt/senzing/er/lib
 SENZING_TOOLS_DATABASE_URL ?= sqlite3://na:na@nowhere/tmp/sqlite/G2C.db
 PATH := $(MAKEFILE_DIRECTORY)/bin:/$(HOME)/go/bin:$(PATH)
 
 # -----------------------------------------------------------------------------
 # OS specific targets
 # -----------------------------------------------------------------------------
+
+.PHONY: build-osarch-specific
+build-osarch-specific: linux/amd64
+
 
 .PHONY: clean-osarch-specific
 clean-osarch-specific:
@@ -24,6 +28,7 @@ clean-osarch-specific:
 	@rm -fr $(TARGET_DIRECTORY) || true
 	@rm -fr /tmp/sqlite || true
 	@pkill godoc || true
+	@docker-compose -f docker-compose.test.yaml down 2> /dev/null || true
 
 
 .PHONY: coverage-osarch-specific
@@ -32,6 +37,14 @@ coverage-osarch-specific:
 	@go test -v -coverprofile=coverage.out -p 1 ./...
 	@go tool cover -html="coverage.out" -o coverage.html
 	@xdg-open $(MAKEFILE_DIRECTORY)/coverage.html
+
+
+.PHONY: docker-build-osarch-specific
+docker-build-osarch-specific:
+	@$(DOCKER_BUILDKIT) docker build \
+		--tag $(DOCKER_IMAGE_NAME) \
+		--tag $(DOCKER_IMAGE_NAME):$(BUILD_VERSION) \
+		.
 
 
 .PHONY: documentation-osarch-specific

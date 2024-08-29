@@ -34,7 +34,7 @@ const DefaultGrpcObserverPort = "8260"
 // Variables
 // ----------------------------------------------------------------------------
 
-// Message templates for g2config implementations.
+// Message templates for szconfig implementations.
 var IDMessages = map[int]string{
 	10:   "Enter " + Prefix + "Initialize().",
 	11:   "Exit  " + Prefix + "Initialize(); json.Marshal failed; returned (%v).",

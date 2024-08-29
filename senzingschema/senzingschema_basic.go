@@ -137,13 +137,13 @@ func (senzingSchema *BasicSenzingSchema) processDatabase(ctx context.Context, re
 	if len(senzingSchema.SQLFile) == 0 {
 		switch parsedURL.Scheme {
 		case "sqlite3":
-			senzingSchema.SQLFile = resourcePath + "/schema/g2core-schema-sqlite-create.sql"
+			senzingSchema.SQLFile = resourcePath + "/schema/szcore-schema-sqlite-create.sql"
 		case "postgresql":
-			senzingSchema.SQLFile = resourcePath + "/schema/g2core-schema-postgresql-create.sql"
+			senzingSchema.SQLFile = resourcePath + "/schema/szcore-schema-postgresql-create.sql"
 		case "mysql":
-			senzingSchema.SQLFile = resourcePath + "/schema/g2core-schema-mysql-create.sql"
+			senzingSchema.SQLFile = resourcePath + "/schema/szcore-schema-mysql-create.sql"
 		case "mssql":
-			senzingSchema.SQLFile = resourcePath + "/schema/g2core-schema-mssql-create.sql"
+			senzingSchema.SQLFile = resourcePath + "/schema/szcore-schema-mssql-create.sql"
 		default:
 			return fmt.Errorf("unknown database scheme: %s", parsedURL.Scheme)
 		}

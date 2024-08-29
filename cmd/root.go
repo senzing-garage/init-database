@@ -285,13 +285,13 @@ func getSQLFileDefault() string {
 
 	switch parsedURL.Scheme {
 	case "sqlite3":
-		result = resourcePath + "/schema/g2core-schema-sqlite-create.sql"
+		result = resourcePath + "/schema/szcore-schema-sqlite-create.sql"
 	case "postgresql":
-		result = resourcePath + "/schema/g2core-schema-postgresql-create.sql"
+		result = resourcePath + "/schema/szcore-schema-postgresql-create.sql"
 	case "mysql":
-		result = resourcePath + "/schema/g2core-schema-mysql-create.sql"
+		result = resourcePath + "/schema/szcore-schema-mysql-create.sql"
 	case "mssql":
-		result = resourcePath + "/schema/g2core-schema-mssql-create.sql"
+		result = resourcePath + "/schema/szcore-schema-mssql-create.sql"
 	}
 
 	return result

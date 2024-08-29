@@ -40,7 +40,7 @@ jobs:
           senzingapi-version: ${{ matrix.senzingapi-version }}
 
       - name: Add to "Path" environment variable
-        run: echo "C:\Program Files\Senzing\g2\lib" | Out-File -FilePath "$env:GITHUB_PATH" -Encoding utf8 -Append
+        run: printf "C:\Program Files\Senzing\er\lib" | Out-File -FilePath "$env:GITHUB_PATH" -Encoding utf8 -Append
 
       - name: Create empty database file
         run: |

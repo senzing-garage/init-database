@@ -4,7 +4,7 @@
 # Variables
 # -----------------------------------------------------------------------------
 
-SENZING_DIR ?= /opt/senzing/g2
+SENZING_DIR ?= /opt/senzing/er
 SENZING_TOOLS_SENZING_DIRECTORY ?= $(SENZING_DIR)
 
 LD_LIBRARY_PATH ?= $(SENZING_TOOLS_SENZING_DIRECTORY)/lib:$(SENZING_TOOLS_SENZING_DIRECTORY)/lib/macos
@@ -16,17 +16,23 @@ PATH := $(MAKEFILE_DIRECTORY)/bin:/$(HOME)/go/bin:$(PATH)
 # OS specific targets
 # -----------------------------------------------------------------------------
 
+.PHONY: build-osarch-specific
+build-osarch-specific: darwin/amd64
+
+
 .PHONY: clean-osarch-specific
 clean-osarch-specific:
 	@docker rm  --force $(DOCKER_CONTAINER_NAME) 2> /dev/null || true
 	@docker rmi --force $(DOCKER_IMAGE_NAME) $(DOCKER_BUILD_IMAGE_NAME) 2> /dev/null || true
 	@rm -f  $(GOPATH)/bin/$(PROGRAM_NAME) || true
+	@rm -f  $(MAKEFILE_DIRECTORY)/.coverage || true
 	@rm -f  $(MAKEFILE_DIRECTORY)/coverage.html || true
 	@rm -f  $(MAKEFILE_DIRECTORY)/coverage.out || true
 	@rm -f  $(MAKEFILE_DIRECTORY)/cover.out || true
 	@rm -fr $(TARGET_DIRECTORY) || true
 	@rm -fr /tmp/sqlite || true
 	@pkill godoc || true
+	@docker-compose -f docker-compose.test.yaml down 2> /dev/null || true
 
 
 .PHONY: coverage-osarch-specific
@@ -35,6 +41,14 @@ coverage-osarch-specific:
 	@go test -v -coverprofile=coverage.out -p 1 ./...
 	@go tool cover -html="coverage.out" -o coverage.html
 	@open file://$(MAKEFILE_DIRECTORY)/coverage.html
+
+
+.PHONY: docker-build-osarch-specific
+docker-build-osarch-specific:
+	@docker build \
+		--tag $(DOCKER_IMAGE_NAME) \
+		--tag $(DOCKER_IMAGE_NAME):$(BUILD_VERSION) \
+		.
 
 
 .PHONY: documentation-osarch-specific
@@ -46,6 +60,11 @@ documentation-osarch-specific:
 .PHONY: hello-world-osarch-specific
 hello-world-osarch-specific:
 	$(info Hello World, from darwin.)
+
+
+.PHONY: package-osarch-specific
+package-osarch-specific:
+	$(info No packaging for darwin.)
 
 
 .PHONY: run-osarch-specific

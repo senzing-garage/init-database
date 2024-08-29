@@ -1,4 +1,4 @@
 /*
-The senzingschema package initializes the database.
+Package senzingschema initializes the database.
 */
 package senzingschema

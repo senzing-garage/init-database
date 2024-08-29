@@ -1,4 +1,4 @@
 /*
-The initializer package initializes the database.
+Package initializer initializes the database.
 */
 package initializer

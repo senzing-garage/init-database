@@ -1,4 +1,4 @@
-# template-go
+# init-database
 
 Placeholder for [GitHub pages].
 
