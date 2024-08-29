@@ -111,11 +111,7 @@ build: build-osarch-specific
 
 
 .PHONY: docker-build
-docker-build:
-	@docker build \
-		--tag $(DOCKER_IMAGE_NAME) \
-		--tag $(DOCKER_IMAGE_NAME):$(BUILD_VERSION) \
-		.
+docker-build: docker-build-osarch-specific
 
 # -----------------------------------------------------------------------------
 # Run
@@ -158,7 +154,7 @@ coverage: coverage-osarch-specific
 check-coverage: export SENZING_LOG_LEVEL=TRACE
 check-coverage:
 	@go test ./... -coverprofile=./cover.out -covermode=atomic -coverpkg=./...
-	@${GOBIN}/go-test-coverage --config=.github/coverage/.testcoverage.yaml
+	@${GOBIN}/go-test-coverage --config=.github/coverage/testcoverage.yaml
 
 # -----------------------------------------------------------------------------
 # Documentation
@@ -200,6 +196,13 @@ clean: clean-osarch-specific
 # Utility targets
 # -----------------------------------------------------------------------------
 
+.PHONY: docker-rmi-for-build
+docker-rmi-for-build:
+	-docker rmi --force \
+		$(DOCKER_IMAGE_NAME):$(GIT_VERSION) \
+		$(DOCKER_IMAGE_NAME)
+
+
 .PHONY: help
 help:
 	$(info Build $(PROGRAM_NAME) version $(BUILD_VERSION)-$(BUILD_ITERATION))
@@ -211,7 +214,7 @@ help:
 print-make-variables:
 	@$(foreach V,$(sort $(.VARIABLES)), \
 		$(if $(filter-out environment% default automatic, \
-		$(origin $V)),$(warning $V=$($V) ($(value $V)))))
+		$(origin $V)),$(info $V=$($V) ($(value $V)))))
 
 
 .PHONY: update-pkg-cache

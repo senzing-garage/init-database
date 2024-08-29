@@ -10,6 +10,11 @@ SENZING_TOOLS_DATABASE_URL ?= sqlite3://na:na@nowhere/C:\Temp\sqlite\G2C.db
 # OS specific targets
 # -----------------------------------------------------------------------------
 
+.PHONY: build-osarch-specific
+build-osarch-specific: windows/amd64
+	@mv $(TARGET_DIRECTORY)/windows-amd64/$(PROGRAM_NAME) $(TARGET_DIRECTORY)/windows-amd64/$(PROGRAM_NAME).exe
+
+
 .PHONY: clean-osarch-specific
 clean-osarch-specific:
 	@del /F /S /Q $(GOPATH)/bin/$(PROGRAM_NAME)
@@ -19,6 +24,7 @@ clean-osarch-specific:
 	@del /F /S /Q $(TARGET_DIRECTORY)
 	@del /F /S /Q C:\Temp\sqlite
 	@taskkill /f /t/im godoc
+	@docker-compose -f docker-compose.test.yaml down
 
 
 .PHONY: coverage-osarch-specific
@@ -27,6 +33,13 @@ coverage-osarch-specific:
 	@go tool cover -html="coverage.out" -o coverage.html
 	@explorer file://$(MAKEFILE_DIRECTORY)/coverage.html
 
+
+.PHONY: docker-build-osarch-specific
+docker-build-osarch-specific:
+	@docker build \
+		--tag $(DOCKER_IMAGE_NAME) \
+		--tag $(DOCKER_IMAGE_NAME):$(BUILD_VERSION) \
+		.
 
 
 .PHONY: documentation-osarch-specific

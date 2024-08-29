@@ -1,4 +1,4 @@
-name: docker push containers to dockerhub and ecr
+name: Docker push containers to dockerhub and ecr
 
 on:
   push:
