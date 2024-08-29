@@ -50,7 +50,7 @@ In these examples, datasources are added to the initial Senzing configuration.
    Example:
 
     ```console
-    export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
+    export LD_LIBRARY_PATH=/opt/senzing/er/lib/
     senzing-tools init-database \
         --database-url postgresql://username:password@postgres.example.com:5432/G2 \
         --datasources CUSTOMER,REFERENCE,WATCHLIST
@@ -61,7 +61,7 @@ In these examples, datasources are added to the initial Senzing configuration.
    Example:
 
     ```console
-    export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
+    export LD_LIBRARY_PATH=/opt/senzing/er/lib/
     senzing-tools init-database \
         --database-url postgresql://username:password@postgres.example.com:5432/G2 \
         --datasources CUSTOMER \
@@ -78,7 +78,7 @@ In these examples, datasources are added to the initial Senzing configuration.
     ```console
     export SENZING_TOOLS_DATABASE_URL=postgresql://username:password@postgres.example.com:5432/G2
     export SENZING_TOOLS_DATASOURCES="CUSTOMER REFERENCE WATCHLIST"
-    export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
+    export LD_LIBRARY_PATH=/opt/senzing/er/lib/
     senzing-tools init-database
 
     ```
@@ -128,7 +128,7 @@ In these examples, datasources are added to the initial Senzing configuration.
 
     ```console
     export LOCAL_IP_ADDRESS=$(curl --silent https://raw.githubusercontent.com/senzing-garage/knowledge-base/main/gists/find-local-ip-address/find-local-ip-address.py | python3 -)
-    export SENZING_TOOLS_DATABASE_URL=postgresql://postgres:postgres@${LOCAL_IP_ADDRESS}:5432/G2/?sslmode=disable
+    export SENZING_TOOLS_DATABASE_URL=postgresql://postgres:postgres@${LOCAL_IP_ADDRESS}:5432/er/?sslmode=disable
 
     ```
 
@@ -157,7 +157,7 @@ For more information, see
     export SENZING_TOOLS_ENGINE_CONFIGURATION_JSON='{
         "PIPELINE": {
             "CONFIGPATH": "/etc/opt/senzing",
-            "RESOURCEPATH": "/opt/senzing/g2/resources",
+            "RESOURCEPATH": "/opt/senzing/er/resources",
             "SUPPORTPATH": "/opt/senzing/data"
         },
         "SQL": {

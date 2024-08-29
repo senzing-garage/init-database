@@ -53,7 +53,7 @@ This command initialize databases with a Senzing schema and a default Senzing co
 ## Use
 
 ```console
-export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
+export LD_LIBRARY_PATH=/opt/senzing/er/lib/
 senzing-tools init-database [flags]
 ```
 
@@ -62,7 +62,7 @@ senzing-tools init-database [flags]
     1. Runtime documentation:
 
         ```console
-        export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
+        export LD_LIBRARY_PATH=/opt/senzing/er/lib/
         senzing-tools init-database --help
         ```
 
@@ -74,7 +74,7 @@ senzing-tools init-database [flags]
    Example:
 
     ```console
-    export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
+    export LD_LIBRARY_PATH=/opt/senzing/er/lib/
     senzing-tools init-database \
         --database-url postgresql://username:password@postgres.example.com:5432/G2
     ```
@@ -88,7 +88,7 @@ senzing-tools init-database [flags]
 
     ```console
     export SENZING_TOOLS_DATABASE_URL=postgresql://username:password@postgres.example.com:5432/G2
-    export LD_LIBRARY_PATH=/opt/senzing/g2/lib/
+    export LD_LIBRARY_PATH=/opt/senzing/er/lib/
     senzing-tools init-database
     ```
 

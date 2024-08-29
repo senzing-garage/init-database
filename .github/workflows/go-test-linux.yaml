@@ -3,7 +3,7 @@ name: Go test linux
 on: [push]
 
 env:
-  LD_LIBRARY_PATH: /opt/senzing/g2/lib
+  LD_LIBRARY_PATH: /opt/senzing/er/lib
   SENZING_LOG_LEVEL: TRACE
   SENZING_TOOLS_DATABASE_URL: sqlite3://na:na@nowhere/tmp/sqlite/G2C.db
 
@@ -36,7 +36,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Copy /opt/senzing/g2/resources/ files
+      - name: Copy /opt/senzing/er/resources/ files
         run: sudo cp --verbose --recursive rootfs/* /
 
       - name: Install Senzing API

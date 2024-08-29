@@ -32,7 +32,7 @@ const Prefix = "init-database.senzingconfig."
 // Variables
 // ----------------------------------------------------------------------------
 
-// Message templates for g2config implementations.
+// Message templates for szconfig implementations.
 var IDMessages = map[int]string{
 	10:   "Enter " + Prefix + "InitializeSenzing().",
 	11:   "Exit  " + Prefix + "InitializeSenzing(); json.Marshal failed; returned (%v).",

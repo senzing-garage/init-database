@@ -476,7 +476,7 @@ Prefixes:
 
 ### senzing-65020013
 
-- Trace the exiting of senzingconfig.InitializeSenzing(); g2Configmgr.GetDefaultConfigID failed; returned (%v).
+- Trace the exiting of senzingconfig.InitializeSenzing(); szConfigmgr.GetDefaultConfigID failed; returned (%v).
 - See <https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig.go>
 
 ### senzing-65020014
@@ -486,7 +486,7 @@ Prefixes:
 
 ### senzing-65020015
 
-- Trace the exiting of senzingconfig.InitializeSenzing(); g2Config.Create failed; returned (%v).
+- Trace the exiting of senzingconfig.InitializeSenzing(); szConfig.Create failed; returned (%v).
 - See <https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig.go>
 
 ### senzing-65020016
@@ -496,17 +496,17 @@ Prefixes:
 
 ### senzing-65020017
 
-- Trace the exiting of senzingconfig.InitializeSenzing(); g2Config.Save failed; returned (%v).
+- Trace the exiting of senzingconfig.InitializeSenzing(); szConfig.Save failed; returned (%v).
 - See <https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig.go>
 
 ### senzing-65020018
 
-- Trace the exiting of senzingconfig.InitializeSenzing(); g2Configmgr.AddConfig failed; returned (%v).
+- Trace the exiting of senzingconfig.InitializeSenzing(); szConfigmgr.AddConfig failed; returned (%v).
 - See <https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig.go>
 
 ### senzing-65020019
 
-- Trace the exiting of senzingconfig.InitializeSenzing(); g2Configmgr.SetDefaultConfigID failed; returned (%v).
+- Trace the exiting of senzingconfig.InitializeSenzing(); szConfigmgr.SetDefaultConfigID failed; returned (%v).
 - See <https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig.go>
 
 ### senzing-65020020
@@ -531,7 +531,7 @@ Prefixes:
 
 ### senzing-65020024
 
-- Trace the exiting of senzingconfig.InitializeSenzing(); copyFile when replacing template/g2config.json failed; returned (%v).
+- Trace the exiting of senzingconfig.InitializeSenzing(); copyFile when replacing template/szConfig.json failed; returned (%v).
 - See <https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig.go>
 
 ### senzing-65020029
@@ -561,12 +561,12 @@ Prefixes:
 
 ### senzing-65020034
 
-- Trace the exiting of senzingconfig.RegisterObserver(%s); g2Config.RegisterObserver failed; returned (%v).
+- Trace the exiting of senzingconfig.RegisterObserver(%s); szConfig.RegisterObserver failed; returned (%v).
 - See <https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig.go>
 
 ### senzing-65020035
 
-- Trace the exiting of senzingconfig.RegisterObserver(%s); g2Configmgr.RegisterObserver failed; returned (%v).
+- Trace the exiting of senzingconfig.RegisterObserver(%s); szConfigmgr.RegisterObserver failed; returned (%v).
 - See <https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig.go>
 
 ### senzing-65020039
@@ -601,12 +601,12 @@ Prefixes:
 
 ### senzing-65020045
 
-- Trace the exiting of senzingconfig.SetLogLevel(%s); g2Config.SetLogLevel failed; returned (%v).
+- Trace the exiting of senzingconfig.SetLogLevel(%s); szConfig.SetLogLevel failed; returned (%v).
 - See <https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig.go>
 
 ### senzing-65020046
 
-- Trace the exiting of senzingconfig.SetLogLevel(%s); g2Configmgr.SetLogLevel failed; returned (%v).
+- Trace the exiting of senzingconfig.SetLogLevel(%s); szConfigmgr.SetLogLevel failed; returned (%v).
 - See <https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig.go>
 
 ### senzing-65020049
@@ -626,12 +626,12 @@ Prefixes:
 
 ### senzing-65020052
 
-- Trace the exiting of senzingconfig.UnregisterObserver(%s); g2Config.UnregisterObserver failed; returned (%v).
+- Trace the exiting of senzingconfig.UnregisterObserver(%s); szConfig.UnregisterObserver failed; returned (%v).
 - See <https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig.go>
 
 ### senzing-65020053
 
-- Trace the exiting of senzingconfig.UnregisterObserver(%s); g2Configmgr.UnregisterObserver failed; returned (%v).
+- Trace the exiting of senzingconfig.UnregisterObserver(%s); szConfigmgr.UnregisterObserver failed; returned (%v).
 - See <https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig.go>
 
 ### senzing-65020054
@@ -696,7 +696,7 @@ Prefixes:
 
 ### senzing-65021013
 
-- senzingconfig.Initialize(); g2Configmgr.GetDefaultConfigID failed; Error: %v.
+- senzingconfig.Initialize(); szConfigmgr.GetDefaultConfigID failed; Error: %v.
 - See <https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig.go>
 
 ### senzing-65021014
@@ -706,7 +706,7 @@ Prefixes:
 
 ### senzing-65021015
 
-- senzingconfig.Initialize(); g2Config.Create failed; Error: %v.
+- senzingconfig.Initialize(); szConfig.Create failed; Error: %v.
 - See <https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig.go>
 
 ### senzing-65021016
@@ -716,17 +716,17 @@ Prefixes:
 
 ### senzing-65021017
 
-- senzingconfig.Initialize(); g2Config.Save failed; Error: %v.
+- senzingconfig.Initialize(); szConfig.Save failed; Error: %v.
 - See <https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig.go>
 
 ### senzing-65021018
 
-- senzingconfig.Initialize(); g2Configmgr.AddConfig failed; Error: %v.
+- senzingconfig.Initialize(); szConfigmgr.AddConfig failed; Error: %v.
 - See <https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig.go>
 
 ### senzing-65021019
 
-- senzingconfig.Initialize(); g2Configmgr.SetDefaultConfigID failed; Error: %v.
+- senzingconfig.Initialize(); szConfigmgr.SetDefaultConfigID failed; Error: %v.
 - See <https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig.go>
 
 ### senzing-65021020
@@ -751,7 +751,7 @@ Prefixes:
 
 ### senzing-65021024
 
-- senzingconfig.Initialize(); copyFile when replacing template/g2config.json failed; Error: %v.
+- senzingconfig.Initialize(); copyFile when replacing template/szConfig.json failed; Error: %v.
 - See <https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig.go>
 
 ### senzing-65021031
@@ -771,12 +771,12 @@ Prefixes:
 
 ### senzing-65021034
 
-- senzingconfig.RegisterObserver(%s); g2Config.RegisterObserver failed; returned (%v).
+- senzingconfig.RegisterObserver(%s); szConfig.RegisterObserver failed; returned (%v).
 - See <https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig.go>
 
 ### senzing-65021035
 
-- senzingconfig.RegisterObserver(%s); g2Configmgr.RegisterObserver failed; returned (%v).
+- senzingconfig.RegisterObserver(%s); szConfigmgr.RegisterObserver failed; returned (%v).
 - See <https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig.go>
 
 ### senzing-65021041
@@ -801,12 +801,12 @@ Prefixes:
 
 ### senzing-65021045
 
-- senzingconfig.SetLogLevel(%s); g2Config.SetLogLevel failed; returned (%v).
+- senzingconfig.SetLogLevel(%s); szConfig.SetLogLevel failed; returned (%v).
 - See <https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig.go>
 
 ### senzing-65021046
 
-- senzingconfig.SetLogLevel(%s); g2Configmgr.SetLogLevel failed; returned (%v).
+- senzingconfig.SetLogLevel(%s); szConfigmgr.SetLogLevel failed; returned (%v).
 - See <https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig.go>
 
 ### senzing-65021051
@@ -816,12 +816,12 @@ Prefixes:
 
 ### senzing-65021052
 
-- senzingconfig.UnregisterObserver(%s); g2Config.UnregisterObserver failed; returned (%v).
+- senzingconfig.UnregisterObserver(%s); szConfig.UnregisterObserver failed; returned (%v).
 - See <https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig.go>
 
 ### senzing-65021053
 
-- senzingconfig.UnregisterObserver(%s); g2Configmgr.UnregisterObserver failed; returned (%v).
+- senzingconfig.UnregisterObserver(%s); szConfigmgr.UnregisterObserver failed; returned (%v).
 - See <https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig.go>
 
 ### senzing-65021054

@@ -406,7 +406,7 @@ func (senzingConfig *BasicSenzingConfig) InitializeSenzing(ctx context.Context) 
 					}
 				}
 
-				// Copy source file to target to "fake out" Senzing's G2Engine.Create().
+				// Copy source file to target to "fake out" Senzing's SzEngine.Create().
 
 				err = senzingConfig.copyFile(sourceFilename, targetFilename)
 				if err != nil {
