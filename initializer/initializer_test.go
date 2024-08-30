@@ -76,10 +76,14 @@ func TestBasicInitializer_UnregisterObserver(test *testing.T) {
 	testObject := &BasicInitializer{
 		SenzingSettings: senzingSettings,
 	}
-	testObject.SetLogLevel(ctx, logging.LevelInfoName)
-	testObject.RegisterObserver(ctx, observer1)
-	testObject.Initialize(ctx)
-	testObject.UnregisterObserver(ctx, observer1)
+	err = testObject.SetLogLevel(ctx, logging.LevelInfoName)
+	require.NoError(test, err)
+	err = testObject.RegisterObserver(ctx, observer1)
+	require.NoError(test, err)
+	err = testObject.Initialize(ctx)
+	require.NoError(test, err)
+	err = testObject.UnregisterObserver(ctx, observer1)
+	require.NoError(test, err)
 }
 
 // ----------------------------------------------------------------------------

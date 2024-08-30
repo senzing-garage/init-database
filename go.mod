@@ -54,7 +54,7 @@ require (
 	github.com/senzing-garage/go-messaging v1.5.1 // indirect
 	github.com/senzing-garage/sz-sdk-go-grpc v0.8.1 // indirect
 	github.com/senzing-garage/sz-sdk-go-mock v0.8.0 // indirect
-	github.com/senzing-garage/sz-sdk-proto v0.7.6 // indirect
+	github.com/senzing-garage/sz-sdk-proto v0.7.7 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.11.0 // indirect
 	github.com/spf13/cast v1.7.0 // indirect
