@@ -1,8 +1,7 @@
 module github.com/senzing-garage/init-database
 
 go 1.21.0
-
-toolchain go1.22.0
+toolchain go1.22.5
 
 retract (
 	v0.1.8
@@ -24,7 +23,7 @@ require (
 	github.com/senzing-garage/go-observing v0.3.3
 	github.com/senzing-garage/go-sdk-abstract-factory v0.9.1
 	github.com/senzing-garage/sz-sdk-go v0.14.1
-	github.com/senzing-garage/sz-sdk-go-core v0.8.1
+	github.com/senzing-garage/sz-sdk-go-core v0.8.2
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.19.0
 	github.com/stretchr/testify v1.9.0
@@ -62,7 +61,7 @@ require (
 	github.com/subosito/gotenv v1.6.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/crypto v0.27.0 // indirect
-	golang.org/x/exp v0.0.0-20240904232852-e7e105dedf7e // indirect
+	golang.org/x/exp v0.0.0-20240909161429-701f63a606c0 // indirect
 	golang.org/x/net v0.29.0 // indirect
 	golang.org/x/sys v0.25.0 // indirect
 	golang.org/x/text v0.18.0 // indirect
