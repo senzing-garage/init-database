@@ -65,22 +65,26 @@ func TestBasicInitializer_SetObserverOrigin(test *testing.T) {
 	testObject.SetObserverOrigin(ctx, "TestObserver")
 }
 
-// func TestBasicInitializer_UnregisterObserver(test *testing.T) {
-// 	ctx := context.TODO()
-// 	observer1 := &observer.NullObserver{
-// 		Id:       "Observer 1",
-// 		IsSilent: true,
-// 	}
-// 	senzingEngineConfigurationJson, err := settings.BuildSimpleSettingsUsingEnvVars()
-// 	testError(test, err)
-// 	testObject := &InitializerImpl{
-// 		SenzingEngineConfigurationJson: senzingEngineConfigurationJson,
-// 	}
-// 	testObject.SetLogLevel(ctx, logging.LevelInfoName)
-// 	testObject.RegisterObserver(ctx, observer1)
-// 	testObject.Initialize(ctx)
-// 	testObject.UnregisterObserver(ctx, observer1)
-// }
+func TestBasicInitializer_UnregisterObserver(test *testing.T) {
+	ctx := context.TODO()
+	observer1 := &observer.NullObserver{
+		ID:       "Observer 1",
+		IsSilent: true,
+	}
+	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
+	require.NoError(test, err)
+	testObject := &BasicInitializer{
+		SenzingSettings: senzingSettings,
+	}
+	err = testObject.SetLogLevel(ctx, logging.LevelInfoName)
+	require.NoError(test, err)
+	err = testObject.RegisterObserver(ctx, observer1)
+	require.NoError(test, err)
+	err = testObject.Initialize(ctx)
+	require.NoError(test, err)
+	err = testObject.UnregisterObserver(ctx, observer1)
+	require.NoError(test, err)
+}
 
 // ----------------------------------------------------------------------------
 // Helper functions
