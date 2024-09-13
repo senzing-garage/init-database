@@ -19,7 +19,7 @@ build-osarch-specific: linux/amd64
 .PHONY: clean-osarch-specific
 clean-osarch-specific:
 	@docker rm  --force $(DOCKER_CONTAINER_NAME) 2> /dev/null || true
-	@docker rmi --force $(DOCKER_IMAGE_NAME) $(DOCKER_BUILD_IMAGE_NAME) 2> /dev/null || true
+	@docker rmi --force $(DOCKER_IMAGE_NAME) $(DOCKER_BUILD_IMAGE_NAME) $(DOCKER_SUT_IMAGE_NAME) 2> /dev/null || true
 	@rm -f  $(GOPATH)/bin/$(PROGRAM_NAME) || true
 	@rm -f  $(MAKEFILE_DIRECTORY)/.coverage || true
 	@rm -f  $(MAKEFILE_DIRECTORY)/coverage.html || true
@@ -40,8 +40,8 @@ coverage-osarch-specific:
 
 
 .PHONY: dependencies-for-development-osarch-specific
-dependencies-for-development-osarch-specific: 
-	@curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(shell go env GOPATH)/bin v1.58.1
+dependencies-for-development-osarch-specific:
+	@curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(shell go env GOPATH)/bin latest
 
 
 .PHONY: docker-build-osarch-specific
@@ -54,6 +54,7 @@ docker-build-osarch-specific:
 
 .PHONY: documentation-osarch-specific
 documentation-osarch-specific:
+	@pkill godoc || true
 	@godoc &
 	@xdg-open http://localhost:6060
 
