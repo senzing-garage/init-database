@@ -37,10 +37,13 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Copy /opt/senzing/er/resources/ files
+        run: sudo cp --verbose --recursive rootfs/* /
+
       - name: Install Senzing API
         uses: senzing-factory/github-action-install-senzing-api@v3
         with:
-          senzingapi-version: ${{ matrix.senzingapi-version }}
+          senzingapi-runtime-version: ${{ matrix.senzingapi-version }}
 
       - name: Run go test
         run: go test -exec /Users/runner/work/init-database/init-database/bin/macos_exec_dyld.sh -json -v -p 1 -coverprofile=./cover.out -covermode=atomic -coverpkg=./... ./...  2>&1 | tee /tmp/gotest.log | gotestfmt
