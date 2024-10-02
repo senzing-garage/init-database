@@ -34,8 +34,10 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Copy /opt/senzing/er/resources/ files
-        run: cp --verbose --recursive rootfs/* /
+      # - name: Copy /opt/senzing/er/resources/ files
+      #   run: |
+      #     Copy-Item -Path c:\test\ -Destination c:\test2\ -Recurse
+      #       cp --verbose --recursive rootfs/* /
 
       - name: Install Senzing API
         uses: senzing-factory/github-action-install-senzing-api@v3

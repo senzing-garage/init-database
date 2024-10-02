@@ -38,7 +38,9 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Copy /opt/senzing/er/resources/ files
-        run: sudo cp -v -R rootfs/* /
+        run: |
+          sudo mkdir /app
+          sudo cp -v -R rootfs/* /
 
       - name: Install Senzing API
         uses: senzing-factory/github-action-install-senzing-api@v3
