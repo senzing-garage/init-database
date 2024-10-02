@@ -35,12 +35,19 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Copy /opt/senzing/er/resources/ files
-        run: sudo cp --verbose --recursive rootfs/* /
+        run: cp --verbose --recursive rootfs/* /
 
       - name: Install Senzing API
         uses: senzing-factory/github-action-install-senzing-api@v3
         with:
           senzingapi-runtime-version: ${{ matrix.senzingapi-version }}
+
+      - name: install senzingapi-setup
+        run: |
+          sudo SENZING_ACCEPT_EULA=I_ACCEPT_THE_SENZING_EULA apt-get -y install senzingapi-setup
+          sudo apt list | grep senzing
+          owner="$(whoami)"
+          sudo chown -R "${owner}":"${owner}" /opt/senzing
 
       - name: Add to "Path" environment variable
         run: |
