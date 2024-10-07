@@ -43,7 +43,7 @@ jobs:
           sudo cp -v -R rootfs/* /
 
       - name: Install Senzing API
-        uses: senzing-factory/github-action-install-senzing-api@v3
+        uses: senzing-factory/github-action-install-senzing-api@v4
         with:
           senzingapi-runtime-version: ${{ matrix.senzingapi-version }}
 
