@@ -167,6 +167,8 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 
 	// Create schema in database.
 
+	fmt.Printf(">>>>>>>  1\n")
+
 	senzingSchema := initializer.getSenzingSchema()
 	err = senzingSchema.SetLogLevel(ctx, logLevel)
 	if err != nil {
@@ -186,22 +188,32 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 
 	// Create initial Senzing configuration.
 
+	fmt.Printf(">>>>>>>  2.1\n")
+
 	senzingConfig := initializer.getSenzingConfig()
 	err = senzingConfig.SetLogLevel(ctx, logLevel)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 15, 1015
 		return err
 	}
+
+	fmt.Printf(">>>>>>>  2.2\n")
+
 	err = initializer.registerObserverSenzingConfig(ctx, anObserver)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 20, 1000
 		return err
 	}
+
+	fmt.Printf(">>>>>>>  2.3\n")
+
 	err = senzingConfig.InitializeSenzing(ctx)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 16, 1016
 		return err
 	}
+
+	fmt.Printf(">>>>>>>  2.4\n")
 
 	// Notify observers.
 
@@ -769,6 +781,13 @@ func (initializer *BasicInitializer) initializeSpecificDatabaseSqlite(ctx contex
 			initializer.traceEntry(100, parsedURL)
 			defer func() { initializer.traceExit(traceExitMessageNumber, parsedURL, err, time.Since(entryTime)) }()
 		}
+	}
+
+	// If in-memory database, do not create a file.
+
+	queryParameters := parsedURL.Query()
+	if (queryParameters.Get("mode") == "memory") && (queryParameters.Get("cache") == "shared") {
+		return err // Nothing to do for in-memory database.
 	}
 
 	// If file exists, no more to do.

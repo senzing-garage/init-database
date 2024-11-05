@@ -150,6 +150,7 @@ func buildSenzingEngineConfigurationJSON(ctx context.Context, aViper *viper.Vipe
 			return result, err
 		}
 	}
+
 	err = settings.VerifySettings(ctx, result)
 	if err != nil {
 		return result, err

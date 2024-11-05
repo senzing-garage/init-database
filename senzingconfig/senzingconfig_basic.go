@@ -113,7 +113,10 @@ func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context)
 	_ = ctx
 	var err error
 	senzingConfig.szAbstractFactorySyncOnce.Do(func() {
+
 		if len(senzingConfig.GrpcTarget) == 0 {
+			fmt.Printf(">>>> senzingConfig.SenzingSettings: %s\n", senzingConfig.SenzingSettings)
+
 			senzingConfig.szAbstractFactorySingleton, err = szfactorycreator.CreateCoreAbstractFactory(senzingConfig.SenzingInstanceName, senzingConfig.SenzingSettings, senzingConfig.SenzingVerboseLogging, senzing.SzInitializeWithDefaultConfiguration)
 			if err != nil {
 				panic(err)
