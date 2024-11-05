@@ -167,7 +167,7 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 
 	// Create schema in database.
 
-	fmt.Printf(">>>>>>>  1\n")
+	fmt.Printf(">>>>>>>  1.1\n")
 
 	senzingSchema := initializer.getSenzingSchema()
 	err = senzingSchema.SetLogLevel(ctx, logLevel)
@@ -175,11 +175,14 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 		traceExitMessageNumber, debugMessageNumber = 13, 1013
 		return err
 	}
+	fmt.Printf(">>>>>>>  1.2\n")
 	err = initializer.registerObserverSenzingSchema(ctx, anObserver)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 19, 1019
 		return err
 	}
+
+	fmt.Printf(">>>>>>>  1.3\n")
 	err = senzingSchema.InitializeSenzing(ctx)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 14, 1014

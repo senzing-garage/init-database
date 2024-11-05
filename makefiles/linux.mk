@@ -6,8 +6,10 @@
 
 LD_LIBRARY_PATH ?= /opt/senzing/er/lib
 # SENZING_TOOLS_DATABASE_URL ?= sqlite3://na:na@nowhere/tmp/sqlite/G2C.db
-SENZING_TOOLS_DATABASE_URL ?= sqlite3://na:na@nowhere/tmp/sqlite/G2C.db?mode=memory&cache=shared
+# SENZING_TOOLS_DATABASE_URL ?= sqlite3://na:na@nowhere/tmp/sqlite/G2C.db?mode=memory&cache=shared
 # SENZING_TOOLS_DATABASE_URL ?= sqlite3://na:na@nowhere/BOBWASHERE?mode=memory&cache=shared
+# SENZING_TOOLS_DATABASE_URL ?= sqlite3:///BOBWASHERE?mode=memory&cache=shared
+SENZING_TOOLS_DATABASE_URL ?= sqlite3://na:na@/MYPRIVATE_DB?mode=memory&cache=shared
 
 PATH := $(MAKEFILE_DIRECTORY)/bin:/$(HOME)/go/bin:$(PATH)
 
