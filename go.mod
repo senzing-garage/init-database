@@ -18,7 +18,7 @@ retract (
 
 require (
 	github.com/senzing-garage/go-cmdhelping v0.3.1
-	github.com/senzing-garage/go-databasing v0.5.4-0.20241105224207-8eef647b1f75
+	github.com/senzing-garage/go-databasing v0.0.0
 	github.com/senzing-garage/go-helpers v0.6.2
 	github.com/senzing-garage/go-logging v1.5.1
 	github.com/senzing-garage/go-observing v0.3.3
@@ -38,7 +38,7 @@ require (
 	github.com/fsnotify/fsnotify v1.8.0 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
-	github.com/godror/godror v0.44.8 // indirect
+	github.com/godror/godror v0.45.0 // indirect
 	github.com/godror/knownpb v0.2.0 // indirect
 	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect
 	github.com/golang-sql/sqlexp v0.1.0 // indirect
@@ -75,3 +75,5 @@ require (
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/senzing-garage/go-databasing v0.0.0 => /home/senzing/senzing-garage.git/go-databasing

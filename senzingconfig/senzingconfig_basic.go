@@ -6,11 +6,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"net/url"
 	"os"
 	"path/filepath"
 	"sync"
 	"time"
 
+	"github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-helpers/settingsparser"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/notifier"
@@ -111,13 +113,83 @@ func (senzingConfig *BasicSenzingConfig) traceExit(messageNumber int, details ..
 // Create an abstract factory singleton and return it.
 func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
 	_ = ctx
-	var err error
 	senzingConfig.szAbstractFactorySyncOnce.Do(func() {
 
 		if len(senzingConfig.GrpcTarget) == 0 {
-			fmt.Printf(">>>> senzingConfig.SenzingSettings: %s\n", senzingConfig.SenzingSettings)
 
-			senzingConfig.szAbstractFactorySingleton, err = szfactorycreator.CreateCoreAbstractFactory(senzingConfig.SenzingInstanceName, senzingConfig.SenzingSettings, senzingConfig.SenzingVerboseLogging, senzing.SzInitializeWithDefaultConfiguration)
+			senzingSettings := senzingConfig.SenzingSettings
+
+			// Handle case of SQLite in-memory database.
+			// TODO:  Refactor to different, reusable, location.
+
+			settingsParser := settingsparser.BasicSettingsParser{
+				Settings: senzingConfig.SenzingSettings,
+			}
+
+			databaseURLs, err := settingsParser.GetDatabaseURLs(ctx)
+			assertNoError(err)
+			if len(databaseURLs) > 1 {
+				panic("Too many databaseURLs")
+			}
+			databaseURL := databaseURLs[0]
+			parsedURL, err := url.Parse(databaseURL)
+			assertNoError(err)
+
+			if parsedURL.Scheme == "sqlite3" {
+				if len(parsedURL.RawQuery) > 0 {
+
+					fmt.Printf(">>>>> parsedURL.RawQuery: %s\n", parsedURL.RawQuery)
+					fmt.Printf(">>>>> parsedURL.Query().Encode(): %s\n", parsedURL.Query().Encode())
+
+					// databaseURL = fmt.Sprintf("file:%s?%s", parsedURL.Path, parsedURL.Query().Encode())
+
+					databaseURL = fmt.Sprintf("file:%s?%s", "BOBWASHERE", parsedURL.Query().Encode())
+
+					fmt.Printf(">>>>> databaseURL: %v\n", []byte(databaseURL))
+
+					configPath, err := settingsParser.GetConfigPath(ctx)
+					assertNoError(err)
+					resourcePath, err := settingsParser.GetResourcePath(ctx)
+					assertNoError(err)
+					supportPath, err := settingsParser.GetSupportPath(ctx)
+					assertNoError(err)
+					licenseStringBase64, err := settingsParser.GetLicenseStringBase64(ctx)
+					assertNoError(err)
+
+					szConfiguration := settings.SzConfiguration{
+						Pipeline: settings.SzConfigurationPipeline{
+							ConfigPath:          configPath,
+							LicenseStringBase64: licenseStringBase64,
+							ResourcePath:        resourcePath,
+							SupportPath:         supportPath,
+						},
+						SQL: settings.SzConfigurationSQL{
+							Connection: databaseURL,
+						},
+					}
+
+					fmt.Printf(">>>>> szConfiguration: %v\n", szConfiguration)
+
+					buffer := &bytes.Buffer{}
+					jsonEncoder := json.NewEncoder(buffer)
+					jsonEncoder.SetEscapeHTML(false)
+					err = jsonEncoder.Encode(szConfiguration)
+					assertNoError(err)
+
+					senzingSettings := buffer.Bytes()
+
+					// senzingSettingsBytes, err := json.Marshal(szConfiguration, encOpts())
+					// assertNoError(err)
+
+					// senzingSettings := fmt.Sprintf("%s", senzingSettingsBytes)
+
+					fmt.Printf(">>>>> Modified senzingSettings: %s\n", senzingSettings)
+
+					fmt.Printf(">>>>> Modified senzingSettings: %s\n", senzingSettings)
+				}
+			}
+
+			senzingConfig.szAbstractFactorySingleton, err = szfactorycreator.CreateCoreAbstractFactory(senzingConfig.SenzingInstanceName, senzingSettings, senzingConfig.SenzingVerboseLogging, senzing.SzInitializeWithDefaultConfiguration)
 			if err != nil {
 				panic(err)
 			}
@@ -285,6 +357,12 @@ func (senzingConfig *BasicSenzingConfig) filesAreEqual(sourceFilename string, ta
 		if !bytes.Equal(sourceBytes, targetBytes) {
 			return false
 		}
+	}
+}
+
+func assertNoError(err error) {
+	if err != nil {
+		panic(err)
 	}
 }
 
