@@ -19,7 +19,7 @@ retract (
 require (
 	github.com/senzing-garage/go-cmdhelping v0.3.1
 	github.com/senzing-garage/go-databasing v0.5.3
-	github.com/senzing-garage/go-helpers v0.6.1
+	github.com/senzing-garage/go-helpers v0.6.2
 	github.com/senzing-garage/go-logging v1.5.1
 	github.com/senzing-garage/go-observing v0.3.3
 	github.com/senzing-garage/go-sdk-abstract-factory v0.9.3
