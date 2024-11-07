@@ -263,7 +263,7 @@ func (senzingSchema *BasicSenzingSchema) InitializeSenzing(ctx context.Context) 
 
 	for _, databaseURL := range databaseURLs {
 
-		fmt.Printf(">>>>> databaseURL: %s\n", databaseURL)
+		fmt.Printf(">>>>> SzSchema databaseURL: %s\n", databaseURL)
 		err = senzingSchema.processDatabase(ctx, resourcePath, databaseURL)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 15, 1015

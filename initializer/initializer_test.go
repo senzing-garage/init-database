@@ -2,6 +2,7 @@ package initializer
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/senzing-garage/go-helpers/settings"
@@ -92,6 +93,9 @@ func TestBasicInitializer_UnregisterObserver(test *testing.T) {
 
 func getTestObject(ctx context.Context, test *testing.T) *BasicInitializer {
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
+
+	fmt.Printf(">>>>> getTestObject.senzingSettings: %s\n", senzingSettings)
+
 	require.NoError(test, err)
 	result := &BasicInitializer{
 		SenzingSettings: senzingSettings,

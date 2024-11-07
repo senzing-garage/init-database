@@ -117,6 +117,8 @@ func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context)
 
 		if len(senzingConfig.GrpcTarget) == 0 {
 
+			fmt.Printf(">>>>> getAbstractFactory senzingConfig.SenzingSettings: %s\n", senzingConfig.SenzingSettings)
+
 			senzingSettings := senzingConfig.SenzingSettings
 
 			// Handle case of SQLite in-memory database.
@@ -141,11 +143,10 @@ func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context)
 					fmt.Printf(">>>>> parsedURL.RawQuery: %s\n", parsedURL.RawQuery)
 					fmt.Printf(">>>>> parsedURL.Query().Encode(): %s\n", parsedURL.Query().Encode())
 
-					// databaseURL = fmt.Sprintf("file:%s?%s", parsedURL.Path, parsedURL.Query().Encode())
+					// databaseURL = fmt.Sprintf("sqlite3://na:na@:%s?%s", parsedURL.Path, parsedURL.Query().Encode())
+					databaseURL = "sqlite3://na:na@/MYPRIVATE_DB?mode=memory&cache=shared"
 
-					databaseURL = fmt.Sprintf("file:%s?%s", "BOBWASHERE", parsedURL.Query().Encode())
-
-					fmt.Printf(">>>>> databaseURL: %v\n", []byte(databaseURL))
+					fmt.Printf(">>>>> databaseURL: %s\n", databaseURL)
 
 					configPath, err := settingsParser.GetConfigPath(ctx)
 					assertNoError(err)
@@ -176,7 +177,7 @@ func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context)
 					err = jsonEncoder.Encode(szConfiguration)
 					assertNoError(err)
 
-					senzingSettings := buffer.Bytes()
+					senzingSettings = buffer.String()
 
 					// senzingSettingsBytes, err := json.Marshal(szConfiguration, encOpts())
 					// assertNoError(err)
@@ -185,9 +186,9 @@ func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context)
 
 					fmt.Printf(">>>>> Modified senzingSettings: %s\n", senzingSettings)
 
-					fmt.Printf(">>>>> Modified senzingSettings: %s\n", senzingSettings)
 				}
 			}
+			fmt.Printf(">>>>> SenzingConfig senzingSettings: %s\n", senzingSettings)
 
 			senzingConfig.szAbstractFactorySingleton, err = szfactorycreator.CreateCoreAbstractFactory(senzingConfig.SenzingInstanceName, senzingSettings, senzingConfig.SenzingVerboseLogging, senzing.SzInitializeWithDefaultConfiguration)
 			if err != nil {

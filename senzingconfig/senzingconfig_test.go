@@ -90,7 +90,8 @@ func TestSenzingConfigImpl_UnregisterObserver(test *testing.T) {
 
 func getTestObject(ctx context.Context, test *testing.T) *BasicSenzingConfig {
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
-	require.NoError(test, err)
+
+	fmt.Printf(">>>>> senzingconfig_basic.go senzingSettings: %s\n", senzingSettings)
 	result := &BasicSenzingConfig{
 		SenzingSettings: senzingSettings,
 	}

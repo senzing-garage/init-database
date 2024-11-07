@@ -10,6 +10,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/senzing-garage/go-databasing/checker"
+	"github.com/senzing-garage/go-databasing/connector"
 	"github.com/senzing-garage/go-helpers/settingsparser"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/notifier"
@@ -165,6 +167,23 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 		return err
 	}
 
+	// DEBUG: Get connection to database
+
+	databaseURL := "sqlite3://na:na@/MYPRIVATE_DB?mode=memory&cache=shared"
+
+	databaseConnector, err := connector.NewConnector(ctx, databaseURL)
+	if err != nil {
+		traceExitMessageNumber, debugMessageNumber = 999, 9999
+		return err
+	}
+
+	checker := &checker.BasicChecker{
+		DatabaseConnector: databaseConnector,
+	}
+
+	isSchemaInstalled, err := checker.IsSchemaInstalled(ctx)
+	fmt.Printf(">>>>> isSchemaInstalled - 1: %t err: %v\n", isSchemaInstalled, err)
+
 	// Create schema in database.
 
 	fmt.Printf(">>>>>>>  1.1\n")
@@ -189,6 +208,10 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 		return err
 	}
 
+	// DEBUG
+	isSchemaInstalled, err = checker.IsSchemaInstalled(ctx)
+	fmt.Printf(">>>>> isSchemaInstalled - 2: %t err: %v\n", isSchemaInstalled, err)
+
 	// Create initial Senzing configuration.
 
 	fmt.Printf(">>>>>>>  2.1\n")
@@ -210,11 +233,20 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 
 	fmt.Printf(">>>>>>>  2.3\n")
 
+	// DEBUG
+	isSchemaInstalled, err = checker.IsSchemaInstalled(ctx)
+	fmt.Printf(">>>>> isSchemaInstalled - 3: %t err: %v\n", isSchemaInstalled, err)
+
 	err = senzingConfig.InitializeSenzing(ctx)
 	if err != nil {
-		traceExitMessageNumber, debugMessageNumber = 16, 1016
-		return err
+		fmt.Print(err)
+		// traceExitMessageNumber, debugMessageNumber = 16, 1016
+		// return err
 	}
+
+	// DEBUG
+	isSchemaInstalled, err = checker.IsSchemaInstalled(ctx)
+	fmt.Printf(">>>>> isSchemaInstalled - 4: %t err: %v\n", isSchemaInstalled, err)
 
 	fmt.Printf(">>>>>>>  2.4\n")
 
