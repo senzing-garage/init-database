@@ -117,8 +117,6 @@ func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context)
 
 		if len(senzingConfig.GrpcTarget) == 0 {
 
-			fmt.Printf(">>>>> getAbstractFactory senzingConfig.SenzingSettings: %s\n", senzingConfig.SenzingSettings)
-
 			senzingSettings := senzingConfig.SenzingSettings
 
 			// Handle case of SQLite in-memory database.
@@ -139,14 +137,6 @@ func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context)
 
 			if parsedURL.Scheme == "sqlite3" {
 				if len(parsedURL.RawQuery) > 0 {
-
-					fmt.Printf(">>>>> parsedURL.RawQuery: %s\n", parsedURL.RawQuery)
-					fmt.Printf(">>>>> parsedURL.Query().Encode(): %s\n", parsedURL.Query().Encode())
-
-					// databaseURL = fmt.Sprintf("sqlite3://na:na@:%s?%s", parsedURL.Path, parsedURL.Query().Encode())
-					databaseURL = "sqlite3://na:na@/MYPRIVATE_DB?mode=memory&cache=shared"
-
-					fmt.Printf(">>>>> databaseURL: %s\n", databaseURL)
 
 					configPath, err := settingsParser.GetConfigPath(ctx)
 					assertNoError(err)
@@ -169,8 +159,6 @@ func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context)
 						},
 					}
 
-					fmt.Printf(">>>>> szConfiguration: %v\n", szConfiguration)
-
 					buffer := &bytes.Buffer{}
 					jsonEncoder := json.NewEncoder(buffer)
 					jsonEncoder.SetEscapeHTML(false)
@@ -184,11 +172,9 @@ func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context)
 
 					// senzingSettings := fmt.Sprintf("%s", senzingSettingsBytes)
 
-					fmt.Printf(">>>>> Modified senzingSettings: %s\n", senzingSettings)
-
 				}
 			}
-			fmt.Printf(">>>>> SenzingConfig senzingSettings: %s\n", senzingSettings)
+			fmt.Printf(">>>>> senzingconfig_basic.go getAbstractFactory senzingSettings: %s\n", senzingSettings)
 
 			senzingConfig.szAbstractFactorySingleton, err = szfactorycreator.CreateCoreAbstractFactory(senzingConfig.SenzingInstanceName, senzingSettings, senzingConfig.SenzingVerboseLogging, senzing.SzInitializeWithDefaultConfiguration)
 			if err != nil {
@@ -213,9 +199,6 @@ func (senzingConfig *BasicSenzingConfig) getSzConfig(ctx context.Context) (senzi
 	var err error
 	senzingConfig.szConfigSyncOnce.Do(func() {
 		senzingConfig.szConfigSingleton, err = senzingConfig.getAbstractFactory(ctx).CreateSzConfig(ctx)
-		if err != nil {
-			panic(err)
-		}
 	})
 	return senzingConfig.szConfigSingleton, err
 }
@@ -225,9 +208,6 @@ func (senzingConfig *BasicSenzingConfig) getSzConfigmgr(ctx context.Context) (se
 	var err error
 	senzingConfig.szConfigManagerSyncOnce.Do(func() {
 		senzingConfig.szConfigManagerSingleton, err = senzingConfig.getAbstractFactory(ctx).CreateSzConfigManager(ctx)
-		if err != nil {
-			panic(err)
-		}
 	})
 	return senzingConfig.szConfigManagerSingleton, err
 }

@@ -20,7 +20,7 @@ func ExampleBasicSenzingConfig_InitializeSenzing_withDatasources() {
 	ctx := context.TODO()
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 	senzingConfig := &BasicSenzingConfig{
 		SenzingSettings: senzingSettings,
@@ -42,7 +42,7 @@ func ExampleBasicSenzingConfig_InitializeSenzing() {
 	ctx := context.TODO()
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 	senzingConfig := &BasicSenzingConfig{
 		SenzingSettings: senzingSettings,
@@ -67,14 +67,14 @@ func ExampleBasicSenzingConfig_RegisterObserver() {
 	}
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 	senzingConfig := &BasicSenzingConfig{
 		SenzingSettings: senzingSettings,
 	}
 	err = senzingConfig.RegisterObserver(ctx, anObserver)
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 	// Output:
 }
@@ -84,7 +84,7 @@ func ExampleBasicSenzingConfig_SetLogLevel() {
 	ctx := context.TODO()
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 	senzingConfig := &BasicSenzingConfig{
 		SenzingSettings: senzingSettings,
@@ -101,7 +101,7 @@ func ExampleBasicSenzingConfig_SetObserverOrigin() {
 	ctx := context.TODO()
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 	senzingConfig := &BasicSenzingConfig{
 		SenzingSettings: senzingSettings,
@@ -119,18 +119,18 @@ func ExampleBasicSenzingConfig_UnregisterObserver() {
 	}
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 	senzingConfig := &BasicSenzingConfig{
 		SenzingSettings: senzingSettings,
 	}
 	err = senzingConfig.RegisterObserver(ctx, anObserver)
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 	err = senzingConfig.UnregisterObserver(ctx, anObserver)
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 	// Output:
 }

@@ -115,13 +115,13 @@ func getTestObject(ctx context.Context, test *testing.T) *BasicSenzingConfig {
 func TestMain(m *testing.M) {
 	err := setup()
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 		os.Exit(1)
 	}
 	code := m.Run()
 	err = teardown()
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 	os.Exit(code)
 }
@@ -130,7 +130,7 @@ func setup() error {
 	ctx := context.TODO()
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 	senzingSchema := &senzingschema.BasicSenzingSchema{
 		SenzingSettings: senzingSettings,

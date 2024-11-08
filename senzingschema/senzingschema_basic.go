@@ -94,8 +94,6 @@ func (senzingSchema *BasicSenzingSchema) traceExit(messageNumber int, details ..
 func (senzingSchema *BasicSenzingSchema) processDatabase(ctx context.Context, resourcePath string, databaseURL string) error {
 	var err error
 
-	fmt.Printf(">>>>>>> processDatabase(databaseURL): %s\n", databaseURL)
-
 	// Prolog.
 
 	debugMessageNumber := 0
@@ -262,8 +260,6 @@ func (senzingSchema *BasicSenzingSchema) InitializeSenzing(ctx context.Context) 
 	// Process each database.
 
 	for _, databaseURL := range databaseURLs {
-
-		fmt.Printf(">>>>> SzSchema databaseURL: %s\n", databaseURL)
 		err = senzingSchema.processDatabase(ctx, resourcePath, databaseURL)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 15, 1015

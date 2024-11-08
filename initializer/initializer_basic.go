@@ -186,7 +186,7 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 
 	// Create schema in database.
 
-	fmt.Printf(">>>>>>>  1.1\n")
+	fmt.Printf(">>>>>  1.1\n")
 
 	senzingSchema := initializer.getSenzingSchema()
 	err = senzingSchema.SetLogLevel(ctx, logLevel)
@@ -194,14 +194,14 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 		traceExitMessageNumber, debugMessageNumber = 13, 1013
 		return err
 	}
-	fmt.Printf(">>>>>>>  1.2\n")
+	fmt.Printf(">>>>>  1.2\n")
 	err = initializer.registerObserverSenzingSchema(ctx, anObserver)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 19, 1019
 		return err
 	}
 
-	fmt.Printf(">>>>>>>  1.3\n")
+	fmt.Printf(">>>>>  1.3\n")
 	err = senzingSchema.InitializeSenzing(ctx)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 14, 1014
@@ -214,7 +214,7 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 
 	// Create initial Senzing configuration.
 
-	fmt.Printf(">>>>>>>  2.1\n")
+	fmt.Printf(">>>>>  2.1\n")
 
 	senzingConfig := initializer.getSenzingConfig()
 	err = senzingConfig.SetLogLevel(ctx, logLevel)
@@ -223,7 +223,7 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 		return err
 	}
 
-	fmt.Printf(">>>>>>>  2.2\n")
+	fmt.Printf(">>>>>  2.2\n")
 
 	err = initializer.registerObserverSenzingConfig(ctx, anObserver)
 	if err != nil {
@@ -231,7 +231,7 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 		return err
 	}
 
-	fmt.Printf(">>>>>>>  2.3\n")
+	fmt.Printf(">>>>>  2.3\n")
 
 	// DEBUG
 	isSchemaInstalled, err = checker.IsSchemaInstalled(ctx)
@@ -239,7 +239,7 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 
 	err = senzingConfig.InitializeSenzing(ctx)
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 		// traceExitMessageNumber, debugMessageNumber = 16, 1016
 		// return err
 	}
@@ -248,7 +248,7 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 	isSchemaInstalled, err = checker.IsSchemaInstalled(ctx)
 	fmt.Printf(">>>>> isSchemaInstalled - 4: %t err: %v\n", isSchemaInstalled, err)
 
-	fmt.Printf(">>>>>>>  2.4\n")
+	fmt.Printf(">>>>>  2.4\n")
 
 	// Notify observers.
 
