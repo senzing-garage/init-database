@@ -22,8 +22,6 @@ func ExampleBasicInitializer_Initialize() {
 	if err != nil {
 		fmt.Println(err)
 	}
-
-	fmt.Printf(">>>>> senzingSettings: %s\n", senzingSettings)
 	anInitializer := &BasicInitializer{
 		SenzingSettings: senzingSettings,
 	}

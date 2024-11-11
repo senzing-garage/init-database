@@ -174,7 +174,7 @@ func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context)
 
 				}
 			}
-			fmt.Printf(">>>>> senzingconfig_basic.go getAbstractFactory senzingSettings: %s\n", senzingSettings)
+			// fmt.Printf(">>>>> senzingconfig_basic.go getAbstractFactory senzingSettings: %s\n", senzingSettings)
 
 			senzingConfig.szAbstractFactorySingleton, err = szfactorycreator.CreateCoreAbstractFactory(senzingConfig.SenzingInstanceName, senzingSettings, senzingConfig.SenzingVerboseLogging, senzing.SzInitializeWithDefaultConfiguration)
 			if err != nil {

@@ -92,7 +92,6 @@ func TestBasicInitializer_UnregisterObserver(test *testing.T) {
 
 func getTestObject(ctx context.Context, test *testing.T) *BasicInitializer {
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
-
 	require.NoError(test, err)
 	result := &BasicInitializer{
 		SenzingSettings: senzingSettings,
