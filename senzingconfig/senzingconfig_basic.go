@@ -114,9 +114,7 @@ func (senzingConfig *BasicSenzingConfig) traceExit(messageNumber int, details ..
 func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
 	_ = ctx
 	senzingConfig.szAbstractFactorySyncOnce.Do(func() {
-
 		if len(senzingConfig.GrpcTarget) == 0 {
-
 			senzingSettings := senzingConfig.SenzingSettings
 
 			// Handle case of SQLite in-memory database.
