@@ -136,6 +136,8 @@ func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context)
 			assertNoError(err)
 
 			if parsedURL.Scheme == "sqlite3" {
+
+				// TODO:  The following if-statement may not be needed.
 				if len(parsedURL.RawQuery) > 0 {
 
 					configPath, err := settingsParser.GetConfigPath(ctx)
@@ -169,9 +171,7 @@ func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context)
 
 					// senzingSettingsBytes, err := json.Marshal(szConfiguration, encOpts())
 					// assertNoError(err)
-
 					// senzingSettings := fmt.Sprintf("%s", senzingSettingsBytes)
-
 				}
 			}
 			// fmt.Printf(">>>>> senzingconfig_basic.go getAbstractFactory senzingSettings: %s\n", senzingSettings)
