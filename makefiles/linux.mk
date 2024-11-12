@@ -5,9 +5,8 @@
 # -----------------------------------------------------------------------------
 
 LD_LIBRARY_PATH ?= /opt/senzing/er/lib
-SENZING_TOOLS_DATABASE_URL ?= sqlite3://na:na@nowhere/tmp/sqlite/G2C.db
-# SENZING_TOOLS_DATABASE_URL ?= sqlite3://na:na@/MYPRIVATE_DB?mode=memory&cache=shared
-
+# SENZING_TOOLS_DATABASE_URL ?= sqlite3://na:na@nowhere/tmp/sqlite/G2C.db
+SENZING_TOOLS_DATABASE_URL ?= sqlite3://na:na@/MYPRIVATE_DB?mode=memory&cache=shared
 PATH := $(MAKEFILE_DIRECTORY)/bin:/$(HOME)/go/bin:$(PATH)
 
 # -----------------------------------------------------------------------------
@@ -87,7 +86,7 @@ setup-osarch-specific:
 
 .PHONY: test-osarch-specific
 test-osarch-specific:
-	@go test -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
+	@go test -tags "libsqlite3 linux" -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
 
 # -----------------------------------------------------------------------------
 # Makefile targets supported only by this platform.

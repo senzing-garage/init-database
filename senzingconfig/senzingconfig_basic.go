@@ -6,13 +6,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"net/url"
 	"os"
 	"path/filepath"
 	"sync"
 	"time"
 
-	"github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-helpers/settingsparser"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/notifier"
@@ -129,49 +127,49 @@ func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context)
 			if len(databaseURLs) > 1 {
 				panic("Too many databaseURLs")
 			}
-			databaseURL := databaseURLs[0]
-			parsedURL, err := url.Parse(databaseURL)
-			assertNoError(err)
+			// databaseURL := databaseURLs[0]
+			// parsedURL, err := url.Parse(databaseURL)
+			// assertNoError(err)
 
-			if parsedURL.Scheme == "sqlite3" {
+			// if parsedURL.Scheme == "sqlite3" {
 
-				// TODO:  The following if-statement may not be needed.
-				if len(parsedURL.RawQuery) > 0 {
+			// 	// TODO:  The following if-statement may not be needed.
+			// 	if len(parsedURL.RawQuery) > 0 {
 
-					configPath, err := settingsParser.GetConfigPath(ctx)
-					assertNoError(err)
-					resourcePath, err := settingsParser.GetResourcePath(ctx)
-					assertNoError(err)
-					supportPath, err := settingsParser.GetSupportPath(ctx)
-					assertNoError(err)
-					licenseStringBase64, err := settingsParser.GetLicenseStringBase64(ctx)
-					assertNoError(err)
+			// 		configPath, err := settingsParser.GetConfigPath(ctx)
+			// 		assertNoError(err)
+			// 		resourcePath, err := settingsParser.GetResourcePath(ctx)
+			// 		assertNoError(err)
+			// 		supportPath, err := settingsParser.GetSupportPath(ctx)
+			// 		assertNoError(err)
+			// 		licenseStringBase64, err := settingsParser.GetLicenseStringBase64(ctx)
+			// 		assertNoError(err)
 
-					szConfiguration := settings.SzConfiguration{
-						Pipeline: settings.SzConfigurationPipeline{
-							ConfigPath:          configPath,
-							LicenseStringBase64: licenseStringBase64,
-							ResourcePath:        resourcePath,
-							SupportPath:         supportPath,
-						},
-						SQL: settings.SzConfigurationSQL{
-							Connection: databaseURL,
-						},
-					}
+			// 		szConfiguration := settings.SzConfiguration{
+			// 			Pipeline: settings.SzConfigurationPipeline{
+			// 				ConfigPath:          configPath,
+			// 				LicenseStringBase64: licenseStringBase64,
+			// 				ResourcePath:        resourcePath,
+			// 				SupportPath:         supportPath,
+			// 			},
+			// 			SQL: settings.SzConfigurationSQL{
+			// 				Connection: databaseURL,
+			// 			},
+			// 		}
 
-					buffer := &bytes.Buffer{}
-					jsonEncoder := json.NewEncoder(buffer)
-					jsonEncoder.SetEscapeHTML(false)
-					err = jsonEncoder.Encode(szConfiguration)
-					assertNoError(err)
+			// 		buffer := &bytes.Buffer{}
+			// 		jsonEncoder := json.NewEncoder(buffer)
+			// 		jsonEncoder.SetEscapeHTML(false)
+			// 		err = jsonEncoder.Encode(szConfiguration)
+			// 		assertNoError(err)
 
-					senzingSettings = buffer.String()
+			// 		senzingSettings = buffer.String()
 
-					// senzingSettingsBytes, err := json.Marshal(szConfiguration, encOpts())
-					// assertNoError(err)
-					// senzingSettings := fmt.Sprintf("%s", senzingSettingsBytes)
-				}
-			}
+			// 		// senzingSettingsBytes, err := json.Marshal(szConfiguration, encOpts())
+			// 		// assertNoError(err)
+			// 		// senzingSettings := fmt.Sprintf("%s", senzingSettingsBytes)
+			// 	}
+			// }
 			// fmt.Printf(">>>>> senzingconfig_basic.go getAbstractFactory senzingSettings: %s\n", senzingSettings)
 
 			senzingConfig.szAbstractFactorySingleton, err = szfactorycreator.CreateCoreAbstractFactory(senzingConfig.SenzingInstanceName, senzingSettings, senzingConfig.SenzingVerboseLogging, senzing.SzInitializeWithDefaultConfiguration)

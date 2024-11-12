@@ -285,14 +285,16 @@ func getSQLFileDefault() string {
 	// Based on database type, choose SQL file.
 
 	switch parsedURL.Scheme {
-	case "sqlite3":
-		result = resourcePath + "/schema/szcore-schema-sqlite-create.sql"
-	case "postgresql":
-		result = resourcePath + "/schema/szcore-schema-postgresql-create.sql"
-	case "mysql":
-		result = resourcePath + "/schema/szcore-schema-mysql-create.sql"
 	case "mssql":
 		result = resourcePath + "/schema/szcore-schema-mssql-create.sql"
+	case "mysql":
+		result = resourcePath + "/schema/szcore-schema-mysql-create.sql"
+	case "oci":
+		result = resourcePath + "/schema/szcore-schema-oracle-create.sql"
+	case "postgresql":
+		result = resourcePath + "/schema/szcore-schema-postgresql-create.sql"
+	case "sqlite3":
+		result = resourcePath + "/schema/szcore-schema-sqlite-create.sql"
 	}
 
 	return result
