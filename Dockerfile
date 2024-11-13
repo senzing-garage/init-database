@@ -25,6 +25,14 @@ LABEL Name="senzing/go-builder" \
 
 USER root
 
+# Install packages via apt-get.
+
+RUN apt-get update \
+ && apt-get -y install \
+        libsqlite3-dev \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
+
 # Copy local files from the Git repository.
 
 COPY ./rootfs /
@@ -63,13 +71,19 @@ USER root
 
 # Install packages via apt-get.
 
+RUN apt-get update \
+ && apt-get -y install \
+        libsqlite3-dev \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
+
 # Copy files from repository.
 
 COPY ./rootfs /
 
 # Copy files from prior stage.
 
-COPY --from=builder "/output/linux/init-database" "/app/init-database"
+COPY --from=builder /output/linux/init-database /app/init-database
 
 # Run as non-root container
 
