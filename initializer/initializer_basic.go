@@ -7,9 +7,9 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 
+	"github.com/senzing-garage/go-databasing/dbhelper"
 	"github.com/senzing-garage/go-helpers/settingsparser"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/notifier"
@@ -276,17 +276,10 @@ func (initializer *BasicInitializer) InitializeSpecificDatabase(ctx context.Cont
 
 		// Parse URL.
 
-		parsedURL, err := url.Parse(databaseURL)
+		parsedURL, err := dbhelper.ParseDatabaseURL(databaseURL)
 		if err != nil {
-			if strings.HasPrefix(databaseURL, "postgresql") {
-				index := strings.LastIndex(databaseURL, ":")
-				newDatabaseURL := databaseURL[:index] + "/" + databaseURL[index+1:]
-				parsedURL, err = url.Parse(newDatabaseURL)
-			}
-			if err != nil {
-				traceExitMessageNumber, debugMessageNumber = 44, 1044
-				return err
-			}
+			traceExitMessageNumber, debugMessageNumber = 44, 1044
+			return err
 		}
 
 		// Special handling for each database type.

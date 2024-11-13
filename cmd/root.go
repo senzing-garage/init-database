@@ -5,7 +5,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"net/url"
 	"os"
 	"strings"
 
@@ -13,6 +12,7 @@ import (
 	"github.com/senzing-garage/go-cmdhelping/constant"
 	"github.com/senzing-garage/go-cmdhelping/option"
 	"github.com/senzing-garage/go-cmdhelping/option/optiontype"
+	"github.com/senzing-garage/go-databasing/dbhelper"
 	"github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-helpers/settingsparser"
 	"github.com/senzing-garage/init-database/initializer"
@@ -270,16 +270,9 @@ func getSQLFileDefault() string {
 
 	// Parse database URL to find which type of database is used.
 
-	parsedURL, err := url.Parse(databaseURL)
+	parsedURL, err := dbhelper.ParseDatabaseURL(databaseURL)
 	if err != nil {
-		if strings.HasPrefix(databaseURL, "postgresql") {
-			index := strings.LastIndex(databaseURL, ":")
-			newDatabaseURL := databaseURL[:index] + "/" + databaseURL[index+1:]
-			parsedURL, err = url.Parse(newDatabaseURL)
-		}
-		if err != nil {
-			return result
-		}
+		return result
 	}
 
 	// Based on database type, choose SQL file.
