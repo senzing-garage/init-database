@@ -20,7 +20,7 @@ func ExampleBasicInitializer_Initialize() {
 	ctx := context.TODO()
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 	anInitializer := &BasicInitializer{
 		SenzingSettings: senzingSettings,
@@ -45,14 +45,14 @@ func ExampleBasicInitializer_RegisterObserver() {
 	}
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 	anInitializer := &BasicInitializer{
 		SenzingSettings: senzingSettings,
 	}
 	err = anInitializer.RegisterObserver(ctx, anObserver)
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 	// Output:
 }
@@ -62,7 +62,7 @@ func ExampleBasicInitializer_SetLogLevel() {
 	ctx := context.TODO()
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 	anInitializer := &BasicInitializer{
 		SenzingSettings: senzingSettings,
@@ -78,7 +78,7 @@ func ExampleBasicInitializer_SetObserverOrigin() {
 	ctx := context.TODO()
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 	anInitializer := &BasicInitializer{
 		SenzingSettings: senzingSettings,
@@ -96,18 +96,18 @@ func ExampleBasicInitializer_UnregisterObserver() {
 	}
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 	anInitializer := &BasicInitializer{
 		SenzingSettings: senzingSettings,
 	}
 	err = anInitializer.RegisterObserver(ctx, anObserver)
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 	err = anInitializer.UnregisterObserver(ctx, anObserver)
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 	// Output:
 }

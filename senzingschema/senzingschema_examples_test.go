@@ -20,7 +20,7 @@ func ExampleBasicSenzingSchema_InitializeSenzing() {
 	ctx := context.TODO()
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 	senzingSchema := &BasicSenzingSchema{
 		SenzingSettings: senzingSettings,
@@ -45,14 +45,14 @@ func ExampleBasicSenzingSchema_RegisterObserver() {
 	}
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 	senzingSchema := &BasicSenzingSchema{
 		SenzingSettings: senzingSettings,
 	}
 	err = senzingSchema.RegisterObserver(ctx, anObserver)
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 	// Output:
 }
@@ -62,14 +62,14 @@ func ExampleBasicSenzingSchema_SetLogLevel() {
 	ctx := context.TODO()
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 	senzingSchema := &BasicSenzingSchema{
 		SenzingSettings: senzingSettings,
 	}
 	err = senzingSchema.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 	// Output:
 }
@@ -79,7 +79,7 @@ func ExampleBasicSenzingSchema_SetObserverOrigin() {
 	ctx := context.TODO()
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 	senzingSchema := &BasicSenzingSchema{
 		SenzingSettings: senzingSettings,
@@ -97,18 +97,18 @@ func ExampleBasicSenzingSchema_UnregisterObserver() {
 	}
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 	senzingSchema := &BasicSenzingSchema{
 		SenzingSettings: senzingSettings,
 	}
 	err = senzingSchema.RegisterObserver(ctx, anObserver)
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 	err = senzingSchema.UnregisterObserver(ctx, anObserver)
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 	// Output:
 }

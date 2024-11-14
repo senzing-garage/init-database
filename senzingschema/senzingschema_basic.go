@@ -4,11 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"net/url"
-	"strings"
 	"time"
 
 	"github.com/senzing-garage/go-databasing/connector"
+	"github.com/senzing-garage/go-databasing/dbhelper"
 	"github.com/senzing-garage/go-databasing/sqlexecutor"
 	"github.com/senzing-garage/go-helpers/settingsparser"
 	"github.com/senzing-garage/go-logging/logging"
@@ -121,29 +120,24 @@ func (senzingSchema *BasicSenzingSchema) processDatabase(ctx context.Context, re
 
 	// Determine which SQL file to process.
 
-	parsedURL, err := url.Parse(databaseURL)
+	parsedURL, err := dbhelper.ParseDatabaseURL(databaseURL)
 	if err != nil {
-		if strings.HasPrefix(databaseURL, "postgresql") {
-			index := strings.LastIndex(databaseURL, ":")
-			newDatabaseURL := databaseURL[:index] + "/" + databaseURL[index+1:]
-			parsedURL, err = url.Parse(newDatabaseURL)
-		}
-		if err != nil {
-			traceExitMessageNumber, debugMessageNumber = 101, 1101
-			return err
-		}
+		traceExitMessageNumber, debugMessageNumber = 101, 1101
+		return err
 	}
 
 	if len(senzingSchema.SQLFile) == 0 {
 		switch parsedURL.Scheme {
-		case "sqlite3":
-			senzingSchema.SQLFile = resourcePath + "/schema/szcore-schema-sqlite-create.sql"
-		case "postgresql":
-			senzingSchema.SQLFile = resourcePath + "/schema/szcore-schema-postgresql-create.sql"
-		case "mysql":
-			senzingSchema.SQLFile = resourcePath + "/schema/szcore-schema-mysql-create.sql"
 		case "mssql":
 			senzingSchema.SQLFile = resourcePath + "/schema/szcore-schema-mssql-create.sql"
+		case "mysql":
+			senzingSchema.SQLFile = resourcePath + "/schema/szcore-schema-mysql-create.sql"
+		case "oci":
+			senzingSchema.SQLFile = resourcePath + "/schema/szcore-schema-oracle-create.sql"
+		case "postgresql":
+			senzingSchema.SQLFile = resourcePath + "/schema/szcore-schema-postgresql-create.sql"
+		case "sqlite3":
+			senzingSchema.SQLFile = resourcePath + "/schema/szcore-schema-sqlite-create.sql"
 		default:
 			return fmt.Errorf("unknown database scheme: %s", parsedURL.Scheme)
 		}
