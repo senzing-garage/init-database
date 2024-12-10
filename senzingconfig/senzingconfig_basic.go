@@ -194,7 +194,7 @@ func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context)
 func (senzingConfig *BasicSenzingConfig) getSzConfig(ctx context.Context) (senzing.SzConfig, error) {
 	var err error
 	senzingConfig.szConfigSyncOnce.Do(func() {
-		senzingConfig.szConfigSingleton, err = senzingConfig.getAbstractFactory(ctx).CreateSzConfig(ctx)
+		senzingConfig.szConfigSingleton, err = senzingConfig.getAbstractFactory(ctx).CreateConfig(ctx)
 	})
 	return senzingConfig.szConfigSingleton, err
 }
@@ -203,7 +203,7 @@ func (senzingConfig *BasicSenzingConfig) getSzConfig(ctx context.Context) (senzi
 func (senzingConfig *BasicSenzingConfig) getSzConfigmgr(ctx context.Context) (senzing.SzConfigManager, error) {
 	var err error
 	senzingConfig.szConfigManagerSyncOnce.Do(func() {
-		senzingConfig.szConfigManagerSingleton, err = senzingConfig.getAbstractFactory(ctx).CreateSzConfigManager(ctx)
+		senzingConfig.szConfigManagerSingleton, err = senzingConfig.getAbstractFactory(ctx).CreateConfigManager(ctx)
 	})
 	return senzingConfig.szConfigManagerSingleton, err
 }
