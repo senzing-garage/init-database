@@ -2,14 +2,14 @@
 # Stages
 # -----------------------------------------------------------------------------
 
-ARG IMAGE_BUILDER=golang:1.22.4-bullseye
-ARG IMAGE_FINAL=senzing/senzingapi-runtime-staging:latest
+ARG IMAGE_BUILDER=golang:1.23.4-bookworm
+ARG IMAGE_FINAL=senzing/senzingsdk-runtime-beta:latest
 
 # -----------------------------------------------------------------------------
-# Stage: senzingapi_runtime
+# Stage: senzingsdk_runtime
 # -----------------------------------------------------------------------------
 
-FROM ${IMAGE_FINAL} AS senzingapi_runtime
+FROM ${IMAGE_FINAL} AS senzingsdk_runtime
 
 # -----------------------------------------------------------------------------
 # Stage: builder
@@ -25,6 +25,14 @@ LABEL Name="senzing/go-builder" \
 
 USER root
 
+# Install packages via apt-get.
+
+RUN apt-get update \
+ && apt-get -y install \
+        libsqlite3-dev \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
+
 # Copy local files from the Git repository.
 
 COPY ./rootfs /
@@ -32,8 +40,8 @@ COPY . ${GOPATH}/src/init-database
 
 # Copy files from prior stage.
 
-COPY --from=senzingapi_runtime  "/opt/senzing/er/lib/"   "/opt/senzing/er/lib/"
-COPY --from=senzingapi_runtime  "/opt/senzing/er/sdk/c/" "/opt/senzing/er/sdk/c/"
+COPY --from=senzingsdk_runtime  "/opt/senzing/er/lib/"   "/opt/senzing/er/lib/"
+COPY --from=senzingsdk_runtime  "/opt/senzing/er/sdk/c/" "/opt/senzing/er/sdk/c/"
 
 # Set path to Senzing libs.
 
@@ -57,11 +65,17 @@ FROM ${IMAGE_FINAL} AS final
 ENV REFRESHED_AT=2024-07-01
 LABEL Name="senzing/init-database" \
       Maintainer="support@senzing.com" \
-      Version="0.5.2"
+      Version="0.7.2"
 HEALTHCHECK CMD ["/app/healthcheck.sh"]
 USER root
 
 # Install packages via apt-get.
+
+RUN apt-get update \
+ && apt-get -y install \
+        libsqlite3-dev \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
 
 # Copy files from repository.
 
@@ -69,7 +83,7 @@ COPY ./rootfs /
 
 # Copy files from prior stage.
 
-COPY --from=builder "/output/linux/init-database" "/app/init-database"
+COPY --from=builder /output/linux/init-database /app/init-database
 
 # Run as non-root container
 

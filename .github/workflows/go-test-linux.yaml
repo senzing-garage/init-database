@@ -12,13 +12,12 @@ permissions:
 
 jobs:
   go-test-linux:
-    name: "Go test with Senzing: ${{ matrix.senzingapi-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }}"
+    name: "Go test with OS: ${{ matrix.os }}; Go: ${{ matrix.go }}"
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         go: ["1.21"]
         os: [ubuntu-latest]
-        senzingapi-version: [staging-v4]
 
     steps:
       - name: Checkout repository
@@ -39,11 +38,12 @@ jobs:
       - name: Copy /opt/senzing/er/resources/ files
         run: sudo cp --verbose --recursive rootfs/* /
 
-      - name: Install Senzing API
-        uses: senzing-factory/github-action-install-senzing-api@v4
+      - name: Install Senzing SDK
+        uses: senzing-factory/github-action-install-senzing-sdk@v2
         with:
-          packages-to-install: "senzingapi-runtime senzingapi-setup"
-          senzingapi-version: ${{ matrix.senzingapi-version }}
+          packages-to-install: "senzingsdk-runtime senzingsdk-setup"
+          senzingsdk-repository-package: ${{ secrets.SENZING_APT_BETA_STAGING_REPOSITORY_PACKAGE }}
+          senzingsdk-repository-path: ${{ secrets.SENZING_APT_BETA_STAGING_REPOSITORY_URL }}
 
       - name: Run go test
         run: go test -json -v -p 1 -coverprofile=./cover.out -covermode=atomic -coverpkg=./... ./...  2>&1 | tee /tmp/gotest.log | gotestfmt

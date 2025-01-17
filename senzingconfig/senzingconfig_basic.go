@@ -111,10 +111,68 @@ func (senzingConfig *BasicSenzingConfig) traceExit(messageNumber int, details ..
 // Create an abstract factory singleton and return it.
 func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
 	_ = ctx
-	var err error
 	senzingConfig.szAbstractFactorySyncOnce.Do(func() {
 		if len(senzingConfig.GrpcTarget) == 0 {
-			senzingConfig.szAbstractFactorySingleton, err = szfactorycreator.CreateCoreAbstractFactory(senzingConfig.SenzingInstanceName, senzingConfig.SenzingSettings, senzingConfig.SenzingVerboseLogging, senzing.SzInitializeWithDefaultConfiguration)
+			senzingSettings := senzingConfig.SenzingSettings
+
+			// Handle case of SQLite in-memory database.
+			// TODO:  Refactor to different, reusable, location.
+
+			settingsParser := settingsparser.BasicSettingsParser{
+				Settings: senzingConfig.SenzingSettings,
+			}
+
+			databaseURLs, err := settingsParser.GetDatabaseURLs(ctx)
+			assertNoError(err)
+			if len(databaseURLs) > 1 {
+				panic("Too many databaseURLs")
+			}
+			// databaseURL := databaseURLs[0]
+			// parsedURL, err := url.Parse(databaseURL)
+			// assertNoError(err)
+
+			// if parsedURL.Scheme == "sqlite3" {
+
+			// 	// TODO:  The following if-statement may not be needed.
+			// 	if len(parsedURL.RawQuery) > 0 {
+
+			// 		configPath, err := settingsParser.GetConfigPath(ctx)
+			// 		assertNoError(err)
+			// 		resourcePath, err := settingsParser.GetResourcePath(ctx)
+			// 		assertNoError(err)
+			// 		supportPath, err := settingsParser.GetSupportPath(ctx)
+			// 		assertNoError(err)
+			// 		licenseStringBase64, err := settingsParser.GetLicenseStringBase64(ctx)
+			// 		assertNoError(err)
+
+			// 		szConfiguration := settings.SzConfiguration{
+			// 			Pipeline: settings.SzConfigurationPipeline{
+			// 				ConfigPath:          configPath,
+			// 				LicenseStringBase64: licenseStringBase64,
+			// 				ResourcePath:        resourcePath,
+			// 				SupportPath:         supportPath,
+			// 			},
+			// 			SQL: settings.SzConfigurationSQL{
+			// 				Connection: databaseURL,
+			// 			},
+			// 		}
+
+			// 		buffer := &bytes.Buffer{}
+			// 		jsonEncoder := json.NewEncoder(buffer)
+			// 		jsonEncoder.SetEscapeHTML(false)
+			// 		err = jsonEncoder.Encode(szConfiguration)
+			// 		assertNoError(err)
+
+			// 		senzingSettings = buffer.String()
+
+			// 		// senzingSettingsBytes, err := json.Marshal(szConfiguration, encOpts())
+			// 		// assertNoError(err)
+			// 		// senzingSettings := fmt.Sprintf("%s", senzingSettingsBytes)
+			// 	}
+			// }
+			// fmt.Printf(">>>>> senzingconfig_basic.go getAbstractFactory senzingSettings: %s\n", senzingSettings)
+
+			senzingConfig.szAbstractFactorySingleton, err = szfactorycreator.CreateCoreAbstractFactory(senzingConfig.SenzingInstanceName, senzingSettings, senzingConfig.SenzingVerboseLogging, senzing.SzInitializeWithDefaultConfiguration)
 			if err != nil {
 				panic(err)
 			}
@@ -136,10 +194,7 @@ func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context)
 func (senzingConfig *BasicSenzingConfig) getSzConfig(ctx context.Context) (senzing.SzConfig, error) {
 	var err error
 	senzingConfig.szConfigSyncOnce.Do(func() {
-		senzingConfig.szConfigSingleton, err = senzingConfig.getAbstractFactory(ctx).CreateSzConfig(ctx)
-		if err != nil {
-			panic(err)
-		}
+		senzingConfig.szConfigSingleton, err = senzingConfig.getAbstractFactory(ctx).CreateConfig(ctx)
 	})
 	return senzingConfig.szConfigSingleton, err
 }
@@ -148,10 +203,7 @@ func (senzingConfig *BasicSenzingConfig) getSzConfig(ctx context.Context) (senzi
 func (senzingConfig *BasicSenzingConfig) getSzConfigmgr(ctx context.Context) (senzing.SzConfigManager, error) {
 	var err error
 	senzingConfig.szConfigManagerSyncOnce.Do(func() {
-		senzingConfig.szConfigManagerSingleton, err = senzingConfig.getAbstractFactory(ctx).CreateSzConfigManager(ctx)
-		if err != nil {
-			panic(err)
-		}
+		senzingConfig.szConfigManagerSingleton, err = senzingConfig.getAbstractFactory(ctx).CreateConfigManager(ctx)
 	})
 	return senzingConfig.szConfigManagerSingleton, err
 }
@@ -282,6 +334,12 @@ func (senzingConfig *BasicSenzingConfig) filesAreEqual(sourceFilename string, ta
 		if !bytes.Equal(sourceBytes, targetBytes) {
 			return false
 		}
+	}
+}
+
+func assertNoError(err error) {
+	if err != nil {
+		panic(err)
 	}
 }
 
