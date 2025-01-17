@@ -39,7 +39,6 @@ jobs:
 
       - name: Copy /opt/senzing/er/resources/ files
         run: |
-          sudo mkdir /app
           sudo cp -v -R rootfs/* /
 
       - name: Install Senzing SDK
