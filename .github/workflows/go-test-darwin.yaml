@@ -39,7 +39,7 @@ jobs:
 
       - name: Copy /opt/senzing/er/resources/ files
         run: |
-          sudo cp -v -R rootfs/* /
+          sudo cp -v -R rootfs/opt/* /opt
 
       - name: Install Senzing SDK
         uses: senzing-factory/github-action-install-senzing-sdk@v2
