@@ -39,7 +39,7 @@ jobs:
         run: sudo cp --verbose --recursive rootfs/* /
 
       - name: Install Senzing SDK
-        uses: senzing-factory/github-action-install-senzing-sdk@v2
+        uses: senzing-factory/github-action-install-senzing-sdk@v3
         with:
           packages-to-install: "senzingsdk-runtime senzingsdk-setup"
           senzingsdk-repository-package: ${{ secrets.SENZING_APT_BETA_STAGING_REPOSITORY_PACKAGE }}
