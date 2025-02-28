@@ -50,6 +50,9 @@ jobs:
       - name: Copy /opt/senzing/er/resources/ files
         run: sudo cp --verbose --recursive rootfs/* /
 
+      - name: Copy /opt/microsoft/ files
+        run: sudo cp --verbose --recursive testdata/* /
+
       - name: Install Senzing SDK
         uses: senzing-factory/github-action-install-senzing-sdk@v3
         with:
@@ -99,4 +102,5 @@ jobs:
         run: |
           export SENZING_PATH="/opt/senzing"
           export LD_LIBRARY_PATH="${SENZING_PATH}/er/lib:${SENZING_PATH}/er/lib/macos"
+          export ODBCSYSINI="/etc/opt/senzing"
           go test -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
