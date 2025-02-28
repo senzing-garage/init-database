@@ -71,7 +71,8 @@ jobs:
 
       - name: Install dependencies 1
         run: |
-          export UBUNTU_MAJOR_VERSION=$(grep VERSION_ID /etc/os-release | cut -d '"' -f 2 | cut -d '.' -f 1)
+          UBUNTU_MAJOR_VERSION=$(grep VERSION_ID /etc/os-release | cut -d '"' -f 2 | cut -d '.' -f 1)
+          export UBUNTU_MAJOR_VERSION
           env
           curl -sSL -O "https://packages.microsoft.com/config/debian/${UBUNTU_MAJOR_VERSION}/packages-microsoft-prod.deb"
           dpkg -i packages-microsoft-prod.deb
