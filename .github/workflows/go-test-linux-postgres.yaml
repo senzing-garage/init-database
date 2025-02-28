@@ -1,17 +1,17 @@
-name: Go test linux
+name: Go test linux - postgres
 
 on: [push]
 
 env:
   SENZING_LOG_LEVEL: TRACE
-  SENZING_TOOLS_DATABASE_URL: postgresql://postgres:postgres@postgres:5432/G2
+  SENZING_TOOLS_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/G2
 
 permissions:
   contents: read
 
 jobs:
   go-test-linux:
-    name: "Go test with Senzing: ${{ matrix.senzingsdk-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }}"
+    name: "Go test with Senzing: ${{ matrix.senzingsdk-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }} - postgres"
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
