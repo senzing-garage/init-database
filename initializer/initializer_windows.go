@@ -9,5 +9,8 @@ func cleanFilename(filename string) string {
 	if strings.HasPrefix(result, "/") {
 		result = result[1:]
 	}
+	if strings.HasPrefix(result, "\\") {
+		result = result[1:]
+	}
 	return result
 }
