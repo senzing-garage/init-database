@@ -1,17 +1,17 @@
-name: Go test linux - postgres
+name: Go test linux - oracle
 
 on: [push]
 
 env:
   SENZING_LOG_LEVEL: TRACE
-  SENZING_TOOLS_DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/G2/?sslmode=disable"
+  SENZING_TOOLS_DATABASE_URL: "oci://sys:Passw0rd@localhost:1521/G2"
 
 permissions:
   contents: read
 
 jobs:
   go-test-linux:
-    name: "Go test with Senzing: ${{ matrix.senzingsdk-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }} - postgres"
+    name: "Go test with Senzing: ${{ matrix.senzingsdk-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }} - oracle"
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -20,19 +20,13 @@ jobs:
         senzingsdk-version: [staging-v4]
 
     services:
-      postgres:
-        # https://hub.docker.com/_/postgres
+      oracle:
+        # https://container-registry.oracle.com/ords/ocr/ba/database/free
         env:
-          POSTGRES_DB: G2
-          POSTGRES_PASSWORD: postgres
-        image: postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          ORACLE_PWD: Passw0rd
+        image: container-registry.oracle.com/database/free
         ports:
-          - 5432:5432
+          - 1521:1521
 
     steps:
       - name: Checkout repository
@@ -59,6 +53,14 @@ jobs:
           packages-to-install: "senzingsdk-runtime senzingsdk-setup"
           senzingsdk-repository-package: ${{ secrets.SENZING_APT_BETA_STAGING_REPOSITORY_PACKAGE }}
           senzingsdk-repository-path: ${{ secrets.SENZING_APT_BETA_STAGING_REPOSITORY_URL }}
+
+      - name: Install Oracle SDK
+        run: |
+          curl --output /tmp/instantclient-basic-linux.zip https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-basic-linux.x64-23.5.0.24.07.zip
+          sudo mkdir -p /opt/oracle
+          sudo unzip -d /opt/oracle /tmp/instantclient-basic-linux.zip
+          sudo apt-get install libaio1t64 libaio-dev
+          sudo ln -s /usr/lib/x86_64-linux-gnu/libaio.so.1t64 /usr/lib/libaio.so.1
 
       - name: Run go test
         run: |

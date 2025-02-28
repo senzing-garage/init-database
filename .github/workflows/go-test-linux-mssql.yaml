@@ -1,17 +1,17 @@
-name: Go test linux - postgres
+name: Go test linux - mssql
 
 on: [push]
 
 env:
   SENZING_LOG_LEVEL: TRACE
-  SENZING_TOOLS_DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/G2/?sslmode=disable"
+  SENZING_TOOLS_DATABASE_URL: "mssql://sa:Passw0rd@localhost:1433/G2"
 
 permissions:
   contents: read
 
 jobs:
   go-test-linux:
-    name: "Go test with Senzing: ${{ matrix.senzingsdk-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }} - postgres"
+    name: "Go test with Senzing: ${{ matrix.senzingsdk-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }} - mssql"
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -20,19 +20,15 @@ jobs:
         senzingsdk-version: [staging-v4]
 
     services:
-      postgres:
-        # https://hub.docker.com/_/postgres
+      mssql:
+        # https://mcr.microsoft.com/en-us/artifact/mar/mssql/server
         env:
-          POSTGRES_DB: G2
-          POSTGRES_PASSWORD: postgres
-        image: postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          ACCEPT_EULA: Y
+          MSSQL_PID: Developer
+          MSSQL_SA_PASSWORD: Passw0rd
+        image: mcr.microsoft.com/mssql/server
         ports:
-          - 5432:5432
+          - 1433:1433
 
     steps:
       - name: Checkout repository

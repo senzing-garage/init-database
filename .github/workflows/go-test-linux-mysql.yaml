@@ -1,17 +1,17 @@
-name: Go test linux - postgres
+name: Go test linux - mysql
 
 on: [push]
 
 env:
   SENZING_LOG_LEVEL: TRACE
-  SENZING_TOOLS_DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/G2/?sslmode=disable"
+  SENZING_TOOLS_DATABASE_URL: "mysql://mysql:mysql@localhost:3306/G2"
 
 permissions:
   contents: read
 
 jobs:
   go-test-linux:
-    name: "Go test with Senzing: ${{ matrix.senzingsdk-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }} - postgres"
+    name: "Go test with Senzing: ${{ matrix.senzingsdk-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }} - mysql"
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -20,19 +20,17 @@ jobs:
         senzingsdk-version: [staging-v4]
 
     services:
-      postgres:
-        # https://hub.docker.com/_/postgres
+      mysql:
+        # https://hub.docker.com/r/bitnami/mysql
         env:
-          POSTGRES_DB: G2
-          POSTGRES_PASSWORD: postgres
-        image: postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          MYSQL_DATABASE: G2
+          MYSQL_PASSWORD: mysql
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_USER: mysql
+        image: bitnami/mysql
         ports:
-          - 5432:5432
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
 
     steps:
       - name: Checkout repository
