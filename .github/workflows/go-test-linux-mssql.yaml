@@ -102,5 +102,5 @@ jobs:
         run: |
           export SENZING_PATH="/opt/senzing"
           export LD_LIBRARY_PATH="${SENZING_PATH}/er/lib:${SENZING_PATH}/er/lib/macos"
-          export ODBCSYSINI="/etc/opt/senzing"
+          export ODBCSYSINI="/opt/microsoft/msodbcsql18/etc"
           go test -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
