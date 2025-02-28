@@ -266,8 +266,9 @@ func (initializer *BasicInitializer) InitializeSpecificDatabase(ctx context.Cont
 	}
 
 	xxx, _ := parser.RedactedJSON(ctx)
-	fmt.Printf(">>>>>>: Configuration JSON: %s", initializer.SenzingSettings)
-	fmt.Printf(">>>>>>: Configuration redacted JSON: %s", xxx)
+	fmt.Printf(">>>>>>: Configuration JSON: %s\n", initializer.SenzingSettings)
+	fmt.Printf(">>>>>>: Configuration JSON reversed: %s\n", reverse(initializer.SenzingSettings))
+	fmt.Printf(">>>>>>: Configuration redacted JSON: %s\n", xxx)
 
 	databaseURLs, err = parser.GetDatabaseURLs(ctx)
 	if err != nil {
@@ -781,6 +782,7 @@ func (initializer *BasicInitializer) initializeSpecificDatabaseSqlite(ctx contex
 
 	filename := parsedURL.Path
 	filename = filepath.Clean(filename) // See https://securego.io/docs/rules/g304.html
+	filename = cleanFilename(filename)
 	_, err = os.Stat(filename)
 	if err == nil {
 		traceExitMessageNumber, debugMessageNumber = 101, 0 // debugMessageNumber=0 because it's not an error.
@@ -817,4 +819,12 @@ func (initializer *BasicInitializer) initializeSpecificDatabaseSqlite(ctx contex
 		}()
 	}
 	return err
+}
+
+func reverse(s string) string {
+	runes := []rune(s)
+	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
+		runes[i], runes[j] = runes[j], runes[i]
+	}
+	return string(runes)
 }
