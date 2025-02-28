@@ -265,11 +265,6 @@ func (initializer *BasicInitializer) InitializeSpecificDatabase(ctx context.Cont
 		return err
 	}
 
-	xxx, _ := parser.RedactedJSON(ctx)
-	fmt.Printf(">>>>>>: Configuration JSON: %s\n", initializer.SenzingSettings)
-	fmt.Printf(">>>>>>: Configuration JSON reversed: %s\n", reverse(initializer.SenzingSettings))
-	fmt.Printf(">>>>>>: Configuration redacted JSON: %s\n", xxx)
-
 	databaseURLs, err = parser.GetDatabaseURLs(ctx)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 43, 1043
@@ -282,7 +277,6 @@ func (initializer *BasicInitializer) InitializeSpecificDatabase(ctx context.Cont
 
 		// Parse URL.
 
-		fmt.Printf(">>>>>> databaseURL: %s\n", databaseURL)
 		parsedURL, err := dbhelper.ParseDatabaseURL(databaseURL)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 44, 1044
@@ -792,10 +786,6 @@ func (initializer *BasicInitializer) initializeSpecificDatabaseSqlite(ctx contex
 	// File doesn't exist, create it.
 
 	path := filepath.Dir(filename)
-
-	fmt.Printf(">>>>>> initializer_basic.go:filename: %s\n", filename)
-	fmt.Printf(">>>>>> initializer_basic.go:path: %s\n", path)
-
 	err = os.MkdirAll(path, os.ModePerm)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 102, 1102
