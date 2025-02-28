@@ -784,6 +784,10 @@ func (initializer *BasicInitializer) initializeSpecificDatabaseSqlite(ctx contex
 	// File doesn't exist, create it.
 
 	path := filepath.Dir(filename)
+
+	fmt.Printf(">>>>>> initializer_basic.go:filename: %s\n", filename)
+	fmt.Printf(">>>>>> initializer_basic.go:path: %s\n", path)
+
 	err = os.MkdirAll(path, os.ModePerm)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 102, 1102
