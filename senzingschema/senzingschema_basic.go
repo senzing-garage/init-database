@@ -139,7 +139,7 @@ func (senzingSchema *BasicSenzingSchema) processDatabase(ctx context.Context, re
 		case "sqlite3":
 			senzingSchema.SQLFile = resourcePath + "/schema/szcore-schema-sqlite-create.sql"
 		default:
-			return fmt.Errorf("unknown database scheme: %s", parsedURL.Scheme)
+			return fmt.Errorf("unknown database scheme: |%s|", parsedURL.Scheme) // FIXME: remove "|"
 		}
 	}
 

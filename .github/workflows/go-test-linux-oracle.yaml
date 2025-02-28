@@ -54,7 +54,7 @@ jobs:
           senzingsdk-repository-package: ${{ secrets.SENZING_APT_BETA_STAGING_REPOSITORY_PACKAGE }}
           senzingsdk-repository-path: ${{ secrets.SENZING_APT_BETA_STAGING_REPOSITORY_URL }}
 
-      - name: Install Oracle SDK
+      - name: Install dependencies
         run: |
           curl --output /tmp/instantclient-basic-linux.zip https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-basic-linux.x64-23.5.0.24.07.zip
           sudo mkdir -p /opt/oracle
