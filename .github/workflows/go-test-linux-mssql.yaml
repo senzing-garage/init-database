@@ -71,7 +71,9 @@ jobs:
 
       - name: Install dependencies 1
         run: |
-          curl -sSL -O https://packages.microsoft.com/config/debian/$(grep VERSION_ID /etc/os-release | cut -d '"' -f 2 | cut -d '.' -f 1)/packages-microsoft-prod.deb
+          export UBUNTU_MAJOR_VERSION=$(grep VERSION_ID /etc/os-release | cut -d '"' -f 2 | cut -d '.' -f 1)
+          env
+          curl -sSL -O "https://packages.microsoft.com/config/debian/${UBUNTU_MAJOR_VERSION}/packages-microsoft-prod.deb"
           dpkg -i packages-microsoft-prod.deb
 
       - name: Install dependencies 2
@@ -84,15 +86,15 @@ jobs:
           ACCEPT_EULA=Y apt-get install -y msodbcsql18
           ACCEPT_EULA=Y apt-get install -y mssql-tools18
 
-      - name: Install dependencies 4
-        run: |
-          echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc
-          source ~/.bashrc
+      # - name: Install dependencies 4
+      #   run: |
+      #     echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc
+      #     source ~/.bashrc
 
-      - name: Install dependencies 5
-        run: |
-          apt-get install -y unixodbc-dev
-          apt-get install -y unixodbc-dev
+      # - name: Install dependencies 5
+      #   run: |
+      #     apt-get install -y unixodbc-dev
+      #     apt-get install -y unixodbc-dev
 
       - name: Run go test
         run: |
