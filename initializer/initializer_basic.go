@@ -264,7 +264,6 @@ func (initializer *BasicInitializer) InitializeSpecificDatabase(ctx context.Cont
 		traceExitMessageNumber, debugMessageNumber = 42, 1042
 		return err
 	}
-
 	databaseURLs, err = parser.GetDatabaseURLs(ctx)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 43, 1043
@@ -809,12 +808,4 @@ func (initializer *BasicInitializer) initializeSpecificDatabaseSqlite(ctx contex
 		}()
 	}
 	return err
-}
-
-func reverse(s string) string {
-	runes := []rune(s)
-	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
-		runes[i], runes[j] = runes[j], runes[i]
-	}
-	return string(runes)
 }
