@@ -75,17 +75,17 @@ jobs:
           export UBUNTU_MAJOR_VERSION
           env
           curl -sSL -O "https://packages.microsoft.com/config/debian/${UBUNTU_MAJOR_VERSION}/packages-microsoft-prod.deb"
-          dpkg -i packages-microsoft-prod.deb
+          sudo dpkg -i packages-microsoft-prod.deb
 
       - name: Install dependencies 2
         run: |
           rm packages-microsoft-prod.deb
-          apt-get update
+          sudo apt-get update
 
       - name: Install dependencies 3
         run: |
-          ACCEPT_EULA=Y apt-get install -y msodbcsql18
-          ACCEPT_EULA=Y apt-get install -y mssql-tools18
+          sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18
+          sudo ACCEPT_EULA=Y apt-get install -y mssql-tools18
 
       # - name: Install dependencies 4
       #   run: |
