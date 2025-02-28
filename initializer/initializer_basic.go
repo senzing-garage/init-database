@@ -264,6 +264,11 @@ func (initializer *BasicInitializer) InitializeSpecificDatabase(ctx context.Cont
 		traceExitMessageNumber, debugMessageNumber = 42, 1042
 		return err
 	}
+
+	xxx, _ := parser.RedactedJSON(ctx)
+	fmt.Printf(">>>>>>: Configuration JSON: %s", initializer.SenzingSettings)
+	fmt.Printf(">>>>>>: Configuration redacted JSON: %s", xxx)
+
 	databaseURLs, err = parser.GetDatabaseURLs(ctx)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 43, 1043
@@ -276,6 +281,7 @@ func (initializer *BasicInitializer) InitializeSpecificDatabase(ctx context.Cont
 
 		// Parse URL.
 
+		fmt.Printf(">>>>>> databaseURL: %s\n", databaseURL)
 		parsedURL, err := dbhelper.ParseDatabaseURL(databaseURL)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 44, 1044
