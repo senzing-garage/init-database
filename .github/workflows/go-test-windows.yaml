@@ -45,7 +45,7 @@ jobs:
       - name: Create empty database file
         run: |
           mkdir "C:\Temp\sqlite"
-          New-Item -Path "C:\Temp\sqlite\G2C.db" -ItemType File
+          # New-Item -Path "C:\Temp\sqlite\G2C.db" -ItemType File
 
       - name: Run go test
         run: |
