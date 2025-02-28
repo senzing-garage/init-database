@@ -4,7 +4,7 @@ on: [push]
 
 env:
   SENZING_LOG_LEVEL: TRACE
-  SENZING_TOOLS_DATABASE_URL: "mysql://mysql:mysql@localhost:3306/G2"
+  SENZING_TOOLS_DATABASE_URL: "mysql://mysql:mysql@mysql:3306/G2"
 
 permissions:
   contents: read
