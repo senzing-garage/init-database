@@ -4,7 +4,8 @@ on: [push]
 
 env:
   SENZING_LOG_LEVEL: TRACE
-  SENZING_TOOLS_DATABASE_URL: "mssql://sa:Passw0rd@mssql:1433/G2"
+  SENZING_TOOLS_DATABASE_URL: "mssql://sa:Passw0rd@127.0.0.1:1433/G2"
+  UBUNTU_VERSION: "24.04"
 
 permissions:
   contents: read
@@ -71,11 +72,7 @@ jobs:
 
       - name: Install dependencies 1
         run: |
-          grep VERSION_ID /etc/os-release | cut -d '"' -f 2 | cut -d '.' -f 1
-          UBUNTU_MAJOR_VERSION=$(grep VERSION_ID /etc/os-release | cut -d '"' -f 2 | cut -d '.' -f 1)
-          export UBUNTU_MAJOR_VERSION
-          env
-          curl -sSL -O "https://packages.microsoft.com/config/debian/24/packages-microsoft-prod.deb"
+          curl -sSL -O "https://packages.microsoft.com/config/ubuntu/${UBUNTU_VERSION}/packages-microsoft-prod.deb"
           sudo dpkg -i packages-microsoft-prod.deb
 
       - name: Install dependencies 2
