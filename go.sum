@@ -91,6 +91,8 @@ github.com/senzing-garage/go-cmdhelping v0.3.2 h1:2uMgVpRygwqc/Otk95SUn40oYo1uoX
 github.com/senzing-garage/go-cmdhelping v0.3.2/go.mod h1:9ezBnHQYwrJpTPHKd968ScvMLAIaFbxXGX50aIbF8+A=
 github.com/senzing-garage/go-databasing v0.5.5-0.20250228212639-69c257421cb4 h1:CDQPwjSgERMFHP0cJvU5dCSrdZvaRKls/MG/qlcGEJk=
 github.com/senzing-garage/go-databasing v0.5.5-0.20250228212639-69c257421cb4/go.mod h1:VBzneXja3BGmWXlO5zvmjjaOggCHw/s06U7X8ZrUBPI=
+github.com/senzing-garage/go-databasing v0.5.5-0.20250228223633-c317026b2a5e h1:sg6Zfmyu+93FeeWZS7ykgseagek37Z/SHDOaQc0Uo0s=
+github.com/senzing-garage/go-databasing v0.5.5-0.20250228223633-c317026b2a5e/go.mod h1:VBzneXja3BGmWXlO5zvmjjaOggCHw/s06U7X8ZrUBPI=
 github.com/senzing-garage/go-helpers v0.6.6 h1:5eRkD4SXJz0e+nm6okTu7vSlcaPnNd5LIFgK0mEJt84=
 github.com/senzing-garage/go-helpers v0.6.6/go.mod h1:252SDuNNlTJ5tOSgu5IvBEt+CNeCczB6g3WYNki2RKQ=
 github.com/senzing-garage/go-logging v1.5.1 h1:3nqw75gN5x+6PQRop34/49+3kag1aE9dlFne7pILQAg=
