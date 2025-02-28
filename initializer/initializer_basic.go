@@ -775,6 +775,7 @@ func (initializer *BasicInitializer) initializeSpecificDatabaseSqlite(ctx contex
 
 	filename := parsedURL.Path
 	filename = filepath.Clean(filename) // See https://securego.io/docs/rules/g304.html
+	filename = cleanFilename(filename)
 	_, err = os.Stat(filename)
 	if err == nil {
 		traceExitMessageNumber, debugMessageNumber = 101, 0 // debugMessageNumber=0 because it's not an error.

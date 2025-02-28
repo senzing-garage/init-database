@@ -3,6 +3,7 @@ name: Go test windows
 on: [pull_request, workflow_dispatch]
 
 env:
+  SENZING_LOG_LEVEL: TRACE
   SENZING_TOOLS_DATABASE_URL: "sqlite3://na:na@nowhere/C:\\Temp\\sqlite\\G2C.db"
 
 permissions:
@@ -10,12 +11,11 @@ permissions:
 
 jobs:
   go-test-windows:
-    name: "Go test with Senzing: ${{ matrix.senzingsdk-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }}"
-    runs-on: ${{ matrix.os }}
+    name: "Go test with Senzing: ${{ matrix.senzingsdk-version }}; OS: windows-latest; Go: ${{ matrix.go }}"
+    runs-on: windows-latest
     strategy:
       matrix:
         go: ["1.21"]
-        os: [windows-latest]
         senzingsdk-version: [staging-v4]
 
     steps:
@@ -40,17 +40,18 @@ jobs:
           senzingsdk-repository-path: ${{ secrets.SENZING_WIN_BETA_REPOSITORY }}
 
       - name: Add to "Path" environment variable
-        run: |
-          # shellcheck disable=SC2028
-          echo "C:\Program Files\Senzing\er\lib" >> "$env:GITHUB_PATH"
+        run: Add-Content "$env:GITHUB_PATH" "$Env:USERPROFILE\Senzing\er\lib"
 
       - name: Create empty database file
         run: |
           mkdir "C:\Temp\sqlite"
-          New-Item -Path "C:\Temp\sqlite\G2C.db" -ItemType File
+          # New-Item -Path "C:\Temp\sqlite\G2C.db" -ItemType File
 
       - name: Run go test
         run: |
+          $Env:SENZING_PATH = "$Env:USERPROFILE\Senzing"
+          $Env:CGO_CFLAGS = "-g -I$Env:SENZING_PATH\er\sdk\c"
+          $Env:CGO_LDFLAGS = "-L$Env:SENZING_PATH\er\lib -lSz"
           go test -json -v -p 1 -coverprofile=cover -covermode=atomic -coverpkg=./... ./... 2>&1 | tee "C:\Temp\gotest.log" | gotestfmt
           cp cover cover.out
 

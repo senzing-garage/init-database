@@ -12,8 +12,8 @@ import (
 	"github.com/senzing-garage/go-cmdhelping/constant"
 	"github.com/senzing-garage/go-cmdhelping/option"
 	"github.com/senzing-garage/go-cmdhelping/option/optiontype"
+	"github.com/senzing-garage/go-cmdhelping/settings"
 	"github.com/senzing-garage/go-databasing/dbhelper"
-	"github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-helpers/settingsparser"
 	"github.com/senzing-garage/init-database/initializer"
 	"github.com/spf13/cobra"
@@ -103,7 +103,7 @@ func RunE(_ *cobra.Command, _ []string) error {
 	var err error
 	ctx := context.Background()
 
-	senzingSettings, err := buildSenzingEngineConfigurationJSON(ctx, viper.GetViper())
+	senzingSettings, err := settings.BuildAndVerifySettings(ctx, viper.GetViper())
 	if err != nil {
 		return err
 	}
@@ -130,33 +130,6 @@ func Version() string {
 // ----------------------------------------------------------------------------
 // Private functions
 // ----------------------------------------------------------------------------
-
-// Construct the JSON string for the Senzing engine configuration.
-func buildSenzingEngineConfigurationJSON(ctx context.Context, aViper *viper.Viper) (string, error) {
-	var err error
-	var result string
-	result = aViper.GetString(option.EngineSettings.Arg)
-	if len(result) == 0 {
-		options := map[string]string{
-			"configPath":          aViper.GetString(option.ConfigPath.Arg),
-			"databaseURL":         aViper.GetString(option.DatabaseURL.Arg),
-			"licenseStringBase64": aViper.GetString(option.LicenseStringBase64.Arg),
-			"resourcePath":        aViper.GetString(option.ResourcePath.Arg),
-			"senzingDirectory":    aViper.GetString(option.SenzingDirectory.Arg),
-			"supportPath":         aViper.GetString(option.SupportPath.Arg),
-		}
-		result, err = settings.BuildSimpleSettingsUsingMap(options)
-		if err != nil {
-			return result, err
-		}
-	}
-
-	err = settings.VerifySettings(ctx, result)
-	if err != nil {
-		return result, err
-	}
-	return result, err
-}
 
 // Construct the path to the "g2config.json" file.
 func getEngineConfigurationFileDefault() string {
@@ -230,7 +203,7 @@ func getParsedEngineConfigurationJSON() (settingsparser.SettingsParser, error) {
 
 	// Build and parse Senzing engine configuration JSON.
 
-	senzingSettings, err := buildSenzingEngineConfigurationJSON(ctx, myViper)
+	senzingSettings, err := settings.BuildAndVerifySettings(ctx, viper.GetViper())
 	if err != nil {
 		return result, err
 	}
