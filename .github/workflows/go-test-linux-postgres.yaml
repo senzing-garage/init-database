@@ -1,0 +1,87 @@
+name: Go test linux
+
+on: [push]
+
+env:
+  SENZING_LOG_LEVEL: TRACE
+  SENZING_TOOLS_DATABASE_URL: postgresql://postgres:postgres@postgres:5432/G2
+
+permissions:
+  contents: read
+
+jobs:
+  go-test-linux:
+    name: "Go test with Senzing: ${{ matrix.senzingsdk-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }}"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        go: ["1.21"]
+        os: [ubuntu-latest]
+        senzingsdk-version: [staging-v4]
+
+    services:
+      postgres:
+        env:
+          POSTGRES_DB: G2
+          POSTGRES_PASSWORD: postgres
+        image: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go }}
+
+      - name: Set up gotestfmt
+        uses: gotesttools/gotestfmt-action@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Copy /opt/senzing/er/resources/ files
+        run: sudo cp --verbose --recursive rootfs/* /
+
+      - name: Install Senzing SDK
+        uses: senzing-factory/github-action-install-senzing-sdk@v3
+        with:
+          packages-to-install: "senzingsdk-runtime senzingsdk-setup"
+          senzingsdk-repository-package: ${{ secrets.SENZING_APT_BETA_STAGING_REPOSITORY_PACKAGE }}
+          senzingsdk-repository-path: ${{ secrets.SENZING_APT_BETA_STAGING_REPOSITORY_URL }}
+
+      - name: Run go test
+        run: |
+          export SENZING_PATH="/opt/senzing"
+          export LD_LIBRARY_PATH="${SENZING_PATH}/er/lib:${SENZING_PATH}/er/lib/macos"
+          go test -json -v -p 1 -coverprofile=./cover.out -covermode=atomic -coverpkg=./... ./...  2>&1 | tee /tmp/gotest.log | gotestfmt
+
+      - name: Store coverage file
+        uses: actions/upload-artifact@v4
+        with:
+          name: cover.out
+          path: ./cover.out
+
+      - name: Upload test log
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-log
+          path: /tmp/gotest.log
+          if-no-files-found: error
+
+  coverage:
+    name: Coverage
+    needs: go-test-linux
+    uses: senzing-factory/build-resources/.github/workflows/go-coverage.yaml@v2
+    with:
+      coverage-config: ./.github/coverage/testcoverage.yaml
