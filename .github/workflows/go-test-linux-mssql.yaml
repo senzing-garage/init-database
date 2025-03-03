@@ -1,0 +1,106 @@
+name: Go test linux - mssql
+
+on: [push]
+
+env:
+  SENZING_LOG_LEVEL: TRACE
+  SENZING_TOOLS_DATABASE_URL: "mssql://sa:Passw0rd@mssql:1433/G2"
+  UBUNTU_VERSION: "24.04"
+
+permissions:
+  contents: read
+
+jobs:
+  go-test-linux:
+    name: "Go test with Senzing: ${{ matrix.senzingsdk-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }} - mssql"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        go: ["1.21"]
+        os: [ubuntu-latest]
+        senzingsdk-version: [staging-v4]
+
+    services:
+      mssql:
+        # https://mcr.microsoft.com/en-us/artifact/mar/mssql/server
+        env:
+          ACCEPT_EULA: Y
+          MSSQL_PID: Developer
+          MSSQL_SA_PASSWORD: Passw0rd
+        image: mcr.microsoft.com/mssql/server
+        ports:
+          - 1433:1433
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go }}
+
+      - name: Set up gotestfmt
+        uses: gotesttools/gotestfmt-action@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Copy /opt/senzing/er/resources/ files
+        run: sudo cp --verbose --recursive rootfs/* /
+
+      - name: Copy /opt/microsoft/ files
+        run: sudo cp --verbose --recursive testdata/* /
+
+      - name: Install Senzing SDK
+        uses: senzing-factory/github-action-install-senzing-sdk@v3
+        with:
+          packages-to-install: "senzingsdk-runtime senzingsdk-setup"
+          senzingsdk-repository-package: ${{ secrets.SENZING_APT_BETA_STAGING_REPOSITORY_PACKAGE }}
+          senzingsdk-repository-path: ${{ secrets.SENZING_APT_BETA_STAGING_REPOSITORY_URL }}
+
+      # - name: Install dependencies
+      #   run: |
+      #     curl -sSL -O https://packages.microsoft.com/config/debian/$(grep VERSION_ID /etc/os-release | cut -d '"' -f 2 | cut -d '.' -f 1)/packages-microsoft-prod.deb
+      #     dpkg -i packages-microsoft-prod.deb
+      #     rm packages-microsoft-prod.deb
+      #     apt-get update
+      #     ACCEPT_EULA=Y apt-get install -y msodbcsql18
+      #     ACCEPT_EULA=Y apt-get install -y mssql-tools18
+      #     echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc
+      #     source ~/.bashrc
+      #     apt-get install -y unixodbc-dev
+      #     apt-get install -y unixodbc-dev
+
+      - name: Install dependencies 1
+        run: |
+          curl -sSL -O "https://packages.microsoft.com/config/ubuntu/${UBUNTU_VERSION}/packages-microsoft-prod.deb"
+          sudo dpkg -i packages-microsoft-prod.deb
+
+      - name: Install dependencies 2
+        run: |
+          rm packages-microsoft-prod.deb
+          sudo apt-get update
+
+      - name: Install dependencies 3
+        run: |
+          sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18
+          sudo ACCEPT_EULA=Y apt-get install -y mssql-tools18
+
+      # - name: Install dependencies 4
+      #   run: |
+      #     echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc
+      #     source ~/.bashrc
+
+      # - name: Install dependencies 5
+      #   run: |
+      #     apt-get install -y unixodbc-dev
+      #     apt-get install -y unixodbc-dev
+
+      - name: Run go test
+        run: |
+          export SENZING_PATH="/opt/senzing"
+          export LD_LIBRARY_PATH="${SENZING_PATH}/er/lib"
+          export ODBCSYSINI="/opt/microsoft/msodbcsql18/etc"
+          go test -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt

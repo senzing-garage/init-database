@@ -19,7 +19,7 @@ retract (
 require (
 	github.com/senzing-garage/go-cmdhelping v0.3.2
 	github.com/senzing-garage/go-databasing v0.5.4
-	github.com/senzing-garage/go-helpers v0.6.6
+	github.com/senzing-garage/go-helpers v0.6.7
 	github.com/senzing-garage/go-logging v1.5.1
 	github.com/senzing-garage/go-observing v0.3.3
 	github.com/senzing-garage/go-sdk-abstract-factory v0.9.5
@@ -38,7 +38,7 @@ require (
 	github.com/fsnotify/fsnotify v1.8.0 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/go-sql-driver/mysql v1.9.0 // indirect
-	github.com/godror/godror v0.46.0 // indirect
+	github.com/godror/godror v0.47.0 // indirect
 	github.com/godror/knownpb v0.2.0 // indirect
 	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect
 	github.com/golang-sql/sqlexp v0.1.0 // indirect
@@ -67,12 +67,14 @@ require (
 	github.com/subosito/gotenv v1.6.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/crypto v0.35.0 // indirect
-	golang.org/x/exp v0.0.0-20250218142911-aa4b98e5adaa // indirect
+	golang.org/x/exp v0.0.0-20250228200357-dead58393ab7 // indirect
 	golang.org/x/net v0.35.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250227231956-55c901821b1e // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250303144028-a0af3efb3deb // indirect
 	google.golang.org/protobuf v1.36.5 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+godebug x509negativeserial=1

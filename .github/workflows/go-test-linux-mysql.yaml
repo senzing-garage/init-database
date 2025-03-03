@@ -1,23 +1,36 @@
-name: Go test linux
+name: Go test linux - mysql
 
 on: [push]
 
 env:
   SENZING_LOG_LEVEL: TRACE
-  SENZING_TOOLS_DATABASE_URL: sqlite3://na:na@nowhere/tmp/sqlite/G2C.db
+  SENZING_TOOLS_DATABASE_URL: "mysql://mysql:mysql@127.0.0.1:3306/G2"
 
 permissions:
   contents: read
 
 jobs:
   go-test-linux:
-    name: "Go test with Senzing: ${{ matrix.senzingsdk-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }}"
+    name: "Go test with Senzing: ${{ matrix.senzingsdk-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }} - mysql"
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         go: ["1.21"]
         os: [ubuntu-latest]
         senzingsdk-version: [staging-v4]
+
+    services:
+      mysql:
+        # https://hub.docker.com/r/bitnami/mysql
+        env:
+          MYSQL_DATABASE: G2
+          MYSQL_PASSWORD: mysql
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_USER: mysql
+        image: bitnami/mysql
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
 
     steps:
       - name: Checkout repository
@@ -45,29 +58,12 @@ jobs:
           senzingsdk-repository-package: ${{ secrets.SENZING_APT_BETA_STAGING_REPOSITORY_PACKAGE }}
           senzingsdk-repository-path: ${{ secrets.SENZING_APT_BETA_STAGING_REPOSITORY_URL }}
 
+      - name: Install dependencies
+        run: |
+          sudo apt-get install mysql-server
+
       - name: Run go test
         run: |
           export SENZING_PATH="/opt/senzing"
           export LD_LIBRARY_PATH="${SENZING_PATH}/er/lib"
-          go test -json -v -p 1 -coverprofile=./cover.out -covermode=atomic -coverpkg=./... ./...  2>&1 | tee /tmp/gotest.log | gotestfmt
-
-      - name: Store coverage file
-        uses: actions/upload-artifact@v4
-        with:
-          name: cover.out
-          path: ./cover.out
-
-      - name: Upload test log
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: test-log
-          path: /tmp/gotest.log
-          if-no-files-found: error
-
-  coverage:
-    name: Coverage
-    needs: go-test-linux
-    uses: senzing-factory/build-resources/.github/workflows/go-coverage.yaml@v2
-    with:
-      coverage-config: ./.github/coverage/testcoverage.yaml
+          go test -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt

@@ -1,23 +1,38 @@
-name: Go test linux
+name: Go test linux - postgres
 
 on: [push]
 
 env:
   SENZING_LOG_LEVEL: TRACE
-  SENZING_TOOLS_DATABASE_URL: sqlite3://na:na@nowhere/tmp/sqlite/G2C.db
+  SENZING_TOOLS_DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/G2/?sslmode=disable"
 
 permissions:
   contents: read
 
 jobs:
   go-test-linux:
-    name: "Go test with Senzing: ${{ matrix.senzingsdk-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }}"
+    name: "Go test with Senzing: ${{ matrix.senzingsdk-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }} - postgres"
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         go: ["1.21"]
         os: [ubuntu-latest]
         senzingsdk-version: [staging-v4]
+
+    services:
+      postgres:
+        # https://hub.docker.com/_/postgres
+        env:
+          POSTGRES_DB: G2
+          POSTGRES_PASSWORD: postgres
+        image: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
 
     steps:
       - name: Checkout repository
@@ -49,25 +64,4 @@ jobs:
         run: |
           export SENZING_PATH="/opt/senzing"
           export LD_LIBRARY_PATH="${SENZING_PATH}/er/lib"
-          go test -json -v -p 1 -coverprofile=./cover.out -covermode=atomic -coverpkg=./... ./...  2>&1 | tee /tmp/gotest.log | gotestfmt
-
-      - name: Store coverage file
-        uses: actions/upload-artifact@v4
-        with:
-          name: cover.out
-          path: ./cover.out
-
-      - name: Upload test log
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: test-log
-          path: /tmp/gotest.log
-          if-no-files-found: error
-
-  coverage:
-    name: Coverage
-    needs: go-test-linux
-    uses: senzing-factory/build-resources/.github/workflows/go-coverage.yaml@v2
-    with:
-      coverage-config: ./.github/coverage/testcoverage.yaml
+          go test -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
