@@ -38,7 +38,7 @@ require (
 	github.com/fsnotify/fsnotify v1.8.0 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/go-sql-driver/mysql v1.9.0 // indirect
-	github.com/godror/godror v0.46.0 // indirect
+	github.com/godror/godror v0.47.0 // indirect
 	github.com/godror/knownpb v0.2.0 // indirect
 	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect
 	github.com/golang-sql/sqlexp v0.1.0 // indirect
