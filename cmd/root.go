@@ -248,7 +248,7 @@ func getSQLFileDefault() string {
 		return result
 	}
 
-	fmt.Printf(">>>>>> parsedURL: %s\n", parsedURL)
+	// fmt.Printf(">>>>>> parsedURL: %s\n", parsedURL)
 
 	// Based on database type, choose SQL file.
 
