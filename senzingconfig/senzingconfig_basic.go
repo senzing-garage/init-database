@@ -115,12 +115,16 @@ func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context)
 		if len(senzingConfig.GrpcTarget) == 0 {
 			senzingSettings := senzingConfig.SenzingSettings
 
+			fmt.Printf(">>>>>> SenzingSettings: %s\n", senzingSettings)
+
 			// Handle case of SQLite in-memory database.
 			// TODO:  Refactor to different, reusable, location.
 
 			settingsParser := settingsparser.BasicSettingsParser{
 				Settings: senzingConfig.SenzingSettings,
 			}
+
+			fmt.Printf(">>>>>> settingsParser: %v\n", settingsParser)
 
 			databaseURLs, err := settingsParser.GetDatabaseURLs(ctx)
 			assertNoError(err)
