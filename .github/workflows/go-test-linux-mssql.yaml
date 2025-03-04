@@ -4,7 +4,7 @@ on: [push]
 
 env:
   SENZING_LOG_LEVEL: TRACE
-  SENZING_TOOLS_DATABASE_URL: "mssql://sa:Passw0rd@mssql:1433/G2/?TrustServerCertificate=true"
+  SENZING_TOOLS_DATABASE_URL: "mssql://sa:Passw0rd@mssql:1433/G2/?TrustServerCertificate=yes"
   UBUNTU_VERSION: "24.04"
 
 permissions:
