@@ -115,7 +115,7 @@ func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context)
 		if len(senzingConfig.GrpcTarget) == 0 {
 			senzingSettings := senzingConfig.SenzingSettings
 
-			fmt.Printf(">>>>>> SenzingSettings: %s\n", senzingSettings)
+			fmt.Printf(">>>>>> SenzingSettings: %s\n", reverseString(senzingSettings))
 
 			// Handle case of SQLite in-memory database.
 			// TODO:  Refactor to different, reusable, location.
@@ -804,4 +804,12 @@ func (senzingConfig *BasicSenzingConfig) UnregisterObserver(ctx context.Context,
 	}
 
 	return err
+}
+
+func reverseString(s string) string {
+	runes := []rune(s)
+	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
+		runes[i], runes[j] = runes[j], runes[i]
+	}
+	return string(runes)
 }
