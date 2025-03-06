@@ -13,7 +13,7 @@ import (
 	"github.com/senzing-garage/go-cmdhelping/option"
 	"github.com/senzing-garage/go-cmdhelping/option/optiontype"
 	"github.com/senzing-garage/go-cmdhelping/settings"
-	"github.com/senzing-garage/go-databasing/dbhelper"
+	helpersettings "github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-helpers/settingsparser"
 	"github.com/senzing-garage/init-database/initializer"
 	"github.com/spf13/cobra"
@@ -108,8 +108,14 @@ func RunE(_ *cobra.Command, _ []string) error {
 		return err
 	}
 
+	databaseURLs, err := getDatabaseURLs(ctx, senzingSettings)
+	if err != nil {
+		return err
+	}
+
 	initializer := &initializer.BasicInitializer{
 		DataSources:           viper.GetStringSlice(option.Datasources.Arg),
+		DatabaseURLs:          databaseURLs,
 		ObserverOrigin:        viper.GetString(option.ObserverOrigin.Arg),
 		ObserverURL:           viper.GetString(option.ObserverURL.Arg),
 		SenzingInstanceName:   viper.GetString(option.EngineInstanceName.Arg),
@@ -130,6 +136,37 @@ func Version() string {
 // ----------------------------------------------------------------------------
 // Private functions
 // ----------------------------------------------------------------------------
+
+// Get a slice of database URL strings.
+func getDatabaseURLs(ctx context.Context, senzingSettings string) ([]string, error) {
+	var err error
+	result := []string{}
+
+	databaseURL := viper.GetString(option.DatabaseURL.Arg)
+	if len(databaseURL) > 0 {
+		result = append(result, databaseURL)
+	}
+
+	if len(result) == 0 {
+		settingsParser, err := settingsparser.New(senzingSettings)
+		if err != nil {
+			return result, err
+		}
+		databaseURIs, err := settingsParser.GetDatabaseURIs(ctx)
+		if err != nil {
+			return result, err
+		}
+
+		for _, databaseURI := range databaseURIs {
+			databaseURL, err := helpersettings.BuildSenzingDatabaseURL(databaseURI)
+			if err != nil {
+				return result, err
+			}
+			result = append(result, databaseURL)
+		}
+	}
+	return result, err
+}
 
 // Construct the path to the "g2config.json" file.
 func getEngineConfigurationFileDefault() string {
@@ -232,34 +269,27 @@ func getSQLFileDefault() string {
 	if err != nil {
 		return result
 	}
-	databaseURLs, err := parsedSenzingEngineConfigurationJSON.GetDatabaseURLs(ctx)
+	databaseURIs, err := parsedSenzingEngineConfigurationJSON.GetDatabaseURIs(ctx)
 	if err != nil {
 		return result
 	}
-	if len(databaseURLs) == 0 {
+	if len(databaseURIs) == 0 {
 		return result
 	}
-	databaseURL := databaseURLs[0]
-
-	// Parse database URL to find which type of database is used.
-
-	parsedURL, err := dbhelper.ParseDatabaseURL(databaseURL)
-	if err != nil {
-		return result
-	}
+	databaseURI := databaseURIs[0]
 
 	// Based on database type, choose SQL file.
 
-	switch parsedURL.Scheme {
-	case "mssql":
+	switch {
+	case strings.HasPrefix(databaseURI, "mssql://"):
 		result = resourcePath + "/schema/szcore-schema-mssql-create.sql"
-	case "mysql":
+	case strings.HasPrefix(databaseURI, "mysql://"):
 		result = resourcePath + "/schema/szcore-schema-mysql-create.sql"
-	case "oci":
+	case strings.HasPrefix(databaseURI, "oci://"):
 		result = resourcePath + "/schema/szcore-schema-oracle-create.sql"
-	case "postgresql":
+	case strings.HasPrefix(databaseURI, "postgresql://"):
 		result = resourcePath + "/schema/szcore-schema-postgresql-create.sql"
-	case "sqlite3":
+	case strings.HasPrefix(databaseURI, "sqlite3://"):
 		result = resourcePath + "/schema/szcore-schema-sqlite-create.sql"
 	}
 

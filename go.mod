@@ -17,9 +17,9 @@ retract (
 )
 
 require (
-	github.com/senzing-garage/go-cmdhelping v0.3.3-0.20250305192003-280ab462f445
-	github.com/senzing-garage/go-databasing v0.5.5-0.20250304145242-aac5af215d2f
-	github.com/senzing-garage/go-helpers v0.6.8-0.20250305191029-245857dbd00d
+	github.com/senzing-garage/go-cmdhelping v0.3.3-0.20250306225745-ac71e6d17cd1
+	github.com/senzing-garage/go-databasing v0.5.5-0.20250306231257-c1fe30090447
+	github.com/senzing-garage/go-helpers v0.6.8-0.20250306225537-e2c3ad6f9baa
 	github.com/senzing-garage/go-logging v1.5.1
 	github.com/senzing-garage/go-observing v0.3.3
 	github.com/senzing-garage/go-sdk-abstract-factory v0.9.5
@@ -67,7 +67,7 @@ require (
 	github.com/subosito/gotenv v1.6.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/crypto v0.36.0 // indirect
-	golang.org/x/exp v0.0.0-20250228200357-dead58393ab7 // indirect
+	golang.org/x/exp v0.0.0-20250305212735-054e65f0b394 // indirect
 	golang.org/x/net v0.37.0 // indirect
 	golang.org/x/sys v0.31.0 // indirect
 	golang.org/x/text v0.23.0 // indirect
