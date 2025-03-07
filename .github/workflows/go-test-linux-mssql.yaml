@@ -27,7 +27,7 @@ jobs:
           ACCEPT_EULA: Y
           MSSQL_PID: Developer
           MSSQL_SA_PASSWORD: Passw0rd
-        image: mcr.microsoft.com/mssql/server
+        image: mcr.microsoft.com/mssql/server:2019-latest
         options: --user "0"
         ports:
           - 1433:1433
@@ -131,7 +131,7 @@ jobs:
 
       - name: Create database
         run: |
-          /opt/mssql-tools18/bin/sqlcmd -P Passw0rd -Q "CREATE DATABASE G2" -S mssql,1433 -U sa
+          /opt/mssql-tools18/bin/sqlcmd -P "Passw0rd" -Q "CREATE DATABASE G2" -S "mssql,1433" -U "sa"
 
       - name: Run go test
         run: |
