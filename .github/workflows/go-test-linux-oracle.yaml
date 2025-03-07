@@ -82,6 +82,10 @@ jobs:
         run: |
           ls /opt/oracle/instantclient_23_5/network/admin
 
+      - name: Paths - 5
+        run: |
+          cat /opt/oracle/instantclient_23_5/network/admin/tnsnames.ora
+
       - name: Run go test
         run: |
           export SENZING_PATH="/opt/senzing"

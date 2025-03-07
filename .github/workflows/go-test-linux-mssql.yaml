@@ -75,7 +75,7 @@ jobs:
 
       - name: Create database
         run: |
-          /opt/mssql-tools18/bin/sqlcmd -P "Passw0rd" -Q "CREATE DATABASE G2" -S "127.0.0.1,1433" -U "sa"
+          /opt/mssql-tools18/bin/sqlcmd -C -P "Passw0rd" -Q "CREATE DATABASE G2" -S "127.0.0.1,1433" -U "sa"
 
       - name: Run go test
         run: |
