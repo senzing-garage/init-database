@@ -71,7 +71,6 @@ jobs:
       #     echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc
       #     source ~/.bashrc
       #     apt-get install -y unixodbc-dev
-      #     apt-get install -y unixodbc-dev
 
       - name: Install dependencies 1
         run: |
@@ -88,15 +87,20 @@ jobs:
           sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18
           sudo ACCEPT_EULA=Y apt-get install -y mssql-tools18
 
-      # - name: Install dependencies 4
-      #   run: |
-      #     echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc
-      #     source ~/.bashrc
+      - name: DEBUG - paths
+        run: |
+          ls /opt
+          ls /opt/microsoft
+          ls /opt/microsoft/msodbcsql18
 
-      # - name: Install dependencies 5
-      #   run: |
-      #     apt-get install -y unixodbc-dev
-      #     apt-get install -y unixodbc-dev
+      - name: Install dependencies 4
+        run: |
+          echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc
+          source ~/.bashrc
+
+      - name: Install dependencies 5
+        run: |
+          apt-get install -y unixodbc-dev
 
       - name: Run go test
         run: |
