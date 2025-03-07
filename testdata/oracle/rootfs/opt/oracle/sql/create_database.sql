@@ -1,3 +1,9 @@
-CREATE DATABASE G2;
+SELECT * FROM DBA_USERS;
+
+SELECT * FROM v$database;
+
+
+
+# CREATE DATABASE G2;
 quit;
 /
