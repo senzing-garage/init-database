@@ -28,6 +28,7 @@ jobs:
           MSSQL_PID: Developer
           MSSQL_SA_PASSWORD: Passw0rd
         image: mcr.microsoft.com/mssql/server
+        options: --user "0"
         ports:
           - 1433:1433
 
@@ -91,9 +92,25 @@ jobs:
         run: |
           ls /opt/microsoft
 
+      - name: Paths - 1.1
+        run: |
+          ls /opt/microsoft/msodbcsql18
+
       - name: Paths - 2
         run: |
           ls /opt/mssql-tools18
+
+      - name: Paths - 2.1
+        run: |
+          ls /opt/mssql-tools18/bin
+
+      - name: Paths - 8
+        run: |
+          sudo find / -name "sqlcmd"
+
+      - name: Paths - 9
+        run: |
+          sudo find / -name "mssqldriver"
 
       - name: Install dependencies 4
         run: |
