@@ -57,6 +57,18 @@ jobs:
           senzingsdk-repository-package: ${{ secrets.SENZING_APT_BETA_STAGING_REPOSITORY_PACKAGE }}
           senzingsdk-repository-path: ${{ secrets.SENZING_APT_BETA_STAGING_REPOSITORY_URL }}
 
+      - name: Set environment variables
+        run: |
+          SENZING_PATH="/opt/senzing"
+          ORACLE_HOME="/opt/oracle/instantclient_23_7"
+          {
+            echo "SENZING_PATH=${SENZING_PATH}"
+            echo "ORACLE_HOME=${ORACLE_HOME}"
+            echo "LD_LIBRARY_PATH="${SENZING_PATH}/er/lib:${ORACLE_HOME}"
+            echo "PATH="${PATH}:${ORACLE_HOME}"
+
+          } >> "$GITHUB_ENV"
+
       - name: Install dependencies
         run: |
           sudo apt-get install libaio1t64 libaio-dev tree
@@ -83,6 +95,4 @@ jobs:
 
       - name: Run go test
         run: |
-          export SENZING_PATH="/opt/senzing"
-          export LD_LIBRARY_PATH="${SENZING_PATH}/er/lib:/opt/oracle/instantclient_23_5"
           go test -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
