@@ -62,6 +62,21 @@ jobs:
           sudo apt-get install libaio1t64 libaio-dev tree
           sudo ln -s /usr/lib/x86_64-linux-gnu/libaio.so.1t64 /usr/lib/libaio.so.1
 
+      - name: Install Oracle InstantClient
+        run: |
+          curl --output /tmp/instantclient-basic-linux.zip   https://download.oracle.com/otn_software/linux/instantclient/2370000/instantclient-basic-linux.x64-23.7.0.25.01.zip
+          sudo mkdir -p /opt/oracle
+          sudo unzip -d /opt/oracle /tmp/instantclient-basic-linux.zip
+
+      - name: Install Oracle SQL-plus
+        run: |
+          curl --output /tmp/instantclient-sqlplus-linux.zip https://download.oracle.com/otn_software/linux/instantclient/2370000/instantclient-sqlplus-linux.x64-23.7.0.25.01.zip
+          sudo unzip -o -d /opt/oracle /tmp/instantclient-sqlplus-linux.zip
+
+      - name: View files
+        run: |
+          tree /opt/oracle
+
       - name: Install Oracle client
         run: |
           curl --output /tmp/instantclient-basic-linux.zip   https://download.oracle.com/otn_software/linux/instantclient/2370000/instantclient-basic-linux.x64-23.7.0.25.01.zip
