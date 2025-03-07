@@ -1,0 +1,9 @@
+G2=
+ (description=
+   (address_list=
+     (address = (protocol = TCP)(host = oracle)(port = 1521))
+   )
+ (connect_data =
+   (service_name=G2)
+ )
+)
