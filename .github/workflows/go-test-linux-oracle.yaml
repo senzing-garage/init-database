@@ -77,14 +77,9 @@ jobs:
         run: |
           tree /opt/oracle
 
-      - name: Install Oracle client
+      - name: Create database
         run: |
-          curl --output /tmp/instantclient-basic-linux.zip   https://download.oracle.com/otn_software/linux/instantclient/2370000/instantclient-basic-linux.x64-23.7.0.25.01.zip
-          curl --output /tmp/instantclient-sqlplus-linux.zip https://download.oracle.com/otn_software/linux/instantclient/2370000/instantclient-sqlplus-linux.x64-23.7.0.25.01.zip
-          sudo mkdir -p /opt/oracle
-          sudo unzip -d /opt/oracle /tmp/instantclient-basic-linux.zip
-          sudo unzip -d /opt/oracle /tmp/instantclient-sqlplus-linux.zip
-          tree /opt/oracle
+          /opt/oracle/instantclient_23_7/sqlplus --help
 
       - name: Run go test
         run: |
