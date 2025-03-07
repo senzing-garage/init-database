@@ -4,7 +4,7 @@ on: [push]
 
 env:
   SENZING_LOG_LEVEL: TRACE
-  SENZING_TOOLS_DATABASE_URL: "mssql://sa:Passw0rd@mssql:1433/G2/?TrustServerCertificate=true&driver=mssqldriver"
+  SENZING_TOOLS_DATABASE_URL: "mssql://sa:Passw0rd@mssql:1433/G2/?TrustServerCertificate=true"
   UBUNTU_VERSION: "24.04"
 
 permissions:
@@ -25,7 +25,7 @@ jobs:
         # https://mcr.microsoft.com/en-us/artifact/mar/mssql/server
         env:
           ACCEPT_EULA: Y
-          MSSQL_PID: Express
+          MSSQL_PID: Developer
           MSSQL_SA_PASSWORD: Passw0rd
         image: mcr.microsoft.com/mssql/server:2019-latest
         ports:
@@ -51,7 +51,7 @@ jobs:
         run: sudo cp --verbose --recursive rootfs/* /
 
       - name: Copy testdata files
-        run: sudo cp --verbose --recursive testdata/* /
+        run: sudo cp --verbose --recursive testdata/mssql/rootfs/* /
 
       - name: Install Senzing SDK
         uses: senzing-factory/github-action-install-senzing-sdk@v3
@@ -77,13 +77,10 @@ jobs:
         run: |
           /opt/mssql-tools18/bin/sqlcmd -C -P "Passw0rd" -Q "CREATE DATABASE G2" -S "localhost,1433" -U "sa"
 
-      - name: List databases
-        run: |
-          /opt/mssql-tools18/bin/sqlcmd -C -P "Passw0rd" -Q "sp_databases" -S "localhost,1433" -U "sa"
-
       - name: Run go test
         run: |
           export SENZING_PATH="/opt/senzing"
           export LD_LIBRARY_PATH="${SENZING_PATH}/er/lib"
+          export ODBCINI=/var/opt/senzing/mssql/odbc.ini"
           export ODBCSYSINI="/opt/microsoft/msodbcsql18/etc"
           go test -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
