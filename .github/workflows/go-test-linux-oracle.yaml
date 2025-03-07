@@ -62,6 +62,14 @@ jobs:
           sudo apt-get install libaio1t64 libaio-dev
           sudo ln -s /usr/lib/x86_64-linux-gnu/libaio.so.1t64 /usr/lib/libaio.so.1
 
+      - name: Debug -1
+        run: ls /opt
+          ls /opt/oracle
+          ls /opt/oracle/instantclient_23_5
+          ls /opt/oracle/instantclient_23_5/network
+          ls /opt/oracle/instantclient_23_5/network/admin
+          cat /opt/oracle/instantclient_23_5/network/admin/tnsnames.ora
+
       - name: Run go test
         run: |
           export SENZING_PATH="/opt/senzing"

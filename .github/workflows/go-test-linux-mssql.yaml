@@ -90,8 +90,7 @@ jobs:
       - name: DEBUG - paths
         run: |
           ls /opt
-          ls /opt/microsoft
-          ls /opt/microsoft/msodbcsql18
+          ls /opt/msodbcsql18
 
       - name: Install dependencies 4
         run: |
@@ -100,11 +99,11 @@ jobs:
 
       - name: Install dependencies 5
         run: |
-          apt-get install -y unixodbc-dev
+          sudo apt-get install -y unixodbc-dev
 
       - name: Run go test
         run: |
           export SENZING_PATH="/opt/senzing"
           export LD_LIBRARY_PATH="${SENZING_PATH}/er/lib"
-          export ODBCSYSINI="/opt/microsoft/msodbcsql18/etc"
+          export ODBCSYSINI="/opt/msodbcsql18/etc"
           go test -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
