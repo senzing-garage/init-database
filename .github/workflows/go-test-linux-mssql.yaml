@@ -81,6 +81,6 @@ jobs:
         run: |
           export SENZING_PATH="/opt/senzing"
           export LD_LIBRARY_PATH="${SENZING_PATH}/er/lib"
-          export ODBCINI=/var/opt/senzing/mssql/odbc.ini"
+          export ODBCINI="/opt/microsoft/msodbcsql18/etc/odbc.ini"
           export ODBCSYSINI="/opt/microsoft/msodbcsql18/etc"
           go test -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
