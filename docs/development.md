@@ -294,6 +294,17 @@ Make documents visible at
 
     ```
 
+## Docker compose instruction
+
+1. Create `senzing/init-database-mssql` Docker image.
+
+    ```console
+    docker build \
+        --build-arg BASE_IMAGE=senzing/init-database:latest \
+        --tag senzing/init-database-mssql:latest \
+        https://github.com/senzing-garage/docker-wrap-image-with-mssql.git#main
+    ```
+
 ## Archive instructions
 
 ### Test using Docker-compose stack with PostgreSql database
