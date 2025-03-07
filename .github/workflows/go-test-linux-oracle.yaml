@@ -91,7 +91,7 @@ jobs:
 
       - name: Create database
         run: |
-          /opt/oracle/instantclient_23_7/sqlplus --help
+          /opt/oracle/instantclient_23_7/sqlplus sys/Passw0rd@localhost as sysdba "@/opt/oracle/sql/create_database.sql"
 
       - name: Run go test
         run: |

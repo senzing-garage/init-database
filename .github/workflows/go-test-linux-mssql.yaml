@@ -77,6 +77,10 @@ jobs:
         run: |
           /opt/mssql-tools18/bin/sqlcmd -C -P "Passw0rd" -Q "CREATE DATABASE G2" -S "localhost,1433" -U "sa"
 
+      - name: cat odbcinst.ini
+        run: |
+          cat /opt/microsoft/msodbcsql18/etc/odbcinst.ini
+
       - name: Run go test
         run: |
           export SENZING_PATH="/opt/senzing"
