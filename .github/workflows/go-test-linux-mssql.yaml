@@ -4,7 +4,7 @@ on: [push]
 
 env:
   SENZING_LOG_LEVEL: TRACE
-  SENZING_TOOLS_DATABASE_URL: "mssql://sa:Passw0rd@mssql:1433/G2/?TrustServerCertificate=true&driver=ODBC+Driver+18+for+SQL+Server"
+  SENZING_TOOLS_DATABASE_URL: "mssql://sa:Passw0rd@mssql:1433/G2/?TrustServerCertificate=true&driver=G2"
   UBUNTU_VERSION: "24.04"
 
 permissions:
@@ -76,6 +76,10 @@ jobs:
       - name: Create database
         run: |
           /opt/mssql-tools18/bin/sqlcmd -C -P "Passw0rd" -Q "CREATE DATABASE G2" -S "localhost,1433" -U "sa"
+
+      - name: cat odbc.ini
+        run: |
+          cat /opt/microsoft/msodbcsql18/etc/odbc.ini
 
       - name: cat odbcinst.ini
         run: |

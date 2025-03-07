@@ -48,7 +48,7 @@ jobs:
         run: sudo cp --verbose --recursive rootfs/* /
 
       - name: Copy testdata files
-        run: sudo cp --verbose --recursive testdata/oracle/rootfs* /
+        run: sudo cp --verbose --recursive testdata/oracle/rootfs/* /
 
       - name: Install Senzing SDK
         uses: senzing-factory/github-action-install-senzing-sdk@v3
