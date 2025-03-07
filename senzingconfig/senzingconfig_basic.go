@@ -110,67 +110,22 @@ func (senzingConfig *BasicSenzingConfig) traceExit(messageNumber int, details ..
 
 // Create an abstract factory singleton and return it.
 func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
+	var err error
 	_ = ctx
 	senzingConfig.szAbstractFactorySyncOnce.Do(func() {
 		if len(senzingConfig.GrpcTarget) == 0 {
 			senzingSettings := senzingConfig.SenzingSettings
 
+			// fmt.Printf(">>>>>> SenzingSettings: %s\n", reverseString(senzingSettings))
+
 			// Handle case of SQLite in-memory database.
 			// TODO:  Refactor to different, reusable, location.
 
-			settingsParser := settingsparser.BasicSettingsParser{
-				Settings: senzingConfig.SenzingSettings,
-			}
-
-			databaseURLs, err := settingsParser.GetDatabaseURLs(ctx)
-			assertNoError(err)
-			if len(databaseURLs) > 1 {
-				panic("Too many databaseURLs")
-			}
-			// databaseURL := databaseURLs[0]
-			// parsedURL, err := url.Parse(databaseURL)
-			// assertNoError(err)
-
-			// if parsedURL.Scheme == "sqlite3" {
-
-			// 	// TODO:  The following if-statement may not be needed.
-			// 	if len(parsedURL.RawQuery) > 0 {
-
-			// 		configPath, err := settingsParser.GetConfigPath(ctx)
-			// 		assertNoError(err)
-			// 		resourcePath, err := settingsParser.GetResourcePath(ctx)
-			// 		assertNoError(err)
-			// 		supportPath, err := settingsParser.GetSupportPath(ctx)
-			// 		assertNoError(err)
-			// 		licenseStringBase64, err := settingsParser.GetLicenseStringBase64(ctx)
-			// 		assertNoError(err)
-
-			// 		szConfiguration := settings.SzConfiguration{
-			// 			Pipeline: settings.SzConfigurationPipeline{
-			// 				ConfigPath:          configPath,
-			// 				LicenseStringBase64: licenseStringBase64,
-			// 				ResourcePath:        resourcePath,
-			// 				SupportPath:         supportPath,
-			// 			},
-			// 			SQL: settings.SzConfigurationSQL{
-			// 				Connection: databaseURL,
-			// 			},
-			// 		}
-
-			// 		buffer := &bytes.Buffer{}
-			// 		jsonEncoder := json.NewEncoder(buffer)
-			// 		jsonEncoder.SetEscapeHTML(false)
-			// 		err = jsonEncoder.Encode(szConfiguration)
-			// 		assertNoError(err)
-
-			// 		senzingSettings = buffer.String()
-
-			// 		// senzingSettingsBytes, err := json.Marshal(szConfiguration, encOpts())
-			// 		// assertNoError(err)
-			// 		// senzingSettings := fmt.Sprintf("%s", senzingSettingsBytes)
-			// 	}
+			// settingsParser := settingsparser.BasicSettingsParser{
+			// 	Settings: senzingConfig.SenzingSettings,
 			// }
-			// fmt.Printf(">>>>> senzingconfig_basic.go getAbstractFactory senzingSettings: %s\n", senzingSettings)
+
+			// fmt.Printf(">>>>>> settingsParser: %v\n", settingsParser)
 
 			senzingConfig.szAbstractFactorySingleton, err = szfactorycreator.CreateCoreAbstractFactory(senzingConfig.SenzingInstanceName, senzingSettings, senzingConfig.SenzingVerboseLogging, senzing.SzInitializeWithDefaultConfiguration)
 			if err != nil {
@@ -337,11 +292,11 @@ func (senzingConfig *BasicSenzingConfig) filesAreEqual(sourceFilename string, ta
 	}
 }
 
-func assertNoError(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
+// func assertNoError(err error) {
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// }
 
 // ----------------------------------------------------------------------------
 // Interface methods
@@ -801,3 +756,11 @@ func (senzingConfig *BasicSenzingConfig) UnregisterObserver(ctx context.Context,
 
 	return err
 }
+
+// func reverseString(s string) string {
+// 	runes := []rune(s)
+// 	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
+// 		runes[i], runes[j] = runes[j], runes[i]
+// 	}
+// 	return string(runes)
+// }

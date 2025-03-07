@@ -4,10 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"time"
 
 	"github.com/senzing-garage/go-databasing/connector"
-	"github.com/senzing-garage/go-databasing/dbhelper"
 	"github.com/senzing-garage/go-databasing/sqlexecutor"
 	"github.com/senzing-garage/go-helpers/settingsparser"
 	"github.com/senzing-garage/go-logging/logging"
@@ -22,8 +22,9 @@ import (
 
 // BasicSenzingSchema is the default implementation of the SenzingSchema interface.
 type BasicSenzingSchema struct {
-	SenzingSettings string `json:"senzingSettings,omitempty"`
-	SQLFile         string `json:"sqlFile,omitempty"`
+	DatabaseURLs    []string `json:"databaseUrls,omitempty"`
+	SenzingSettings string   `json:"senzingSettings,omitempty"`
+	SQLFile         string   `json:"sqlFile,omitempty"`
 
 	logger         logging.Logging
 	logLevelName   string
@@ -41,151 +42,6 @@ var debugOptions = []interface{}{
 
 var traceOptions = []interface{}{
 	&logging.OptionCallerSkip{Value: 5},
-}
-
-// ----------------------------------------------------------------------------
-// Internal methods
-// ----------------------------------------------------------------------------
-
-// --- Logging ----------------------------------------------------------------
-
-// Get the Logger singleton.
-func (senzingSchema *BasicSenzingSchema) getLogger() logging.Logging {
-	var err error
-	if senzingSchema.logger == nil {
-		options := []interface{}{
-			&logging.OptionCallerSkip{Value: 4},
-		}
-		senzingSchema.logger, err = logging.NewSenzingLogger(ComponentID, IDMessages, options...)
-		if err != nil {
-			panic(err)
-		}
-	}
-	return senzingSchema.logger
-}
-
-// Log message.
-func (senzingSchema *BasicSenzingSchema) log(messageNumber int, details ...interface{}) {
-	senzingSchema.getLogger().Log(messageNumber, details...)
-}
-
-// Debug.
-func (senzingSchema *BasicSenzingSchema) debug(messageNumber int, details ...interface{}) {
-	details = append(details, debugOptions...)
-	senzingSchema.getLogger().Log(messageNumber, details...)
-}
-
-// Trace method entry.
-func (senzingSchema *BasicSenzingSchema) traceEntry(messageNumber int, details ...interface{}) {
-	details = append(details, traceOptions...)
-	senzingSchema.getLogger().Log(messageNumber, details...)
-}
-
-// Trace method exit.
-func (senzingSchema *BasicSenzingSchema) traceExit(messageNumber int, details ...interface{}) {
-	details = append(details, traceOptions...)
-	senzingSchema.getLogger().Log(messageNumber, details...)
-}
-
-// --- Misc -------------------------------------------------------------------
-
-// Given a database URL, detemine the correct SQL file and send the statements to the database.
-func (senzingSchema *BasicSenzingSchema) processDatabase(ctx context.Context, resourcePath string, databaseURL string) error {
-	var err error
-
-	// Prolog.
-
-	debugMessageNumber := 0
-	traceExitMessageNumber := 109
-	if senzingSchema.getLogger().IsDebug() {
-
-		// If DEBUG, log error exit.
-
-		defer func() {
-			if debugMessageNumber > 0 {
-				senzingSchema.debug(debugMessageNumber, resourcePath, databaseURL, err)
-			}
-		}()
-
-		// If TRACE, Log on entry/exit.
-
-		if senzingSchema.getLogger().IsTrace() {
-			entryTime := time.Now()
-			senzingSchema.traceEntry(100, resourcePath, databaseURL)
-			defer func() {
-				senzingSchema.traceExit(traceExitMessageNumber, resourcePath, databaseURL, err, time.Since(entryTime))
-			}()
-		}
-	}
-
-	// Determine which SQL file to process.
-
-	parsedURL, err := dbhelper.ParseDatabaseURL(databaseURL)
-	if err != nil {
-		traceExitMessageNumber, debugMessageNumber = 101, 1101
-		return err
-	}
-
-	if len(senzingSchema.SQLFile) == 0 {
-		switch parsedURL.Scheme {
-		case "mssql":
-			senzingSchema.SQLFile = resourcePath + "/schema/szcore-schema-mssql-create.sql"
-		case "mysql":
-			senzingSchema.SQLFile = resourcePath + "/schema/szcore-schema-mysql-create.sql"
-		case "oci":
-			senzingSchema.SQLFile = resourcePath + "/schema/szcore-schema-oracle-create.sql"
-		case "postgresql":
-			senzingSchema.SQLFile = resourcePath + "/schema/szcore-schema-postgresql-create.sql"
-		case "sqlite3":
-			senzingSchema.SQLFile = resourcePath + "/schema/szcore-schema-sqlite-create.sql"
-		default:
-			return fmt.Errorf("unknown database scheme: %s", parsedURL.Scheme)
-		}
-	}
-
-	// Connect to the database.
-
-	databaseConnector, err := connector.NewConnector(ctx, databaseURL)
-	if err != nil {
-		traceExitMessageNumber, debugMessageNumber = 102, 1102
-		return err
-	}
-
-	// Create sqlExecutor to process file of SQL.
-
-	sqlExecutor := &sqlexecutor.BasicSQLExecutor{
-		DatabaseConnector: databaseConnector,
-	}
-	err = sqlExecutor.SetLogLevel(ctx, senzingSchema.logLevelName)
-	if err != nil {
-		traceExitMessageNumber, debugMessageNumber = 103, 1103
-		return err
-	}
-
-	// Add observers to sqlExecutor.
-
-	if senzingSchema.observers != nil {
-		for _, observer := range senzingSchema.observers.GetObservers(ctx) {
-			err = sqlExecutor.RegisterObserver(ctx, observer)
-			if err != nil {
-				traceExitMessageNumber, debugMessageNumber = 104, 1104
-				return err
-			}
-		}
-	}
-
-	// TODO: add following when it becomes available.
-	// sqlExecutor.SetObserverOrigin(ctx, senzingSchema.observerOrigin)
-
-	// Process file of SQL
-
-	err = sqlExecutor.ProcessFileName(ctx, senzingSchema.SQLFile)
-	if err != nil {
-		traceExitMessageNumber, debugMessageNumber = 105, 1105
-		return err
-	}
-	senzingSchema.log(2001, senzingSchema.SQLFile, parsedURL.Redacted())
-	return err
 }
 
 // ----------------------------------------------------------------------------
@@ -245,15 +101,10 @@ func (senzingSchema *BasicSenzingSchema) InitializeSenzing(ctx context.Context) 
 		traceExitMessageNumber, debugMessageNumber = 13, 1013
 		return err
 	}
-	databaseURLs, err := parser.GetDatabaseURLs(ctx)
-	if err != nil {
-		traceExitMessageNumber, debugMessageNumber = 14, 1014
-		return err
-	}
 
 	// Process each database.
 
-	for _, databaseURL := range databaseURLs {
+	for _, databaseURL := range senzingSchema.DatabaseURLs {
 		err = senzingSchema.processDatabase(ctx, resourcePath, databaseURL)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 15, 1015
@@ -558,5 +409,150 @@ func (senzingSchema *BasicSenzingSchema) UnregisterObserver(ctx context.Context,
 		}
 	}
 
+	return err
+}
+
+// ----------------------------------------------------------------------------
+// Internal methods
+// ----------------------------------------------------------------------------
+
+// --- Logging ----------------------------------------------------------------
+
+// Get the Logger singleton.
+func (senzingSchema *BasicSenzingSchema) getLogger() logging.Logging {
+	var err error
+	if senzingSchema.logger == nil {
+		options := []interface{}{
+			&logging.OptionCallerSkip{Value: 4},
+		}
+		senzingSchema.logger, err = logging.NewSenzingLogger(ComponentID, IDMessages, options...)
+		if err != nil {
+			panic(err)
+		}
+	}
+	return senzingSchema.logger
+}
+
+// Log message.
+func (senzingSchema *BasicSenzingSchema) log(messageNumber int, details ...interface{}) {
+	senzingSchema.getLogger().Log(messageNumber, details...)
+}
+
+// Debug.
+func (senzingSchema *BasicSenzingSchema) debug(messageNumber int, details ...interface{}) {
+	details = append(details, debugOptions...)
+	senzingSchema.getLogger().Log(messageNumber, details...)
+}
+
+// Trace method entry.
+func (senzingSchema *BasicSenzingSchema) traceEntry(messageNumber int, details ...interface{}) {
+	details = append(details, traceOptions...)
+	senzingSchema.getLogger().Log(messageNumber, details...)
+}
+
+// Trace method exit.
+func (senzingSchema *BasicSenzingSchema) traceExit(messageNumber int, details ...interface{}) {
+	details = append(details, traceOptions...)
+	senzingSchema.getLogger().Log(messageNumber, details...)
+}
+
+// --- Misc -------------------------------------------------------------------
+
+// Given a database URL, detemine the correct SQL file and send the statements to the database.
+func (senzingSchema *BasicSenzingSchema) processDatabase(ctx context.Context, resourcePath string, databaseURL string) error {
+	var err error
+
+	// Prolog.
+
+	debugMessageNumber := 0
+	traceExitMessageNumber := 109
+	if senzingSchema.getLogger().IsDebug() {
+
+		// If DEBUG, log error exit.
+
+		defer func() {
+			if debugMessageNumber > 0 {
+				senzingSchema.debug(debugMessageNumber, resourcePath, databaseURL, err)
+			}
+		}()
+
+		// If TRACE, Log on entry/exit.
+
+		if senzingSchema.getLogger().IsTrace() {
+			entryTime := time.Now()
+			senzingSchema.traceEntry(100, resourcePath, databaseURL)
+			defer func() {
+				senzingSchema.traceExit(traceExitMessageNumber, resourcePath, databaseURL, err, time.Since(entryTime))
+			}()
+		}
+	}
+
+	// Determine which SQL file to process.
+
+	parsedURL, err := url.Parse(databaseURL)
+	if err != nil {
+		traceExitMessageNumber, debugMessageNumber = 101, 1101
+		return err
+	}
+
+	if len(senzingSchema.SQLFile) == 0 {
+		switch parsedURL.Scheme {
+		case "mssql":
+			senzingSchema.SQLFile = resourcePath + "/schema/szcore-schema-mssql-create.sql"
+		case "mysql":
+			senzingSchema.SQLFile = resourcePath + "/schema/szcore-schema-mysql-create.sql"
+		case "oci":
+			senzingSchema.SQLFile = resourcePath + "/schema/szcore-schema-oracle-create.sql"
+		case "postgresql":
+			senzingSchema.SQLFile = resourcePath + "/schema/szcore-schema-postgresql-create.sql"
+		case "sqlite3":
+			senzingSchema.SQLFile = resourcePath + "/schema/szcore-schema-sqlite-create.sql"
+		default:
+			return fmt.Errorf("unknown database scheme: %s", parsedURL.Scheme)
+		}
+	}
+
+	// Connect to the database.
+
+	databaseConnector, err := connector.NewConnector(ctx, databaseURL)
+	if err != nil {
+		traceExitMessageNumber, debugMessageNumber = 102, 1102
+		return err
+	}
+
+	// Create sqlExecutor to process file of SQL.
+
+	sqlExecutor := &sqlexecutor.BasicSQLExecutor{
+		DatabaseConnector: databaseConnector,
+	}
+	err = sqlExecutor.SetLogLevel(ctx, senzingSchema.logLevelName)
+	if err != nil {
+		traceExitMessageNumber, debugMessageNumber = 103, 1103
+		return err
+	}
+
+	// Add observers to sqlExecutor.
+
+	if senzingSchema.observers != nil {
+		for _, observer := range senzingSchema.observers.GetObservers(ctx) {
+			err = sqlExecutor.RegisterObserver(ctx, observer)
+			if err != nil {
+				traceExitMessageNumber, debugMessageNumber = 104, 1104
+				return err
+			}
+		}
+	}
+
+	// TODO: add following when it becomes available.
+	// sqlExecutor.SetObserverOrigin(ctx, senzingSchema.observerOrigin)
+
+	// Process file of SQL
+
+	err = sqlExecutor.ProcessFileName(ctx, senzingSchema.SQLFile)
+	if err != nil {
+		traceExitMessageNumber, debugMessageNumber = 105, 1105
+		return err
+	}
+	senzingSchema.log(2001, senzingSchema.SQLFile, parsedURL.Redacted())
 	return err
 }

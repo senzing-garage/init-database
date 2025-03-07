@@ -44,8 +44,11 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Copy /opt/senzing/er/resources/ files
+      - name: Copy rootfs files
         run: sudo cp --verbose --recursive rootfs/* /
+
+      - name: Copy testdata files
+        run: sudo cp --verbose --recursive testdata/oracle/rootfs/* /
 
       - name: Install Senzing SDK
         uses: senzing-factory/github-action-install-senzing-sdk@v3
@@ -54,16 +57,42 @@ jobs:
           senzingsdk-repository-package: ${{ secrets.SENZING_APT_BETA_STAGING_REPOSITORY_PACKAGE }}
           senzingsdk-repository-path: ${{ secrets.SENZING_APT_BETA_STAGING_REPOSITORY_URL }}
 
+      - name: Set environment variables
+        run: |
+          SENZING_PATH="/opt/senzing"
+          ORACLE_HOME="/opt/oracle/instantclient_23_7"
+          {
+            echo "SENZING_PATH=${SENZING_PATH}"
+            echo "ORACLE_HOME=${ORACLE_HOME}"
+            echo "LD_LIBRARY_PATH="${SENZING_PATH}/er/lib:${ORACLE_HOME}"
+            echo "PATH="${PATH}:${ORACLE_HOME}"
+
+          } >> "$GITHUB_ENV"
+
       - name: Install dependencies
         run: |
-          curl --output /tmp/instantclient-basic-linux.zip https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-basic-linux.x64-23.5.0.24.07.zip
+          sudo apt-get install libaio1t64 libaio-dev tree
+          sudo ln -s /usr/lib/x86_64-linux-gnu/libaio.so.1t64 /usr/lib/libaio.so.1
+
+      - name: Install Oracle InstantClient
+        run: |
+          curl --output /tmp/instantclient-basic-linux.zip   https://download.oracle.com/otn_software/linux/instantclient/2370000/instantclient-basic-linux.x64-23.7.0.25.01.zip
           sudo mkdir -p /opt/oracle
           sudo unzip -d /opt/oracle /tmp/instantclient-basic-linux.zip
-          sudo apt-get install libaio1t64 libaio-dev
-          sudo ln -s /usr/lib/x86_64-linux-gnu/libaio.so.1t64 /usr/lib/libaio.so.1
+
+      - name: Install Oracle SQL-plus
+        run: |
+          curl --output /tmp/instantclient-sqlplus-linux.zip https://download.oracle.com/otn_software/linux/instantclient/2370000/instantclient-sqlplus-linux.x64-23.7.0.25.01.zip
+          sudo unzip -o -d /opt/oracle /tmp/instantclient-sqlplus-linux.zip
+
+      - name: View files
+        run: |
+          tree /opt/oracle
+
+      - name: Create database
+        run: |
+          /opt/oracle/instantclient_23_7/sqlplus sys/Passw0rd@localhost as sysdba "@/opt/oracle/sql/create_database.sql"
 
       - name: Run go test
         run: |
-          export SENZING_PATH="/opt/senzing"
-          export LD_LIBRARY_PATH="${SENZING_PATH}/er/lib:/opt/oracle/instantclient_23_5"
           go test -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
