@@ -60,77 +60,22 @@ jobs:
           senzingsdk-repository-package: ${{ secrets.SENZING_APT_BETA_STAGING_REPOSITORY_PACKAGE }}
           senzingsdk-repository-path: ${{ secrets.SENZING_APT_BETA_STAGING_REPOSITORY_URL }}
 
-      # - name: Install dependencies
-      #   run: |
-      #     curl -sSL -O https://packages.microsoft.com/config/debian/$(grep VERSION_ID /etc/os-release | cut -d '"' -f 2 | cut -d '.' -f 1)/packages-microsoft-prod.deb
-      #     dpkg -i packages-microsoft-prod.deb
-      #     rm packages-microsoft-prod.deb
-      #     apt-get update
-      #     ACCEPT_EULA=Y apt-get install -y msodbcsql18
-      #     ACCEPT_EULA=Y apt-get install -y mssql-tools18
-      #     echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc
-      #     source ~/.bashrc
-      #     apt-get install -y unixodbc-dev
-
-      - name: Env
-        run: |
-          env
-
-      - name: Install dependencies 1
+      - name: Install dependencies
         run: |
           curl -sSL -O "https://packages.microsoft.com/config/ubuntu/${UBUNTU_VERSION}/packages-microsoft-prod.deb"
           sudo dpkg -i packages-microsoft-prod.deb
-
-      - name: Install dependencies 2
-        run: |
           rm packages-microsoft-prod.deb
           sudo apt-get update
-
-      - name: Install dependencies 3
-        run: |
           sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18
           sudo ACCEPT_EULA=Y apt-get install -y mssql-tools18
-
-      - name: Paths - 1
-        run: |
-          ls /opt/microsoft
-
-      - name: Paths - 1.1
-        run: |
-          ls /opt/microsoft/msodbcsql18
-
-      - name: Paths - 1.1.1
-        run: |
-          ls /opt/microsoft/msodbcsql18/etc
-
-      - name: Paths - 2
-        run: |
-          ls /opt/mssql-tools18
-
-      - name: Paths - 2.1
-        run: |
-          ls /opt/mssql-tools18/bin
-
-      - name: Paths - 8
-        run: |
-          sudo find / -name "sqlcmd"
-
-      - name: Paths - 9
-        run: |
-          sudo find / -name "mssqldriver"
-
-      - name: Install dependencies 4
-        run: |
           echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc
           source ~/.bashrc
-
-      - name: Install dependencies 5
-        run: |
           sudo apt-get install -y unixodbc-dev
+          sudo apt-get install -y libgssapi-krb5-2
 
       - name: Create database
         run: |
-          /opt/mssql-tools18/bin/sqlcmd -P "Passw0rd" -Q "CREATE DATABASE G2" -S "mssql,1433" -U "sa"
+          /opt/mssql-tools18/bin/sqlcmd -P "Passw0rd" -Q "CREATE DATABASE G2" -S "127.0.0.1,1433" -U "sa"
 
       - name: Run go test
         run: |
