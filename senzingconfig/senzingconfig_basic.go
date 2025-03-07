@@ -292,11 +292,11 @@ func (senzingConfig *BasicSenzingConfig) filesAreEqual(sourceFilename string, ta
 	}
 }
 
-func assertNoError(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
+// func assertNoError(err error) {
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// }
 
 // ----------------------------------------------------------------------------
 // Interface methods
@@ -757,10 +757,10 @@ func (senzingConfig *BasicSenzingConfig) UnregisterObserver(ctx context.Context,
 	return err
 }
 
-func reverseString(s string) string {
-	runes := []rune(s)
-	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
-		runes[i], runes[j] = runes[j], runes[i]
-	}
-	return string(runes)
-}
+// func reverseString(s string) string {
+// 	runes := []rune(s)
+// 	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
+// 		runes[i], runes[j] = runes[j], runes[i]
+// 	}
+// 	return string(runes)
+// }
