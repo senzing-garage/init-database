@@ -59,35 +59,17 @@ jobs:
 
       - name: Install dependencies
         run: |
-          curl --output /tmp/instantclient-basic-linux.zip https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-basic-linux.x64-23.5.0.24.07.zip
-          sudo mkdir -p /opt/oracle
-          sudo unzip -d /opt/oracle /tmp/instantclient-basic-linux.zip
-          sudo apt-get install libaio1t64 libaio-dev
+          sudo apt-get install libaio1t64 libaio-dev tree
           sudo ln -s /usr/lib/x86_64-linux-gnu/libaio.so.1t64 /usr/lib/libaio.so.1
 
-      - name: Paths - 1
+      - name: Install Oracle client
         run: |
-          ls /opt
-
-      - name: Paths - 2
-        run: |
-          ls /opt/oracle
-
-      - name: Paths - 3
-        run: |
-          ls /opt/oracle/instantclient_23_5
-
-      - name: Paths - 4
-        run: |
-          ls /opt/oracle/instantclient_23_5/network
-
-      - name: Paths - 5
-        run: |
-          ls /opt/oracle/instantclient_23_5/network/admin
-
-      - name: Paths - 5
-        run: |
-          cat /opt/oracle/instantclient_23_5/network/admin/tnsnames.ora
+          curl --output /tmp/instantclient-basic-linux.zip   https://download.oracle.com/otn_software/linux/instantclient/2370000/instantclient-basic-linux.x64-23.7.0.25.01.zip
+          curl --output /tmp/instantclient-sqlplus-linux.zip https://download.oracle.com/otn_software/linux/instantclient/2370000/instantclient-sqlplus-linux.x64-23.7.0.25.01.zip
+          sudo mkdir -p /opt/oracle
+          sudo unzip -d /opt/oracle /tmp/instantclient-basic-linux.zip
+          sudo unzip -d /opt/oracle /tmp/instantclient-sqlplus-linux.zip
+          tree /opt/oracle
 
       - name: Run go test
         run: |
