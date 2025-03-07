@@ -63,7 +63,8 @@ jobs:
           sudo ln -s /usr/lib/x86_64-linux-gnu/libaio.so.1t64 /usr/lib/libaio.so.1
 
       - name: Debug -1
-        run: ls /opt
+        run: |
+          ls /opt
           ls /opt/oracle
           ls /opt/oracle/instantclient_23_5
           ls /opt/oracle/instantclient_23_5/network
