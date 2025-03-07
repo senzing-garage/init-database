@@ -87,10 +87,12 @@ jobs:
           sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18
           sudo ACCEPT_EULA=Y apt-get install -y mssql-tools18
 
-      - name: DEBUG - paths
+      - name: Paths - 1
         run: |
-          ls /opt
           ls /opt/microsoft
+
+      - name: Paths - 2
+        run: |
           ls /opt/mssql-tools18
 
       - name: Install dependencies 4
