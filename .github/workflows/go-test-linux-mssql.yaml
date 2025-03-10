@@ -59,7 +59,6 @@ jobs:
             unixodbc \
             unixodbc-dev \
             libgssapi-krb5-2
-          sudo apt-get install -y libssl1.1
 
       - name: Install MS SQL libraries
         run: |
