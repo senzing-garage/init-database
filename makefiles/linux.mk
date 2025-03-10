@@ -86,7 +86,17 @@ setup-osarch-specific:
 
 .PHONY: test-osarch-specific
 test-osarch-specific:
+	@echo "SENZING_TOOLS_DATABASE_URL: ${SENZING_TOOLS_DATABASE_URL}"
+	@env
 	@go test -tags "libsqlite3 linux" -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
+
+
+.PHONY: test-postgresql-osarch-specific
+test-postgresql-osarch-specific: export SENZING_TOOLS_DATABASE_URL=postgresql://postgres:postgres@localhost:5432/G2/?sslmode=disable
+test-postgresql-osarch-specific:
+	@echo "SENZING_TOOLS_DATABASE_URL: ${SENZING_TOOLS_DATABASE_URL}"
+	env
+	@go test -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
 
 # -----------------------------------------------------------------------------
 # Makefile targets supported only by this platform.

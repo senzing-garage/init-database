@@ -154,6 +154,10 @@ run: run-osarch-specific
 test: test-osarch-specific
 
 
+.PHONY: test-postgresql
+test-postgresql: test-postgresql-osarch-specific
+
+
 .PHONY: docker-test
 docker-test:
 	@docker-compose -f docker-compose.test.yaml up
