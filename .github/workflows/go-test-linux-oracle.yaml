@@ -3,8 +3,10 @@ name: Go test linux - oracle
 on: [push]
 
 env:
+  LD_LIBRARY_PATH: /opt/senzing/er/lib:/opt/oracle/instantclient_23_5
   SENZING_LOG_LEVEL: TRACE
-  SENZING_TOOLS_DATABASE_URL: "oci://sys:Passw0rd@oracle:1521/G2"
+  # SENZING_TOOLS_DATABASE_URL: "oci://sys:Passw0rd@oracle:1521/PDB/?sysdba=true&noTimezoneCheck=true"
+  SENZING_TOOLS_DATABASE_URL: "oci://sys:Passw0rd@oracle:1521/PDB"
 
 permissions:
   contents: read
@@ -21,7 +23,6 @@ jobs:
 
     services:
       oracle:
-        # https://container-registry.oracle.com/ords/ocr/ba/database/free
         env:
           ORACLE_PWD: Passw0rd
         image: container-registry.oracle.com/database/free
@@ -39,9 +40,9 @@ jobs:
         with:
           go-version: ${{ matrix.go }}
 
-      - name: Install depencencies
-        run: |
-          sudo apt-get install -y ca-certificates
+      # - name: Install depencencies
+      #   run: |
+      #     sudo apt-get install -y ca-certificates
 
       - name: Set up gotestfmt
         uses: gotesttools/gotestfmt-action@v2
@@ -61,40 +62,34 @@ jobs:
           senzingsdk-repository-package: ${{ secrets.SENZING_APT_BETA_STAGING_REPOSITORY_PACKAGE }}
           senzingsdk-repository-path: ${{ secrets.SENZING_APT_BETA_STAGING_REPOSITORY_URL }}
 
+      - name: Install Oracle SDK
+        run: |
+          curl --output /tmp/instantclient-basic-linux.zip https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-basic-linux.x64-23.5.0.24.07.zip
+          sudo mkdir -p /opt/oracle
+          sudo unzip -d /opt/oracle /tmp/instantclient-basic-linux.zip
+          sudo apt-get install libaio1t64 libaio-dev
+          sudo ln -s /usr/lib/x86_64-linux-gnu/libaio.so.1t64 /usr/lib/libaio.so.1
+
+      # - name: Install Oracle SQL-plus
+      #   run: |
+      #     # curl --output /tmp/instantclient-sqlplus-linux.zip https://download.oracle.com/otn_software/linux/instantclient/2370000/instantclient-sqlplus-linux.x64-23.7.0.25.01.zip
+      #     curl --output /tmp/instantclient-sqlplus-linux.zip https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-sqlplus-linux.x64-23.5.0.24.07.zip
+      #     sudo unzip -o -d /opt/oracle /tmp/instantclient-sqlplus-linux.zip
+
       - name: Set environment variables
         run: |
           SENZING_PATH="/opt/senzing"
-          ORACLE_HOME="/opt/oracle/instantclient_23_7"
+          ORACLE_HOME="/opt/oracle/instantclient_23_5"
           {
             echo "SENZING_PATH=${SENZING_PATH}"
             echo "ORACLE_HOME=${ORACLE_HOME}"
             echo "LD_LIBRARY_PATH="${SENZING_PATH}/er/lib:${ORACLE_HOME}"
             echo "PATH="${PATH}:${ORACLE_HOME}"
-
           } >> "$GITHUB_ENV"
 
-      - name: Install Oracle InstantClient SDK
-        run: |
-          # curl --output /tmp/instantclient-basic-linux.zip   https://download.oracle.com/otn_software/linux/instantclient/2370000/instantclient-basic-linux.x64-23.7.0.25.01.zip
-          curl --output /tmp/instantclient-basic-linux.zip https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-basic-linux.x64-23.5.0.24.07.zip
-          sudo mkdir -p /opt/oracle
-          sudo unzip -d /opt/oracle /tmp/instantclient-basic-linux.zip
-          sudo apt-get install libaio1t64 libaio-dev tree
-          sudo ln -s /usr/lib/x86_64-linux-gnu/libaio.so.1t64 /usr/lib/libaio.so.1
-
-      - name: Install Oracle SQL-plus
-        run: |
-          # curl --output /tmp/instantclient-sqlplus-linux.zip https://download.oracle.com/otn_software/linux/instantclient/2370000/instantclient-sqlplus-linux.x64-23.7.0.25.01.zip
-          curl --output /tmp/instantclient-sqlplus-linux.zip https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-sqlplus-linux.x64-23.5.0.24.07.zip
-          sudo unzip -o -d /opt/oracle /tmp/instantclient-sqlplus-linux.zip
-
-      - name: View files
-        run: |
-          tree /opt/oracle
-
-      - name: Create database
-        run: |
-          /opt/oracle/instantclient_23_7/sqlplus sys/Passw0rd@localhost as sysdba "@/opt/oracle/sql/create_database.sql"
+      # - name: Create database
+      #   run: |
+      #     ${ORACLE_HOME}/sqlplus sys/Passw0rd@localhost as sysdba "@/opt/oracle/sql/create_database.sql"
 
       - name: Run go test
         run: |
