@@ -4,7 +4,7 @@ on: [push]
 
 env:
   SENZING_LOG_LEVEL: TRACE
-  SENZING_TOOLS_DATABASE_URL: "mssql://sa:Passw0rd@127.0.0.1:1433/G2/?TrustServerCertificate=true&driver=/opt/microsoft/msodbcsql18/lib64/libmsodbcsql-18.4.so.1.1"
+  SENZING_TOOLS_DATABASE_URL: "mssql://sa:Passw0rd@127.0.0.1:1433/G2/?TrustServerCertificate=True&driver=/opt/microsoft/msodbcsql18/lib64/libmsodbcsql-18.4.so.1.1"
   UBUNTU_VERSION: "24.04"
 
 permissions:
