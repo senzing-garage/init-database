@@ -62,7 +62,7 @@ jobs:
 
       - name: Install Oracle SDK
         run: |
-          curl --output /tmp/instantclient-basic-linux.zip https://download.oracle.com/otn_software/linux/instantclient/instantclient-basic-linuxx64.zip
+          curl --output /tmp/instantclient-basic-linux.zip https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-basic-linux.x64-23.5.0.24.07.zip
           sudo mkdir -p /opt/oracle
           sudo unzip -d /opt/oracle /tmp/instantclient-basic-linux.zip
           sudo ln -s /usr/lib/x86_64-linux-gnu/libaio.so.1t64 /usr/lib/libaio.so.1
@@ -70,8 +70,8 @@ jobs:
       - name: Install Oracle SQL-plus
         run: |
           # curl --output /tmp/instantclient-sqlplus-linux.zip https://download.oracle.com/otn_software/linux/instantclient/2370000/instantclient-sqlplus-linux.x64-23.7.0.25.01.zip
-          # curl --output /tmp/instantclient-sqlplus-linux.zip https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-sqlplus-linux.x64-23.5.0.24.07.zip
-          curl --output /tmp/instantclient-sqlplus-linux.zip https://download.oracle.com/otn_software/linux/instantclient/instantclient-sqlplus-linuxx64zip
+          # curl --output /tmp/instantclient-sqlplus-linux.zip https://download.oracle.com/otn_software/linux/instantclient/instantclient-sqlplus-linuxx64zip
+          curl --output /tmp/instantclient-sqlplus-linux.zip https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-sqlplus-linux.x64-23.5.0.24.07.zip
           sudo unzip -o -d /opt/oracle /tmp/instantclient-sqlplus-linux.zip
 
       - name: Copy rootfs files
