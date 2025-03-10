@@ -32,7 +32,7 @@ type BasicSenzingConfig struct {
 	GrpcTarget            string            `json:"grpcTarget,omitempty"`
 	SenzingInstanceName   string            `json:"senzingInstanceName,omitempty"`
 	SenzingSettings       string            `json:"senzingSettings,omitempty"`
-	SenzingSettingsFile   string            `json:"senzingSettingsFile,omitempty"`
+	SenzingConfigJSONFile string            `json:"senzingConfigJsonFile,omitempty"`
 	SenzingVerboseLogging int64             `json:"senzingVerboseLogging,omitempty"`
 
 	isTrace                    bool
@@ -116,7 +116,8 @@ func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context)
 		if len(senzingConfig.GrpcTarget) == 0 {
 			senzingSettings := senzingConfig.SenzingSettings
 
-			// fmt.Printf(">>>>>> SenzingSettings: %s\n", reverseString(senzingSettings))
+			fmt.Printf(">>>>>> SenzingSettings: %s\n", senzingSettings)
+			fmt.Printf(">>>>>> SenzingSettings (reversed): %s\n", reverseString(senzingSettings))
 
 			// Handle case of SQLite in-memory database.
 			// TODO:  Refactor to different, reusable, location.
@@ -373,7 +374,7 @@ func (senzingConfig *BasicSenzingConfig) InitializeSenzing(ctx context.Context) 
 
 	// If engine configuration file specified, swap it in.
 
-	if len(senzingConfig.SenzingSettingsFile) > 0 {
+	if len(senzingConfig.SenzingConfigJSONFile) > 0 {
 		parsedJSON, err := settingsparser.New(senzingConfig.SenzingSettings)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 20, 1020
@@ -387,7 +388,7 @@ func (senzingConfig *BasicSenzingConfig) InitializeSenzing(ctx context.Context) 
 
 		// Compare file names.
 
-		sourceFilename := senzingConfig.SenzingSettingsFile
+		sourceFilename := senzingConfig.SenzingConfigJSONFile
 		targetFilename := fmt.Sprintf("%s/templates/g2config.json", resourcePath)
 		if sourceFilename != targetFilename {
 
@@ -757,10 +758,10 @@ func (senzingConfig *BasicSenzingConfig) UnregisterObserver(ctx context.Context,
 	return err
 }
 
-// func reverseString(s string) string {
-// 	runes := []rune(s)
-// 	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
-// 		runes[i], runes[j] = runes[j], runes[i]
-// 	}
-// 	return string(runes)
-// }
+func reverseString(s string) string {
+	runes := []rune(s)
+	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
+		runes[i], runes[j] = runes[j], runes[i]
+	}
+	return string(runes)
+}

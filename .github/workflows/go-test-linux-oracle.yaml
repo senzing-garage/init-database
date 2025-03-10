@@ -64,7 +64,7 @@ jobs:
 
       - name: Install Oracle SDK
         run: |
-          curl --output /tmp/instantclient-basic-linux.zip https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-basic-linux.x64-23.5.0.24.07.zip
+          curl --output /tmp/instantclient-basic-linux.zip https://download.oracle.com/otn_software/linux/instantclient/instantclient-basic-linuxx64.zip
           sudo mkdir -p /opt/oracle
           sudo unzip -d /opt/oracle /tmp/instantclient-basic-linux.zip
           sudo apt-get install libaio1t64 libaio-dev

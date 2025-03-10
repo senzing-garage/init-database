@@ -4,7 +4,7 @@ on: [push]
 
 env:
   SENZING_LOG_LEVEL: TRACE
-  SENZING_TOOLS_DATABASE_URL: "mssql://sa:Passw0rd@127.0.0.1:1433/G2/?TrustServerCertificate=True&driver=/opt/microsoft/msodbcsql18/lib64/libmsodbcsql-18.4.so.1.1"
+  SENZING_TOOLS_DATABASE_URL: "mssql://sa:Passw0rd@localhost:1433/G2/?TrustServerCertificate=True&driver=/opt/microsoft/msodbcsql18/lib64/libmsodbcsql-18.4.so.1.1"
   UBUNTU_VERSION: "24.04"
 
 permissions:
@@ -53,6 +53,23 @@ jobs:
       - name: Copy testdata files
         run: sudo cp --verbose --recursive testdata/mssql/rootfs/* /
 
+      - name: Install dependencies
+        run: |
+          sudo apt-get install -y \
+            unixodbc \
+            unixodbc-dev \
+            libgssapi-krb5-2
+          sudo apt-get install -y libssl1.1
+
+      - name: Install MS SQL libraries
+        run: |
+          curl -sSL -O "https://packages.microsoft.com/config/ubuntu/${UBUNTU_VERSION}/packages-microsoft-prod.deb"
+          sudo apt-get install -y packages-microsoft-prod.deb
+          sudo apt-get update
+          sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18 mssql-tools18
+          echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc
+          source ~/.bashrc
+
       - name: Install Senzing SDK
         uses: senzing-factory/github-action-install-senzing-sdk@v3
         with:
@@ -60,22 +77,9 @@ jobs:
           senzingsdk-repository-package: ${{ secrets.SENZING_APT_BETA_STAGING_REPOSITORY_PACKAGE }}
           senzingsdk-repository-path: ${{ secrets.SENZING_APT_BETA_STAGING_REPOSITORY_URL }}
 
-      - name: Install dependencies
-        run: |
-          curl -sSL -O "https://packages.microsoft.com/config/ubuntu/${UBUNTU_VERSION}/packages-microsoft-prod.deb"
-          sudo dpkg -i packages-microsoft-prod.deb
-          rm packages-microsoft-prod.deb
-          sudo apt-get update
-          sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18
-          sudo ACCEPT_EULA=Y apt-get install -y mssql-tools18
-          echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc
-          source ~/.bashrc
-          sudo apt-get install -y unixodbc-dev
-          sudo apt-get install -y libgssapi-krb5-2
-
       - name: Create database
         run: |
-          /opt/mssql-tools18/bin/sqlcmd -C -P "Passw0rd" -Q "CREATE DATABASE G2" -S "localhost,1433" -U "sa"
+          sqlcmd -C -P "Passw0rd" -Q "CREATE DATABASE G2" -S "localhost,1433" -U "sa"
 
       - name: cat odbc.ini
         run: |

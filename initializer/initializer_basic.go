@@ -702,7 +702,7 @@ func (initializer *BasicInitializer) getSenzingConfig() senzingconfig.SenzingCon
 	if initializer.senzingConfigSingleton == nil {
 		initializer.senzingConfigSingleton = &senzingconfig.BasicSenzingConfig{
 			DataSources:           initializer.DataSources,
-			SenzingSettingsFile:   initializer.SenzingSettingsFile,
+			SenzingConfigJSONFile: initializer.SenzingSettingsFile,
 			SenzingSettings:       initializer.SenzingSettings,
 			SenzingInstanceName:   initializer.SenzingInstanceName,
 			SenzingVerboseLogging: initializer.SenzingVerboseLogging,
