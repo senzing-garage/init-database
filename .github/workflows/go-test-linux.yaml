@@ -19,6 +19,47 @@ jobs:
         os: [ubuntu-latest]
         senzingsdk-version: [staging-v4]
 
+    services:
+      oracle:
+        env:
+          ORACLE_PWD: Passw0rd
+        image: container-registry.oracle.com/database/free
+        ports:
+          - 1521:1521
+
+      mssql:
+        env:
+          ACCEPT_EULA: Y
+          MSSQL_PID: Developer
+          MSSQL_SA_PASSWORD: Passw0rd
+        image: mcr.microsoft.com/mssql/server
+        ports:
+          - 1433:1433
+
+      mysql:
+        env:
+          MYSQL_DATABASE: G2
+          MYSQL_PASSWORD: mysql
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_USER: mysql
+        image: bitnami/mysql
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
+
+      postgres:
+        env:
+          POSTGRES_DB: G2
+          POSTGRES_PASSWORD: postgres
+        image: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -30,6 +71,10 @@ jobs:
         with:
           go-version: ${{ matrix.go }}
 
+      - name: Install depencencies
+        run: |
+          sudo apt-get install -y ca-certificates
+
       - name: Set up gotestfmt
         uses: gotesttools/gotestfmt-action@v2
         with:
@@ -38,6 +83,11 @@ jobs:
       - name: Copy /opt/senzing/er/resources/ files
         run: sudo cp --verbose --recursive rootfs/* /
 
+      - name: Make empty G2C.db
+        run: |
+          mkdir /tmp/sqlite
+          touch /tmp/sqlite/G2C.db
+
       - name: Install Senzing SDK
         uses: senzing-factory/github-action-install-senzing-sdk@v3
         with:
@@ -45,10 +95,18 @@ jobs:
           senzingsdk-repository-package: ${{ secrets.SENZING_APT_BETA_STAGING_REPOSITORY_PACKAGE }}
           senzingsdk-repository-path: ${{ secrets.SENZING_APT_BETA_STAGING_REPOSITORY_URL }}
 
+      - name: Install Oracle SDK
+        run: |
+          curl --output /tmp/instantclient-basic-linux.zip https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-basic-linux.x64-23.5.0.24.07.zip
+          sudo mkdir -p /opt/oracle
+          sudo unzip -d /opt/oracle /tmp/instantclient-basic-linux.zip
+          sudo apt-get install libaio1t64 libaio-dev
+          sudo ln -s /usr/lib/x86_64-linux-gnu/libaio.so.1t64 /usr/lib/libaio.so.1
+
       - name: Run go test
         run: |
           export SENZING_PATH="/opt/senzing"
-          export LD_LIBRARY_PATH="${SENZING_PATH}/er/lib"
+          export LD_LIBRARY_PATH="${SENZING_PATH}/er/lib:/opt/oracle/instantclient_23_5"
           go test -json -v -p 1 -coverprofile=./cover.out -covermode=atomic -coverpkg=./... ./...  2>&1 | tee /tmp/gotest.log | gotestfmt
 
       - name: Store coverage file

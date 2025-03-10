@@ -4,7 +4,6 @@
 # Variables
 # -----------------------------------------------------------------------------
 
-LD_LIBRARY_PATH ?= /opt/senzing/er/lib
 SENZING_TOOLS_DATABASE_URL ?= sqlite3://na:na@nowhere/tmp/sqlite/G2C.db
 # SENZING_TOOLS_DATABASE_URL ?= sqlite3://na:na@/MYPRIVATE_DB?mode=memory&cache=shared
 PATH := $(MAKEFILE_DIRECTORY)/bin:/$(HOME)/go/bin:$(PATH)
@@ -82,6 +81,7 @@ run-osarch-specific:
 setup-osarch-specific:
 	@mkdir /tmp/sqlite
 	@touch /tmp/sqlite/G2C.db
+	docker-compose -f docker-compose.test.yaml up --detach
 
 
 .PHONY: test-osarch-specific
