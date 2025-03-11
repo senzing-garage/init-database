@@ -531,6 +531,7 @@ func (senzingSchema *BasicSenzingSchema) processDatabase(ctx context.Context, re
 
 	fmt.Printf(">>>>>> processDatabase: 3.1\n")
 	fmt.Printf(">>>>>> databaseURL: %s\n", databaseURL)
+	fmt.Printf(">>>>>> databaseURL (reversed): %s\n", reverseString(databaseURL))
 
 	// Connect to the database.
 
@@ -582,4 +583,12 @@ func (senzingSchema *BasicSenzingSchema) processDatabase(ctx context.Context, re
 
 	senzingSchema.log(2001, senzingSchema.SQLFile, parsedURL.Redacted())
 	return err
+}
+
+func reverseString(s string) string {
+	runes := []rune(s)
+	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
+		runes[i], runes[j] = runes[j], runes[i]
+	}
+	return string(runes)
 }
