@@ -8,7 +8,7 @@ env:
   # SENZING_TOOLS_DATABASE_URL: "oci://sys:Passw0rd@oracle:1521/G2/?sysdba=true&noTimezoneCheck=true"
   # SENZING_TOOLS_DATABASE_URL: "oci://sys:Passw0rd@127.0.01:1521/PDB"
   # SENZING_TOOLS_DATABASE_URL: "oci://sys:Passw0rd@localhost:1521/G2/?sysdba=true&noTimezoneCheck=true"
-  SENZING_TOOLS_DATABASE_URL: "oci://sys:Passw0rd@localhost:1521/G2"
+  SENZING_TOOLS_DATABASE_URL: "oci://pdbadmin:Passw0rd@localhost:1521/FREEPDB"
 
 permissions:
   contents: read
@@ -96,9 +96,9 @@ jobs:
             echo "PATH="${PATH}:${ORACLE_HOME}"
           } >> "$GITHUB_ENV"
 
-      - name: Create database
-        run: |
-          ${ORACLE_HOME}/sqlplus sys/Passw0rd@localhost as sysdba "@/opt/oracle/sql/create_database.sql"
+      # - name: Create database
+      #   run: |
+      #     ${ORACLE_HOME}/sqlplus sys/Passw0rd@localhost as sysdba "@/opt/oracle/sql/create_database.sql"
 
       - name: Run go test
         run: |

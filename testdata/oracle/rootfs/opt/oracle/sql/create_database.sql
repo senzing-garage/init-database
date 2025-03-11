@@ -4,6 +4,6 @@ SELECT * FROM v$database;
 
 
 
-# CREATE DATABASE G2;
+CREATE DATABASE G2;
 quit;
 /
