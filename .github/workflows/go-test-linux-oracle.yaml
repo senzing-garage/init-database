@@ -5,8 +5,9 @@ on: [push]
 env:
   LD_LIBRARY_PATH: /opt/senzing/er/lib:/opt/oracle/instantclient_23_5
   SENZING_LOG_LEVEL: TRACE
-  SENZING_TOOLS_DATABASE_URL: "oci://sys:Passw0rd@oracle:1521/G2/?sysdba=true&noTimezoneCheck=true"
+  # SENZING_TOOLS_DATABASE_URL: "oci://sys:Passw0rd@oracle:1521/G2/?sysdba=true&noTimezoneCheck=true"
   # SENZING_TOOLS_DATABASE_URL: "oci://sys:Passw0rd@127.0.01:1521/PDB"
+  SENZING_TOOLS_DATABASE_URL: "oci://sys:Passw0rd@localhost:1521/G2/?sysdba=true&noTimezoneCheck=true"
 
 permissions:
   contents: read
