@@ -185,6 +185,9 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 		traceExitMessageNumber, debugMessageNumber = 19, 1019
 		return err
 	}
+
+	fmt.Printf(">>>>>> in Initialize 4.1\n")
+
 	err = senzingSchema.InitializeSenzing(ctx)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 14, 1014

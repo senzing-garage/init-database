@@ -8,7 +8,7 @@ env:
   # SENZING_TOOLS_DATABASE_URL: "oci://sys:Passw0rd@oracle:1521/G2/?sysdba=true&noTimezoneCheck=true"
   # SENZING_TOOLS_DATABASE_URL: "oci://sys:Passw0rd@127.0.01:1521/PDB"
   # SENZING_TOOLS_DATABASE_URL: "oci://sys:Passw0rd@localhost:1521/G2/?sysdba=true&noTimezoneCheck=true"
-  SENZING_TOOLS_DATABASE_URL: "oci://pdbadmin:Passw0rd@localhost:1521/FREEPDB"
+  SENZING_TOOLS_DATABASE_URL: "oci://pdbadmin:Passw0rd@localhost:1521/FREEPDB1"
 
 permissions:
   contents: read
@@ -71,8 +71,6 @@ jobs:
 
       - name: Install Oracle SQL-plus
         run: |
-          # curl --output /tmp/instantclient-sqlplus-linux.zip https://download.oracle.com/otn_software/linux/instantclient/2370000/instantclient-sqlplus-linux.x64-23.7.0.25.01.zip
-          # curl --output /tmp/instantclient-sqlplus-linux.zip https://download.oracle.com/otn_software/linux/instantclient/instantclient-sqlplus-linuxx64zip
           curl --output /tmp/instantclient-sqlplus-linux.zip https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-sqlplus-linux.x64-23.5.0.24.07.zip
           sudo unzip -o -d /opt/oracle /tmp/instantclient-sqlplus-linux.zip
 
