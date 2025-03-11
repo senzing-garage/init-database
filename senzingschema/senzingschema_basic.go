@@ -530,6 +530,7 @@ func (senzingSchema *BasicSenzingSchema) processDatabase(ctx context.Context, re
 	}
 
 	fmt.Printf(">>>>>> processDatabase: 3.1\n")
+	fmt.Printf(">>>>>> databaseURL: %s\n", databaseURL)
 
 	// Connect to the database.
 
