@@ -154,6 +154,10 @@ run: run-osarch-specific
 test: test-osarch-specific
 
 
+.PHONY: test-mysql
+test-mysql: test-mysql-osarch-specific
+
+
 .PHONY: test-postgresql
 test-postgresql: test-postgresql-osarch-specific
 
