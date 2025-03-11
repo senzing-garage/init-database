@@ -91,11 +91,26 @@ test-osarch-specific:
 	@go test -tags "libsqlite3 linux" -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
 
 
+.PHONY: test-mssql-osarch-specific
+test-mssql-osarch-specific: export SENZING_TOOLS_DATABASE_URL=mssql://sa:Passw0rd@localhost:1433/G2/?TrustServerCertificate=yes
+test-mssql-osarch-specific:
+	@echo "SENZING_TOOLS_DATABASE_URL: ${SENZING_TOOLS_DATABASE_URL}"
+	@go test -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
+
+
 .PHONY: test-mysql-osarch-specific
 test-mysql-osarch-specific: export SENZING_TOOLS_DATABASE_URL=mysql://mysql:mysql@127.0.0.1:3306/G2
 test-mysql-osarch-specific:
 	@echo "SENZING_TOOLS_DATABASE_URL: ${SENZING_TOOLS_DATABASE_URL}"
-	env
+	@go test -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
+
+
+.PHONY: test-oracle-osarch-specific
+# test-oracle-osarch-specific: export SENZING_TOOLS_DATABASE_URL=oci://pdbadmin:Passw0rd@localhost:1521/FREEPDB1
+# test-oracle-osarch-specific: export SENZING_TOOLS_DATABASE_URL=oci://pdbadmin:Passw0rd@localhost:1521/FREEPDB1/?sysdba=true
+test-oracle-osarch-specific: export SENZING_TOOLS_DATABASE_URL=oci://sys:Passw0rd@localhost:1521/FREE/?sysdba=true&noTimezoneCheck=true
+test-oracle-osarch-specific:
+	@echo "SENZING_TOOLS_DATABASE_URL: ${SENZING_TOOLS_DATABASE_URL}"
 	@go test -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
 
 
@@ -103,7 +118,6 @@ test-mysql-osarch-specific:
 test-postgresql-osarch-specific: export SENZING_TOOLS_DATABASE_URL=postgresql://postgres:postgres@localhost:5432/G2/?sslmode=disable
 test-postgresql-osarch-specific:
 	@echo "SENZING_TOOLS_DATABASE_URL: ${SENZING_TOOLS_DATABASE_URL}"
-	env
 	@go test -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
 
 # -----------------------------------------------------------------------------

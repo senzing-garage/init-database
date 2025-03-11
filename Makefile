@@ -158,6 +158,14 @@ test: test-osarch-specific
 test-mysql: test-mysql-osarch-specific
 
 
+.PHONY: test-mssql
+test-mssql: test-mssql-osarch-specific
+
+
+.PHONY: test-oracle
+test-oracle: test-oracle-osarch-specific
+
+
 .PHONY: test-postgresql
 test-postgresql: test-postgresql-osarch-specific
 

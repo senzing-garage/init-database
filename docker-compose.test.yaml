@@ -221,4 +221,4 @@ services:
 
 networks:
   senzing:
-    name: ${SENZING_DOCKER_NETWORK:-senzing}
+    name: ${SENZING_DOCKER_NETWORK:-senzing-network}

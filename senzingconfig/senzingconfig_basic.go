@@ -112,9 +112,18 @@ func (senzingConfig *BasicSenzingConfig) traceExit(messageNumber int, details ..
 func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
 	var err error
 	_ = ctx
+	fmt.Printf(">>>>>> getAbstractFactory: 0.0\n")
+
 	senzingConfig.szAbstractFactorySyncOnce.Do(func() {
+		fmt.Printf(">>>>>> getAbstractFactory: 1.0\n")
+
 		if len(senzingConfig.GrpcTarget) == 0 {
 			senzingSettings := senzingConfig.SenzingSettings
+			senzingInstanceName := senzingConfig.SenzingInstanceName
+			if len(senzingInstanceName) == 0 {
+				senzingInstanceName = fmt.Sprintf("senzing init-database at %s", time.Now())
+
+			}
 
 			fmt.Printf(">>>>>> SenzingSettings: %s\n", senzingSettings)
 			fmt.Printf(">>>>>> SenzingSettings (reversed): %s\n", reverseString(senzingSettings))
@@ -128,10 +137,13 @@ func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context)
 
 			// fmt.Printf(">>>>>> settingsParser: %v\n", settingsParser)
 
-			senzingConfig.szAbstractFactorySingleton, err = szfactorycreator.CreateCoreAbstractFactory(senzingConfig.SenzingInstanceName, senzingSettings, senzingConfig.SenzingVerboseLogging, senzing.SzInitializeWithDefaultConfiguration)
+			fmt.Printf(">>>>>> SenzingInstanceName: %s \n", senzingInstanceName)
+
+			senzingConfig.szAbstractFactorySingleton, err = szfactorycreator.CreateCoreAbstractFactory(senzingInstanceName, senzingSettings, senzingConfig.SenzingVerboseLogging, senzing.SzInitializeWithDefaultConfiguration)
 			if err != nil {
 				panic(err)
 			}
+			fmt.Printf(">>>>>> getAbstractFactory: 2.0\n")
 		} else {
 			grpcConnection, err := grpc.NewClient(senzingConfig.GrpcTarget, senzingConfig.GrpcDialOptions...)
 			if err != nil {
@@ -142,7 +154,11 @@ func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context)
 				panic(err)
 			}
 		}
+		fmt.Printf(">>>>>> getAbstractFactory: 3.0\n")
+
 	})
+	fmt.Printf(">>>>>> getAbstractFactory: 9.9\n")
+
 	return senzingConfig.szAbstractFactorySingleton
 }
 
@@ -158,9 +174,14 @@ func (senzingConfig *BasicSenzingConfig) getSzConfig(ctx context.Context) (senzi
 // Create a SzConfigManager singleton and return it.
 func (senzingConfig *BasicSenzingConfig) getSzConfigmgr(ctx context.Context) (senzing.SzConfigManager, error) {
 	var err error
+	fmt.Printf(">>>>>> getSzConfigmgr: 0.0\n")
+
 	senzingConfig.szConfigManagerSyncOnce.Do(func() {
+		fmt.Printf(">>>>>> getSzConfigmgr: 1.0\n")
 		senzingConfig.szConfigManagerSingleton, err = senzingConfig.getAbstractFactory(ctx).CreateConfigManager(ctx)
 	})
+	fmt.Printf(">>>>>> getSzConfigmgr: 9.9\n")
+
 	return senzingConfig.szConfigManagerSingleton, err
 }
 
