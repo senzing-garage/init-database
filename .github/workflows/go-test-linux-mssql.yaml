@@ -57,17 +57,19 @@ jobs:
         run: |
           sudo apt-get install -y \
             unixodbc \
-            unixodbc-dev \
             libgssapi-krb5-2
 
       - name: Install MS SQL libraries
         run: |
           curl -sSL -O "https://packages.microsoft.com/config/ubuntu/${UBUNTU_VERSION}/packages-microsoft-prod.deb"
           sudo dpkg -i packages-microsoft-prod.deb
+          rm packages-microsoft-prod.deb
           sudo apt-get update
-          sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18 mssql-tools18
+          sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18
+          sudo ACCEPT_EULA=Y apt-get install -y mssql-tools18
           echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc
           source ~/.bashrc
+          sudo apt-get install -y unixodbc-dev
 
       - name: Install Senzing SDK
         uses: senzing-factory/github-action-install-senzing-sdk@v3
@@ -78,7 +80,7 @@ jobs:
 
       - name: Create database
         run: |
-          sqlcmd -C -P "Passw0rd" -Q "CREATE DATABASE G2" -S "localhost,1433" -U "sa"
+          /opt/mssql-tools18/bin/sqlcmd -C -P "Passw0rd" -Q "CREATE DATABASE G2" -S "localhost,1433" -U "sa"
 
       - name: cat odbc.ini
         run: |
