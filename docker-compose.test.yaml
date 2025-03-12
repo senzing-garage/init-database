@@ -125,6 +125,8 @@ services:
     ports:
       - 1521:1521
     restart: always
+    volumes:
+      - ./testdata/oracle/rootfs/opt/oracle/scripts/startup:/opt/oracle/scripts/startup
 
   pgadmin:
     container_name: senzing-pgadmin

@@ -166,6 +166,10 @@ test-mssql: test-mssql-osarch-specific
 test-oracle: test-oracle-osarch-specific
 
 
+.PHONY: test-oracle-sys
+test-oracle-sys: test-oracle-sys-osarch-specific
+
+
 .PHONY: test-postgresql
 test-postgresql: test-postgresql-osarch-specific
 

@@ -108,9 +108,24 @@ test-mysql-osarch-specific:
 .PHONY: test-oracle-osarch-specific
 # test-oracle-osarch-specific: export SENZING_TOOLS_DATABASE_URL=oci://pdbadmin:Passw0rd@localhost:1521/FREEPDB1
 # test-oracle-osarch-specific: export SENZING_TOOLS_DATABASE_URL=oci://pdbadmin:Passw0rd@localhost:1521/FREEPDB1/?sysdba=true
-test-oracle-osarch-specific: export SENZING_TOOLS_DATABASE_URL=oci://sys:Passw0rd@localhost:1521/FREE/?sysdba=true&noTimezoneCheck=true
+# test-oracle-osarch-specific: export SENZING_TOOLS_DATABASE_URL=oci://sys:Passw0rd@localhost:1521/FREE/?sysdba=true&noTimezoneCheck=true
+# test-oracle-osarch-specific: export SENZING_TOOLS_DATABASE_URL=oci://pdbadmin:Passw0rd@localhost:1521/FREEPDB1
+# test-oracle-osarch-specific: export SENZING_TOOLS_DATABASE_URL=oci://sys:Passw0rd@localhost:1521/FREE/?sysdba=true&noTimezoneCheck=true
+# test-oracle-osarch-specific: export SENZING_TOOLS_DATABASE_URL=oci://sysdba:Passw0rd@localhost:1521/FREE/ Fails
+# test-oracle-osarch-specific: export SENZING_TOOLS_DATABASE_URL=oci://sys:Passw0rd@localhost:1521/FREE/
+# test-oracle-osarch-specific: export SENZING_TOOLS_DATABASE_URL=oci://sys:Passw0rd@localhost:1521/FREE/?sysdba=true&noTimezoneCheck=true
+test-oracle-osarch-specific: export SENZING_TOOLS_DATABASE_URL=oci://pdbadmin:Passw0rd@localhost:1521/FREEPDB1
+test-oracle-osarch-specific: export SENZING_TOOLS_SQL_FILE=$(MAKEFILE_DIRECTORY)/rootfs/opt/senzing/er/resources/schema/szcore-schema-oracle-create.sql
 test-oracle-osarch-specific:
 	@echo "SENZING_TOOLS_DATABASE_URL: ${SENZING_TOOLS_DATABASE_URL}"
+	@go test -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
+
+
+.PHONY: test-oracle-sys-osarch-specific
+test-oracle-sys-osarch-specific: export SENZING_TOOLS_DATABASE_URL=oci://sys:Passw0rd@localhost:1521/FREE/?sysdba=true&noTimezoneCheck=true
+test-oracle-sys-osarch-specific: export SENZING_TOOLS_SQL_FILE=$(MAKEFILE_DIRECTORY)/rootfs/opt/senzing/er/resources/schema/szcore-schema-oracle-create.sql
+test-oracle-sys-osarch-specific:
+	@echo "test-oracle-sys-osarch-specific:  SENZING_TOOLS_DATABASE_URL: ${SENZING_TOOLS_DATABASE_URL}"
 	@go test -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
 
 

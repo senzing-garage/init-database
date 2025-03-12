@@ -11,7 +11,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/senzing-garage/go-helpers/jsonutil"
 	"github.com/senzing-garage/go-helpers/settingsparser"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/notifier"
@@ -126,8 +125,8 @@ func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context)
 
 			}
 
-			fmt.Printf(">>>>>> SenzingSettings: %s\n", senzingSettings)
-			fmt.Printf(">>>>>> SenzingSettings (reversed): %s\n", jsonutil.ReverseString(senzingSettings))
+			// fmt.Printf(">>>>>> SenzingSettings: %s\n", senzingSettings)
+			// fmt.Printf(">>>>>> SenzingSettings (reversed): %s\n", jsonutil.ReverseString(senzingSettings))
 
 			// Handle case of SQLite in-memory database.
 			// TODO:  Refactor to different, reusable, location.

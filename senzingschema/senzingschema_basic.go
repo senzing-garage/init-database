@@ -579,6 +579,17 @@ func (senzingSchema *BasicSenzingSchema) processDatabase(ctx context.Context, re
 		return err
 	}
 
+	// testFile := "/home/senzing/senzing-garage.git/init-database/testdata/oracle/select_from_dba_tables.sql"
+	// fmt.Printf(">>>>>> processDatabase File: %s\n", testFile)
+
+	// err = sqlExecutor.ProcessFileName(ctx, testFile)
+	// if err != nil {
+	// 	traceExitMessageNumber, debugMessageNumber = 105, 1105
+	// 	return err
+	// }
+
+	// fmt.Printf(">>>>>> DONE:  processDatabase File: %s\n", testFile)
+
 	// fmt.Printf(">>>>>> processDatabase: 5.0\n")
 
 	senzingSchema.log(2001, senzingSchema.SQLFile, parsedURL.Redacted())
