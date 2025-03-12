@@ -9,7 +9,8 @@ env:
   # SENZING_TOOLS_DATABASE_URL: "oci://sys:Passw0rd@127.0.01:1521/PDB"
   # SENZING_TOOLS_DATABASE_URL: "oci://sys:Passw0rd@localhost:1521/G2/?sysdba=true&noTimezoneCheck=true"
   # SENZING_TOOLS_DATABASE_URL: "oci://pdbadmin:Passw0rd@localhost:1521/FREEPDB1"
-  SENZING_TOOLS_DATABASE_URL: "oci://sys:Passw0rd@localhost:1521/FREE/?sysdba=true&noTimezoneCheck=true"
+  # SENZING_TOOLS_DATABASE_URL: "oci://sys:Passw0rd@localhost:1521/FREE/?sysdba=true&noTimezoneCheck=true"
+  SENZING_TOOLS_DATABASE_URL: "oci://pdbadmin:Passw0rd@localhost:1521/FREEPDB1"
 
 permissions:
   contents: read
