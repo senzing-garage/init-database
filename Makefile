@@ -41,7 +41,13 @@ GO_ARCH = $(word 2, $(GO_OSARCH))
 
 DOCKER_IMAGE_TAG ?= $(GIT_REPOSITORY_NAME):$(GIT_VERSION)
 GOBIN ?= $(shell go env GOPATH)/bin
-LD_LIBRARY_PATH ?= /opt/senzing/er/lib:/opt/oracle/instantclient_23_5
+
+# Tricky code.
+# Accept a LD_LIBRARY_PATH environment variable, default to /opt/senzing/er/lib
+# Then append path to oracle SDK
+
+LD_LIBRARY_PATH ?= /opt/senzing/er/lib
+LD_LIBRARY_PATH := $(LD_LIBRARY_PATH):/opt/oracle/instantclient_23_5
 
 # Export environment variables.
 
@@ -146,6 +152,26 @@ run: run-osarch-specific
 
 .PHONY: test
 test: test-osarch-specific
+
+
+.PHONY: test-mysql
+test-mysql: test-mysql-osarch-specific
+
+
+.PHONY: test-mssql
+test-mssql: test-mssql-osarch-specific
+
+
+.PHONY: test-oracle
+test-oracle: test-oracle-osarch-specific
+
+
+.PHONY: test-oracle-sys
+test-oracle-sys: test-oracle-sys-osarch-specific
+
+
+.PHONY: test-postgresql
+test-postgresql: test-postgresql-osarch-specific
 
 
 .PHONY: docker-test

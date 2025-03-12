@@ -9,8 +9,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/senzing-garage/go-databasing/dbhelper"
-	"github.com/senzing-garage/go-helpers/settingsparser"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/notifier"
 	"github.com/senzing-garage/go-observing/observer"
@@ -28,6 +26,7 @@ import (
 
 // BasicInitializer is the default implementation of the Initializer interface.
 type BasicInitializer struct {
+	DatabaseURLs          []string `json:"databaseUrl,omitempty"`
 	DataSources           []string `json:"dataSources,omitempty"`
 	ObserverOrigin        string   `json:"observerOrigin,omitempty"`
 	ObserverURL           string   `json:"observerUrl,omitempty"`
@@ -178,6 +177,7 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 		traceExitMessageNumber, debugMessageNumber = 19, 1019
 		return err
 	}
+
 	err = senzingSchema.InitializeSenzing(ctx)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 14, 1014
@@ -223,7 +223,6 @@ Input
 */
 func (initializer *BasicInitializer) InitializeSpecificDatabase(ctx context.Context) error {
 	var err error
-	var databaseURLs []string
 
 	// Prolog.
 
@@ -257,26 +256,13 @@ func (initializer *BasicInitializer) InitializeSpecificDatabase(ctx context.Cont
 		initializer.log(1001, initializer, string(asJSON))
 	}
 
-	// Pull values out of SenzingEngineConfigurationJson.
-
-	parser, err := settingsparser.New(initializer.SenzingSettings)
-	if err != nil {
-		traceExitMessageNumber, debugMessageNumber = 42, 1042
-		return err
-	}
-	databaseURLs, err = parser.GetDatabaseURLs(ctx)
-	if err != nil {
-		traceExitMessageNumber, debugMessageNumber = 43, 1043
-		return err
-	}
-
 	// Process each database.
 
-	for _, databaseURL := range databaseURLs {
+	for _, databaseURL := range initializer.DatabaseURLs {
 
 		// Parse URL.
 
-		parsedURL, err := dbhelper.ParseDatabaseURL(databaseURL)
+		parsedURL, err := url.Parse(databaseURL)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 44, 1044
 			return err
@@ -717,7 +703,7 @@ func (initializer *BasicInitializer) getSenzingConfig() senzingconfig.SenzingCon
 	if initializer.senzingConfigSingleton == nil {
 		initializer.senzingConfigSingleton = &senzingconfig.BasicSenzingConfig{
 			DataSources:           initializer.DataSources,
-			SenzingSettingsFile:   initializer.SenzingSettingsFile,
+			SenzingConfigJSONFile: initializer.SenzingSettingsFile,
 			SenzingSettings:       initializer.SenzingSettings,
 			SenzingInstanceName:   initializer.SenzingInstanceName,
 			SenzingVerboseLogging: initializer.SenzingVerboseLogging,
@@ -729,6 +715,7 @@ func (initializer *BasicInitializer) getSenzingConfig() senzingconfig.SenzingCon
 func (initializer *BasicInitializer) getSenzingSchema() senzingschema.SenzingSchema {
 	if initializer.senzingSchemaSingleton == nil {
 		initializer.senzingSchemaSingleton = &senzingschema.BasicSenzingSchema{
+			DatabaseURLs:    initializer.DatabaseURLs,
 			SenzingSettings: initializer.SenzingSettings,
 			SQLFile:         initializer.SQLFile,
 		}

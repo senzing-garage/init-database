@@ -4,7 +4,6 @@
 # Variables
 # -----------------------------------------------------------------------------
 
-LD_LIBRARY_PATH ?= /opt/senzing/er/lib
 SENZING_TOOLS_DATABASE_URL ?= sqlite3://na:na@nowhere/tmp/sqlite/G2C.db
 # SENZING_TOOLS_DATABASE_URL ?= sqlite3://na:na@/MYPRIVATE_DB?mode=memory&cache=shared
 PATH := $(MAKEFILE_DIRECTORY)/bin:/$(HOME)/go/bin:$(PATH)
@@ -82,11 +81,50 @@ run-osarch-specific:
 setup-osarch-specific:
 	@mkdir /tmp/sqlite
 	@touch /tmp/sqlite/G2C.db
+	docker-compose -f docker-compose.test.yaml up --detach
 
 
 .PHONY: test-osarch-specific
 test-osarch-specific:
+	@echo "SENZING_TOOLS_DATABASE_URL: ${SENZING_TOOLS_DATABASE_URL}"
 	@go test -tags "libsqlite3 linux" -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
+
+
+.PHONY: test-mssql-osarch-specific
+test-mssql-osarch-specific: export SENZING_TOOLS_DATABASE_URL=mssql://sa:Passw0rd@localhost:1433/G2/?TrustServerCertificate=yes
+test-mssql-osarch-specific:
+	@echo "SENZING_TOOLS_DATABASE_URL: ${SENZING_TOOLS_DATABASE_URL}"
+	@go test -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
+
+
+.PHONY: test-mysql-osarch-specific
+test-mysql-osarch-specific: export SENZING_TOOLS_DATABASE_URL=mysql://mysql:mysql@127.0.0.1:3306/G2
+test-mysql-osarch-specific:
+	@echo "SENZING_TOOLS_DATABASE_URL: ${SENZING_TOOLS_DATABASE_URL}"
+	@go test -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
+
+
+.PHONY: test-oracle-osarch-specific
+test-oracle-osarch-specific: export SENZING_TOOLS_DATABASE_URL=oci://pdbadmin:Passw0rd@localhost:1521/FREEPDB1
+test-oracle-osarch-specific: export SENZING_TOOLS_SQL_FILE=$(MAKEFILE_DIRECTORY)/rootfs/opt/senzing/er/resources/schema/szcore-schema-oracle-create.sql
+test-oracle-osarch-specific:
+	@echo "SENZING_TOOLS_DATABASE_URL: ${SENZING_TOOLS_DATABASE_URL}"
+	@go test -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
+
+
+.PHONY: test-oracle-sys-osarch-specific
+test-oracle-sys-osarch-specific: export SENZING_TOOLS_DATABASE_URL=oci://sys:Passw0rd@localhost:1521/FREE/?sysdba=true&noTimezoneCheck=true
+test-oracle-sys-osarch-specific: export SENZING_TOOLS_SQL_FILE=$(MAKEFILE_DIRECTORY)/rootfs/opt/senzing/er/resources/schema/szcore-schema-oracle-create.sql
+test-oracle-sys-osarch-specific:
+	@echo "test-oracle-sys-osarch-specific:  SENZING_TOOLS_DATABASE_URL: ${SENZING_TOOLS_DATABASE_URL}"
+	@go test -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
+
+
+.PHONY: test-postgresql-osarch-specific
+test-postgresql-osarch-specific: export SENZING_TOOLS_DATABASE_URL=postgresql://postgres:postgres@localhost:5432/G2/?sslmode=disable
+test-postgresql-osarch-specific:
+	@echo "SENZING_TOOLS_DATABASE_URL: ${SENZING_TOOLS_DATABASE_URL}"
+	@go test -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
 
 # -----------------------------------------------------------------------------
 # Makefile targets supported only by this platform.

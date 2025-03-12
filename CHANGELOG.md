@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning].
 
 -
 
+## [0.7.7] - 2025-03-12
+
+### Added in 0.7.7
+
+- Support for MS SQL
+
 ## [0.7.6] - 2025-03-03
 
 ### Changed in 0.7.6

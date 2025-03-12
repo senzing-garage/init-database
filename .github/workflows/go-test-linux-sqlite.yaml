@@ -30,13 +30,23 @@ jobs:
         with:
           go-version: ${{ matrix.go }}
 
+      - name: Install depencencies
+        run: |
+          sudo apt-get install -y ca-certificates
+
       - name: Set up gotestfmt
         uses: gotesttools/gotestfmt-action@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Copy /opt/senzing/er/resources/ files
-        run: sudo cp --verbose --recursive rootfs/* /
+        run: |
+          sudo cp --verbose --recursive rootfs/* /
+
+      - name: Make empty G2C.db
+        run: |
+          mkdir /tmp/sqlite
+          touch /tmp/sqlite/G2C.db
 
       - name: Install Senzing SDK
         uses: senzing-factory/github-action-install-senzing-sdk@v3
