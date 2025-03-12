@@ -71,7 +71,7 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 	debugMessageNumber := 0
 	traceExitMessageNumber := 19
 
-	fmt.Printf(">>>>>> in Initialize 1.0\n")
+	// fmt.Printf(">>>>>> in Initialize 1.0\n")
 
 	// Initialize logging.
 
@@ -149,7 +149,7 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 
 	// Verify database file exists.
 
-	fmt.Printf(">>>>>> in Initialize 2.0\n")
+	// fmt.Printf(">>>>>> in Initialize 2.0\n")
 
 	if len(initializer.SQLFile) > 0 {
 		_, err = os.Stat(initializer.SQLFile)
@@ -162,7 +162,7 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 
 	// Perform initialization for specific databases.
 
-	fmt.Printf(">>>>>> in Initialize 3.0\n")
+	// fmt.Printf(">>>>>> in Initialize 3.0\n")
 
 	err = initializer.InitializeSpecificDatabase(ctx)
 	if err != nil {
@@ -172,7 +172,7 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 
 	// Create schema in database.
 
-	fmt.Printf(">>>>>> in Initialize 4.0\n")
+	// fmt.Printf(">>>>>> in Initialize 4.0\n")
 
 	senzingSchema := initializer.getSenzingSchema()
 	err = senzingSchema.SetLogLevel(ctx, logLevel)
@@ -186,7 +186,7 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 		return err
 	}
 
-	fmt.Printf(">>>>>> in Initialize 4.1\n")
+	// fmt.Printf(">>>>>> in Initialize 4.1\n")
 
 	err = senzingSchema.InitializeSenzing(ctx)
 	if err != nil {
@@ -196,7 +196,7 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 
 	// Create initial Senzing configuration.
 
-	fmt.Printf(">>>>>> in Initialize 5.0\n")
+	// fmt.Printf(">>>>>> in Initialize 5.0\n")
 
 	senzingConfig := initializer.getSenzingConfig()
 	err = senzingConfig.SetLogLevel(ctx, logLevel)
@@ -215,7 +215,7 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 		return err
 	}
 
-	fmt.Printf(">>>>>> in Initialize 6.0\n")
+	// fmt.Printf(">>>>>> in Initialize 6.0\n")
 
 	// Notify observers.
 
