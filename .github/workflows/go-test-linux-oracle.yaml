@@ -91,7 +91,7 @@ jobs:
           {
             echo "SENZING_PATH=${SENZING_PATH}"
             echo "ORACLE_HOME=${ORACLE_HOME}"
-            echo "LD_LIBRARY_PATH="${SENZING_PATH}/er/lib:${ORACLE_HOME}"
+            echo "LD_LIBRARY_PATH=${SENZING_PATH}/er/lib:${ORACLE_HOME}"
             echo "PATH=${PATH}:${ORACLE_HOME}"
           } >> "$GITHUB_ENV"
 
