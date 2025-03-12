@@ -49,7 +49,8 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Copy rootfs files
-        run: sudo cp --verbose --recursive rootfs/* /
+        run: |
+          sudo cp --verbose --recursive rootfs/* /
 
       - name: Install Senzing SDK
         uses: senzing-factory/github-action-install-senzing-sdk@v3

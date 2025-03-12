@@ -40,7 +40,8 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Copy /opt/senzing/er/resources/ files
-        run: sudo cp --verbose --recursive rootfs/* /
+        run: |
+          sudo cp --verbose --recursive rootfs/* /
 
       - name: Make empty G2C.db
         run: |

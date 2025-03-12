@@ -5,11 +5,6 @@ on: [push]
 env:
   LD_LIBRARY_PATH: /opt/senzing/er/lib:/opt/oracle/instantclient_23_5
   SENZING_LOG_LEVEL: TRACE
-  # SENZING_TOOLS_DATABASE_URL: "oci://sys:Passw0rd@oracle:1521/G2/?sysdba=true&noTimezoneCheck=true"
-  # SENZING_TOOLS_DATABASE_URL: "oci://sys:Passw0rd@127.0.01:1521/PDB"
-  # SENZING_TOOLS_DATABASE_URL: "oci://sys:Passw0rd@localhost:1521/G2/?sysdba=true&noTimezoneCheck=true"
-  # SENZING_TOOLS_DATABASE_URL: "oci://pdbadmin:Passw0rd@localhost:1521/FREEPDB1"
-  # SENZING_TOOLS_DATABASE_URL: "oci://sys:Passw0rd@localhost:1521/FREE/?sysdba=true&noTimezoneCheck=true"
   SENZING_TOOLS_DATABASE_URL: "oci://pdbadmin:Passw0rd@localhost:1521/FREEPDB1"
 
 permissions:
@@ -77,13 +72,9 @@ jobs:
           sudo unzip -o -d /opt/oracle /tmp/instantclient-sqlplus-linux.zip
 
       - name: Copy rootfs files
-        run: sudo cp --verbose --recursive rootfs/* /
-
-      - name: Copy testdata files
-        run: sudo cp --verbose --recursive testdata/oracle/rootfs/* /
-
-      - name: Oracle install listing
-        run: tree /opt/oracle
+        run: |
+          sudo cp --verbose --recursive rootfs/* /
+          sudo cp --verbose --recursive testdata/oracle/rootfs/* /
 
       - name: Set environment variables
         run: |
@@ -96,7 +87,7 @@ jobs:
             echo "PATH=${PATH}:${ORACLE_HOME}"
           } >> "$GITHUB_ENV"
 
-      - name: Create database
+      - name: Give permissions to pdbadmin
         run: |
           "${ORACLE_HOME}/sqlplus" sys/Passw0rd@localhost as sysdba "@/opt/oracle/scripts/startup/01_permissions.sql"
 
