@@ -32,8 +32,6 @@ jobs:
         image: container-registry.oracle.com/database/free
         ports:
           - 1521:1521
-        volumes:
-          - ./testdata/oracle/rootfs/opt/oracle/scripts/startup:/opt/oracle/scripts/startup
 
     steps:
       - name: Checkout repository
@@ -98,9 +96,9 @@ jobs:
             echo "PATH=${PATH}:${ORACLE_HOME}"
           } >> "$GITHUB_ENV"
 
-      # - name: Create database
-      #   run: |
-      #     ${ORACLE_HOME}/sqlplus sys/Passw0rd@localhost as sysdba "@/opt/oracle/sql/create_database.sql"
+      - name: Create database
+        run: |
+          ${ORACLE_HOME}/sqlplus sys/Passw0rd@localhost as sysdba "@/opt/oracle/scripts/startup/01_permissions.sql"
 
       - name: Run go test
         run: |
