@@ -98,7 +98,7 @@ jobs:
 
       - name: Create database
         run: |
-          ${ORACLE_HOME}/sqlplus sys/Passw0rd@localhost as sysdba "@/opt/oracle/scripts/startup/01_permissions.sql"
+          "${ORACLE_HOME}/sqlplus" sys/Passw0rd@localhost as sysdba "@/opt/oracle/scripts/startup/01_permissions.sql"
 
       - name: Run go test
         run: |
