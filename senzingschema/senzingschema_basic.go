@@ -59,8 +59,6 @@ func (senzingSchema *BasicSenzingSchema) InitializeSenzing(ctx context.Context) 
 
 	// Prolog.
 
-	// fmt.Printf(">>>>>> in InitializeSenzing 1.0\n")
-
 	debugMessageNumber := 0
 	traceExitMessageNumber := 19
 	if senzingSchema.getLogger().IsDebug() {
@@ -93,8 +91,6 @@ func (senzingSchema *BasicSenzingSchema) InitializeSenzing(ctx context.Context) 
 
 	// Pull values out of SenzingEngineConfigurationJson.
 
-	// fmt.Printf(">>>>>> in InitializeSenzing 2.0\n")
-
 	parser, err := settingsparser.New(senzingSchema.SenzingSettings)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 12, 1012
@@ -106,13 +102,9 @@ func (senzingSchema *BasicSenzingSchema) InitializeSenzing(ctx context.Context) 
 		return err
 	}
 
-	// fmt.Printf(">>>>>> in InitializeSenzing 3.0\n")
-
 	// Process each database.
 
 	for _, databaseURL := range senzingSchema.DatabaseURLs {
-
-		// fmt.Printf(">>>>>> databaseURL: %s\n", databaseURL)
 
 		err = senzingSchema.processDatabase(ctx, resourcePath, databaseURL)
 		if err != nil {
@@ -120,8 +112,6 @@ func (senzingSchema *BasicSenzingSchema) InitializeSenzing(ctx context.Context) 
 			return err
 		}
 	}
-
-	// fmt.Printf(">>>>>> in InitializeSenzing 4.0\n")
 
 	// Notify observers.
 
@@ -475,8 +465,6 @@ func (senzingSchema *BasicSenzingSchema) processDatabase(ctx context.Context, re
 
 	// Prolog.
 
-	// fmt.Printf(">>>>>> processDatabase: 1.0\n")
-
 	debugMessageNumber := 0
 	traceExitMessageNumber := 109
 	if senzingSchema.getLogger().IsDebug() {
@@ -502,15 +490,11 @@ func (senzingSchema *BasicSenzingSchema) processDatabase(ctx context.Context, re
 
 	// Determine which SQL file to process.
 
-	// fmt.Printf(">>>>>> processDatabase: 2.0\n")
-
 	parsedURL, err := url.Parse(databaseURL)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 101, 1101
 		return err
 	}
-
-	// fmt.Printf(">>>>>> processDatabase: 3.0\n")
 
 	if len(senzingSchema.SQLFile) == 0 {
 		switch parsedURL.Scheme {
@@ -529,10 +513,6 @@ func (senzingSchema *BasicSenzingSchema) processDatabase(ctx context.Context, re
 		}
 	}
 
-	// fmt.Printf(">>>>>> processDatabase: 3.1\n")
-	// fmt.Printf(">>>>>> databaseURL: %s\n", databaseURL)
-	// fmt.Printf(">>>>>> databaseURL (reversed): %s\n", reverseString(databaseURL))
-
 	// Connect to the database.
 
 	databaseConnector, err := connector.NewConnector(ctx, databaseURL)
@@ -540,8 +520,6 @@ func (senzingSchema *BasicSenzingSchema) processDatabase(ctx context.Context, re
 		traceExitMessageNumber, debugMessageNumber = 102, 1102
 		return err
 	}
-
-	// fmt.Printf(">>>>>> processDatabase: 4.0\n")
 
 	// Create sqlExecutor to process file of SQL.
 
@@ -571,26 +549,11 @@ func (senzingSchema *BasicSenzingSchema) processDatabase(ctx context.Context, re
 
 	// Process file of SQL
 
-	// fmt.Printf(">>>>>> processDatabase File: %s\n", senzingSchema.SQLFile)
-
 	err = sqlExecutor.ProcessFileName(ctx, senzingSchema.SQLFile)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 105, 1105
 		return err
 	}
-
-	// testFile := "/home/senzing/senzing-garage.git/init-database/testdata/oracle/select_from_dba_tables.sql"
-	// fmt.Printf(">>>>>> processDatabase File: %s\n", testFile)
-
-	// err = sqlExecutor.ProcessFileName(ctx, testFile)
-	// if err != nil {
-	// 	traceExitMessageNumber, debugMessageNumber = 105, 1105
-	// 	return err
-	// }
-
-	// fmt.Printf(">>>>>> DONE:  processDatabase File: %s\n", testFile)
-
-	// fmt.Printf(">>>>>> processDatabase: 5.0\n")
 
 	senzingSchema.log(2001, senzingSchema.SQLFile, parsedURL.Redacted())
 	return err
