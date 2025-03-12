@@ -125,8 +125,8 @@ func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context)
 
 			}
 
-			// fmt.Printf(">>>>>> SenzingSettings: %s\n", senzingSettings)
-			// fmt.Printf(">>>>>> SenzingSettings (reversed): %s\n", reverseString(senzingSettings))
+			fmt.Printf(">>>>>> SenzingSettings: %s\n", senzingSettings)
+			fmt.Printf(">>>>>> SenzingSettings (reversed): %s\n", reverseString(senzingSettings))
 
 			// Handle case of SQLite in-memory database.
 			// TODO:  Refactor to different, reusable, location.
