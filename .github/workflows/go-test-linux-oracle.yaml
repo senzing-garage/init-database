@@ -32,6 +32,8 @@ jobs:
         image: container-registry.oracle.com/database/free
         ports:
           - 1521:1521
+        volumes:
+          - ./testdata/oracle/rootfs/opt/oracle/scripts/startup:/opt/oracle/scripts/startup
 
     steps:
       - name: Checkout repository
