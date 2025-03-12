@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning].
 ### Added in 0.7.7
 
 - Support for MS SQL
+- Support for Oracle
 
 ## [0.7.6] - 2025-03-03
 
