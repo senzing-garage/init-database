@@ -46,15 +46,15 @@ COPY --from=senzingsdk_runtime  "/opt/senzing/er/sdk/c/" "/opt/senzing/er/sdk/c/
 # Set path to Senzing libs.
 
 ENV LD_LIBRARY_PATH=/opt/senzing/er/lib/
+WORKDIR ${GOPATH}/src/init-database
 
 # Debug
 
 RUN uname -a \
  && make print-make-variables 
-
+ 
 # Build go program.
-
-WORKDIR ${GOPATH}/src/init-database
+ 
 RUN make build
 
 # Copy binaries to /output.
