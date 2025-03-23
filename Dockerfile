@@ -50,7 +50,7 @@ ENV LD_LIBRARY_PATH=/opt/senzing/er/lib/
 # Debug
 
 RUN uname -a \
-    make print-make-variables 
+ && make print-make-variables 
 
 # Build go program.
 
