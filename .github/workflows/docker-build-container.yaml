@@ -27,4 +27,4 @@ jobs:
           image-repository: senzing/${{ steps.repo-basename.outputs.repo }}
           password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
           username: ${{ secrets.DOCKERHUB_USERNAME }}
-          platforms: linux/amd64
+          platforms: linux/arm64
