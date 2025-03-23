@@ -32,7 +32,7 @@ RUN apt-get update \
         libsqlite3-dev \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
-
+ 
 # Copy local files from the Git repository.
 
 COPY ./rootfs /
@@ -46,6 +46,11 @@ COPY --from=senzingsdk_runtime  "/opt/senzing/er/sdk/c/" "/opt/senzing/er/sdk/c/
 # Set path to Senzing libs.
 
 ENV LD_LIBRARY_PATH=/opt/senzing/er/lib/
+
+# Debug
+
+RUN uname -a \
+    make print-make-variables 
 
 # Build go program.
 
