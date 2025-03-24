@@ -2,7 +2,7 @@
 # Stages
 # -----------------------------------------------------------------------------
 
-ARG IMAGE_BUILDER=golang:1.23.4-bookworm
+ARG IMAGE_BUILDER=golang:1.24.1-bookworm
 ARG IMAGE_FINAL=senzing/senzingsdk-runtime-beta:latest
 
 # -----------------------------------------------------------------------------
@@ -28,11 +28,11 @@ USER root
 # Install packages via apt-get.
 
 RUN apt-get update \
- && apt-get -y install \
-        libsqlite3-dev \
- && apt-get clean \
- && rm -rf /var/lib/apt/lists/*
- 
+      && apt-get -y install \
+      libsqlite3-dev \
+      && apt-get clean \
+      && rm -rf /var/lib/apt/lists/*
+
 # Copy local files from the Git repository.
 
 COPY ./rootfs /
@@ -51,18 +51,18 @@ WORKDIR ${GOPATH}/src/init-database
 # Debug
 
 RUN uname -a \
- && make print-make-variables 
- 
+      && make print-make-variables
+
 RUN go mod tidy
-  
+
 # Build go program.
- 
+
 RUN make build
 
 # Copy binaries to /output.
 
 RUN mkdir -p /output \
- && cp -R ${GOPATH}/src/init-database/target/*  /output/
+      && cp -R ${GOPATH}/src/init-database/target/*  /output/
 
 # -----------------------------------------------------------------------------
 # Stage: final
@@ -79,10 +79,10 @@ USER root
 # Install packages via apt-get.
 
 RUN apt-get update \
- && apt-get -y install \
-        libsqlite3-dev \
- && apt-get clean \
- && rm -rf /var/lib/apt/lists/*
+      && apt-get -y install \
+      libsqlite3-dev \
+      && apt-get clean \
+      && rm -rf /var/lib/apt/lists/*
 
 # Copy files from repository.
 
