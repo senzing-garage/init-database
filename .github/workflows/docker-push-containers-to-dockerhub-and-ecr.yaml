@@ -19,8 +19,7 @@ jobs:
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
     uses: senzing-factory/build-resources/.github/workflows/docker-push-containers-to-dockerhub-and-ecr.yaml@v2
     with:
-      build-options: "-q --push"
       docker-image-repository: senzing/init-database
       ecr-image-repository: senzing/init-database
       image-tag: ${{ github.ref_name }}
-      platforms: "linux/amd64,linux/arm64"
+      push: true
