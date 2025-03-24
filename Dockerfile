@@ -2,7 +2,7 @@
 # Stages
 # -----------------------------------------------------------------------------
 
-ARG IMAGE_BUILDER=golang:1.23.4-bookworm
+ARG IMAGE_BUILDER=golang:1.24.1-bookworm
 ARG IMAGE_FINAL=senzing/senzingsdk-runtime-beta:latest
 
 # -----------------------------------------------------------------------------
@@ -29,7 +29,7 @@ USER root
 
 RUN apt-get update \
  && apt-get -y install \
-        libsqlite3-dev \
+      libsqlite3-dev \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
@@ -46,10 +46,10 @@ COPY --from=senzingsdk_runtime  "/opt/senzing/er/sdk/c/" "/opt/senzing/er/sdk/c/
 # Set path to Senzing libs.
 
 ENV LD_LIBRARY_PATH=/opt/senzing/er/lib/
+WORKDIR ${GOPATH}/src/init-database
 
 # Build go program.
 
-WORKDIR ${GOPATH}/src/init-database
 RUN make build
 
 # Copy binaries to /output.
@@ -71,9 +71,9 @@ USER root
 
 # Install packages via apt-get.
 
-RUN apt-get update \
- && apt-get -y install \
-        libsqlite3-dev \
+RUN apt-get update -qqq \
+ && apt-get -yqqq install \
+      libsqlite3-dev \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
