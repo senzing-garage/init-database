@@ -40,14 +40,6 @@ dependencies-for-development-osarch-specific:
 	@curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(shell go env GOPATH)/bin latest
 
 
-.PHONY: docker-build-osarch-specific
-docker-build-osarch-specific:
-	@$(DOCKER_BUILDKIT) docker build \
-		--tag $(DOCKER_IMAGE_NAME) \
-		--tag $(DOCKER_IMAGE_NAME):$(BUILD_VERSION) \
-		.
-
-
 .PHONY: documentation-osarch-specific
 documentation-osarch-specific:
 	@pkill godoc || true
