@@ -6,7 +6,6 @@
 
 .PHONY: build-osarch-specific
 build-osarch-specific: linux/amd64
-	$(info >>>>>> Running build-osarch-specific from linux_x86_64.mk.)
 	@mkdir -p $(TARGET_DIRECTORY)/linux
 	@cp $(TARGET_DIRECTORY)/linux-amd64/$(PROGRAM_NAME) $(TARGET_DIRECTORY)/linux/$(PROGRAM_NAME)
 

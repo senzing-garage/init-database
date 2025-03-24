@@ -48,13 +48,6 @@ COPY --from=senzingsdk_runtime  "/opt/senzing/er/sdk/c/" "/opt/senzing/er/sdk/c/
 ENV LD_LIBRARY_PATH=/opt/senzing/er/lib/
 WORKDIR ${GOPATH}/src/init-database
 
-# Debug
-
-RUN uname -a \
- && make print-make-variables
-
-RUN go mod tidy
-
 # Build go program.
 
 RUN make build
