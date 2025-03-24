@@ -53,6 +53,8 @@ WORKDIR ${GOPATH}/src/init-database
 RUN uname -a \
  && make print-make-variables 
  
+RUN go mod tidy
+  
 # Build go program.
  
 RUN make build

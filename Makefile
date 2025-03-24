@@ -114,7 +114,7 @@ $(PLATFORMS):
 
 PLATFORMS_WITH_LIBSQLITE3 := linux/amd64/libsqlite3  linux/arm64/libsqlite3
 $(PLATFORMS_WITH_LIBSQLITE3):
-	$(info Building $(TARGET_DIRECTORY)/$(GO_OS)-$(GO_ARCH)/$(PROGRAM_NAME))
+	$(info Building $(TARGET_DIRECTORY)/$(GO_OS)-$(GO_ARCH)/$(PROGRAM_NAME) libsqlite3)
 	@GOOS=$(GO_OS) GOARCH=$(GO_ARCH) go build -tags "libsqlite3 linux" -o $(TARGET_DIRECTORY)/$(GO_OS)-$(GO_ARCH)/$(PROGRAM_NAME)
 
 

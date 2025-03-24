@@ -6,6 +6,7 @@
 
 .PHONY: build-osarch-specific
 build-osarch-specific: linux/arm64
+	$(info >>>>>> Running build-osarch-specific from linux_arm_64.mk.)
 	@mkdir -p $(TARGET_DIRECTORY)/linux
 	@cp $(TARGET_DIRECTORY)/linux-arm64/$(PROGRAM_NAME) $(TARGET_DIRECTORY)/linux/$(PROGRAM_NAME)
 
