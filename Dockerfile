@@ -28,10 +28,10 @@ USER root
 # Install packages via apt-get.
 
 RUN apt-get update \
-      && apt-get -y install \
+ && apt-get -y install \
       libsqlite3-dev \
-      && apt-get clean \
-      && rm -rf /var/lib/apt/lists/*
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
 
 # Copy local files from the Git repository.
 
@@ -51,7 +51,7 @@ WORKDIR ${GOPATH}/src/init-database
 # Debug
 
 RUN uname -a \
-      && make print-make-variables
+ && make print-make-variables
 
 RUN go mod tidy
 
@@ -62,7 +62,7 @@ RUN make build
 # Copy binaries to /output.
 
 RUN mkdir -p /output \
-      && cp -R ${GOPATH}/src/init-database/target/*  /output/
+ && cp -R ${GOPATH}/src/init-database/target/*  /output/
 
 # -----------------------------------------------------------------------------
 # Stage: final
@@ -79,10 +79,10 @@ USER root
 # Install packages via apt-get.
 
 RUN apt-get update \
-      && apt-get -y install \
+ && apt-get -y install \
       libsqlite3-dev \
-      && apt-get clean \
-      && rm -rf /var/lib/apt/lists/*
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
 
 # Copy files from repository.
 
