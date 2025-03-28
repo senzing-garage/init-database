@@ -1,6 +1,6 @@
 name: Go test linux - postgres
 
-on: [push]
+on: [push, workflow_dispatch]
 
 env:
   SENZING_LOG_LEVEL: TRACE
@@ -15,7 +15,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        go: ["1.21"]
+        go: ["1.24"]
         os: [ubuntu-latest]
         senzingsdk-version: [staging-v4]
 
@@ -40,7 +40,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup go
+      - name: Setup go ${{ matrix.go }}
         uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go }}
