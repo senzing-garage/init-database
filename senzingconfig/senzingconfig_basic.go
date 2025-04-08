@@ -1,13 +1,10 @@
 package senzingconfig
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"os"
-	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -55,8 +52,6 @@ var debugOptions = []interface{}{
 var traceOptions = []interface{}{
 	&logging.OptionCallerSkip{Value: 5},
 }
-
-var defaultModuleName = "init-database"
 
 // ----------------------------------------------------------------------------
 // Interface methods
@@ -117,11 +112,15 @@ func (senzingConfig *BasicSenzingConfig) InitializeSenzing(ctx context.Context) 
 
 	if len(senzingConfig.SenzingConfigJSONFile) > 0 {
 
-		configDefinition, err := fileToString(ctx, senzingConfig.SenzingConfigJSONFile)
-		szConfig, err := szConfigManager.CreateConfigFromString(ctx, configDefinition)
-		if err != nil {
+		configDefinition, err1 := fileToString(ctx, senzingConfig.SenzingConfigJSONFile)
+		if err1 != nil {
 			traceExitMessageNumber, debugMessageNumber = 99, 1999
-			return err
+			return err1
+		}
+		szConfig, err2 := szConfigManager.CreateConfigFromString(ctx, configDefinition)
+		if err2 != nil {
+			traceExitMessageNumber, debugMessageNumber = 99, 1999
+			return err2
 		}
 
 		configID, err = senzingConfig.makeDefaultConfig(ctx, szAbstractFactory, szConfig)
@@ -155,10 +154,10 @@ func (senzingConfig *BasicSenzingConfig) InitializeSenzing(ctx context.Context) 
 		}
 
 		if len(senzingConfig.DataSources) > 0 {
-			szConfig, err := szConfigManager.CreateConfigFromConfigID(ctx, configID)
-			if err != nil {
+			szConfig, err2 := szConfigManager.CreateConfigFromConfigID(ctx, configID)
+			if err2 != nil {
 				traceExitMessageNumber, debugMessageNumber = 99, 1999
-				return err
+				return err2
 			}
 			configID, err = senzingConfig.makeDefaultConfig(ctx, szAbstractFactory, szConfig)
 		}
@@ -596,112 +595,12 @@ func (senzingConfig *BasicSenzingConfig) makeDefaultConfig(
 	return result, err
 }
 
-func (senzingConfig *BasicSenzingConfig) copyFile(sourceFilename string, targetFilename string) error {
-	sourceFilename = filepath.Clean(sourceFilename)
-	sourceFile, err := os.Open(sourceFilename)
-	if err != nil {
-		return err
-	}
-	defer func() {
-		if err := sourceFile.Close(); err != nil {
-			senzingConfig.log(9999, sourceFilename, err)
-		}
-	}()
-	targetFilename = filepath.Clean(targetFilename)
-	targetFile, err := os.Create(targetFilename)
-	if err != nil {
-		return err
-	}
-	defer func() {
-		if err := targetFile.Close(); err != nil {
-			senzingConfig.log(9999, targetFilename, err)
-		}
-	}()
-	_, err = io.Copy(targetFile, sourceFile)
-	if err != nil {
-		return err
-	}
-	senzingConfig.log(2004, sourceFilename, targetFilename)
-	return err
-}
-
-func (senzingConfig *BasicSenzingConfig) filesAreEqual(sourceFilename string, targetFilename string) bool {
-	var (
-		chunkSize        = 64000
-		shortCircuitExit bool
-	)
-
-	// If file sizes differ, then files differ.
-
-	sourceStat, err := os.Stat(sourceFilename)
-	if err != nil {
-		return false
-	}
-	targetStat, err := os.Stat(targetFilename)
-	if err != nil {
-		return false
-	}
-
-	if sourceStat.Size() != targetStat.Size() {
-		return false
-	}
-
-	// Final check: If file contents differ, then files differ.
-
-	sourceFilename = filepath.Clean(sourceFilename)
-	sourceFile, err := os.Open(sourceFilename)
-	if err != nil {
-		shortCircuitExit = true
-	}
-	defer func() {
-		if err := sourceFile.Close(); err != nil {
-			senzingConfig.log(9999, sourceFilename, err)
-		}
-	}()
-
-	targetFilename = filepath.Clean(targetFilename)
-	targetFile, err := os.Open(targetFilename)
-	if err != nil {
-		shortCircuitExit = true
-	}
-	defer func() {
-		if err := targetFile.Close(); err != nil {
-			senzingConfig.log(9999, targetFilename, err)
-		}
-	}()
-
-	if shortCircuitExit {
-		return false
-	}
-
-	for {
-		sourceBytes := make([]byte, chunkSize)
-		_, sourceError := sourceFile.Read(sourceBytes)
-
-		targetBytes := make([]byte, chunkSize)
-		_, targetError := targetFile.Read(targetBytes)
-
-		if sourceError != nil || targetError != nil {
-			switch {
-			case sourceError == io.EOF && targetError == io.EOF:
-				return true
-			case sourceError == io.EOF || targetError == io.EOF:
-				return false
-			default:
-				senzingConfig.log(4001, sourceFilename, targetFilename, sourceError, targetError)
-			}
-		}
-		if !bytes.Equal(sourceBytes, targetBytes) {
-			return false
-		}
-	}
-}
-
 // ----------------------------------------------------------------------------
 // Internal functions
 // ----------------------------------------------------------------------------
 
 func fileToString(ctx context.Context, filePath string) (string, error) {
+	_ = ctx
 	content, err := os.ReadFile(filePath)
 	return string(content), err
 }

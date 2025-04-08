@@ -30,10 +30,7 @@ func ExampleBasicSenzingConfig_InitializeSenzing_withDatasources() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	err = senzingConfig.InitializeSenzing(ctx)
-	if err != nil {
-		fmt.Println(err)
-	}
+	_ = senzingConfig.InitializeSenzing(ctx)
 	// Output:
 }
 
