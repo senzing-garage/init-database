@@ -17,11 +17,11 @@ retract (
 require (
 	github.com/senzing-garage/go-cmdhelping v0.3.3
 	github.com/senzing-garage/go-databasing v0.5.6
-	github.com/senzing-garage/go-helpers v0.6.10-0.20250404192823-3f5fa8fbdd34
+	github.com/senzing-garage/go-helpers v0.6.10
 	github.com/senzing-garage/go-logging v1.5.1
 	github.com/senzing-garage/go-observing v0.3.3
 	github.com/senzing-garage/go-sdk-abstract-factory v0.9.6-0.20250408200422-705974aaf18a
-	github.com/senzing-garage/sz-sdk-go v0.14.6-0.20250407222016-d75840d12e33
+	github.com/senzing-garage/sz-sdk-go v0.15.0
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/viper v1.20.1
 	github.com/stretchr/testify v1.10.0
@@ -54,7 +54,7 @@ require (
 	github.com/senzing-garage/sz-sdk-go-core v0.9.1-0.20250408200012-27d793e97dd9 // indirect
 	github.com/senzing-garage/sz-sdk-go-grpc v0.9.3-0.20250408182053-109d6d58496c // indirect
 	github.com/senzing-garage/sz-sdk-go-mock v0.8.5-0.20250408163439-cdb6168e261f // indirect
-	github.com/senzing-garage/sz-sdk-proto v0.8.1-0.20250408002554-4ea893978faa // indirect
+	github.com/senzing-garage/sz-sdk-proto v0.8.1-0.20250409191401-4f99c75d587f // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.14.0 // indirect
 	github.com/spf13/cast v1.7.1 // indirect
