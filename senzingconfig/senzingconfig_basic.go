@@ -1,17 +1,14 @@
 package senzingconfig
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"os"
-	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
-	"github.com/senzing-garage/go-helpers/settingsparser"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/notifier"
 	"github.com/senzing-garage/go-observing/observer"
@@ -42,10 +39,6 @@ type BasicSenzingConfig struct {
 	observers                  subject.Subject
 	szAbstractFactorySingleton senzing.SzAbstractFactory
 	szAbstractFactorySyncOnce  sync.Once
-	szConfigManagerSingleton   senzing.SzConfigManager
-	szConfigManagerSyncOnce    sync.Once
-	szConfigSingleton          senzing.SzConfig
-	szConfigSyncOnce           sync.Once
 }
 
 // ----------------------------------------------------------------------------
@@ -59,237 +52,6 @@ var debugOptions = []interface{}{
 var traceOptions = []interface{}{
 	&logging.OptionCallerSkip{Value: 5},
 }
-
-var defaultModuleName = "init-database"
-
-// ----------------------------------------------------------------------------
-// Internal methods
-// ----------------------------------------------------------------------------
-
-// --- Logging ----------------------------------------------------------------
-
-// Get the Logger singleton.
-func (senzingConfig *BasicSenzingConfig) getLogger() logging.Logging {
-	var err error
-	if senzingConfig.logger == nil {
-		options := []interface{}{
-			&logging.OptionCallerSkip{Value: 4},
-		}
-		senzingConfig.logger, err = logging.NewSenzingLogger(ComponentID, IDMessages, options...)
-		if err != nil {
-			panic(err)
-		}
-	}
-	return senzingConfig.logger
-}
-
-// Log message.
-func (senzingConfig *BasicSenzingConfig) log(messageNumber int, details ...interface{}) {
-	senzingConfig.getLogger().Log(messageNumber, details...)
-}
-
-// Debug.
-func (senzingConfig *BasicSenzingConfig) debug(messageNumber int, details ...interface{}) {
-	details = append(details, debugOptions...)
-	senzingConfig.getLogger().Log(messageNumber, details...)
-}
-
-// Trace method entry.
-func (senzingConfig *BasicSenzingConfig) traceEntry(messageNumber int, details ...interface{}) {
-	details = append(details, traceOptions...)
-	senzingConfig.getLogger().Log(messageNumber, details...)
-}
-
-// Trace method exit.
-func (senzingConfig *BasicSenzingConfig) traceExit(messageNumber int, details ...interface{}) {
-	details = append(details, traceOptions...)
-	senzingConfig.getLogger().Log(messageNumber, details...)
-}
-
-// --- Dependent services -----------------------------------------------------
-
-// Create an abstract factory singleton and return it.
-func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
-	var err error
-	_ = ctx
-
-	senzingConfig.szAbstractFactorySyncOnce.Do(func() {
-		if len(senzingConfig.GrpcTarget) == 0 {
-			senzingSettings := senzingConfig.SenzingSettings
-			senzingInstanceName := senzingConfig.SenzingInstanceName
-			if len(senzingInstanceName) == 0 {
-				senzingInstanceName = fmt.Sprintf("senzing init-database at %s", time.Now())
-			}
-			senzingConfig.szAbstractFactorySingleton, err = szfactorycreator.CreateCoreAbstractFactory(senzingInstanceName, senzingSettings, senzingConfig.SenzingVerboseLogging, senzing.SzInitializeWithDefaultConfiguration)
-			if err != nil {
-				panic(err)
-			}
-		} else {
-			grpcConnection, err := grpc.NewClient(senzingConfig.GrpcTarget, senzingConfig.GrpcDialOptions...)
-			if err != nil {
-				panic(err)
-			}
-			senzingConfig.szAbstractFactorySingleton, err = szfactorycreator.CreateGrpcAbstractFactory(grpcConnection)
-			if err != nil {
-				panic(err)
-			}
-		}
-	})
-	return senzingConfig.szAbstractFactorySingleton
-}
-
-// Create a SzConfig singleton and return it.
-func (senzingConfig *BasicSenzingConfig) getSzConfig(ctx context.Context) (senzing.SzConfig, error) {
-	var err error
-	senzingConfig.szConfigSyncOnce.Do(func() {
-		senzingConfig.szConfigSingleton, err = senzingConfig.getAbstractFactory(ctx).CreateConfig(ctx)
-	})
-	return senzingConfig.szConfigSingleton, err
-}
-
-// Create a SzConfigManager singleton and return it.
-func (senzingConfig *BasicSenzingConfig) getSzConfigmgr(ctx context.Context) (senzing.SzConfigManager, error) {
-	var err error
-	senzingConfig.szConfigManagerSyncOnce.Do(func() {
-		senzingConfig.szConfigManagerSingleton, err = senzingConfig.getAbstractFactory(ctx).CreateConfigManager(ctx)
-	})
-	return senzingConfig.szConfigManagerSingleton, err
-}
-
-// Get dependent services: SzConfig, SzConfigManager
-func (senzingConfig *BasicSenzingConfig) getDependentServices(ctx context.Context) (senzing.SzConfig, senzing.SzConfigManager, error) {
-	szConfig, err := senzingConfig.getSzConfig(ctx)
-	if err != nil {
-		return nil, nil, err
-	}
-	szConfigManager, err := senzingConfig.getSzConfigmgr(ctx)
-	if err != nil {
-		return szConfig, nil, err
-	}
-	return szConfig, szConfigManager, err
-}
-
-// --- Misc -------------------------------------------------------------------
-
-// Add datasources to Senzing configuration.
-func (senzingConfig *BasicSenzingConfig) addDatasources(ctx context.Context, szConfig senzing.SzConfig, configHandle uintptr) error {
-	var err error
-	for _, datasource := range senzingConfig.DataSources {
-		_, err = szConfig.AddDataSource(ctx, configHandle, datasource)
-		if err != nil {
-			return err
-		}
-		senzingConfig.log(2001, datasource)
-	}
-	return err
-}
-
-func (senzingConfig *BasicSenzingConfig) copyFile(sourceFilename string, targetFilename string) error {
-	sourceFilename = filepath.Clean(sourceFilename)
-	sourceFile, err := os.Open(sourceFilename)
-	if err != nil {
-		return err
-	}
-	defer func() {
-		if err := sourceFile.Close(); err != nil {
-			senzingConfig.log(9999, sourceFilename, err)
-		}
-	}()
-	targetFilename = filepath.Clean(targetFilename)
-	targetFile, err := os.Create(targetFilename)
-	if err != nil {
-		return err
-	}
-	defer func() {
-		if err := targetFile.Close(); err != nil {
-			senzingConfig.log(9999, targetFilename, err)
-		}
-	}()
-	_, err = io.Copy(targetFile, sourceFile)
-	if err != nil {
-		return err
-	}
-	senzingConfig.log(2004, sourceFilename, targetFilename)
-	return err
-}
-
-func (senzingConfig *BasicSenzingConfig) filesAreEqual(sourceFilename string, targetFilename string) bool {
-	var (
-		chunkSize        = 64000
-		shortCircuitExit bool
-	)
-
-	// If file sizes differ, then files differ.
-
-	sourceStat, err := os.Stat(sourceFilename)
-	if err != nil {
-		return false
-	}
-	targetStat, err := os.Stat(targetFilename)
-	if err != nil {
-		return false
-	}
-
-	if sourceStat.Size() != targetStat.Size() {
-		return false
-	}
-
-	// Final check: If file contents differ, then files differ.
-
-	sourceFilename = filepath.Clean(sourceFilename)
-	sourceFile, err := os.Open(sourceFilename)
-	if err != nil {
-		shortCircuitExit = true
-	}
-	defer func() {
-		if err := sourceFile.Close(); err != nil {
-			senzingConfig.log(9999, sourceFilename, err)
-		}
-	}()
-
-	targetFilename = filepath.Clean(targetFilename)
-	targetFile, err := os.Open(targetFilename)
-	if err != nil {
-		shortCircuitExit = true
-	}
-	defer func() {
-		if err := targetFile.Close(); err != nil {
-			senzingConfig.log(9999, targetFilename, err)
-		}
-	}()
-
-	if shortCircuitExit {
-		return false
-	}
-
-	for {
-		sourceBytes := make([]byte, chunkSize)
-		_, sourceError := sourceFile.Read(sourceBytes)
-
-		targetBytes := make([]byte, chunkSize)
-		_, targetError := targetFile.Read(targetBytes)
-
-		if sourceError != nil || targetError != nil {
-			switch {
-			case sourceError == io.EOF && targetError == io.EOF:
-				return true
-			case sourceError == io.EOF || targetError == io.EOF:
-				return false
-			default:
-				senzingConfig.log(4001, sourceFilename, targetFilename, sourceError, targetError)
-			}
-		}
-		if !bytes.Equal(sourceBytes, targetBytes) {
-			return false
-		}
-	}
-}
-
-// func assertNoError(err error) {
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// }
 
 // ----------------------------------------------------------------------------
 // Interface methods
@@ -339,9 +101,31 @@ func (senzingConfig *BasicSenzingConfig) InitializeSenzing(ctx context.Context) 
 
 	// Create Senzing objects.
 
-	szConfig, szConfigManager, err := senzingConfig.getDependentServices(ctx)
+	szAbstractFactory := senzingConfig.getAbstractFactory(ctx)
+
+	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	if err != nil {
-		traceExitMessageNumber, debugMessageNumber = 12, 1012
+		return err
+	}
+
+	// If a Senzing configuration file is specified, use it.
+
+	if len(senzingConfig.SenzingConfigJSONFile) > 0 {
+
+		configDefinition, err1 := fileToString(ctx, senzingConfig.SenzingConfigJSONFile)
+		if err1 != nil {
+			traceExitMessageNumber, debugMessageNumber = 99, 1999
+			return err1
+		}
+		szConfig, err2 := szConfigManager.CreateConfigFromString(ctx, configDefinition)
+		if err2 != nil {
+			traceExitMessageNumber, debugMessageNumber = 99, 1999
+			return err2
+		}
+
+		configID, err = senzingConfig.makeDefaultConfig(ctx, szAbstractFactory, szConfig)
+		senzingConfig.log(2999, configID)
+		traceExitMessageNumber, debugMessageNumber = 99, 999
 		return err
 	}
 
@@ -352,121 +136,57 @@ func (senzingConfig *BasicSenzingConfig) InitializeSenzing(ctx context.Context) 
 		traceExitMessageNumber, debugMessageNumber = 13, 1013
 		return err
 	}
+
 	if configID != 0 {
 		if senzingConfig.observers != nil {
 			go func() {
 				details := map[string]string{}
-				notifier.Notify(ctx, senzingConfig.observers, senzingConfig.observerOrigin, ComponentID, 8001, err, details)
+				notifier.Notify(
+					ctx,
+					senzingConfig.observers,
+					senzingConfig.observerOrigin,
+					ComponentID,
+					8001,
+					err,
+					details,
+				)
 			}()
 		}
+
+		if len(senzingConfig.DataSources) > 0 {
+			szConfig, err2 := szConfigManager.CreateConfigFromConfigID(ctx, configID)
+			if err2 != nil {
+				traceExitMessageNumber, debugMessageNumber = 99, 1999
+				return err2
+			}
+			configID, err = senzingConfig.makeDefaultConfig(ctx, szAbstractFactory, szConfig)
+		}
+
 		senzingConfig.log(2002, configID)
 		traceExitMessageNumber, debugMessageNumber = 14, 0 // debugMessageNumber=0 because it's not an error.
 		return err
 	}
 
-	// If engine configuration file specified, swap it in.
+	// If no configuration file specified, install the template.
 
-	if len(senzingConfig.SenzingConfigJSONFile) > 0 {
-		parsedJSON, err := settingsparser.New(senzingConfig.SenzingSettings)
+	if len(senzingConfig.SenzingConfigJSONFile) == 0 {
+
+		szConfig, err := szConfigManager.CreateConfigFromTemplate(ctx)
 		if err != nil {
-			traceExitMessageNumber, debugMessageNumber = 20, 1020
-			return err
-		}
-		resourcePath, err := parsedJSON.GetResourcePath(ctx)
-		if err != nil {
-			traceExitMessageNumber, debugMessageNumber = 21, 1021
+			traceExitMessageNumber, debugMessageNumber = 99, 1999
 			return err
 		}
 
-		// Compare file names.
-
-		sourceFilename := senzingConfig.SenzingConfigJSONFile
-		targetFilename := fmt.Sprintf("%s/templates/g2config.json", resourcePath)
-		if sourceFilename != targetFilename {
-
-			// Verify source file exists.
-
-			_, err := os.Stat(sourceFilename)
-			if err != nil {
-				senzingConfig.log(5001, sourceFilename, err)
-				traceExitMessageNumber, debugMessageNumber = 22, 1022
-				return err
-			}
-
-			// Determine if target file needs to be replaced.
-
-			if senzingConfig.filesAreEqual(sourceFilename, targetFilename) {
-				senzingConfig.log(2005, sourceFilename, targetFilename)
-			} else {
-
-				// If target file exists, back it up.
-
-				_, err = os.Stat(targetFilename)
-				if err == nil {
-					backupFilename := fmt.Sprintf("%s.%d", targetFilename, time.Now().Unix())
-					err = senzingConfig.copyFile(targetFilename, backupFilename)
-					if err != nil {
-						senzingConfig.log(5002, targetFilename, backupFilename, err)
-						traceExitMessageNumber, debugMessageNumber = 23, 1023
-						return err
-					}
-				}
-
-				// Copy source file to target to "fake out" Senzing's SzEngine.Create().
-
-				err = senzingConfig.copyFile(sourceFilename, targetFilename)
-				if err != nil {
-					senzingConfig.log(5003, sourceFilename, targetFilename, err)
-					traceExitMessageNumber, debugMessageNumber = 24, 1024
-					return err
-				}
-			}
-		}
-	}
-
-	// Create a fresh Senzing configuration.
-
-	configHandle, err := szConfig.CreateConfig(ctx)
-	if err != nil {
-		traceExitMessageNumber, debugMessageNumber = 15, 1015
+		configID, err = senzingConfig.makeDefaultConfig(ctx, szAbstractFactory, szConfig)
+		senzingConfig.log(2999, configID)
+		traceExitMessageNumber, debugMessageNumber = 999, 999
 		return err
-	}
 
-	// If requested, add DataSources to fresh Senzing configuration.
-
-	if len(senzingConfig.DataSources) > 0 {
-		err = senzingConfig.addDatasources(ctx, szConfig, configHandle)
-		if err != nil {
-			traceExitMessageNumber, debugMessageNumber = 16, 1016
-			return err
-		}
-	}
-
-	// Create a JSON string from the in-memory configuration.
-
-	configStr, err := szConfig.ExportConfig(ctx, configHandle)
-	if err != nil {
-		traceExitMessageNumber, debugMessageNumber = 17, 1017
-		return err
-	}
-
-	// Persist the Senzing configuration to the Senzing repository and set as default configuration.
-
-	configComments := fmt.Sprintf("Created by %s at %s", defaultModuleName, entryTime.Format(time.RFC3339Nano))
-	configID, err = szConfigManager.AddConfig(ctx, configStr, configComments)
-	if err != nil {
-		traceExitMessageNumber, debugMessageNumber = 18, 1018
-		return err
-	}
-	err = szConfigManager.SetDefaultConfigID(ctx, configID)
-	if err != nil {
-		traceExitMessageNumber, debugMessageNumber = 19, 1019
-		return err
 	}
 
 	// Notify observers.
 
-	senzingConfig.log(2003, configID, configComments)
+	senzingConfig.log(2003, configID)
 	if senzingConfig.observers != nil {
 		go func() {
 			details := map[string]string{}
@@ -749,3 +469,144 @@ func (senzingConfig *BasicSenzingConfig) UnregisterObserver(ctx context.Context,
 
 	return err
 }
+
+// ----------------------------------------------------------------------------
+// Internal methods
+// ----------------------------------------------------------------------------
+
+// --- Logging ----------------------------------------------------------------
+
+// Get the Logger singleton.
+func (senzingConfig *BasicSenzingConfig) getLogger() logging.Logging {
+	var err error
+	if senzingConfig.logger == nil {
+		options := []interface{}{
+			&logging.OptionCallerSkip{Value: 4},
+		}
+		senzingConfig.logger, err = logging.NewSenzingLogger(ComponentID, IDMessages, options...)
+		if err != nil {
+			panic(err)
+		}
+	}
+	return senzingConfig.logger
+}
+
+// Log message.
+func (senzingConfig *BasicSenzingConfig) log(messageNumber int, details ...interface{}) {
+	senzingConfig.getLogger().Log(messageNumber, details...)
+}
+
+// Debug.
+func (senzingConfig *BasicSenzingConfig) debug(messageNumber int, details ...interface{}) {
+	details = append(details, debugOptions...)
+	senzingConfig.getLogger().Log(messageNumber, details...)
+}
+
+// Trace method entry.
+func (senzingConfig *BasicSenzingConfig) traceEntry(messageNumber int, details ...interface{}) {
+	details = append(details, traceOptions...)
+	senzingConfig.getLogger().Log(messageNumber, details...)
+}
+
+// Trace method exit.
+func (senzingConfig *BasicSenzingConfig) traceExit(messageNumber int, details ...interface{}) {
+	details = append(details, traceOptions...)
+	senzingConfig.getLogger().Log(messageNumber, details...)
+}
+
+// --- Dependent services -----------------------------------------------------
+
+// Create an abstract factory singleton and return it.
+func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
+	var err error
+	_ = ctx
+
+	senzingConfig.szAbstractFactorySyncOnce.Do(func() {
+		if len(senzingConfig.GrpcTarget) == 0 {
+			senzingSettings := senzingConfig.SenzingSettings
+			senzingInstanceName := senzingConfig.SenzingInstanceName
+			if len(senzingInstanceName) == 0 {
+				senzingInstanceName = fmt.Sprintf("senzing init-database at %s", time.Now())
+			}
+			senzingConfig.szAbstractFactorySingleton, err = szfactorycreator.CreateCoreAbstractFactory(
+				senzingInstanceName,
+				senzingSettings,
+				senzingConfig.SenzingVerboseLogging,
+				senzing.SzInitializeWithDefaultConfiguration,
+			)
+			if err != nil {
+				panic(err)
+			}
+		} else {
+			grpcConnection, err := grpc.NewClient(senzingConfig.GrpcTarget, senzingConfig.GrpcDialOptions...)
+			if err != nil {
+				panic(err)
+			}
+			senzingConfig.szAbstractFactorySingleton, err = szfactorycreator.CreateGrpcAbstractFactory(grpcConnection)
+			if err != nil {
+				panic(err)
+			}
+		}
+	})
+	return senzingConfig.szAbstractFactorySingleton
+}
+
+// --- Misc -------------------------------------------------------------------
+
+func (senzingConfig *BasicSenzingConfig) makeDefaultConfig(
+	ctx context.Context,
+	szAbstractFactory senzing.SzAbstractFactory,
+	szConfig senzing.SzConfig,
+) (int64, error) {
+	var (
+		err    error
+		result int64
+	)
+
+	for _, datasource := range senzingConfig.DataSources {
+		_, err = szConfig.AddDataSource(ctx, datasource)
+		if err != nil {
+			return result, err
+		}
+		senzingConfig.log(2001, datasource)
+	}
+
+	configComment := fmt.Sprintf(
+		"Created by init-database at %s with datasources: %s ",
+		time.Now().Format(time.RFC3339),
+		strings.Join(senzingConfig.DataSources, ", "),
+	)
+
+	configDefinition, err := szConfig.Export(ctx)
+	if err != nil {
+		return result, err
+	}
+
+	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
+	if err != nil {
+		return result, err
+	}
+
+	result, err = szConfigManager.SetDefaultConfig(ctx, configDefinition, configComment)
+	if err != nil {
+		return result, err
+	}
+
+	return result, err
+}
+
+// ----------------------------------------------------------------------------
+// Internal functions
+// ----------------------------------------------------------------------------
+
+func fileToString(ctx context.Context, filePath string) (string, error) {
+	_ = ctx
+	content, err := os.ReadFile(filePath)
+	return string(content), err
+}
+
+// func assertNoError(err error) {
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// }
