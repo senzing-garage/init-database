@@ -20,7 +20,7 @@ require (
 	github.com/senzing-garage/go-helpers v0.6.10
 	github.com/senzing-garage/go-logging v1.5.1
 	github.com/senzing-garage/go-observing v0.3.3
-	github.com/senzing-garage/go-sdk-abstract-factory v0.9.6-0.20250408200422-705974aaf18a
+	github.com/senzing-garage/go-sdk-abstract-factory v0.9.6
 	github.com/senzing-garage/sz-sdk-go v0.15.0
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/viper v1.20.1
@@ -51,10 +51,10 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sagikazarmark/locafero v0.9.0 // indirect
 	github.com/senzing-garage/go-messaging v1.5.2 // indirect
-	github.com/senzing-garage/sz-sdk-go-core v0.9.1-0.20250408200012-27d793e97dd9 // indirect
-	github.com/senzing-garage/sz-sdk-go-grpc v0.9.3-0.20250408182053-109d6d58496c // indirect
-	github.com/senzing-garage/sz-sdk-go-mock v0.8.5-0.20250408163439-cdb6168e261f // indirect
-	github.com/senzing-garage/sz-sdk-proto v0.8.1-0.20250409191401-4f99c75d587f // indirect
+	github.com/senzing-garage/sz-sdk-go-core v0.9.1 // indirect
+	github.com/senzing-garage/sz-sdk-go-grpc v0.9.3-0.20250410012459-0c19bb8c7aeb // indirect
+	github.com/senzing-garage/sz-sdk-go-mock v0.8.5 // indirect
+	github.com/senzing-garage/sz-sdk-proto v0.8.1 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.14.0 // indirect
 	github.com/spf13/cast v1.7.1 // indirect
@@ -66,7 +66,7 @@ require (
 	golang.org/x/net v0.39.0 // indirect
 	golang.org/x/sys v0.32.0 // indirect
 	golang.org/x/text v0.24.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250407143221-ac9807e6c755 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250409194420-de1ac958c67a // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
