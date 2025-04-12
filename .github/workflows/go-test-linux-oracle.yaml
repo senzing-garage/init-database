@@ -1,6 +1,6 @@
 name: Go test linux - oracle
 
-on: [push, workflow_dispatch]
+on: [pull_request, workflow_dispatch]
 
 env:
   LD_LIBRARY_PATH: /opt/senzing/er/lib:/opt/oracle/instantclient_23_5
