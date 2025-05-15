@@ -12,8 +12,6 @@ permissions:
 jobs:
   go-test-linux:
     name: "Go test with Senzing: ${{ matrix.senzingsdk-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }} - mysql"
-    outputs:
-      status: ${{ job.status }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:

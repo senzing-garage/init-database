@@ -1,6 +1,6 @@
 name: Go test linux - mssql
 
-on: [push, workflow_dispatch]
+on: [pull_request, workflow_dispatch]
 
 env:
   SENZING_LOG_LEVEL: TRACE
@@ -13,8 +13,6 @@ permissions:
 jobs:
   go-test-linux:
     name: "Go test with Senzing: ${{ matrix.senzingsdk-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }} - mssql"
-    outputs:
-      status: ${{ job.status }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
