@@ -93,12 +93,12 @@ func Execute() {
 	}
 }
 
-// Used in construction of cobra.Command
+// Used in construction of cobra.Command.
 func PreRun(cobraCommand *cobra.Command, args []string) {
 	cmdhelper.PreRun(cobraCommand, args, Use, append(ContextVariables, OptionSQLFile, OptionEngineConfigurationFile))
 }
 
-// Used in construction of cobra.Command
+// Used in construction of cobra.Command.
 func RunE(_ *cobra.Command, _ []string) error {
 	var err error
 	ctx := context.Background()
@@ -128,7 +128,7 @@ func RunE(_ *cobra.Command, _ []string) error {
 	return initializer.Initialize(ctx)
 }
 
-// Used in construction of cobra.Command
+// Used in construction of cobra.Command.
 func Version() string {
 	return cmdhelper.Version(githubVersion, githubIteration)
 }
