@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/senzing-garage/go-helpers/wraperror"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/notifier"
 	"github.com/senzing-garage/go-observing/observer"
@@ -48,11 +49,11 @@ type BasicInitializer struct {
 // ----------------------------------------------------------------------------
 
 var debugOptions = []interface{}{
-	&logging.OptionCallerSkip{Value: 5},
+	&logging.OptionCallerSkip{Value: OptionCallerSkip5},
 }
 
 var traceOptions = []interface{}{
-	&logging.OptionCallerSkip{Value: 5},
+	&logging.OptionCallerSkip{Value: OptionCallerSkip5},
 }
 
 // ----------------------------------------------------------------------------
@@ -107,43 +108,13 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 		asJSON, err := json.Marshal(initializer)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 11, 1011
+
 			return err
 		}
 		initializer.log(1000, initializer, string(asJSON))
 	}
 
-	// Initialize observing.
-
-	var anObserver observer.Observer
-	if len(initializer.ObserverURL) > 0 {
-		parsedURL, err := url.Parse(initializer.ObserverURL)
-		if err != nil {
-			return err
-		}
-		switch parsedURL.Scheme {
-		case "grpc":
-			anObserver, err = initializer.createGrpcObserver(ctx, *parsedURL)
-			if err != nil {
-				traceExitMessageNumber, debugMessageNumber = 18, 1018
-				return err
-			}
-		default:
-		}
-		err = initializer.registerObserverLocal(ctx, anObserver)
-		if err != nil {
-			traceExitMessageNumber, debugMessageNumber = 17, 1017
-			return err
-		}
-
-		// Notify observers.
-
-		go func() {
-			details := map[string]string{
-				"observerID": anObserver.GetObserverID(ctx),
-			}
-			notifier.Notify(ctx, initializer.observers, initializer.ObserverOrigin, ComponentID, 8001, err, details)
-		}()
-	}
+	anObserver, err := initializer.getObserver(ctx)
 
 	// Verify database file exists.
 
@@ -152,6 +123,7 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 		if err != nil {
 			initializer.log(3001, initializer.SQLFile)
 			traceExitMessageNumber, debugMessageNumber = 21, 1075
+
 			return err
 		}
 	}
@@ -161,6 +133,7 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 	err = initializer.InitializeSpecificDatabase(ctx)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 12, 1012
+
 		return err
 	}
 
@@ -170,17 +143,20 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 	err = senzingSchema.SetLogLevel(ctx, logLevel)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 13, 1013
+
 		return err
 	}
 	err = initializer.registerObserverSenzingSchema(ctx, anObserver)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 19, 1019
+
 		return err
 	}
 
 	err = senzingSchema.InitializeSenzing(ctx)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 14, 1014
+
 		return err
 	}
 
@@ -190,16 +166,19 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 	err = senzingConfig.SetLogLevel(ctx, logLevel)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 15, 1015
+
 		return err
 	}
 	err = initializer.registerObserverSenzingConfig(ctx, anObserver)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 20, 1000
+
 		return err
 	}
 	err = senzingConfig.InitializeSenzing(ctx)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 16, 1016
+
 		return err
 	}
 
@@ -211,6 +190,7 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 			notifier.Notify(ctx, initializer.observers, initializer.ObserverOrigin, ComponentID, 8002, err, details)
 		}()
 	}
+
 	return err
 }
 
@@ -251,6 +231,7 @@ func (initializer *BasicInitializer) InitializeSpecificDatabase(ctx context.Cont
 		asJSON, err := json.Marshal(initializer)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 41, 1041
+
 			return err
 		}
 		initializer.log(1001, initializer, string(asJSON))
@@ -265,6 +246,7 @@ func (initializer *BasicInitializer) InitializeSpecificDatabase(ctx context.Cont
 		parsedURL, err := url.Parse(databaseURL)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 44, 1044
+
 			return err
 		}
 
@@ -275,11 +257,13 @@ func (initializer *BasicInitializer) InitializeSpecificDatabase(ctx context.Cont
 			err = initializer.initializeSpecificDatabaseSqlite(ctx, parsedURL)
 			if err != nil {
 				traceExitMessageNumber, debugMessageNumber = 45, 1045
+
 				return err
 			}
 		default:
 		}
 	}
+
 	return err
 }
 
@@ -326,6 +310,7 @@ func (initializer *BasicInitializer) RegisterObserver(ctx context.Context, obser
 		asJSON, err := json.Marshal(initializer)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 51, 1051
+
 			return err
 		}
 		initializer.log(1002, initializer, string(asJSON))
@@ -342,16 +327,19 @@ func (initializer *BasicInitializer) RegisterObserver(ctx context.Context, obser
 	err = initializer.observers.RegisterObserver(ctx, observer)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 52, 1052
+
 		return err
 	}
 	err = initializer.getSenzingConfig().RegisterObserver(ctx, observer)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 53, 1053
+
 		return err
 	}
 	err = initializer.getSenzingSchema().RegisterObserver(ctx, observer)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 54, 1054
+
 		return err
 	}
 
@@ -363,6 +351,7 @@ func (initializer *BasicInitializer) RegisterObserver(ctx context.Context, obser
 		}
 		notifier.Notify(ctx, initializer.observers, initializer.ObserverOrigin, ComponentID, 8003, err, details)
 	}()
+
 	return err
 }
 
@@ -403,6 +392,7 @@ func (initializer *BasicInitializer) SetLogLevel(ctx context.Context, logLevelNa
 		asJSON, err := json.Marshal(initializer)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 61, 1061
+
 			return err
 		}
 		initializer.log(1003, initializer, string(asJSON))
@@ -412,7 +402,8 @@ func (initializer *BasicInitializer) SetLogLevel(ctx context.Context, logLevelNa
 
 	if !logging.IsValidLogLevelName(logLevelName) {
 		traceExitMessageNumber, debugMessageNumber = 62, 1062
-		return fmt.Errorf("invalid error level: %s", logLevelName)
+
+		return wraperror.Errorf(errForPackage, "invalid error level: %s", logLevelName)
 	}
 
 	// Set initializer log level.
@@ -420,6 +411,7 @@ func (initializer *BasicInitializer) SetLogLevel(ctx context.Context, logLevelNa
 	err = initializer.getLogger().SetLogLevel(logLevelName)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 63, 1063
+
 		return err
 	}
 
@@ -429,12 +421,14 @@ func (initializer *BasicInitializer) SetLogLevel(ctx context.Context, logLevelNa
 		err = initializer.senzingConfigSingleton.SetLogLevel(ctx, logLevelName)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 64, 1064
+
 			return err
 		}
 	}
 	err = initializer.getSenzingSchema().SetLogLevel(ctx, logLevelName)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 65, 1065
+
 		return err
 	}
 
@@ -448,6 +442,7 @@ func (initializer *BasicInitializer) SetLogLevel(ctx context.Context, logLevelNa
 			notifier.Notify(ctx, initializer.observers, initializer.ObserverOrigin, ComponentID, 8004, err, details)
 		}()
 	}
+
 	return err
 }
 
@@ -490,6 +485,7 @@ func (initializer *BasicInitializer) SetObserverOrigin(ctx context.Context, orig
 		asJSON, err := json.Marshal(initializer)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 81, 1081
+
 			return
 		}
 		initializer.log(1004, initializer, string(asJSON))
@@ -515,7 +511,6 @@ func (initializer *BasicInitializer) SetObserverOrigin(ctx context.Context, orig
 			notifier.Notify(ctx, initializer.observers, initializer.ObserverOrigin, ComponentID, 8005, err, details)
 		}()
 	}
-
 }
 
 /*
@@ -561,6 +556,7 @@ func (initializer *BasicInitializer) UnregisterObserver(ctx context.Context, obs
 		asJSON, err := json.Marshal(initializer)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 71, 1071
+
 			return err
 		}
 		initializer.log(1005, initializer, string(asJSON))
@@ -571,11 +567,13 @@ func (initializer *BasicInitializer) UnregisterObserver(ctx context.Context, obs
 	err = initializer.getSenzingConfig().UnregisterObserver(ctx, observer)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 72, 1072
+
 		return err
 	}
 	err = initializer.getSenzingSchema().UnregisterObserver(ctx, observer)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 73, 1073
+
 		return err
 	}
 
@@ -595,6 +593,7 @@ func (initializer *BasicInitializer) UnregisterObserver(ctx context.Context, obs
 		err = initializer.observers.UnregisterObserver(ctx, observer)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 74, 1074
+
 			return err
 		}
 
@@ -602,11 +601,12 @@ func (initializer *BasicInitializer) UnregisterObserver(ctx context.Context, obs
 			initializer.observers = nil
 		}
 	}
+
 	return err
 }
 
 // ----------------------------------------------------------------------------
-// Internal methods
+// Private methods
 // ----------------------------------------------------------------------------
 
 // --- Logging ----------------------------------------------------------------
@@ -616,7 +616,7 @@ func (initializer *BasicInitializer) getLogger() logging.Logging {
 	var err error
 	if initializer.logger == nil {
 		options := []interface{}{
-			logging.OptionCallerSkip{Value: 4},
+			logging.OptionCallerSkip{Value: OptionCallerSkip4},
 		}
 		if len(initializer.SenzingLogLevel) > 0 {
 			options = append(options, logging.OptionLogLevel{Value: initializer.SenzingLogLevel})
@@ -626,6 +626,7 @@ func (initializer *BasicInitializer) getLogger() logging.Logging {
 			panic(err)
 		}
 	}
+
 	return initializer.logger
 }
 
@@ -654,7 +655,49 @@ func (initializer *BasicInitializer) traceExit(messageNumber int, details ...int
 
 // --- Observing --------------------------------------------------------------
 
-func (initializer *BasicInitializer) createGrpcObserver(ctx context.Context, parsedURL url.URL) (observer.Observer, error) {
+func (initializer *BasicInitializer) getObserver(
+	ctx context.Context,
+) (observer.Observer, error) {
+	var (
+		err    error
+		result observer.Observer
+	)
+
+	if len(initializer.ObserverURL) > 0 {
+		parsedURL, err := url.Parse(initializer.ObserverURL)
+		if err != nil {
+			return result, err
+		}
+		switch parsedURL.Scheme {
+		case "grpc":
+			result, err = initializer.createGrpcObserver(ctx, *parsedURL)
+			if err != nil {
+				return result, wraperror.Errorf(err, "initializer.getObserver.createGrpcObserver error: %w", err)
+			}
+		default:
+		}
+		err = initializer.registerObserverLocal(ctx, result)
+		if err != nil {
+			return result, wraperror.Errorf(err, "initializer.getObserver.registerObserverLocal error: %w", err)
+		}
+
+		// Notify observers.
+
+		go func() {
+			details := map[string]string{
+				"observerID": result.GetObserverID(ctx),
+			}
+			notifier.Notify(ctx, initializer.observers, initializer.ObserverOrigin, ComponentID, 8001, err, details)
+		}()
+	}
+
+	return result, err
+}
+
+func (initializer *BasicInitializer) createGrpcObserver(
+	ctx context.Context,
+	parsedURL url.URL,
+) (observer.Observer, error) {
 	_ = ctx
 	var err error
 
@@ -666,7 +709,7 @@ func (initializer *BasicInitializer) createGrpcObserver(ctx context.Context, par
 	}
 	target := fmt.Sprintf("%s:%s", parsedURL.Hostname(), port)
 
-	// TODO: Allow specification of options from ObserverUrl/parsedUrl
+	// IMPROVE: Allow specification of options from ObserverUrl/parsedUrl
 	grpcOptions := grpc.WithTransportCredentials(insecure.NewCredentials())
 
 	grpcConnection, err := grpc.NewClient(target, grpcOptions)
@@ -677,6 +720,7 @@ func (initializer *BasicInitializer) createGrpcObserver(ctx context.Context, par
 		GrpcClient: observerpb.NewObserverClient(grpcConnection),
 		ID:         "init-database",
 	}
+
 	return result, err
 }
 
@@ -684,16 +728,25 @@ func (initializer *BasicInitializer) registerObserverLocal(ctx context.Context, 
 	if initializer.observers == nil {
 		initializer.observers = &subject.SimpleSubject{}
 	}
+
 	return initializer.observers.RegisterObserver(ctx, observer)
 }
 
-func (initializer *BasicInitializer) registerObserverSenzingConfig(ctx context.Context, observer observer.Observer) error {
+func (initializer *BasicInitializer) registerObserverSenzingConfig(
+	ctx context.Context,
+	observer observer.Observer,
+) error {
 	initializer.getSenzingConfig().SetObserverOrigin(ctx, initializer.ObserverOrigin)
+
 	return initializer.getSenzingConfig().RegisterObserver(ctx, observer)
 }
 
-func (initializer *BasicInitializer) registerObserverSenzingSchema(ctx context.Context, observer observer.Observer) error {
+func (initializer *BasicInitializer) registerObserverSenzingSchema(
+	ctx context.Context,
+	observer observer.Observer,
+) error {
 	initializer.getSenzingSchema().SetObserverOrigin(ctx, initializer.ObserverOrigin)
+
 	return initializer.getSenzingSchema().RegisterObserver(ctx, observer)
 }
 
@@ -709,6 +762,7 @@ func (initializer *BasicInitializer) getSenzingConfig() senzingconfig.SenzingCon
 			SenzingVerboseLogging: initializer.SenzingVerboseLogging,
 		}
 	}
+
 	return initializer.senzingConfigSingleton
 }
 
@@ -720,6 +774,7 @@ func (initializer *BasicInitializer) getSenzingSchema() senzingschema.SenzingSch
 			SQLFile:         initializer.SQLFile,
 		}
 	}
+
 	return initializer.senzingSchemaSingleton
 }
 
@@ -766,7 +821,8 @@ func (initializer *BasicInitializer) initializeSpecificDatabaseSqlite(ctx contex
 	_, err = os.Stat(filename)
 	if err == nil {
 		traceExitMessageNumber, debugMessageNumber = 101, 0 // debugMessageNumber=0 because it's not an error.
-		return err                                          // Nothing more to do.
+
+		return err // Nothing more to do.
 	}
 
 	// File doesn't exist, create it.
@@ -775,11 +831,13 @@ func (initializer *BasicInitializer) initializeSpecificDatabaseSqlite(ctx contex
 	err = os.MkdirAll(path, os.ModePerm)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 102, 1102
+
 		return err
 	}
 	_, err = os.Create(filename)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 103, 1103
+
 		return err
 	}
 	initializer.log(2001, filename)
@@ -794,5 +852,6 @@ func (initializer *BasicInitializer) initializeSpecificDatabaseSqlite(ctx contex
 			notifier.Notify(ctx, initializer.observers, initializer.ObserverOrigin, ComponentID, 8010, err, details)
 		}()
 	}
+
 	return err
 }

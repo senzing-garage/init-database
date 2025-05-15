@@ -1,6 +1,6 @@
 //go:build linux
 
-package senzingconfig
+package senzingconfig_test
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 	"github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/observer"
+	"github.com/senzing-garage/init-database/senzingconfig"
 )
 
 // ----------------------------------------------------------------------------
@@ -22,7 +23,7 @@ func ExampleBasicSenzingConfig_InitializeSenzing_withDatasources() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	senzingConfig := &BasicSenzingConfig{
+	senzingConfig := &senzingconfig.BasicSenzingConfig{
 		SenzingSettings: senzingSettings,
 		DataSources:     []string{"CUSTOMERS", "REFERENCE", "WATCHLIST"},
 	}
@@ -41,7 +42,7 @@ func ExampleBasicSenzingConfig_InitializeSenzing() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	senzingConfig := &BasicSenzingConfig{
+	senzingConfig := &senzingconfig.BasicSenzingConfig{
 		SenzingSettings: senzingSettings,
 	}
 	err = senzingConfig.SetLogLevel(ctx, logging.LevelInfoName)
@@ -66,7 +67,7 @@ func ExampleBasicSenzingConfig_RegisterObserver() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	senzingConfig := &BasicSenzingConfig{
+	senzingConfig := &senzingconfig.BasicSenzingConfig{
 		SenzingSettings: senzingSettings,
 	}
 	err = senzingConfig.RegisterObserver(ctx, anObserver)
@@ -83,7 +84,7 @@ func ExampleBasicSenzingConfig_SetLogLevel() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	senzingConfig := &BasicSenzingConfig{
+	senzingConfig := &senzingconfig.BasicSenzingConfig{
 		SenzingSettings: senzingSettings,
 	}
 	err = senzingConfig.SetLogLevel(ctx, logging.LevelInfoName)
@@ -100,7 +101,7 @@ func ExampleBasicSenzingConfig_SetObserverOrigin() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	senzingConfig := &BasicSenzingConfig{
+	senzingConfig := &senzingconfig.BasicSenzingConfig{
 		SenzingSettings: senzingSettings,
 	}
 	senzingConfig.SetObserverOrigin(ctx, "TestObserver")
@@ -118,7 +119,7 @@ func ExampleBasicSenzingConfig_UnregisterObserver() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	senzingConfig := &BasicSenzingConfig{
+	senzingConfig := &senzingconfig.BasicSenzingConfig{
 		SenzingSettings: senzingSettings,
 	}
 	err = senzingConfig.RegisterObserver(ctx, anObserver)

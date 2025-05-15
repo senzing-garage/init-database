@@ -3,13 +3,13 @@ package senzingschema
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/url"
 	"time"
 
 	"github.com/senzing-garage/go-databasing/connector"
 	"github.com/senzing-garage/go-databasing/sqlexecutor"
 	"github.com/senzing-garage/go-helpers/settingsparser"
+	"github.com/senzing-garage/go-helpers/wraperror"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/notifier"
 	"github.com/senzing-garage/go-observing/observer"
@@ -37,11 +37,11 @@ type BasicSenzingSchema struct {
 // ----------------------------------------------------------------------------
 
 var debugOptions = []interface{}{
-	&logging.OptionCallerSkip{Value: 5},
+	&logging.OptionCallerSkip{Value: OptionCallerSkip5},
 }
 
 var traceOptions = []interface{}{
-	&logging.OptionCallerSkip{Value: 5},
+	&logging.OptionCallerSkip{Value: OptionCallerSkip5},
 }
 
 // ----------------------------------------------------------------------------
@@ -84,6 +84,7 @@ func (senzingSchema *BasicSenzingSchema) InitializeSenzing(ctx context.Context) 
 		asJSON, err := json.Marshal(senzingSchema)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 11, 1011
+
 			return err
 		}
 		senzingSchema.log(1001, senzingSchema, string(asJSON))
@@ -94,11 +95,13 @@ func (senzingSchema *BasicSenzingSchema) InitializeSenzing(ctx context.Context) 
 	parser, err := settingsparser.New(senzingSchema.SenzingSettings)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 12, 1012
+
 		return err
 	}
 	resourcePath, err := parser.GetResourcePath(ctx)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 13, 1013
+
 		return err
 	}
 
@@ -109,6 +112,7 @@ func (senzingSchema *BasicSenzingSchema) InitializeSenzing(ctx context.Context) 
 		err = senzingSchema.processDatabase(ctx, resourcePath, databaseURL)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 15, 1015
+
 			return err
 		}
 	}
@@ -168,6 +172,7 @@ func (senzingSchema *BasicSenzingSchema) RegisterObserver(ctx context.Context, o
 		asJSON, err := json.Marshal(senzingSchema)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 21, 1021
+
 			return err
 		}
 		senzingSchema.log(1002, senzingSchema, string(asJSON))
@@ -184,6 +189,7 @@ func (senzingSchema *BasicSenzingSchema) RegisterObserver(ctx context.Context, o
 	err = senzingSchema.observers.RegisterObserver(ctx, observer)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 22, 1022
+
 		return err
 	}
 
@@ -238,6 +244,7 @@ func (senzingSchema *BasicSenzingSchema) SetLogLevel(ctx context.Context, logLev
 		asJSON, err := json.Marshal(senzingSchema)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 31, 1031
+
 			return err
 		}
 		senzingSchema.log(1003, senzingSchema, string(asJSON))
@@ -247,7 +254,8 @@ func (senzingSchema *BasicSenzingSchema) SetLogLevel(ctx context.Context, logLev
 
 	if !logging.IsValidLogLevelName(logLevelName) {
 		traceExitMessageNumber, debugMessageNumber = 32, 1032
-		return fmt.Errorf("invalid error level: %s", logLevelName)
+
+		return wraperror.Errorf(errForPackage, "invalid error level: %s", logLevelName)
 	}
 
 	// Set senzingSchema log level.
@@ -256,6 +264,7 @@ func (senzingSchema *BasicSenzingSchema) SetLogLevel(ctx context.Context, logLev
 	err = senzingSchema.getLogger().SetLogLevel(logLevelName)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 33, 1033
+
 		return err
 	}
 
@@ -314,6 +323,7 @@ func (senzingSchema *BasicSenzingSchema) SetObserverOrigin(ctx context.Context, 
 			debugMessageNumber = 1051
 			traceExitMessageNumber = 51
 			traceExitMessageNumber, debugMessageNumber = 51, 1051
+
 			return
 		}
 		senzingSchema.log(1004, senzingSchema, string(asJSON))
@@ -379,6 +389,7 @@ func (senzingSchema *BasicSenzingSchema) UnregisterObserver(ctx context.Context,
 		asJSON, err := json.Marshal(senzingSchema)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 41, 1041
+
 			return err
 		}
 		senzingSchema.log(1005, senzingSchema, string(asJSON))
@@ -402,6 +413,7 @@ func (senzingSchema *BasicSenzingSchema) UnregisterObserver(ctx context.Context,
 			debugMessageNumber = 1042
 			traceExitMessageNumber = 42
 			traceExitMessageNumber, debugMessageNumber = 42, 1042
+
 			return err
 		}
 
@@ -424,13 +436,14 @@ func (senzingSchema *BasicSenzingSchema) getLogger() logging.Logging {
 	var err error
 	if senzingSchema.logger == nil {
 		options := []interface{}{
-			&logging.OptionCallerSkip{Value: 4},
+			&logging.OptionCallerSkip{Value: OptionCallerSkip4},
 		}
 		senzingSchema.logger, err = logging.NewSenzingLogger(ComponentID, IDMessages, options...)
 		if err != nil {
 			panic(err)
 		}
 	}
+
 	return senzingSchema.logger
 }
 
@@ -460,7 +473,11 @@ func (senzingSchema *BasicSenzingSchema) traceExit(messageNumber int, details ..
 // --- Misc -------------------------------------------------------------------
 
 // Given a database URL, detemine the correct SQL file and send the statements to the database.
-func (senzingSchema *BasicSenzingSchema) processDatabase(ctx context.Context, resourcePath string, databaseURL string) error {
+func (senzingSchema *BasicSenzingSchema) processDatabase(
+	ctx context.Context,
+	resourcePath string,
+	databaseURL string,
+) error {
 	var err error
 
 	// Prolog.
@@ -493,6 +510,7 @@ func (senzingSchema *BasicSenzingSchema) processDatabase(ctx context.Context, re
 	parsedURL, err := url.Parse(databaseURL)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 101, 1101
+
 		return err
 	}
 
@@ -509,7 +527,7 @@ func (senzingSchema *BasicSenzingSchema) processDatabase(ctx context.Context, re
 		case "sqlite3":
 			senzingSchema.SQLFile = resourcePath + "/schema/szcore-schema-sqlite-create.sql"
 		default:
-			return fmt.Errorf("unknown database scheme: %s", parsedURL.Scheme)
+			return wraperror.Errorf(errForPackage, "unknown database scheme: %s", parsedURL.Scheme)
 		}
 	}
 
@@ -518,6 +536,7 @@ func (senzingSchema *BasicSenzingSchema) processDatabase(ctx context.Context, re
 	databaseConnector, err := connector.NewConnector(ctx, databaseURL)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 102, 1102
+
 		return err
 	}
 
@@ -529,6 +548,7 @@ func (senzingSchema *BasicSenzingSchema) processDatabase(ctx context.Context, re
 	err = sqlExecutor.SetLogLevel(ctx, senzingSchema.logLevelName)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 103, 1103
+
 		return err
 	}
 
@@ -539,12 +559,13 @@ func (senzingSchema *BasicSenzingSchema) processDatabase(ctx context.Context, re
 			err = sqlExecutor.RegisterObserver(ctx, observer)
 			if err != nil {
 				traceExitMessageNumber, debugMessageNumber = 104, 1104
+
 				return err
 			}
 		}
 	}
 
-	// TODO: add following when it becomes available.
+	// IMPROVE: add following when it becomes available.
 	// sqlExecutor.SetObserverOrigin(ctx, senzingSchema.observerOrigin)
 
 	// Process file of SQL
@@ -552,9 +573,11 @@ func (senzingSchema *BasicSenzingSchema) processDatabase(ctx context.Context, re
 	err = sqlExecutor.ProcessFileName(ctx, senzingSchema.SQLFile)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 105, 1105
+
 		return err
 	}
 
 	senzingSchema.log(2001, senzingSchema.SQLFile, parsedURL.Redacted())
+
 	return err
 }

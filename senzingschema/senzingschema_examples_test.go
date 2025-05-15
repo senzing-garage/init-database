@@ -1,6 +1,6 @@
 //go:build linux
 
-package senzingschema
+package senzingschema_test
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 	"github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/observer"
+	"github.com/senzing-garage/init-database/senzingschema"
 )
 
 // ----------------------------------------------------------------------------
@@ -22,7 +23,7 @@ func ExampleBasicSenzingSchema_InitializeSenzing() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	senzingSchema := &BasicSenzingSchema{
+	senzingSchema := &senzingschema.BasicSenzingSchema{
 		SenzingSettings: senzingSettings,
 	}
 	err = senzingSchema.SetLogLevel(ctx, logging.LevelInfoName)
@@ -47,7 +48,7 @@ func ExampleBasicSenzingSchema_RegisterObserver() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	senzingSchema := &BasicSenzingSchema{
+	senzingSchema := &senzingschema.BasicSenzingSchema{
 		SenzingSettings: senzingSettings,
 	}
 	err = senzingSchema.RegisterObserver(ctx, anObserver)
@@ -64,7 +65,7 @@ func ExampleBasicSenzingSchema_SetLogLevel() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	senzingSchema := &BasicSenzingSchema{
+	senzingSchema := &senzingschema.BasicSenzingSchema{
 		SenzingSettings: senzingSettings,
 	}
 	err = senzingSchema.SetLogLevel(ctx, logging.LevelInfoName)
@@ -81,7 +82,7 @@ func ExampleBasicSenzingSchema_SetObserverOrigin() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	senzingSchema := &BasicSenzingSchema{
+	senzingSchema := &senzingschema.BasicSenzingSchema{
 		SenzingSettings: senzingSettings,
 	}
 	senzingSchema.SetObserverOrigin(ctx, "TestObserver")
@@ -99,7 +100,7 @@ func ExampleBasicSenzingSchema_UnregisterObserver() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	senzingSchema := &BasicSenzingSchema{
+	senzingSchema := &senzingschema.BasicSenzingSchema{
 		SenzingSettings: senzingSettings,
 	}
 	err = senzingSchema.RegisterObserver(ctx, anObserver)

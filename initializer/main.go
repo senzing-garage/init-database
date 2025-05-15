@@ -2,6 +2,7 @@ package initializer
 
 import (
 	"context"
+	"errors"
 
 	"github.com/senzing-garage/go-observing/observer"
 )
@@ -27,8 +28,13 @@ const ComponentID = 6501
 // Log message prefix.
 const Prefix = "init-database.initializer."
 
-// Default gRPC Observer port
+// Default gRPC Observer port.
 const DefaultGrpcObserverPort = "8260"
+
+const (
+	OptionCallerSkip4 = 4
+	OptionCallerSkip5 = 5
+)
 
 // ----------------------------------------------------------------------------
 // Variables
@@ -133,3 +139,5 @@ var IDMessages = map[int]string{
 
 // Status strings for specific messages.
 var IDStatuses = map[int]string{}
+
+var errForPackage = errors.New("initializer")

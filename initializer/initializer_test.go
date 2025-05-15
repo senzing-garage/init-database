@@ -1,4 +1,4 @@
-package initializer
+package initializer_test
 
 import (
 	"context"
@@ -8,6 +8,7 @@ import (
 	"github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/observer"
+	"github.com/senzing-garage/init-database/initializer"
 	"github.com/stretchr/testify/require"
 )
 
@@ -44,7 +45,7 @@ func TestBasicInitializer_RegisterObserver(test *testing.T) {
 	}
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	require.NoError(test, err)
-	testObject := &BasicInitializer{
+	testObject := &initializer.BasicInitializer{
 		SenzingSettings: senzingSettings,
 	}
 	err = testObject.SetLogLevel(ctx, logging.LevelInfoName)
@@ -59,7 +60,7 @@ func TestBasicInitializer_SetObserverOrigin(test *testing.T) {
 	ctx := context.TODO()
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	require.NoError(test, err)
-	testObject := &BasicInitializer{
+	testObject := &initializer.BasicInitializer{
 		SenzingSettings: senzingSettings,
 	}
 	testObject.SetObserverOrigin(ctx, "TestObserver")
@@ -73,7 +74,7 @@ func TestBasicInitializer_UnregisterObserver(test *testing.T) {
 	}
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	require.NoError(test, err)
-	testObject := &BasicInitializer{
+	testObject := &initializer.BasicInitializer{
 		SenzingSettings: senzingSettings,
 	}
 	err = testObject.SetLogLevel(ctx, logging.LevelInfoName)
@@ -90,10 +91,10 @@ func TestBasicInitializer_UnregisterObserver(test *testing.T) {
 // Helper functions
 // ----------------------------------------------------------------------------
 
-func getTestObject(ctx context.Context, test *testing.T) *BasicInitializer {
+func getTestObject(ctx context.Context, test *testing.T) *initializer.BasicInitializer {
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	require.NoError(test, err)
-	result := &BasicInitializer{
+	result := &initializer.BasicInitializer{
 		SenzingSettings: senzingSettings,
 		SenzingLogLevel: logLevel,
 	}
@@ -108,5 +109,6 @@ func getTestObject(ctx context.Context, test *testing.T) *BasicInitializer {
 		err = result.SetLogLevel(ctx, logLevel)
 		require.NoError(test, err)
 	}
+
 	return result
 }

@@ -1,8 +1,7 @@
-package senzingconfig
+package senzingconfig_test
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"testing"
 
@@ -10,6 +9,7 @@ import (
 	"github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/observer"
+	"github.com/senzing-garage/init-database/senzingconfig"
 	"github.com/senzing-garage/init-database/senzingschema"
 	"github.com/stretchr/testify/require"
 )
@@ -88,10 +88,10 @@ func TestSenzingConfigImpl_UnregisterObserver(test *testing.T) {
 // Helper functions
 // ----------------------------------------------------------------------------
 
-func getTestObject(ctx context.Context, test *testing.T) *BasicSenzingConfig {
+func getTestObject(ctx context.Context, test *testing.T) *senzingconfig.BasicSenzingConfig {
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	require.NoError(test, err)
-	result := &BasicSenzingConfig{
+	result := &senzingconfig.BasicSenzingConfig{
 		SenzingSettings: senzingSettings,
 	}
 	if logLevel == "TRACE" {
@@ -104,6 +104,7 @@ func getTestObject(ctx context.Context, test *testing.T) *BasicSenzingConfig {
 		err = result.SetLogLevel(ctx, logLevel)
 		require.NoError(test, err)
 	}
+
 	return result
 }
 
@@ -114,13 +115,12 @@ func getTestObject(ctx context.Context, test *testing.T) *BasicSenzingConfig {
 func TestMain(m *testing.M) {
 	err := setup()
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		panic(err)
 	}
 	code := m.Run()
 	err = teardown()
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 	os.Exit(code)
 }
@@ -129,23 +129,23 @@ func setup() error {
 	ctx := context.TODO()
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 	senzingSchema := &senzingschema.BasicSenzingSchema{
 		SenzingSettings: senzingSettings,
 	}
 	err = senzingSchema.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 	err = senzingSchema.InitializeSenzing(ctx)
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
+
 	return err
 }
 
 func teardown() error {
-	var err error
-	return err
+	return nil
 }

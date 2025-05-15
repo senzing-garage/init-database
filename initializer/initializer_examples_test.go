@@ -1,6 +1,6 @@
 //go:build linux
 
-package initializer
+package initializer_test
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 	"github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/observer"
+	"github.com/senzing-garage/init-database/initializer"
 )
 
 // ----------------------------------------------------------------------------
@@ -22,7 +23,7 @@ func ExampleBasicInitializer_Initialize() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	anInitializer := &BasicInitializer{
+	anInitializer := &initializer.BasicInitializer{
 		SenzingSettings: senzingSettings,
 	}
 	err = anInitializer.SetLogLevel(ctx, logging.LevelInfoName)
@@ -47,7 +48,7 @@ func ExampleBasicInitializer_RegisterObserver() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	anInitializer := &BasicInitializer{
+	anInitializer := &initializer.BasicInitializer{
 		SenzingSettings: senzingSettings,
 	}
 	err = anInitializer.RegisterObserver(ctx, anObserver)
@@ -64,7 +65,7 @@ func ExampleBasicInitializer_SetLogLevel() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	anInitializer := &BasicInitializer{
+	anInitializer := &initializer.BasicInitializer{
 		SenzingSettings: senzingSettings,
 	}
 	err = anInitializer.SetLogLevel(ctx, logging.LevelInfoName)
@@ -80,7 +81,7 @@ func ExampleBasicInitializer_SetObserverOrigin() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	anInitializer := &BasicInitializer{
+	anInitializer := &initializer.BasicInitializer{
 		SenzingSettings: senzingSettings,
 	}
 	anInitializer.SetObserverOrigin(ctx, "TestObserver")
@@ -98,7 +99,7 @@ func ExampleBasicInitializer_UnregisterObserver() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	anInitializer := &BasicInitializer{
+	anInitializer := &initializer.BasicInitializer{
 		SenzingSettings: senzingSettings,
 	}
 	err = anInitializer.RegisterObserver(ctx, anObserver)

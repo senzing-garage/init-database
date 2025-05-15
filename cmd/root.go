@@ -125,6 +125,7 @@ func RunE(_ *cobra.Command, _ []string) error {
 		SenzingVerboseLogging: viper.GetInt64(option.EngineLogLevel.Arg),
 		SQLFile:               viper.GetString(OptionSQLFile.Arg),
 	}
+
 	return initializer.Initialize(ctx)
 }
 
@@ -165,6 +166,7 @@ func getDatabaseURLs(ctx context.Context, senzingSettings string) ([]string, err
 			result = append(result, databaseURL)
 		}
 	}
+
 	return result, err
 }
 
@@ -191,6 +193,7 @@ func getEngineConfigurationFileDefault() string {
 		return result
 	}
 	result = resourcePath + "/templates/g2config.json"
+
 	return result
 }
 
@@ -203,12 +206,21 @@ For more information, visit https://github.com/senzing-garage/init-database
 
 	sqlFileDefault := getSQLFileDefault()
 	if len(sqlFileDefault) > 0 {
-		result = fmt.Sprintf("%s\nThe SQL file used to create the Senzing database schema will be %s", result, sqlFileDefault)
+		result = fmt.Sprintf(
+			"%s\nThe SQL file used to create the Senzing database schema will be %s",
+			result,
+			sqlFileDefault,
+		)
 	}
 	engineConfigurationFileDefault := getEngineConfigurationFileDefault()
 	if len(engineConfigurationFileDefault) > 0 {
-		result = fmt.Sprintf("%s\nThe JSON file used to create the Senzing configuration  will be %s", result, engineConfigurationFileDefault)
+		result = fmt.Sprintf(
+			"%s\nThe JSON file used to create the Senzing configuration  will be %s",
+			result,
+			engineConfigurationFileDefault,
+		)
 	}
+
 	return result
 }
 
@@ -244,6 +256,7 @@ func getParsedEngineConfigurationJSON() (settingsparser.SettingsParser, error) {
 	if err != nil {
 		return result, err
 	}
+
 	return settingsparser.New(senzingSettings)
 }
 

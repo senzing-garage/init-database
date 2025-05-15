@@ -2,18 +2,6 @@ module github.com/senzing-garage/init-database
 
 go 1.24
 
-retract (
-	v0.1.8
-	v0.1.7
-	v0.1.6
-	v0.1.5
-	v0.1.4
-	v0.1.3
-	v0.1.2
-	v0.1.1
-	v0.1.0
-)
-
 require (
 	github.com/senzing-garage/go-cmdhelping v0.3.4
 	github.com/senzing-garage/go-databasing v0.5.7

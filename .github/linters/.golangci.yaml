@@ -11,39 +11,39 @@ linters:
     - containedctx
     - contextcheck
     - copyloopvar
-    # - cyclop
+    - cyclop
     - decorder
-    # - depguard
+    - depguard
     - dogsled
     - dupl
     - dupword
     - durationcheck
-    # - err113
+    - err113
     - errcheck
     - errchkjson
     - errname
     - errorlint
     - exhaustive
-    # - exhaustruct
+    - exhaustruct
     - exptostd
     - fatcontext
-    # - forbidigo
+    - forbidigo
     - forcetypeassert
-    # - funcorder
-    # - funlen
+    - funcorder
+    - funlen
     - ginkgolinter
     - gocheckcompilerdirectives
-    # - gochecknoglobals
-    # - gochecknoinits
+    - gochecknoglobals
+    - gochecknoinits
     - gochecksumtype
-    # - gocognit
+    - gocognit
     - goconst
     - gocritic
     - gocyclo
-    # - godot
-    # - godox
+    - godot
+    - godox
     - goheader
-    # - gomoddirectives
+    - gomoddirectives
     - gomodguard
     - goprintffuncname
     - gosec
@@ -56,27 +56,27 @@ linters:
     - ineffassign
     - interfacebloat
     - intrange
-    # - ireturn
-    # - lll
+    - ireturn
+    - lll
     - loggercheck
     - maintidx
     - makezero
     - mirror
     - misspell
-    # - mnd
+    - mnd
     - musttag
     - nakedret
-    # - nestif
+    - nestif
     - nilerr
     - nilnesserr
     - nilnil
-    # - nlreturn
+    - nlreturn
     - noctx
     - nolintlint
     - nonamedreturns
     - nosprintfhostport
     # - paralleltest
-    # - perfsprint
+    - perfsprint
     - prealloc
     - predeclared
     - promlinter
@@ -91,9 +91,9 @@ linters:
     - staticcheck
     - tagalign
     - tagliatelle
-    # - testableexamples
+    - testableexamples
     - testifylint
-    # - testpackage
+    - testpackage
     # - thelper
     - tparallel
     - unconvert
@@ -110,6 +110,7 @@ linters:
   disable:
     - gochecknoglobals
     - gochecknoinits
+    - lll
   exclusions:
     generated: lax
     presets:
@@ -122,6 +123,8 @@ linters:
       - builtin$
       - examples$
   settings:
+    cyclop:
+      max-complexity: 20
     depguard:
       rules:
         prevent_unmaintained_packages:
@@ -134,15 +137,43 @@ linters:
     exhaustruct:
       exclude:
         - '.+/cobra\.Command$'
+        - '.+/initializer\.BasicInitializer$'
+        - '.+/senzingconfig\.BasicSenzingConfig$'
+        - '.+/senzingschema\.BasicSenzingSchema$'
+        - '.+/subject\.SimpleSubject$'
+    funlen:
+      lines: 130
+      statements: 70
     ireturn:
       allow:
         - anon
         - empty
         - error
+        - logging.Logging
+        - observer.Observer
+        - senzing.SzAbstractFactory
+        - senzingconfig.SenzingConfig
+        - senzingschema.SenzingSchema
+        - settingsparser.SettingsParser
         - stdlib
     mnd:
       ignored-functions:
         - '^logger\.Log$'
+        - '^senzingSchema\.log$'
+        - '^senzingSchema\.traceEntry$'
+        - '^notifier\.Notify$'
+        - '^senzingConfig\.traceEntry$'
+        - '^senzingConfig\.log$'
+        - '^initializer\.log$'
+        - '^initializer\.traceEntry$'
+        - '^logger\.Log$'
+        - '^logger\.Log$'
+        - '^logger\.Log$'
+        - '^logger\.Log$'
+        - '^logger\.Log$'
+        - '^logger\.Log$'
+        - '^logger\.Log$'
+
 formatters:
   enable:
     - gci
