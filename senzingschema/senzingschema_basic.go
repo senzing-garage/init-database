@@ -61,10 +61,9 @@ func (senzingSchema *BasicSenzingSchema) InitializeSenzing(ctx context.Context) 
 
 	debugMessageNumber := 0
 	traceExitMessageNumber := 19
+
 	if senzingSchema.getLogger().IsDebug() {
-
 		// If DEBUG, log error exit.
-
 		defer func() {
 			if debugMessageNumber > 0 {
 				senzingSchema.debug(debugMessageNumber, err)
@@ -75,7 +74,9 @@ func (senzingSchema *BasicSenzingSchema) InitializeSenzing(ctx context.Context) 
 
 		if senzingSchema.getLogger().IsTrace() {
 			entryTime := time.Now()
+
 			senzingSchema.traceEntry(10)
+
 			defer func() { senzingSchema.traceExit(traceExitMessageNumber, err, time.Since(entryTime)) }()
 		}
 
@@ -85,8 +86,9 @@ func (senzingSchema *BasicSenzingSchema) InitializeSenzing(ctx context.Context) 
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 11, 1011
 
-			return err
+			return wraperror.Errorf(err, "senzingschema.InitializeSenzing.Marshal error: %w", err)
 		}
+
 		senzingSchema.log(1001, senzingSchema, string(asJSON))
 	}
 
@@ -96,24 +98,24 @@ func (senzingSchema *BasicSenzingSchema) InitializeSenzing(ctx context.Context) 
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 12, 1012
 
-		return err
+		return wraperror.Errorf(err, "senzingschema.InitializeSenzing.New error: %w", err)
 	}
+
 	resourcePath, err := parser.GetResourcePath(ctx)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 13, 1013
 
-		return err
+		return wraperror.Errorf(err, "senzingschema.InitializeSenzing.GetResourcePath error: %w", err)
 	}
 
 	// Process each database.
 
 	for _, databaseURL := range senzingSchema.DatabaseURLs {
-
 		err = senzingSchema.processDatabase(ctx, resourcePath, databaseURL)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 15, 1015
 
-			return err
+			return wraperror.Errorf(err, "senzingschema.InitializeSenzing.processDatabase error: %w", err)
 		}
 	}
 
@@ -126,7 +128,7 @@ func (senzingSchema *BasicSenzingSchema) InitializeSenzing(ctx context.Context) 
 		}()
 	}
 
-	return err
+	return wraperror.Errorf(err, "senzingschema.InitializeSenzing error: %w", err)
 }
 
 /*
@@ -147,10 +149,9 @@ func (senzingSchema *BasicSenzingSchema) RegisterObserver(ctx context.Context, o
 
 	debugMessageNumber := 0
 	traceExitMessageNumber := 29
+
 	if senzingSchema.getLogger().IsDebug() {
-
 		// If DEBUG, log error exit.
-
 		defer func() {
 			if debugMessageNumber > 0 {
 				senzingSchema.debug(debugMessageNumber, observer.GetObserverID(ctx), err)
@@ -161,7 +162,9 @@ func (senzingSchema *BasicSenzingSchema) RegisterObserver(ctx context.Context, o
 
 		if senzingSchema.getLogger().IsTrace() {
 			entryTime := time.Now()
+
 			senzingSchema.traceEntry(20, observer.GetObserverID(ctx))
+
 			defer func() {
 				senzingSchema.traceExit(traceExitMessageNumber, observer.GetObserverID(ctx), err, time.Since(entryTime))
 			}()
@@ -173,8 +176,9 @@ func (senzingSchema *BasicSenzingSchema) RegisterObserver(ctx context.Context, o
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 21, 1021
 
-			return err
+			return wraperror.Errorf(err, "senzingschema.RegisterObserver.Marshal error: %w", err)
 		}
+
 		senzingSchema.log(1002, senzingSchema, string(asJSON))
 	}
 
@@ -190,7 +194,7 @@ func (senzingSchema *BasicSenzingSchema) RegisterObserver(ctx context.Context, o
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 22, 1022
 
-		return err
+		return wraperror.Errorf(err, "senzingschema.RegisterObserver.RegisterObserver error: %w", err)
 	}
 
 	// Notify observers.
@@ -202,7 +206,7 @@ func (senzingSchema *BasicSenzingSchema) RegisterObserver(ctx context.Context, o
 		notifier.Notify(ctx, senzingSchema.observers, senzingSchema.observerOrigin, ComponentID, 8002, err, details)
 	}()
 
-	return err
+	return wraperror.Errorf(err, "senzingschema.RegisterObserver error: %w", err)
 }
 
 /*
@@ -219,10 +223,9 @@ func (senzingSchema *BasicSenzingSchema) SetLogLevel(ctx context.Context, logLev
 
 	debugMessageNumber := 0
 	traceExitMessageNumber := 39
+
 	if senzingSchema.getLogger().IsDebug() {
-
 		// If DEBUG, log error exit.
-
 		defer func() {
 			if debugMessageNumber > 0 {
 				senzingSchema.debug(debugMessageNumber, err)
@@ -233,7 +236,9 @@ func (senzingSchema *BasicSenzingSchema) SetLogLevel(ctx context.Context, logLev
 
 		if senzingSchema.getLogger().IsTrace() {
 			entryTime := time.Now()
+
 			senzingSchema.traceEntry(30, logLevelName)
+
 			defer func() {
 				senzingSchema.traceExit(traceExitMessageNumber, logLevelName, err, time.Since(entryTime))
 			}()
@@ -245,8 +250,9 @@ func (senzingSchema *BasicSenzingSchema) SetLogLevel(ctx context.Context, logLev
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 31, 1031
 
-			return err
+			return wraperror.Errorf(err, "senzingschema.SetLogLevel.Marshal error: %w", err)
 		}
+
 		senzingSchema.log(1003, senzingSchema, string(asJSON))
 	}
 
@@ -261,11 +267,12 @@ func (senzingSchema *BasicSenzingSchema) SetLogLevel(ctx context.Context, logLev
 	// Set senzingSchema log level.
 
 	senzingSchema.logLevelName = logLevelName
+
 	err = senzingSchema.getLogger().SetLogLevel(logLevelName)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 33, 1033
 
-		return err
+		return wraperror.Errorf(err, "senzingschema.SetLogLevel.SetLogLevel error: %w", err)
 	}
 
 	// Notify observers.
@@ -279,7 +286,7 @@ func (senzingSchema *BasicSenzingSchema) SetLogLevel(ctx context.Context, logLev
 		}()
 	}
 
-	return err
+	return wraperror.Errorf(err, "senzingschema.SetLogLevel error: %w", err)
 }
 
 /*
@@ -296,10 +303,9 @@ func (senzingSchema *BasicSenzingSchema) SetObserverOrigin(ctx context.Context, 
 
 	debugMessageNumber := 0
 	traceExitMessageNumber := 59
+
 	if senzingSchema.getLogger().IsDebug() {
-
 		// If DEBUG, log error exit.
-
 		defer func() {
 			if debugMessageNumber > 0 {
 				senzingSchema.debug(debugMessageNumber, err)
@@ -310,7 +316,9 @@ func (senzingSchema *BasicSenzingSchema) SetObserverOrigin(ctx context.Context, 
 
 		if senzingSchema.getLogger().IsTrace() {
 			entryTime := time.Now()
+
 			senzingSchema.traceEntry(50, origin)
+
 			defer func() {
 				senzingSchema.traceExit(traceExitMessageNumber, origin, err, time.Since(entryTime))
 			}()
@@ -326,6 +334,7 @@ func (senzingSchema *BasicSenzingSchema) SetObserverOrigin(ctx context.Context, 
 
 			return
 		}
+
 		senzingSchema.log(1004, senzingSchema, string(asJSON))
 	}
 
@@ -343,7 +352,6 @@ func (senzingSchema *BasicSenzingSchema) SetObserverOrigin(ctx context.Context, 
 			notifier.Notify(ctx, senzingSchema.observers, senzingSchema.observerOrigin, ComponentID, 8004, err, details)
 		}()
 	}
-
 }
 
 /*
@@ -364,10 +372,9 @@ func (senzingSchema *BasicSenzingSchema) UnregisterObserver(ctx context.Context,
 
 	debugMessageNumber := 0
 	traceExitMessageNumber := 49
+
 	if senzingSchema.getLogger().IsDebug() {
-
 		// If DEBUG, log error exit.
-
 		defer func() {
 			if debugMessageNumber > 0 {
 				senzingSchema.debug(debugMessageNumber, observer.GetObserverID(ctx), err)
@@ -378,7 +385,9 @@ func (senzingSchema *BasicSenzingSchema) UnregisterObserver(ctx context.Context,
 
 		if senzingSchema.getLogger().IsTrace() {
 			entryTime := time.Now()
+
 			senzingSchema.traceEntry(40, observer.GetObserverID(ctx))
+
 			defer func() {
 				senzingSchema.traceExit(traceExitMessageNumber, observer.GetObserverID(ctx), err, time.Since(entryTime))
 			}()
@@ -390,15 +399,15 @@ func (senzingSchema *BasicSenzingSchema) UnregisterObserver(ctx context.Context,
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 41, 1041
 
-			return err
+			return wraperror.Errorf(err, "senzingschema.UnregisterObserver.Marshal error: %w", err)
 		}
+
 		senzingSchema.log(1005, senzingSchema, string(asJSON))
 	}
 
 	// Remove observer from this service.
 
 	if senzingSchema.observers != nil {
-
 		// Tricky code:
 		// client.notify is called synchronously before client.observers is set to nil.
 		// In client.notify, each observer will get notified in a goroutine.
@@ -414,7 +423,7 @@ func (senzingSchema *BasicSenzingSchema) UnregisterObserver(ctx context.Context,
 			traceExitMessageNumber = 42
 			traceExitMessageNumber, debugMessageNumber = 42, 1042
 
-			return err
+			return wraperror.Errorf(err, "senzingschema.UnregisterObserver error: %w", err)
 		}
 
 		if !senzingSchema.observers.HasObservers(ctx) {
@@ -422,7 +431,7 @@ func (senzingSchema *BasicSenzingSchema) UnregisterObserver(ctx context.Context,
 		}
 	}
 
-	return err
+	return wraperror.Errorf(err, "senzingschema.UnregisterObserver error: %w", err)
 }
 
 // ----------------------------------------------------------------------------
@@ -434,10 +443,12 @@ func (senzingSchema *BasicSenzingSchema) UnregisterObserver(ctx context.Context,
 // Get the Logger singleton.
 func (senzingSchema *BasicSenzingSchema) getLogger() logging.Logging {
 	var err error
+
 	if senzingSchema.logger == nil {
 		options := []interface{}{
 			&logging.OptionCallerSkip{Value: OptionCallerSkip4},
 		}
+
 		senzingSchema.logger, err = logging.NewSenzingLogger(ComponentID, IDMessages, options...)
 		if err != nil {
 			panic(err)
@@ -484,10 +495,9 @@ func (senzingSchema *BasicSenzingSchema) processDatabase(
 
 	debugMessageNumber := 0
 	traceExitMessageNumber := 109
+
 	if senzingSchema.getLogger().IsDebug() {
-
 		// If DEBUG, log error exit.
-
 		defer func() {
 			if debugMessageNumber > 0 {
 				senzingSchema.debug(debugMessageNumber, resourcePath, databaseURL, err)
@@ -498,7 +508,9 @@ func (senzingSchema *BasicSenzingSchema) processDatabase(
 
 		if senzingSchema.getLogger().IsTrace() {
 			entryTime := time.Now()
+
 			senzingSchema.traceEntry(100, resourcePath, databaseURL)
+
 			defer func() {
 				senzingSchema.traceExit(traceExitMessageNumber, resourcePath, databaseURL, err, time.Since(entryTime))
 			}()
@@ -511,7 +523,7 @@ func (senzingSchema *BasicSenzingSchema) processDatabase(
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 101, 1101
 
-		return err
+		return wraperror.Errorf(err, "senzingschema.processDatabase.Parse error: %w", err)
 	}
 
 	if len(senzingSchema.SQLFile) == 0 {
@@ -537,7 +549,7 @@ func (senzingSchema *BasicSenzingSchema) processDatabase(
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 102, 1102
 
-		return err
+		return wraperror.Errorf(err, "senzingschema.processDatabase.NewConnector error: %w", err)
 	}
 
 	// Create sqlExecutor to process file of SQL.
@@ -545,11 +557,12 @@ func (senzingSchema *BasicSenzingSchema) processDatabase(
 	sqlExecutor := &sqlexecutor.BasicSQLExecutor{
 		DatabaseConnector: databaseConnector,
 	}
+
 	err = sqlExecutor.SetLogLevel(ctx, senzingSchema.logLevelName)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 103, 1103
 
-		return err
+		return wraperror.Errorf(err, "senzingschema.processDatabase.SetLogLevel error: %w", err)
 	}
 
 	// Add observers to sqlExecutor.
@@ -560,7 +573,7 @@ func (senzingSchema *BasicSenzingSchema) processDatabase(
 			if err != nil {
 				traceExitMessageNumber, debugMessageNumber = 104, 1104
 
-				return err
+				return wraperror.Errorf(err, "senzingschema.processDatabase.RegisterObserver error: %w", err)
 			}
 		}
 	}
@@ -574,10 +587,10 @@ func (senzingSchema *BasicSenzingSchema) processDatabase(
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 105, 1105
 
-		return err
+		return wraperror.Errorf(err, "senzingschema.processDatabase.ProcessFileName error: %w", err)
 	}
 
 	senzingSchema.log(2001, senzingSchema.SQLFile, parsedURL.Redacted())
 
-	return err
+	return wraperror.Errorf(err, "senzingschema.processDatabase error: %w", err)
 }

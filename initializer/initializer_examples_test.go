@@ -19,17 +19,21 @@ import (
 func ExampleBasicInitializer_Initialize() {
 	// For more information, visit https://github.com/senzing-garage/init-database/blob/main/initializer/initializer_examples_test.go
 	ctx := context.TODO()
+
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	anInitializer := &initializer.BasicInitializer{
 		SenzingSettings: senzingSettings,
 	}
+
 	err = anInitializer.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	err = anInitializer.Initialize(ctx)
 	if err != nil {
 		fmt.Println(err)
@@ -44,13 +48,16 @@ func ExampleBasicInitializer_RegisterObserver() {
 		ID:       "Observer 1",
 		IsSilent: true,
 	}
+
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	anInitializer := &initializer.BasicInitializer{
 		SenzingSettings: senzingSettings,
 	}
+
 	err = anInitializer.RegisterObserver(ctx, anObserver)
 	if err != nil {
 		fmt.Println(err)
@@ -61,13 +68,16 @@ func ExampleBasicInitializer_RegisterObserver() {
 func ExampleBasicInitializer_SetLogLevel() {
 	// For more information, visit https://github.com/senzing-garage/init-database/blob/main/initializer/initializer_examples_test.go
 	ctx := context.TODO()
+
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	anInitializer := &initializer.BasicInitializer{
 		SenzingSettings: senzingSettings,
 	}
+
 	err = anInitializer.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		fmt.Println(err)
@@ -77,10 +87,12 @@ func ExampleBasicInitializer_SetLogLevel() {
 
 func ExampleBasicInitializer_SetObserverOrigin() {
 	ctx := context.TODO()
+
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	anInitializer := &initializer.BasicInitializer{
 		SenzingSettings: senzingSettings,
 	}
@@ -95,17 +107,21 @@ func ExampleBasicInitializer_UnregisterObserver() {
 		ID:       "Observer 1",
 		IsSilent: true,
 	}
+
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	anInitializer := &initializer.BasicInitializer{
 		SenzingSettings: senzingSettings,
 	}
+
 	err = anInitializer.RegisterObserver(ctx, anObserver)
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	err = anInitializer.UnregisterObserver(ctx, anObserver)
 	if err != nil {
 		fmt.Println(err)

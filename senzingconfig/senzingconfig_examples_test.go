@@ -19,18 +19,22 @@ import (
 func ExampleBasicSenzingConfig_InitializeSenzing_withDatasources() {
 	// For more information, visit https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig_examples_test.go
 	ctx := context.TODO()
+
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	senzingConfig := &senzingconfig.BasicSenzingConfig{
 		SenzingSettings: senzingSettings,
 		DataSources:     []string{"CUSTOMERS", "REFERENCE", "WATCHLIST"},
 	}
+
 	err = senzingConfig.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	_ = senzingConfig.InitializeSenzing(ctx)
 	// Output:
 }
@@ -38,17 +42,21 @@ func ExampleBasicSenzingConfig_InitializeSenzing_withDatasources() {
 func ExampleBasicSenzingConfig_InitializeSenzing() {
 	// For more information, visit https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig_examples_test.go
 	ctx := context.TODO()
+
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	senzingConfig := &senzingconfig.BasicSenzingConfig{
 		SenzingSettings: senzingSettings,
 	}
+
 	err = senzingConfig.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	err = senzingConfig.InitializeSenzing(ctx)
 	if err != nil {
 		fmt.Println(err)
@@ -63,13 +71,16 @@ func ExampleBasicSenzingConfig_RegisterObserver() {
 		ID:       "Observer 1",
 		IsSilent: true,
 	}
+
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	senzingConfig := &senzingconfig.BasicSenzingConfig{
 		SenzingSettings: senzingSettings,
 	}
+
 	err = senzingConfig.RegisterObserver(ctx, anObserver)
 	if err != nil {
 		fmt.Println(err)
@@ -80,13 +91,16 @@ func ExampleBasicSenzingConfig_RegisterObserver() {
 func ExampleBasicSenzingConfig_SetLogLevel() {
 	// For more information, visit https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig_examples_test.go
 	ctx := context.TODO()
+
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	senzingConfig := &senzingconfig.BasicSenzingConfig{
 		SenzingSettings: senzingSettings,
 	}
+
 	err = senzingConfig.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		fmt.Println(err)
@@ -97,10 +111,12 @@ func ExampleBasicSenzingConfig_SetLogLevel() {
 func ExampleBasicSenzingConfig_SetObserverOrigin() {
 	// For more information, visit https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig_examples_test.go
 	ctx := context.TODO()
+
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	senzingConfig := &senzingconfig.BasicSenzingConfig{
 		SenzingSettings: senzingSettings,
 	}
@@ -115,17 +131,21 @@ func ExampleBasicSenzingConfig_UnregisterObserver() {
 		ID:       "Observer 1",
 		IsSilent: true,
 	}
+
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	senzingConfig := &senzingconfig.BasicSenzingConfig{
 		SenzingSettings: senzingSettings,
 	}
+
 	err = senzingConfig.RegisterObserver(ctx, anObserver)
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	err = senzingConfig.UnregisterObserver(ctx, anObserver)
 	if err != nil {
 		fmt.Println(err)

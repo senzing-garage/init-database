@@ -75,7 +75,7 @@ linters:
     - nolintlint
     - nonamedreturns
     - nosprintfhostport
-    # - paralleltest
+    - paralleltest
     - perfsprint
     - prealloc
     - predeclared
@@ -94,23 +94,24 @@ linters:
     - testableexamples
     - testifylint
     - testpackage
-    # - thelper
+    - thelper
     - tparallel
     - unconvert
     - unparam
     - unused
     - usestdlibvars
-    # - usetesting
+    - usetesting
     - varnamelen
     - wastedassign
-    # - whitespace
-    # - wrapcheck
-    # - wsl
+    - whitespace
+    - wrapcheck
+    - wsl
     - zerologlint
   disable:
     - gochecknoglobals
     - gochecknoinits
     - lll
+    - paralleltest
   exclusions:
     generated: lax
     presets:
@@ -142,7 +143,7 @@ linters:
         - '.+/senzingschema\.BasicSenzingSchema$'
         - '.+/subject\.SimpleSubject$'
     funlen:
-      lines: 130
+      lines: 140
       statements: 70
     ireturn:
       allow:
@@ -158,29 +159,21 @@ linters:
         - stdlib
     mnd:
       ignored-functions:
-        - '^logger\.Log$'
-        - '^senzingSchema\.log$'
-        - '^senzingSchema\.traceEntry$'
-        - '^notifier\.Notify$'
-        - '^senzingConfig\.traceEntry$'
-        - '^senzingConfig\.log$'
         - '^initializer\.log$'
         - '^initializer\.traceEntry$'
         - '^logger\.Log$'
-        - '^logger\.Log$'
-        - '^logger\.Log$'
-        - '^logger\.Log$'
-        - '^logger\.Log$'
-        - '^logger\.Log$'
-        - '^logger\.Log$'
-
+        - '^notifier\.Notify$'
+        - '^senzingConfig\.log$'
+        - '^senzingConfig\.traceEntry$'
+        - '^senzingSchema\.log$'
+        - '^senzingSchema\.traceEntry$'
 formatters:
   enable:
     - gci
     - gofmt
-    # - gofumpt
+    - gofumpt
     - goimports
-    # - golines
+    - golines
   exclusions:
     generated: lax
     paths:

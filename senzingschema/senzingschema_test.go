@@ -1,7 +1,6 @@
 package senzingschema_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/senzing-garage/go-helpers/settings"
@@ -16,9 +15,10 @@ import (
 // ----------------------------------------------------------------------------
 
 func TestSenzingSchemaImpl_InitializeSenzing(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	require.NoError(test, err)
+
 	testObject := &senzingschema.BasicSenzingSchema{
 		SenzingSettings: senzingSettings,
 	}
@@ -29,13 +29,14 @@ func TestSenzingSchemaImpl_InitializeSenzing(test *testing.T) {
 }
 
 func TestSenzingSchemaImpl_RegisterObserver(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	observer1 := &observer.NullObserver{
 		ID:       "Observer 1",
 		IsSilent: true,
 	}
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	require.NoError(test, err)
+
 	testObject := &senzingschema.BasicSenzingSchema{
 		SenzingSettings: senzingSettings,
 	}
@@ -48,9 +49,10 @@ func TestSenzingSchemaImpl_RegisterObserver(test *testing.T) {
 }
 
 func TestSenzingSchemaImpl_SetObserverOrigin(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	require.NoError(test, err)
+
 	testObject := &senzingschema.BasicSenzingSchema{
 		SenzingSettings: senzingSettings,
 	}
@@ -58,13 +60,14 @@ func TestSenzingSchemaImpl_SetObserverOrigin(test *testing.T) {
 }
 
 func TestSenzingSchemaImpl_UnregisterObserver(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	observer1 := &observer.NullObserver{
 		ID:       "Observer 1",
 		IsSilent: true,
 	}
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	require.NoError(test, err)
+
 	testObject := &senzingschema.BasicSenzingSchema{
 		SenzingSettings: senzingSettings,
 	}
