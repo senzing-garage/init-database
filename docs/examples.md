@@ -145,7 +145,7 @@ In these examples, datasources are added to the initial Senzing configuration.
 
 ### Docker example using SENZING_TOOLS_ENGINE_CONFIGURATION_JSON
 
-Using `SENZING_TOOLS_ENGINE_CONFIGURATION_JSON` superceeds use of `SENZING_TOOLS_DATABASE_URL`.
+Using `SENZING_TOOLS_ENGINE_CONFIGURATION_JSON` supercedes use of `SENZING_TOOLS_DATABASE_URL`.
 It can be used to specify multiple databases or non-system locations of senzing binaries.
 For more information, see
 [SENZING_TOOLS_ENGINE_CONFIGURATION_JSON](https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_engine_configuration_json).

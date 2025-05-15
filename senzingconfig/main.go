@@ -2,6 +2,7 @@ package senzingconfig
 
 import (
 	"context"
+	"errors"
 
 	"github.com/senzing-garage/go-observing/observer"
 )
@@ -27,6 +28,11 @@ const ComponentID = 6502
 
 // Log message prefix.
 const Prefix = "init-database.senzingconfig."
+
+const (
+	OptionCallerSkip4 = 4
+	OptionCallerSkip5 = 5
+)
 
 // ----------------------------------------------------------------------------
 // Variables
@@ -127,3 +133,5 @@ var IDMessages = map[int]string{
 
 // Status strings for specific messages.
 var IDStatuses = map[int]string{}
+
+var errForPackage = errors.New("senzingconfig")

@@ -1,4 +1,4 @@
-package initializer
+package initializer_test
 
 import (
 	"context"
@@ -8,6 +8,7 @@ import (
 	"github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/observer"
+	"github.com/senzing-garage/init-database/initializer"
 	"github.com/stretchr/testify/require"
 )
 
@@ -28,7 +29,7 @@ var (
 // ----------------------------------------------------------------------------
 
 func TestBasicInitializer_Initialize(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	testObject := getTestObject(ctx, test)
 	err := testObject.SetLogLevel(ctx, logging.LevelInfoName)
 	require.NoError(test, err)
@@ -37,14 +38,15 @@ func TestBasicInitializer_Initialize(test *testing.T) {
 }
 
 func TestBasicInitializer_RegisterObserver(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	observer1 := &observer.NullObserver{
 		ID:       "Observer 1",
 		IsSilent: true,
 	}
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	require.NoError(test, err)
-	testObject := &BasicInitializer{
+
+	testObject := &initializer.BasicInitializer{
 		SenzingSettings: senzingSettings,
 	}
 	err = testObject.SetLogLevel(ctx, logging.LevelInfoName)
@@ -56,24 +58,26 @@ func TestBasicInitializer_RegisterObserver(test *testing.T) {
 }
 
 func TestBasicInitializer_SetObserverOrigin(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	require.NoError(test, err)
-	testObject := &BasicInitializer{
+
+	testObject := &initializer.BasicInitializer{
 		SenzingSettings: senzingSettings,
 	}
 	testObject.SetObserverOrigin(ctx, "TestObserver")
 }
 
 func TestBasicInitializer_UnregisterObserver(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	observer1 := &observer.NullObserver{
 		ID:       "Observer 1",
 		IsSilent: true,
 	}
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	require.NoError(test, err)
-	testObject := &BasicInitializer{
+
+	testObject := &initializer.BasicInitializer{
 		SenzingSettings: senzingSettings,
 	}
 	err = testObject.SetLogLevel(ctx, logging.LevelInfoName)
@@ -90,23 +94,27 @@ func TestBasicInitializer_UnregisterObserver(test *testing.T) {
 // Helper functions
 // ----------------------------------------------------------------------------
 
-func getTestObject(ctx context.Context, test *testing.T) *BasicInitializer {
+func getTestObject(ctx context.Context, t *testing.T) *initializer.BasicInitializer {
+	t.Helper()
+
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
-	require.NoError(test, err)
-	result := &BasicInitializer{
+	require.NoError(t, err)
+
+	result := &initializer.BasicInitializer{
 		SenzingSettings: senzingSettings,
 		SenzingLogLevel: logLevel,
 	}
 
 	if logLevel == "TRACE" {
 		result.SetObserverOrigin(ctx, observerOrigin)
-		require.NoError(test, err)
+		require.NoError(t, err)
 		err = result.SetLogLevel(ctx, logLevel)
-		require.NoError(test, err)
+		require.NoError(t, err)
 		err = result.RegisterObserver(ctx, observerSingleton)
-		require.NoError(test, err)
+		require.NoError(t, err)
 		err = result.SetLogLevel(ctx, logLevel)
-		require.NoError(test, err)
+		require.NoError(t, err)
 	}
+
 	return result
 }

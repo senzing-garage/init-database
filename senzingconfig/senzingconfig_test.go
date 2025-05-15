@@ -1,8 +1,7 @@
-package senzingconfig
+package senzingconfig_test
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"testing"
 
@@ -10,6 +9,7 @@ import (
 	"github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/observer"
+	"github.com/senzing-garage/init-database/senzingconfig"
 	"github.com/senzing-garage/init-database/senzingschema"
 	"github.com/stretchr/testify/require"
 )
@@ -31,7 +31,7 @@ var (
 // ----------------------------------------------------------------------------
 
 func TestSenzingConfigImpl_InitializeSenzing_withDatasources(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	senzingConfig := getTestObject(ctx, test)
 	senzingConfig.DataSources = []string{"CUSTOMERS", "REFERENCE", "WATCHLIST"}
 	err := senzingConfig.InitializeSenzing(ctx)
@@ -39,7 +39,7 @@ func TestSenzingConfigImpl_InitializeSenzing_withDatasources(test *testing.T) {
 }
 
 func TestSenzingConfigImpl_InitializeSenzing(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	senzingConfig := getTestObject(ctx, test)
 	err := senzingConfig.SetLogLevel(ctx, logging.LevelInfoName)
 	require.NoError(test, err)
@@ -48,7 +48,7 @@ func TestSenzingConfigImpl_InitializeSenzing(test *testing.T) {
 }
 
 func TestSenzingConfigImpl_RegisterObserver(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	senzingConfig := getTestObject(ctx, test)
 	anObserver := &observer.NullObserver{
 		ID:       "Observer 1",
@@ -59,20 +59,20 @@ func TestSenzingConfigImpl_RegisterObserver(test *testing.T) {
 }
 
 func TestSenzingConfigImpl_SetLogLevel(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	senzingConfig := getTestObject(ctx, test)
 	err := senzingConfig.SetLogLevel(ctx, logging.LevelInfoName)
 	require.NoError(test, err)
 }
 
 func TestSenzingConfigImpl_SetObserverOrigin(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	senzingConfig := getTestObject(ctx, test)
 	senzingConfig.SetObserverOrigin(ctx, "TestObserver")
 }
 
 func TestSenzingConfigImpl_UnregisterObserver(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	senzingConfig := getTestObject(ctx, test)
 	anObserver := &observer.NullObserver{
 		ID:       "Observer 1",
@@ -88,22 +88,26 @@ func TestSenzingConfigImpl_UnregisterObserver(test *testing.T) {
 // Helper functions
 // ----------------------------------------------------------------------------
 
-func getTestObject(ctx context.Context, test *testing.T) *BasicSenzingConfig {
+func getTestObject(ctx context.Context, t *testing.T) *senzingconfig.BasicSenzingConfig {
+	t.Helper()
+
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
-	require.NoError(test, err)
-	result := &BasicSenzingConfig{
+	require.NoError(t, err)
+
+	result := &senzingconfig.BasicSenzingConfig{
 		SenzingSettings: senzingSettings,
 	}
 	if logLevel == "TRACE" {
 		result.SetObserverOrigin(ctx, observerOrigin)
-		require.NoError(test, err)
+		require.NoError(t, err)
 		err = result.SetLogLevel(ctx, logLevel)
-		require.NoError(test, err)
+		require.NoError(t, err)
 		err = result.RegisterObserver(ctx, observerSingleton)
-		require.NoError(test, err)
+		require.NoError(t, err)
 		err = result.SetLogLevel(ctx, logLevel)
-		require.NoError(test, err)
+		require.NoError(t, err)
 	}
+
 	return result
 }
 
@@ -112,40 +116,35 @@ func getTestObject(ctx context.Context, test *testing.T) *BasicSenzingConfig {
 // ----------------------------------------------------------------------------
 
 func TestMain(m *testing.M) {
-	err := setup()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	setup()
+
 	code := m.Run()
-	err = teardown()
-	if err != nil {
-		fmt.Println(err)
-	}
+
+	teardown()
 	os.Exit(code)
 }
 
-func setup() error {
+func setup() {
 	ctx := context.TODO()
+
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
+
 	senzingSchema := &senzingschema.BasicSenzingSchema{
 		SenzingSettings: senzingSettings,
 	}
+
 	err = senzingSchema.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
+
 	err = senzingSchema.InitializeSenzing(ctx)
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
-	return err
 }
 
-func teardown() error {
-	var err error
-	return err
-}
+func teardown() {}

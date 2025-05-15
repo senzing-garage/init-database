@@ -1,12 +1,12 @@
-package senzingschema
+package senzingschema_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/observer"
+	"github.com/senzing-garage/init-database/senzingschema"
 	"github.com/stretchr/testify/require"
 )
 
@@ -15,10 +15,11 @@ import (
 // ----------------------------------------------------------------------------
 
 func TestSenzingSchemaImpl_InitializeSenzing(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	require.NoError(test, err)
-	testObject := &BasicSenzingSchema{
+
+	testObject := &senzingschema.BasicSenzingSchema{
 		SenzingSettings: senzingSettings,
 	}
 	err = testObject.SetLogLevel(ctx, logging.LevelInfoName)
@@ -28,14 +29,15 @@ func TestSenzingSchemaImpl_InitializeSenzing(test *testing.T) {
 }
 
 func TestSenzingSchemaImpl_RegisterObserver(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	observer1 := &observer.NullObserver{
 		ID:       "Observer 1",
 		IsSilent: true,
 	}
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	require.NoError(test, err)
-	testObject := &BasicSenzingSchema{
+
+	testObject := &senzingschema.BasicSenzingSchema{
 		SenzingSettings: senzingSettings,
 	}
 	err = testObject.SetLogLevel(ctx, logging.LevelInfoName)
@@ -47,24 +49,26 @@ func TestSenzingSchemaImpl_RegisterObserver(test *testing.T) {
 }
 
 func TestSenzingSchemaImpl_SetObserverOrigin(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	require.NoError(test, err)
-	testObject := &BasicSenzingSchema{
+
+	testObject := &senzingschema.BasicSenzingSchema{
 		SenzingSettings: senzingSettings,
 	}
 	testObject.SetObserverOrigin(ctx, "TestObserver")
 }
 
 func TestSenzingSchemaImpl_UnregisterObserver(test *testing.T) {
-	ctx := context.TODO()
+	ctx := test.Context()
 	observer1 := &observer.NullObserver{
 		ID:       "Observer 1",
 		IsSilent: true,
 	}
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	require.NoError(test, err)
-	testObject := &BasicSenzingSchema{
+
+	testObject := &senzingschema.BasicSenzingSchema{
 		SenzingSettings: senzingSettings,
 	}
 	err = testObject.SetLogLevel(ctx, logging.LevelInfoName)

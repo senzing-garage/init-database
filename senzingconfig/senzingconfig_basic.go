@@ -5,10 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
 
+	"github.com/senzing-garage/go-helpers/wraperror"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/notifier"
 	"github.com/senzing-garage/go-observing/observer"
@@ -46,11 +48,11 @@ type BasicSenzingConfig struct {
 // ----------------------------------------------------------------------------
 
 var debugOptions = []interface{}{
-	&logging.OptionCallerSkip{Value: 5},
+	&logging.OptionCallerSkip{Value: OptionCallerSkip5},
 }
 
 var traceOptions = []interface{}{
-	&logging.OptionCallerSkip{Value: 5},
+	&logging.OptionCallerSkip{Value: OptionCallerSkip5},
 }
 
 // ----------------------------------------------------------------------------
@@ -65,17 +67,18 @@ Input
 */
 func (senzingConfig *BasicSenzingConfig) InitializeSenzing(ctx context.Context) error {
 	var err error
+
 	var configID int64
+
 	entryTime := time.Now()
 
 	// Prolog.
 
 	debugMessageNumber := 0
 	traceExitMessageNumber := 29
+
 	if senzingConfig.getLogger().IsDebug() {
-
 		// If DEBUG, log error exit.
-
 		defer func() {
 			if debugMessageNumber > 0 {
 				senzingConfig.debug(debugMessageNumber, err)
@@ -86,6 +89,7 @@ func (senzingConfig *BasicSenzingConfig) InitializeSenzing(ctx context.Context) 
 
 		if senzingConfig.getLogger().IsTrace() {
 			senzingConfig.traceEntry(10, configID)
+
 			defer func() { senzingConfig.traceExit(traceExitMessageNumber, configID, err, time.Since(entryTime)) }()
 		}
 
@@ -94,8 +98,10 @@ func (senzingConfig *BasicSenzingConfig) InitializeSenzing(ctx context.Context) 
 		asJSON, err := json.Marshal(senzingConfig)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 11, 1011
-			return err
+
+			return wraperror.Errorf(err, "senzing.InitializeSenzing.Marshal error: %w", err)
 		}
+
 		senzingConfig.log(1001, senzingConfig, string(asJSON))
 	}
 
@@ -105,28 +111,32 @@ func (senzingConfig *BasicSenzingConfig) InitializeSenzing(ctx context.Context) 
 
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	if err != nil {
-		return err
+		return wraperror.Errorf(err, "senzing.InitializeSenzing.CreateConfigManager error: %w", err)
 	}
 
 	// If a Senzing configuration file is specified, use it.
 
 	if len(senzingConfig.SenzingConfigJSONFile) > 0 {
-
 		configDefinition, err1 := fileToString(ctx, senzingConfig.SenzingConfigJSONFile)
 		if err1 != nil {
 			traceExitMessageNumber, debugMessageNumber = 99, 1999
-			return err1
+
+			return wraperror.Errorf(err1, "senzing.InitializeSenzing.fileToString error: %w", err1)
 		}
+
 		szConfig, err2 := szConfigManager.CreateConfigFromString(ctx, configDefinition)
 		if err2 != nil {
 			traceExitMessageNumber, debugMessageNumber = 99, 1999
-			return err2
+
+			return wraperror.Errorf(err2, "senzing.InitializeSenzing.CreateConfigFromString error: %w", err2)
 		}
 
 		configID, err = senzingConfig.makeDefaultConfig(ctx, szAbstractFactory, szConfig)
 		senzingConfig.log(2999, configID)
+
 		traceExitMessageNumber, debugMessageNumber = 99, 999
-		return err
+
+		return wraperror.Errorf(err, "senzing.InitializeSenzing.makeDefaultConfig error: %w", err)
 	}
 
 	// Determine if configuration already exists. If so, return.
@@ -134,7 +144,8 @@ func (senzingConfig *BasicSenzingConfig) InitializeSenzing(ctx context.Context) 
 	configID, err = szConfigManager.GetDefaultConfigID(ctx)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 13, 1013
-		return err
+
+		return wraperror.Errorf(err, "senzing.InitializeSenzing error: %w", err)
 	}
 
 	if configID != 0 {
@@ -157,36 +168,42 @@ func (senzingConfig *BasicSenzingConfig) InitializeSenzing(ctx context.Context) 
 			szConfig, err2 := szConfigManager.CreateConfigFromConfigID(ctx, configID)
 			if err2 != nil {
 				traceExitMessageNumber, debugMessageNumber = 99, 1999
-				return err2
+
+				return wraperror.Errorf(err2, "senzing.InitializeSenzing error: %w", err2)
 			}
+
 			configID, err = senzingConfig.makeDefaultConfig(ctx, szAbstractFactory, szConfig)
 		}
 
 		senzingConfig.log(2002, configID)
+
 		traceExitMessageNumber, debugMessageNumber = 14, 0 // debugMessageNumber=0 because it's not an error.
-		return err
+
+		return wraperror.Errorf(err, "senzing.InitializeSenzing error: %w", err)
 	}
 
 	// If no configuration file specified, install the template.
 
 	if len(senzingConfig.SenzingConfigJSONFile) == 0 {
-
 		szConfig, err := szConfigManager.CreateConfigFromTemplate(ctx)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 99, 1999
-			return err
+
+			return wraperror.Errorf(err, "senzing.InitializeSenzing.CreateConfigFromTemplate error: %w", err)
 		}
 
 		configID, err = senzingConfig.makeDefaultConfig(ctx, szAbstractFactory, szConfig)
 		senzingConfig.log(2999, configID)
-		traceExitMessageNumber, debugMessageNumber = 999, 999
-		return err
 
+		traceExitMessageNumber, debugMessageNumber = 999, 999
+
+		return wraperror.Errorf(err, "senzing.InitializeSenzing.makeDefaultConfig error: %w", err)
 	}
 
 	// Notify observers.
 
 	senzingConfig.log(2003, configID)
+
 	if senzingConfig.observers != nil {
 		go func() {
 			details := map[string]string{}
@@ -194,7 +211,7 @@ func (senzingConfig *BasicSenzingConfig) InitializeSenzing(ctx context.Context) 
 		}()
 	}
 
-	return err
+	return wraperror.Errorf(err, "senzing.InitializeSenzing error: %w", err)
 }
 
 /*
@@ -215,10 +232,9 @@ func (senzingConfig *BasicSenzingConfig) RegisterObserver(ctx context.Context, o
 
 	debugMessageNumber := 0
 	traceExitMessageNumber := 39
+
 	if senzingConfig.getLogger().IsDebug() {
-
 		// If DEBUG, log error exit.
-
 		defer func() {
 			if debugMessageNumber > 0 {
 				senzingConfig.debug(debugMessageNumber, err)
@@ -229,7 +245,9 @@ func (senzingConfig *BasicSenzingConfig) RegisterObserver(ctx context.Context, o
 
 		if senzingConfig.getLogger().IsTrace() {
 			entryTime := time.Now()
+
 			senzingConfig.traceEntry(30, observer.GetObserverID(ctx))
+
 			defer func() {
 				senzingConfig.traceExit(traceExitMessageNumber, observer.GetObserverID(ctx), err, time.Since(entryTime))
 			}()
@@ -240,8 +258,10 @@ func (senzingConfig *BasicSenzingConfig) RegisterObserver(ctx context.Context, o
 		asJSON, err := json.Marshal(senzingConfig)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 31, 1031
-			return err
+
+			return wraperror.Errorf(err, "senzing.RegisterObserver.Marshal error: %w", err)
 		}
+
 		senzingConfig.log(1002, senzingConfig, string(asJSON))
 	}
 
@@ -260,7 +280,7 @@ func (senzingConfig *BasicSenzingConfig) RegisterObserver(ctx context.Context, o
 		notifier.Notify(ctx, senzingConfig.observers, senzingConfig.observerOrigin, ComponentID, 8003, err, details)
 	}()
 
-	return err
+	return wraperror.Errorf(err, "senzing.RegisterObserver error: %w", err)
 }
 
 /*
@@ -277,10 +297,9 @@ func (senzingConfig *BasicSenzingConfig) SetLogLevel(ctx context.Context, logLev
 
 	debugMessageNumber := 0
 	traceExitMessageNumber := 49
+
 	if senzingConfig.getLogger().IsDebug() {
-
 		// If DEBUG, log error exit.
-
 		defer func() {
 			if debugMessageNumber > 0 {
 				senzingConfig.debug(debugMessageNumber, err)
@@ -291,7 +310,9 @@ func (senzingConfig *BasicSenzingConfig) SetLogLevel(ctx context.Context, logLev
 
 		if senzingConfig.getLogger().IsTrace() {
 			entryTime := time.Now()
+
 			senzingConfig.traceEntry(40, logLevelName)
+
 			defer func() {
 				senzingConfig.traceExit(traceExitMessageNumber, logLevelName, err, time.Since(entryTime))
 			}()
@@ -302,8 +323,10 @@ func (senzingConfig *BasicSenzingConfig) SetLogLevel(ctx context.Context, logLev
 		asJSON, err := json.Marshal(senzingConfig)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 41, 1041
-			return err
+
+			return wraperror.Errorf(err, "senzing.SetLogLevel.SetLogLevel.Marshal error: %w", err)
 		}
+
 		senzingConfig.log(1003, senzingConfig, string(asJSON))
 	}
 
@@ -311,17 +334,21 @@ func (senzingConfig *BasicSenzingConfig) SetLogLevel(ctx context.Context, logLev
 
 	if !logging.IsValidLogLevelName(logLevelName) {
 		traceExitMessageNumber, debugMessageNumber = 42, 1042
-		return fmt.Errorf("invalid error level: %s", logLevelName)
+
+		return wraperror.Errorf(errForPackage, "invalid error level: %s", logLevelName)
 	}
 
 	// Set senzingConfig log level.
 
 	senzingConfig.logLevel = logLevelName
+
 	err = senzingConfig.getLogger().SetLogLevel(logLevelName)
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 43, 1043
-		return err
+
+		return wraperror.Errorf(err, "senzing.SetLogLevel.SetLogLevel error: %w", err)
 	}
+
 	senzingConfig.isTrace = (logLevelName == logging.LevelTraceName)
 
 	// Notify observers.
@@ -335,7 +362,7 @@ func (senzingConfig *BasicSenzingConfig) SetLogLevel(ctx context.Context, logLev
 		}()
 	}
 
-	return err
+	return wraperror.Errorf(err, "senzing.SetLogLevel error: %w", err)
 }
 
 /*
@@ -352,10 +379,9 @@ func (senzingConfig *BasicSenzingConfig) SetObserverOrigin(ctx context.Context, 
 
 	debugMessageNumber := 0
 	traceExitMessageNumber := 69
+
 	if senzingConfig.getLogger().IsDebug() {
-
 		// If DEBUG, log error exit.
-
 		defer func() {
 			if debugMessageNumber > 0 {
 				senzingConfig.debug(debugMessageNumber, err)
@@ -366,7 +392,9 @@ func (senzingConfig *BasicSenzingConfig) SetObserverOrigin(ctx context.Context, 
 
 		if senzingConfig.getLogger().IsTrace() {
 			entryTime := time.Now()
+
 			senzingConfig.traceEntry(60, origin)
+
 			defer func() {
 				senzingConfig.traceExit(traceExitMessageNumber, origin, err, time.Since(entryTime))
 			}()
@@ -377,8 +405,10 @@ func (senzingConfig *BasicSenzingConfig) SetObserverOrigin(ctx context.Context, 
 		asJSON, err := json.Marshal(senzingConfig)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 61, 1061
+
 			return
 		}
+
 		senzingConfig.log(1004, senzingConfig, string(asJSON))
 	}
 
@@ -392,7 +422,6 @@ func (senzingConfig *BasicSenzingConfig) SetObserverOrigin(ctx context.Context, 
 			notifier.Notify(ctx, senzingConfig.observers, senzingConfig.observerOrigin, ComponentID, 8005, err, details)
 		}()
 	}
-
 }
 
 /*
@@ -413,10 +442,9 @@ func (senzingConfig *BasicSenzingConfig) UnregisterObserver(ctx context.Context,
 
 	debugMessageNumber := 0
 	traceExitMessageNumber := 59
+
 	if senzingConfig.getLogger().IsDebug() {
-
 		// If DEBUG, log error exit.
-
 		defer func() {
 			if debugMessageNumber > 0 {
 				senzingConfig.debug(debugMessageNumber, err)
@@ -427,7 +455,9 @@ func (senzingConfig *BasicSenzingConfig) UnregisterObserver(ctx context.Context,
 
 		if senzingConfig.getLogger().IsTrace() {
 			entryTime := time.Now()
+
 			senzingConfig.traceEntry(50, observer.GetObserverID(ctx))
+
 			defer func() {
 				senzingConfig.traceExit(traceExitMessageNumber, observer.GetObserverID(ctx), err, time.Since(entryTime))
 			}()
@@ -438,15 +468,16 @@ func (senzingConfig *BasicSenzingConfig) UnregisterObserver(ctx context.Context,
 		asJSON, err := json.Marshal(senzingConfig)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 51, 1051
-			return err
+
+			return wraperror.Errorf(err, "senzing.UnregisterObserverMarshal error: %w", err)
 		}
+
 		senzingConfig.log(1005, senzingConfig, string(asJSON))
 	}
 
 	// Remove observer from this service.
 
 	if senzingConfig.observers != nil {
-
 		// Tricky code:
 		// client.notify is called synchronously before client.observers is set to nil.
 		// In client.notify, each observer will get notified in a goroutine.
@@ -459,7 +490,8 @@ func (senzingConfig *BasicSenzingConfig) UnregisterObserver(ctx context.Context,
 		err = senzingConfig.observers.UnregisterObserver(ctx, observer)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 54, 1054
-			return err
+
+			return wraperror.Errorf(err, "senzing.UnregisterObserver.UnregisterObserver error: %w", err)
 		}
 
 		if !senzingConfig.observers.HasObservers(ctx) {
@@ -467,11 +499,11 @@ func (senzingConfig *BasicSenzingConfig) UnregisterObserver(ctx context.Context,
 		}
 	}
 
-	return err
+	return wraperror.Errorf(err, "senzing.UnregisterObserver error: %w", err)
 }
 
 // ----------------------------------------------------------------------------
-// Internal methods
+// Private methods
 // ----------------------------------------------------------------------------
 
 // --- Logging ----------------------------------------------------------------
@@ -479,15 +511,18 @@ func (senzingConfig *BasicSenzingConfig) UnregisterObserver(ctx context.Context,
 // Get the Logger singleton.
 func (senzingConfig *BasicSenzingConfig) getLogger() logging.Logging {
 	var err error
+
 	if senzingConfig.logger == nil {
 		options := []interface{}{
-			&logging.OptionCallerSkip{Value: 4},
+			&logging.OptionCallerSkip{Value: OptionCallerSkip4},
 		}
+
 		senzingConfig.logger, err = logging.NewSenzingLogger(ComponentID, IDMessages, options...)
 		if err != nil {
 			panic(err)
 		}
 	}
+
 	return senzingConfig.logger
 }
 
@@ -519,21 +554,12 @@ func (senzingConfig *BasicSenzingConfig) traceExit(messageNumber int, details ..
 // Create an abstract factory singleton and return it.
 func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
 	var err error
+
 	_ = ctx
 
 	senzingConfig.szAbstractFactorySyncOnce.Do(func() {
 		if len(senzingConfig.GrpcTarget) == 0 {
-			senzingSettings := senzingConfig.SenzingSettings
-			senzingInstanceName := senzingConfig.SenzingInstanceName
-			if len(senzingInstanceName) == 0 {
-				senzingInstanceName = fmt.Sprintf("senzing init-database at %s", time.Now())
-			}
-			senzingConfig.szAbstractFactorySingleton, err = szfactorycreator.CreateCoreAbstractFactory(
-				senzingInstanceName,
-				senzingSettings,
-				senzingConfig.SenzingVerboseLogging,
-				senzing.SzInitializeWithDefaultConfiguration,
-			)
+			senzingConfig.szAbstractFactorySingleton, err = senzingConfig.buildSzAbstractFactory()
 			if err != nil {
 				panic(err)
 			}
@@ -542,16 +568,41 @@ func (senzingConfig *BasicSenzingConfig) getAbstractFactory(ctx context.Context)
 			if err != nil {
 				panic(err)
 			}
+
 			senzingConfig.szAbstractFactorySingleton, err = szfactorycreator.CreateGrpcAbstractFactory(grpcConnection)
 			if err != nil {
 				panic(err)
 			}
 		}
 	})
+
 	return senzingConfig.szAbstractFactorySingleton
 }
 
 // --- Misc -------------------------------------------------------------------
+
+func (senzingConfig *BasicSenzingConfig) buildSzAbstractFactory() (senzing.SzAbstractFactory, error) {
+	var (
+		err    error
+		result senzing.SzAbstractFactory
+	)
+
+	senzingSettings := senzingConfig.SenzingSettings
+
+	senzingInstanceName := senzingConfig.SenzingInstanceName
+	if len(senzingInstanceName) == 0 {
+		senzingInstanceName = fmt.Sprintf("senzing init-database at %s", time.Now())
+	}
+
+	result, err = szfactorycreator.CreateCoreAbstractFactory(
+		senzingInstanceName,
+		senzingSettings,
+		senzingConfig.SenzingVerboseLogging,
+		senzing.SzInitializeWithDefaultConfiguration,
+	)
+
+	return result, wraperror.Errorf(err, "senzingconfig.buildSzAbstractFactory error: %w", err)
+}
 
 func (senzingConfig *BasicSenzingConfig) makeDefaultConfig(
 	ctx context.Context,
@@ -566,8 +617,9 @@ func (senzingConfig *BasicSenzingConfig) makeDefaultConfig(
 	for _, datasource := range senzingConfig.DataSources {
 		_, err = szConfig.AddDataSource(ctx, datasource)
 		if err != nil {
-			return result, err
+			return result, wraperror.Errorf(err, "senzingconfig.makeDefaultConfig.AddDataSource error: %w", err)
 		}
+
 		senzingConfig.log(2001, datasource)
 	}
 
@@ -579,29 +631,30 @@ func (senzingConfig *BasicSenzingConfig) makeDefaultConfig(
 
 	configDefinition, err := szConfig.Export(ctx)
 	if err != nil {
-		return result, err
+		return result, wraperror.Errorf(err, "senzingconfig.makeDefaultConfig.Export error: %w", err)
 	}
 
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	if err != nil {
-		return result, err
+		return result, wraperror.Errorf(err, "senzingconfig.makeDefaultConfig.CreateConfigManager error: %w", err)
 	}
 
 	result, err = szConfigManager.SetDefaultConfig(ctx, configDefinition, configComment)
 	if err != nil {
-		return result, err
+		return result, wraperror.Errorf(err, "senzingconfig.makeDefaultConfig.SetDefaultConfig error: %w", err)
 	}
 
-	return result, err
+	return result, wraperror.Errorf(err, "senzingconfig.makeDefaultConfig error: %w", err)
 }
 
 // ----------------------------------------------------------------------------
-// Internal functions
+// Private functions
 // ----------------------------------------------------------------------------
 
 func fileToString(ctx context.Context, filePath string) (string, error) {
 	_ = ctx
-	content, err := os.ReadFile(filePath)
+	content, err := os.ReadFile(filepath.Clean(filePath))
+
 	return string(content), err
 }
 

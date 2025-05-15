@@ -1,6 +1,6 @@
 //go:build linux
 
-package senzingschema
+package senzingschema_test
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 	"github.com/senzing-garage/go-helpers/settings"
 	"github.com/senzing-garage/go-logging/logging"
 	"github.com/senzing-garage/go-observing/observer"
+	"github.com/senzing-garage/init-database/senzingschema"
 )
 
 // ----------------------------------------------------------------------------
@@ -18,17 +19,21 @@ import (
 func ExampleBasicSenzingSchema_InitializeSenzing() {
 	// For more information, visit https://github.com/senzing-garage/init-database/blob/main/senzingschema/senzingschema_examples_test.go
 	ctx := context.TODO()
+
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
 		fmt.Println(err)
 	}
-	senzingSchema := &BasicSenzingSchema{
+
+	senzingSchema := &senzingschema.BasicSenzingSchema{
 		SenzingSettings: senzingSettings,
 	}
+
 	err = senzingSchema.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	err = senzingSchema.InitializeSenzing(ctx)
 	if err != nil {
 		fmt.Println(err)
@@ -43,13 +48,16 @@ func ExampleBasicSenzingSchema_RegisterObserver() {
 		ID:       "Observer 1",
 		IsSilent: true,
 	}
+
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
 		fmt.Println(err)
 	}
-	senzingSchema := &BasicSenzingSchema{
+
+	senzingSchema := &senzingschema.BasicSenzingSchema{
 		SenzingSettings: senzingSettings,
 	}
+
 	err = senzingSchema.RegisterObserver(ctx, anObserver)
 	if err != nil {
 		fmt.Println(err)
@@ -60,13 +68,16 @@ func ExampleBasicSenzingSchema_RegisterObserver() {
 func ExampleBasicSenzingSchema_SetLogLevel() {
 	// For more information, visit https://github.com/senzing-garage/init-database/blob/main/senzingschema/senzingschema_examples_test.go
 	ctx := context.TODO()
+
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
 		fmt.Println(err)
 	}
-	senzingSchema := &BasicSenzingSchema{
+
+	senzingSchema := &senzingschema.BasicSenzingSchema{
 		SenzingSettings: senzingSettings,
 	}
+
 	err = senzingSchema.SetLogLevel(ctx, logging.LevelInfoName)
 	if err != nil {
 		fmt.Println(err)
@@ -77,11 +88,13 @@ func ExampleBasicSenzingSchema_SetLogLevel() {
 func ExampleBasicSenzingSchema_SetObserverOrigin() {
 	// For more information, visit https://github.com/senzing-garage/init-database/blob/main/senzingschema/senzingschema_examples_test.go
 	ctx := context.TODO()
+
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
 		fmt.Println(err)
 	}
-	senzingSchema := &BasicSenzingSchema{
+
+	senzingSchema := &senzingschema.BasicSenzingSchema{
 		SenzingSettings: senzingSettings,
 	}
 	senzingSchema.SetObserverOrigin(ctx, "TestObserver")
@@ -95,17 +108,21 @@ func ExampleBasicSenzingSchema_UnregisterObserver() {
 		ID:       "Observer 1",
 		IsSilent: true,
 	}
+
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
 	if err != nil {
 		fmt.Println(err)
 	}
-	senzingSchema := &BasicSenzingSchema{
+
+	senzingSchema := &senzingschema.BasicSenzingSchema{
 		SenzingSettings: senzingSettings,
 	}
+
 	err = senzingSchema.RegisterObserver(ctx, anObserver)
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	err = senzingSchema.UnregisterObserver(ctx, anObserver)
 	if err != nil {
 		fmt.Println(err)
