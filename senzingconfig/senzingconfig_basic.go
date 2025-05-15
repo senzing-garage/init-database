@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -601,7 +602,7 @@ func (senzingConfig *BasicSenzingConfig) makeDefaultConfig(
 
 func fileToString(ctx context.Context, filePath string) (string, error) {
 	_ = ctx
-	content, err := os.ReadFile(filePath)
+	content, err := os.ReadFile(filepath.Clean(filePath))
 	return string(content), err
 }
 
