@@ -1,6 +1,11 @@
 name: Go test linux - mssql
 
-on: [pull_request, workflow_dispatch]
+on:
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "15 7 * * *"
+  workflow_dispatch:
 
 env:
   SENZING_LOG_LEVEL: TRACE
@@ -13,6 +18,8 @@ permissions:
 jobs:
   go-test-linux:
     name: "Go test with Senzing: ${{ matrix.senzingsdk-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }} - mssql"
+    outputs:
+      status: ${{ job.status }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -84,3 +91,12 @@ jobs:
           export ODBCINI="/opt/microsoft/msodbcsql18/etc/odbc.ini"
           export ODBCSYSINI="/opt/microsoft/msodbcsql18/etc"
           go test -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
+
+  slack-notification:
+    needs: [go-test-linux]
+    if: ${{ always() && contains(fromJSON('["failure", "cancelled"]'), needs.go-test-linux.outputs.status ) && github.event_name == 'schedule' }}
+    secrets:
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+    uses: senzing-factory/build-resources/.github/workflows/build-failure-slack-notification.yaml@v2
+    with:
+      job-status: ${{ needs.go-test-linux.outputs.status }}
