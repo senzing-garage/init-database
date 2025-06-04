@@ -105,12 +105,12 @@ func RunE(_ *cobra.Command, _ []string) error {
 
 	senzingSettings, err := settings.BuildAndVerifySettings(ctx, viper.GetViper())
 	if err != nil {
-		return wraperror.Errorf(err, "cmd.RunE.BuildAndVerifySettings error %w", err)
+		return wraperror.Errorf(err, "BuildAndVerifySettings")
 	}
 
 	databaseURLs, err := getDatabaseURLs(ctx, senzingSettings)
 	if err != nil {
-		return wraperror.Errorf(err, "cmd.RunE.getDatabaseURLs error %w", err)
+		return wraperror.Errorf(err, "getDatabaseURLs")
 	}
 
 	initializer := &initializer.BasicInitializer{
@@ -128,7 +128,7 @@ func RunE(_ *cobra.Command, _ []string) error {
 
 	err = initializer.Initialize(ctx)
 
-	return wraperror.Errorf(err, "cmd.RunE.Initialize error %w", err)
+	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 // Used in construction of cobra.Command.
@@ -154,25 +154,25 @@ func getDatabaseURLs(ctx context.Context, senzingSettings string) ([]string, err
 	if len(result) == 0 {
 		settingsParser, err := settingsparser.New(senzingSettings)
 		if err != nil {
-			return result, wraperror.Errorf(err, "cmd.getDatabaseURLs.New error: %w", err)
+			return result, wraperror.Errorf(err, "getDatabaseURLs")
 		}
 
 		databaseURIs, err := settingsParser.GetDatabaseURIs(ctx)
 		if err != nil {
-			return result, wraperror.Errorf(err, "cmd.getDatabaseURLs.GetDatabaseURIs error: %w", err)
+			return result, wraperror.Errorf(err, "GetDatabaseURIs")
 		}
 
 		for _, databaseURI := range databaseURIs {
 			databaseURL, err := helpersettings.BuildSenzingDatabaseURL(databaseURI)
 			if err != nil {
-				return result, wraperror.Errorf(err, "cmd.getDatabaseURLs.BuildSenzingDatabaseURL error: %w", err)
+				return result, wraperror.Errorf(err, "BuildSenzingDatabaseURL: %s", databaseURI)
 			}
 
 			result = append(result, databaseURL)
 		}
 	}
 
-	return result, wraperror.Errorf(err, "cmd.getDatabaseURLs error: %w", err)
+	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 // Construct the path to the "g2config.json" file.
@@ -248,7 +248,7 @@ func getParsedEngineConfigurationJSON() (settingsparser.SettingsParser, error) {
 	if isSet {
 		result, err = settingsparser.New(senzingSettings)
 		if err != nil {
-			return result, wraperror.Errorf(err, "cmd.getParsedEngineConfigurationJSON.New error: %w", err)
+			return result, wraperror.Errorf(err, "New")
 		}
 	}
 
@@ -271,16 +271,12 @@ func getParsedEngineConfigurationJSON() (settingsparser.SettingsParser, error) {
 
 	senzingSettings, err = settings.BuildAndVerifySettings(ctx, viper.GetViper())
 	if err != nil {
-		return result, wraperror.Errorf(
-			err,
-			"cmd.getParsedEngineConfigurationJSON.BuildAndVerifySettings error: %w",
-			err,
-		)
+		return result, wraperror.Errorf(err, "BuildAndVerifySettings")
 	}
 
 	result, err = settingsparser.New(senzingSettings)
 
-	return result, wraperror.Errorf(err, "cmd.getParsedEngineConfigurationJSON error: %w", err)
+	return result, wraperror.Errorf(err, "New")
 }
 
 // Get the path to the SQL file used to create the Senzing database schema.
