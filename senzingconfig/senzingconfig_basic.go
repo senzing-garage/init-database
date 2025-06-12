@@ -589,9 +589,6 @@ func (senzingConfig *BasicSenzingConfig) buildSzAbstractFactory() (senzing.SzAbs
 
 	senzingSettings := senzingConfig.SenzingSettings
 
-	// FIXME: remove.
-	fmt.Printf(">>>>>> senzingSettings: %s", senzingSettings)
-
 	senzingInstanceName := senzingConfig.SenzingInstanceName
 	if len(senzingInstanceName) == 0 {
 		senzingInstanceName = fmt.Sprintf("senzing init-database at %s", time.Now())
