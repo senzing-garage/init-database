@@ -1410,6 +1410,26 @@
                 "FELEM_REQ": "No",
                 "DEFAULT_VALUE": null,
                 "INTERNAL": "No"
+            },
+            {
+                "ATTR_ID": 2815,
+                "ATTR_CODE": "SEMANTIC_EMBEDDING",
+                "ATTR_CLASS": "IDENTIFIER",
+                "FTYPE_CODE": "SEMANTIC_VALUE",
+                "FELEM_CODE": "EMBEDDING",
+                "FELEM_REQ": "No",
+                "DEFAULT_VALUE": null,
+                "INTERNAL": "No"
+            },
+            {
+                "ATTR_ID": 2816,
+                "ATTR_CODE": "SEMANTIC_ALGORITHM",
+                "ATTR_CLASS": "IDENTIFIER",
+                "FTYPE_CODE": "SEMANTIC_VALUE",
+                "FELEM_CODE": "ALGORITHM",
+                "FELEM_REQ": "No",
+                "DEFAULT_VALUE": null,
+                "INTERNAL": "Yes"
             }
         ],
         "CFG_CFBOM": [
@@ -2090,6 +2110,18 @@
                 "FTYPE_ID": 93,
                 "FELEM_ID": 124,
                 "EXEC_ORDER": 1
+            },
+            {
+                "CFCALL_ID": 67,
+                "FTYPE_ID": 99,
+                "FELEM_ID": 127,
+                "EXEC_ORDER": 1
+            },
+            {
+                "CFCALL_ID": 67,
+                "FTYPE_ID": 99,
+                "FELEM_ID": 128,
+                "EXEC_ORDER": 2
             }
         ],
         "CFG_CFCALL": [
@@ -2186,7 +2218,7 @@
             {
                 "CFCALL_ID": 36,
                 "FTYPE_ID": 53,
-                "CFUNC_ID": 3
+                "CFUNC_ID": 9
             },
             {
                 "CFCALL_ID": 37,
@@ -2332,6 +2364,11 @@
                 "CFCALL_ID": 66,
                 "FTYPE_ID": 93,
                 "CFUNC_ID": 14
+            },
+            {
+                "CFCALL_ID": 67,
+                "FTYPE_ID": 99,
+                "CFUNC_ID": 15
             }
         ],
         "CFG_CFRTN": [
@@ -2574,6 +2611,30 @@
                 "LIKELY_SCORE": 95,
                 "PLAUSIBLE_SCORE": 95,
                 "UN_LIKELY_SCORE": 95
+            },
+            {
+                "CFRTN_ID": 27,
+                "CFUNC_ID": 9,
+                "FTYPE_ID": 53,
+                "CFUNC_RTNVAL": "FULL_SCORE",
+                "EXEC_ORDER": 1,
+                "SAME_SCORE": 100,
+                "CLOSE_SCORE": 100,
+                "LIKELY_SCORE": 100,
+                "PLAUSIBLE_SCORE": 100,
+                "UN_LIKELY_SCORE": 100
+            },
+            {
+                "CFRTN_ID": 28,
+                "CFUNC_ID": 15,
+                "FTYPE_ID": 0,
+                "CFUNC_RTNVAL": "FULL_SCORE",
+                "EXEC_ORDER": 1,
+                "SAME_SCORE": 98,
+                "CLOSE_SCORE": 90,
+                "LIKELY_SCORE": 80,
+                "PLAUSIBLE_SCORE": 70,
+                "UN_LIKELY_SCORE": 60
             }
         ],
         "CFG_CFUNC": [
@@ -2678,6 +2739,14 @@
                 "CFUNC_CODE": "PLACEKEY_COMP",
                 "CFUNC_DESC": "Placekey comp",
                 "CONNECT_STR": "g2PlacekeyComp",
+                "ANON_SUPPORT": "Yes",
+                "LANGUAGE": null
+            },
+            {
+                "CFUNC_ID": 15,
+                "CFUNC_CODE": "SEMANTIC_SIMILARITY_COMP",
+                "CFUNC_DESC": "Semantic Similarity comp",
+                "CONNECT_STR": "g2SemanticSimilarityComp",
                 "ANON_SUPPORT": "Yes",
                 "LANGUAGE": null
             }
@@ -6719,6 +6788,14 @@
                 "DERIVED": "No"
             },
             {
+                "FTYPE_ID": 53,
+                "FELEM_ID": 69,
+                "EXEC_ORDER": 3,
+                "DISPLAY_LEVEL": 0,
+                "DISPLAY_DELIM": null,
+                "DERIVED": "Yes"
+            },
+            {
                 "FTYPE_ID": 54,
                 "FELEM_ID": 28,
                 "EXEC_ORDER": 1,
@@ -7298,6 +7375,22 @@
                 "FTYPE_ID": 98,
                 "FELEM_ID": 36,
                 "EXEC_ORDER": 1,
+                "DISPLAY_LEVEL": 1,
+                "DISPLAY_DELIM": null,
+                "DERIVED": "No"
+            },
+            {
+                "FTYPE_ID": 99,
+                "FELEM_ID": 127,
+                "EXEC_ORDER": 1,
+                "DISPLAY_LEVEL": 1,
+                "DISPLAY_DELIM": null,
+                "DERIVED": "No"
+            },
+            {
+                "FTYPE_ID": 99,
+                "FELEM_ID": 128,
+                "EXEC_ORDER": 2,
                 "DISPLAY_LEVEL": 1,
                 "DISPLAY_DELIM": null,
                 "DERIVED": "No"
@@ -8067,6 +8160,18 @@
                 "FELEM_CODE": "SUPRESSED_RELATIONSHIP_CONNECTING_FTYPE_ID",
                 "FELEM_DESC": "Suppressed relationship connecting feature type ID",
                 "DATA_TYPE": "number"
+            },
+            {
+                "FELEM_ID": 127,
+                "FELEM_CODE": "EMBEDDING",
+                "FELEM_DESC": "Embeddings",
+                "DATA_TYPE": "embedding"
+            },
+            {
+                "FELEM_ID": 128,
+                "FELEM_CODE": "ALGORITHM",
+                "FELEM_DESC": "Algorithm",
+                "DATA_TYPE": "string"
             }
         ],
         "CFG_FTYPE": [
@@ -8275,7 +8380,7 @@
                 "DERIVED": "No",
                 "RTYPE_ID": 0,
                 "ANONYMIZE": "No",
-                "VERSION": 2,
+                "VERSION": 3,
                 "SHOW_IN_MATCH_KEY": "Yes"
             },
             {
@@ -9173,6 +9278,22 @@
                 "ANONYMIZE": "No",
                 "VERSION": 1,
                 "SHOW_IN_MATCH_KEY": "No"
+            },
+            {
+                "FTYPE_ID": 99,
+                "FTYPE_CODE": "SEMANTIC_VALUE",
+                "FTYPE_DESC": "Semantic value",
+                "FCLASS_ID": 7,
+                "FTYPE_FREQ": "FF",
+                "FTYPE_EXCL": "No",
+                "FTYPE_STAB": "No",
+                "PERSIST_HISTORY": "Yes",
+                "USED_FOR_CAND": "No",
+                "DERIVED": "No",
+                "RTYPE_ID": 0,
+                "ANONYMIZE": "No",
+                "VERSION": 1,
+                "SHOW_IN_MATCH_KEY": "Yes"
             }
         ],
         "CFG_GENERIC_THRESHOLD": [
@@ -9692,9 +9813,9 @@
         },
         "CONFIG_BASE_VERSION": {
             "VERSION": "4.0.0",
-            "BUILD_VERSION": "4.0.0.25062",
-            "BUILD_DATE": "2025-03-03",
-            "BUILD_NUMBER": "25062",
+            "BUILD_VERSION": "4.0.0.25161",
+            "BUILD_DATE": "2025-06-10",
+            "BUILD_NUMBER": "25161",
             "COMPATIBILITY_VERSION": {
                 "CONFIG_VERSION": "11"
             }
