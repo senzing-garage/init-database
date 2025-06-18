@@ -1,6 +1,6 @@
 module github.com/senzing-garage/init-database
 
-go 1.24
+go 1.24.4
 
 require (
 	github.com/senzing-garage/go-cmdhelping v0.3.6
@@ -8,8 +8,8 @@ require (
 	github.com/senzing-garage/go-helpers v0.6.13
 	github.com/senzing-garage/go-logging v1.5.3
 	github.com/senzing-garage/go-observing v0.3.5
-	github.com/senzing-garage/go-sdk-abstract-factory v0.9.10
-	github.com/senzing-garage/sz-sdk-go v0.15.5
+	github.com/senzing-garage/go-sdk-abstract-factory v0.9.11
+	github.com/senzing-garage/sz-sdk-go v0.15.6
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/viper v1.20.1
 	github.com/stretchr/testify v1.10.0
@@ -23,8 +23,8 @@ require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
-	github.com/go-sql-driver/mysql v1.9.2 // indirect
-	github.com/go-viper/mapstructure/v2 v2.2.1 // indirect
+	github.com/go-sql-driver/mysql v1.9.3 // indirect
+	github.com/go-viper/mapstructure/v2 v2.3.0 // indirect
 	github.com/godror/godror v0.48.3 // indirect
 	github.com/godror/knownpb v0.3.0 // indirect
 	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect
@@ -39,10 +39,10 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sagikazarmark/locafero v0.9.0 // indirect
 	github.com/senzing-garage/go-messaging v1.5.3 // indirect
-	github.com/senzing-garage/sz-sdk-go-core v0.9.6 // indirect
-	github.com/senzing-garage/sz-sdk-go-grpc v0.9.6 // indirect
-	github.com/senzing-garage/sz-sdk-go-mock v0.8.8 // indirect
-	github.com/senzing-garage/sz-sdk-proto v0.8.4 // indirect
+	github.com/senzing-garage/sz-sdk-go-core v0.9.7 // indirect
+	github.com/senzing-garage/sz-sdk-go-grpc v0.9.7 // indirect
+	github.com/senzing-garage/sz-sdk-go-mock v0.8.9 // indirect
+	github.com/senzing-garage/sz-sdk-proto v0.8.5 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.14.0 // indirect
 	github.com/spf13/cast v1.9.2 // indirect
