@@ -615,9 +615,9 @@ func (senzingConfig *BasicSenzingConfig) makeDefaultConfig(
 	)
 
 	for _, datasource := range senzingConfig.DataSources {
-		_, err = szConfig.AddDataSource(ctx, datasource)
+		_, err = szConfig.RegisterDataSource(ctx, datasource)
 		if err != nil {
-			return result, wraperror.Errorf(err, "AddDataSource: %s", datasource)
+			return result, wraperror.Errorf(err, "RegisterDataSource: %s", datasource)
 		}
 
 		senzingConfig.log(2001, datasource)
