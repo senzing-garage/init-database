@@ -491,7 +491,7 @@ Prefixes:
 
 ### senzing-65020016
 
-- Trace the exiting of senzingconfig.InitializeSenzing(); senzingConfig.addDatasources failed; returned (%v).
+- Trace the exiting of senzingconfig.InitializeSenzing(); senzingConfig.registerDatasources failed; returned (%v).
 - See <https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig.go>
 
 ### senzing-65020017
@@ -711,7 +711,7 @@ Prefixes:
 
 ### senzing-65021016
 
-- senzingconfig.Initialize(); senzingConfig.addDatasources failed; Error: %v.
+- senzingconfig.Initialize(); senzingConfig.registerDatasources failed; Error: %v.
 - See <https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig.go>
 
 ### senzing-65021017
