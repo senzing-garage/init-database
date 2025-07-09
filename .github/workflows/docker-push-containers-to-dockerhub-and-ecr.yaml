@@ -30,6 +30,7 @@ jobs:
           push: true
           role-session-name: GitHub_to_AWS_via_FederatedOIDC
           role-to-assume: arn:aws:iam::${{ secrets.AWS_DOCKER_ACCOUNT_ID }}:role/github-actions-ecr-push
+          sign-image: true
           username: ${{ secrets.DOCKERHUB_USERNAME }}
 
   slack-notification:
