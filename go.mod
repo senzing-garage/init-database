@@ -9,7 +9,7 @@ require (
 	github.com/senzing-garage/go-logging v1.5.3
 	github.com/senzing-garage/go-observing v0.3.6
 	github.com/senzing-garage/go-sdk-abstract-factory v0.9.13
-	github.com/senzing-garage/sz-sdk-go v0.15.7
+	github.com/senzing-garage/sz-sdk-go v0.15.8
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/viper v1.20.1
 	github.com/stretchr/testify v1.10.0
