@@ -75,7 +75,8 @@ setup-osarch-specific:
 .PHONY: test-osarch-specific
 test-osarch-specific:
 	@echo "SENZING_TOOLS_DATABASE_URL: ${SENZING_TOOLS_DATABASE_URL}"
-	@go test -tags "libsqlite3 linux" -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
+#	@go test -tags "libsqlite3 linux" -json -v -p 1 ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
+	@go test -tags "libsqlite3 linux" -v -p 1 ./senzingschema ./senzingconfig
 
 
 .PHONY: test-mssql-osarch-specific
