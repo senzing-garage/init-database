@@ -640,6 +640,7 @@ func (senzingConfig *BasicSenzingConfig) makeDefaultConfig(
 	if err != nil {
 		return result, wraperror.Errorf(err, "CreateConfigManager")
 	}
+	defer func() { szConfigManager.Destroy(ctx) }()
 
 	result, err = szConfigManager.SetDefaultConfig(ctx, configDefinition, configComment)
 	if err != nil {
