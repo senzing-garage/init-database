@@ -144,7 +144,7 @@ linters:
         - '.+/subject\.SimpleSubject$'
     funlen:
       lines: 140
-      statements: 70
+      statements: 75
     ireturn:
       allow:
         - anon

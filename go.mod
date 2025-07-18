@@ -39,7 +39,7 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sagikazarmark/locafero v0.9.0 // indirect
 	github.com/senzing-garage/go-messaging v1.5.3 // indirect
-	github.com/senzing-garage/sz-sdk-go-core v0.9.10 // indirect
+	github.com/senzing-garage/sz-sdk-go-core v0.9.11-0.20250718003936-d0c5c2dce5a8 // indirect
 	github.com/senzing-garage/sz-sdk-go-grpc v0.9.9 // indirect
 	github.com/senzing-garage/sz-sdk-go-mock v0.8.11 // indirect
 	github.com/senzing-garage/sz-sdk-proto v0.8.8 // indirect
@@ -50,7 +50,7 @@ require (
 	github.com/subosito/gotenv v1.6.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/crypto v0.40.0 // indirect
-	golang.org/x/exp v0.0.0-20250711185948-6ae5c78190dc // indirect
+	golang.org/x/exp v0.0.0-20250717185816-542afb5b7346 // indirect
 	golang.org/x/net v0.42.0 // indirect
 	golang.org/x/sys v0.34.0 // indirect
 	golang.org/x/text v0.27.0 // indirect

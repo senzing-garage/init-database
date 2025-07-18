@@ -108,13 +108,15 @@ func (senzingConfig *BasicSenzingConfig) InitializeSenzing(ctx context.Context) 
 	// Create Senzing objects.
 
 	szAbstractFactory := senzingConfig.getAbstractFactory(ctx)
+
 	defer func() { szAbstractFactory.Close(ctx) }()
 
 	szConfigManager, err := szAbstractFactory.CreateConfigManager(ctx)
 	if err != nil {
 		return wraperror.Errorf(err, "CreateConfigManager")
 	}
-	defer func() { szConfigManager.Destroy(ctx) }()
+
+	defer func() { _ = szConfigManager.Destroy(ctx) }()
 
 	// If a Senzing configuration file is specified, use it.
 
@@ -640,7 +642,8 @@ func (senzingConfig *BasicSenzingConfig) makeDefaultConfig(
 	if err != nil {
 		return result, wraperror.Errorf(err, "CreateConfigManager")
 	}
-	defer func() { szConfigManager.Destroy(ctx) }()
+
+	defer func() { _ = szConfigManager.Destroy(ctx) }()
 
 	result, err = szConfigManager.SetDefaultConfig(ctx, configDefinition, configComment)
 	if err != nil {
