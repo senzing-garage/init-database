@@ -66,12 +66,13 @@ jobs:
 
       - name: Install MS SQL libraries
         run: |
-          echo "Step 1"
-          wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
-          echo "Step 2"
-          # sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
-          sudo install -D -o root -g root -m 644 packages.microsoft.gpg /usr/share/keyrings/microsoft-prod.gpg
+          # echo "Step 1"
+          # wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+          # echo "Step 2"
+          # # sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
+          # sudo install -D -o root -g root -m 644 packages.microsoft.gpg /usr/share/keyrings/microsoft-prod.gpg
           echo "Step 3"
+          echo ">>> ${UBUNTU_VERSION}"
           curl -sSL -O "https://packages.microsoft.com/config/ubuntu/${UBUNTU_VERSION}/packages-microsoft-prod.deb"
           echo "Step 4"
           sudo dpkg -i packages-microsoft-prod.deb
