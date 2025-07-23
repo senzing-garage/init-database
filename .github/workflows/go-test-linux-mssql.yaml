@@ -60,9 +60,8 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get install -y \
-            libgssapi-krb5-2 \
             unixodbc \
-            wget
+            libgssapi-krb5-2
 
       - name: Install MS SQL libraries
         run: |
