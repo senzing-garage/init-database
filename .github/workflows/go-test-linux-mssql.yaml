@@ -24,7 +24,7 @@ jobs:
     strategy:
       matrix:
         go: ["1.24"]
-        os: [ubuntu-latest]
+        os: [ubuntu-22.04]
         senzingsdk-version: [staging-v4]
 
     services:
