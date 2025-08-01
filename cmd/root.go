@@ -52,11 +52,11 @@ var OptionSQLFile = option.ContextVariable{
 
 var ContextVariablesForMultiPlatform = []option.ContextVariable{
 	option.Configuration,
+	option.CoreInstanceName,
+	option.CoreLogLevel,
+	option.CoreSettings,
 	option.DatabaseURL,
 	option.Datasources,
-	option.EngineSettings,
-	option.EngineLogLevel,
-	option.EngineInstanceName,
 	option.LicenseStringBase64,
 	option.LogLevel,
 	option.ObserverOrigin,
@@ -118,11 +118,11 @@ func RunE(_ *cobra.Command, _ []string) error {
 		DatabaseURLs:          databaseURLs,
 		ObserverOrigin:        viper.GetString(option.ObserverOrigin.Arg),
 		ObserverURL:           viper.GetString(option.ObserverURL.Arg),
-		SenzingInstanceName:   viper.GetString(option.EngineInstanceName.Arg),
+		SenzingInstanceName:   viper.GetString(option.CoreInstanceName.Arg),
 		SenzingLogLevel:       viper.GetString(option.LogLevel.Arg),
 		SenzingSettings:       senzingSettings,
 		SenzingSettingsFile:   viper.GetString(OptionEngineConfigurationFile.Arg),
-		SenzingVerboseLogging: viper.GetInt64(option.EngineLogLevel.Arg),
+		SenzingVerboseLogging: viper.GetInt64(option.CoreLogLevel.Arg),
 		SQLFile:               viper.GetString(OptionSQLFile.Arg),
 	}
 
@@ -244,7 +244,7 @@ func getParsedEngineConfigurationJSON() (settingsparser.SettingsParser, error) {
 
 	// Early exit.  Environment variable is set.
 
-	senzingSettings, isSet := os.LookupEnv(option.EngineSettings.Arg)
+	senzingSettings, isSet := os.LookupEnv(option.CoreSettings.Arg)
 	if isSet {
 		result, err = settingsparser.New(senzingSettings)
 		if err != nil {
