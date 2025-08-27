@@ -21,6 +21,7 @@ jobs:
       status: ${{ job.status }}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         go: ["1.24"]
         os: [ubuntu-latest]
@@ -85,7 +86,7 @@ jobs:
     uses: senzing-factory/build-resources/.github/workflows/go-coverage.yaml@kernelsam-patch-1
     with:
       coverage-config: ./.github/coverage/testcoverage.yaml
-      profile: "cover-${{ matrix.senzingsdk-version }}.out"
+      profile: "cover-production-v4.out,cover-staging-v4.out"
 
   slack-notification:
     needs: [go-test-linux]
