@@ -79,7 +79,7 @@ jobs:
   coverage:
     name: Coverage
     needs: go-test-windows
-    uses: senzing-factory/build-resources/.github/workflows/go-coverage.yaml@kernelsam-patch-1
+    uses: senzing-factory/build-resources/.github/workflows/go-coverage.yaml@v2
     with:
       coverage-config: ./.github/coverage/testcoverage-windows.yaml
       profile: "cover-production-v4.out,cover-staging-v4.out"
