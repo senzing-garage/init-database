@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 
 ARG IMAGE_BUILDER=golang:1.24.4-bookworm
-ARG IMAGE_FINAL=senzing/senzingsdk-runtime-beta:latest
+ARG IMAGE_FINAL=senzing/senzingsdk-runtime:latest
 
 # -----------------------------------------------------------------------------
 # Stage: senzingsdk_runtime
@@ -16,7 +16,7 @@ FROM ${IMAGE_FINAL} AS senzingsdk_runtime
 # -----------------------------------------------------------------------------
 
 FROM ${IMAGE_BUILDER} AS builder
-ENV REFRESHED_AT=2024-07-01
+ENV REFRESHED_AT=2024-08-01
 LABEL Name="senzing/go-builder" \
       Maintainer="support@senzing.com" \
       Version="0.1.0"
@@ -62,10 +62,10 @@ RUN mkdir -p /output \
 # -----------------------------------------------------------------------------
 
 FROM ${IMAGE_FINAL} AS final
-ENV REFRESHED_AT=2024-07-01
+ENV REFRESHED_AT=2024-08-01
 LABEL Name="senzing/init-database" \
       Maintainer="support@senzing.com" \
-      Version="0.7.2"
+      Version="0.7.19"
 HEALTHCHECK CMD ["/app/healthcheck.sh"]
 USER root
 
