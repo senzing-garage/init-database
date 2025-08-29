@@ -231,6 +231,7 @@ docker-build-package:
 clean: clean-osarch-specific
 	@go clean -cache
 	@go clean -testcache
+	@docker-compose -f docker-compose.test.yaml down
 
 # -----------------------------------------------------------------------------
 # Utility targets
