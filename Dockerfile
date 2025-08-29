@@ -108,10 +108,15 @@ USER root
 
 # Install packages via apt-get.
 
-RUN apt-get update -qqq \
- && apt-get -yqqq install \
+RUN cd /tmp \
+ && wget https://dev.mysql.com/get/mysql-apt-config_8_all.deb
+
+RUN apt-get update \
+ && apt-get -y install \
       libaio1 \
+      libmysqlclient21 \
       libsqlite3-dev \
+      mysql-client  \
       unixodbc \
       unixodbc-dev \
  && apt-get clean \

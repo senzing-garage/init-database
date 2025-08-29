@@ -153,7 +153,7 @@ Since the Senzing library is a prerequisite, it must be installed first.
 
     ```
 
-   Visit [localhost:9174](http://localhost:9174).
+   Visit [localhost:9174].
 
 ## Coverage
 
@@ -294,7 +294,64 @@ Make documents visible at
 
     ```
 
-## Docker compose instruction
+## Docker compose instructions
+
+### SQLite
+
+1. Bring up Docker composition.
+
+    ```console
+    docker-compose -f docker-compose/docker-compose.sqlite.yaml up
+    ```
+
+1. Visit database at [localhost:9174].
+
+1. Bring down Docker composition.
+
+    ```console
+    docker-compose -f docker-compose/docker-compose.sqlite.yaml down
+    ```
+
+### PostgreSQL
+
+1. Bring up Docker composition.
+
+    ```console
+    docker-compose -f docker-compose/docker-compose.postgresql.yaml up
+    ```
+
+1. Visit database at [localhost:9171].
+    1. Login
+        1. Username and Password are shown in "Senzing demonstration" box.
+    1. On right-hand side, click on "Servers" > "senzing"
+        1. *Password:* postgres
+
+1. Bring down Docker composition.
+
+    ```console
+    docker-compose -f docker-compose/docker-compose.postgresql.yaml down
+    ```
+
+### MySQL
+
+1. Bring up Docker composition.
+
+    ```console
+    docker-compose -f docker-compose/docker-compose.mysql.yaml up
+    ```
+
+1. Visit database at [localhost:9173].
+    1. Login
+        1. *Username:* mysql
+        1. *Password:* mysql
+
+1. Bring down Docker composition.
+
+    ```console
+    docker-compose -f docker-compose/docker-compose.mysql.yaml down
+    ```
+
+### MS SQL
 
 1. Create `senzing/init-database-mssql` Docker image.
 
@@ -396,5 +453,8 @@ in testing the `sz-sdk-go-core` packages.
 [go]: https://github.com/senzing-garage/knowledge-base/blob/main/WHATIS/go.md
 [How to Install Senzing for Go Development]: https://github.com/senzing-garage/knowledge-base/blob/main/HOWTO/install-senzing-for-go-development.md
 [localhost:6060]: http://localhost:6060/pkg/github.com/senzing-garage/template-go/
+[localhost:9171]: http://localhost:9171
+[localhost:9173]: http://localhost:9173
+[localhost:9174]: http://localhost:9174
 [make]: https://github.com/senzing-garage/knowledge-base/blob/main/WHATIS/make.md
 [testcoverage.yaml]: ../.github/coverage/testcoverage.yaml

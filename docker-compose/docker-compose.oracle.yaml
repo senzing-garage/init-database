@@ -1,0 +1,35 @@
+version: '3'
+services:
+
+  oracle:
+    container_name: senzing-oracle
+    environment:
+      # See https://container-registry.oracle.com/ords/ocr/ba/database/free
+      ORACLE_PWD: Passw0rd
+    image: container-registry.oracle.com/database/free:${SENZING_DOCKER_IMAGE_VERSION_ORACLE_FREE:-latest}
+    networks:
+      - senzing
+    ports:
+      - 1521:1521
+    restart: always
+
+  oracle_client:
+    container_name: senzing-oracle-client
+    image: pull ghcr.io/oracle/oraclelinux9-instantclient:23
+    networks:
+      - senzing
+
+  oracle-init:
+    container_name: senzing-oracle-init
+    depends_on:
+      - oracle
+    environment:
+      SENZING_TOOLS_DATABASE_URL: "oci://postgres:Passw0rd@oracle:1521/G2/?sslmode=disable"
+      SENZING_TOOLS_DATASOURCES: "CUSTOMERS, REFERENCE, WATCHLIST"
+    image: senzing/init-database
+    networks:
+      - senzing
+
+networks:
+  senzing:
+    name: ${SENZING_DOCKER_NETWORK:-senzing}

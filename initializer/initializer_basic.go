@@ -27,16 +27,17 @@ import (
 
 // BasicInitializer is the default implementation of the Initializer interface.
 type BasicInitializer struct {
-	DatabaseURLs          []string `json:"databaseUrl,omitempty"`
-	DataSources           []string `json:"dataSources,omitempty"`
-	ObserverOrigin        string   `json:"observerOrigin,omitempty"`
-	ObserverURL           string   `json:"observerUrl,omitempty"`
-	SenzingInstanceName   string   `json:"senzingInstanceName,omitempty"`
-	SenzingLogLevel       string   `json:"senzingLogLevel,omitempty"`
-	SenzingSettings       string   `json:"senzingSettings,omitempty"`
-	SenzingSettingsFile   string   `json:"senzingSettingsFile,omitempty"`
-	SenzingVerboseLogging int64    `json:"senzingVerboseLogging,omitempty"`
-	SQLFile               string   `json:"sqlFile,omitempty"`
+	DatabaseURLs                []string `json:"databaseUrl,omitempty"`
+	DataSources                 []string `json:"dataSources,omitempty"`
+	ObserverOrigin              string   `json:"observerOrigin,omitempty"`
+	ObserverURL                 string   `json:"observerUrl,omitempty"`
+	SenzingInstanceName         string   `json:"senzingInstanceName,omitempty"`
+	SenzingLogLevel             string   `json:"senzingLogLevel,omitempty"`
+	SenzingSettings             string   `json:"senzingSettings,omitempty"`
+	SenzingSettingsFile         string   `json:"senzingSettingsFile,omitempty"`
+	SenzingVerboseLogging       int64    `json:"senzingVerboseLogging,omitempty"`
+	SQLFile                     string   `json:"sqlFile,omitempty"`
+	InstallSenzingConfiguration bool     `json:"installSenzingConfiguration,omitempty"`
 
 	logger                 logging.Logging
 	observers              subject.Subject
@@ -166,29 +167,31 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 		return wraperror.Errorf(err, "InitializeSenzing")
 	}
 
-	// Create initial Senzing configuration.
+	// Determine if Senzing configuration should be installed
 
-	senzingConfig := initializer.getSenzingConfig()
+	if initializer.InstallSenzingConfiguration || len(initializer.DataSources) > 0 {
+		senzingConfig := initializer.getSenzingConfig()
 
-	err = senzingConfig.SetLogLevel(ctx, logLevel)
-	if err != nil {
-		traceExitMessageNumber, debugMessageNumber = 15, 1015
+		err = senzingConfig.SetLogLevel(ctx, logLevel)
+		if err != nil {
+			traceExitMessageNumber, debugMessageNumber = 15, 1015
 
-		return wraperror.Errorf(err, "config.SetLogLevel: %s", logLevel)
-	}
+			return wraperror.Errorf(err, "config.SetLogLevel: %s", logLevel)
+		}
 
-	err = initializer.registerObserverSenzingConfig(ctx, anObserver)
-	if err != nil {
-		traceExitMessageNumber, debugMessageNumber = 20, 1000
+		err = initializer.registerObserverSenzingConfig(ctx, anObserver)
+		if err != nil {
+			traceExitMessageNumber, debugMessageNumber = 20, 1000
 
-		return wraperror.Errorf(err, "registerObserverSenzingConfig")
-	}
+			return wraperror.Errorf(err, "registerObserverSenzingConfig")
+		}
 
-	err = senzingConfig.InitializeSenzing(ctx)
-	if err != nil {
-		traceExitMessageNumber, debugMessageNumber = 16, 1016
+		err = senzingConfig.InitializeSenzing(ctx)
+		if err != nil {
+			traceExitMessageNumber, debugMessageNumber = 16, 1016
 
-		return wraperror.Errorf(err, "InitializeSenzing")
+			return wraperror.Errorf(err, "InitializeSenzing")
+		}
 	}
 
 	// Notify observers.

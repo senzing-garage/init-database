@@ -1,0 +1,89 @@
+version: '3'
+services:
+
+  makefile:
+    container_name: senzing-makefile
+    command:
+      - sh
+      - -c
+      - mkdir -p /var/opt/senzing/mssql; echo "$${FILE_CONTENTS}" >> /var/opt/senzing/mssql/odbc.ini
+    environment:
+      FILE_CONTENTS: |
+        [G2]
+        Database = G2
+        Description = Senzing MS SQL database for G2
+        Driver = ODBC Driver 17 for SQL Server
+        Server = senzing-mssql,1433
+    image: busybox:${SENZING_DOCKER_IMAGE_VERSION_BUSYBOX:-latest}
+    networks:
+      - senzing
+    read_only: true
+    user: ${SENZING_UID:-1001}:${SENZING_GID:-1001}
+    volumes:
+      - /tmp:/var/opt/senzing
+
+  mssql:
+    container_name: senzing-mssql
+    environment:
+      # See https://docs.microsoft.com/en-us/sql/linux/sql-server-linux-configure-environment-variables
+      ACCEPT_EULA: Y
+      MSSQL_PID: Developer
+      MSSQL_SA_PASSWORD: Passw0rd
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    networks:
+      - senzing
+    ports:
+      - 1433:1433
+    restart: always
+    user: "0"
+
+  mssql-create-db:
+    command:
+      - /opt/mssql-tools/bin/sqlcmd
+      - -P
+      - Passw0rd
+      - -Q
+      - "CREATE DATABASE G2"
+      - -S
+      - senzing-mssql,1433
+      - -U
+      - sa
+    container_name: senzing-mssql-create-database
+    depends_on:
+      - mssql
+    image: mcr.microsoft.com/mssql-tools:${SENZING_DOCKER_IMAGE_VERSION_MSSQL_TOOLS:-latest}
+    networks:
+      - senzing
+    restart: on-failure
+
+
+  mssql-init:
+    container_name: senzing-mssql-init
+    depends_on:
+      - mssql
+    environment:
+      ODBCINI: /var/opt/senzing/mssql/odbc.ini
+      ODBCSYSINI: /opt/microsoft/msodbcsql17/etc
+      SENZING_TOOLS_DATABASE_URL: "mssql://sa:Passw0rd@senzing-mssql:1433/G2"
+      SENZING_TOOLS_DATASOURCES: CUSTOMERS, REFERENCE, WATCHLIST
+    image: senzing/init-database-mssql
+    networks:
+      - senzing
+    volumes:
+      - /tmp:/var/opt/senzing
+
+
+  adminer:
+    container_name: senzing-adminer
+    environment:
+      ADMINER_DEFAULT_SERVER: senzing-mssql
+    image: senzing/adminer:${SENZING_DOCKER_IMAGE_VERSION_ADMINER:-latest}
+    networks:
+      - senzing
+    ports:
+      - 9177:8080
+    restart: always
+
+networks:
+  senzing:
+    name: ${SENZING_DOCKER_NETWORK:-senzing}
