@@ -1,26 +1,26 @@
 version: '3'
 services:
 
-  makefile:
-    container_name: senzing-makefile
-    command:
-      - sh
-      - -c
-      - mkdir -p /var/opt/senzing/mssql; echo "$${FILE_CONTENTS}" >> /var/opt/senzing/mssql/odbc.ini
-    environment:
-      FILE_CONTENTS: |
-        [G2]
-        Database = G2
-        Description = Senzing MS SQL database for G2
-        Driver = ODBC Driver 17 for SQL Server
-        Server = senzing-mssql,1433
-    image: busybox:${SENZING_DOCKER_IMAGE_VERSION_BUSYBOX:-latest}
-    networks:
-      - senzing
-    read_only: true
-    user: ${SENZING_UID:-1001}:${SENZING_GID:-1001}
-    volumes:
-      - /tmp:/var/opt/senzing
+  # makefile:
+  #   container_name: senzing-makefile
+  #   command:
+  #     - sh
+  #     - -c
+  #     - mkdir -p /var/opt/senzing/mssql; echo "$${FILE_CONTENTS}" >> /var/opt/senzing/mssql/odbc.ini
+  #   environment:
+  #     FILE_CONTENTS: |
+  #       [G2]
+  #       Database = G2
+  #       Description = Senzing MS SQL database for G2
+  #       Driver = ODBC Driver 17 for SQL Server
+  #       Server = senzing-mssql,1433
+  #   image: busybox:${SENZING_DOCKER_IMAGE_VERSION_BUSYBOX:-latest}
+  #   networks:
+  #     - senzing
+  #   read_only: true
+  #   user: ${SENZING_UID:-1001}:${SENZING_GID:-1001}
+  #   volumes:
+  #     - /tmp:/var/opt/senzing
 
   mssql:
     container_name: senzing-mssql
@@ -51,26 +51,10 @@ services:
     container_name: senzing-mssql-create-database
     depends_on:
       - mssql
-    image: mcr.microsoft.com/mssql-tools:${SENZING_DOCKER_IMAGE_VERSION_MSSQL_TOOLS:-latest}
+    image: mcr.microsoft.com/mssql-tools
     networks:
       - senzing
     restart: on-failure
-
-
-  mssql-init:
-    container_name: senzing-mssql-init
-    depends_on:
-      - mssql
-    environment:
-      ODBCINI: /var/opt/senzing/mssql/odbc.ini
-      ODBCSYSINI: /opt/microsoft/msodbcsql17/etc
-      SENZING_TOOLS_DATABASE_URL: "mssql://sa:Passw0rd@senzing-mssql:1433/G2"
-      SENZING_TOOLS_DATASOURCES: CUSTOMERS, REFERENCE, WATCHLIST
-    image: senzing/init-database-mssql
-    networks:
-      - senzing
-    volumes:
-      - /tmp:/var/opt/senzing
 
 
   adminer:
@@ -83,6 +67,17 @@ services:
     ports:
       - 9177:8080
     restart: always
+
+  mssql-init:
+    container_name: senzing-mssql-init
+    depends_on:
+      - mssql
+    environment:
+      SENZING_TOOLS_DATABASE_URL: "mssql://sa:Passw0rd@senzing-mssql:1433/G2"
+    image: senzing/init-database
+    networks:
+      - senzing
+    restart: on-failure
 
 networks:
   senzing:

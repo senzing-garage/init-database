@@ -37,7 +37,6 @@ services:
       - mysql
     environment:
       SENZING_TOOLS_DATABASE_URL: "mysql://mysql:mysql@mysql:3306/G2"
-      SENZING_TOOLS_DATASOURCES: "CUSTOMERS, REFERENCE, WATCHLIST"
     image: senzing/init-database
     networks:
       - senzing

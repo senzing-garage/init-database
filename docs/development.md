@@ -353,13 +353,40 @@ Make documents visible at
 
 ### MS SQL
 
-1. Create `senzing/init-database-mssql` Docker image.
+1. Bring up Docker composition.
 
     ```console
-    docker build \
-        --build-arg BASE_IMAGE=senzing/init-database:latest \
-        --tag senzing/init-database-mssql:latest \
-        https://github.com/senzing-garage/docker-wrap-image-with-mssql.git#main
+    docker-compose -f docker-compose/docker-compose.mssql.yaml up
+    ```
+
+1. Visit database at [localhost:9177].
+    1. Login
+        1. *System:* MS SQL (beta)
+        1. *Server:* senzing-mssql
+        1. *Username:* sa
+        1. *Password:* Passw0rd
+        1. *Database:* G2
+
+1. Bring down Docker composition.
+
+    ```console
+    docker-compose -f docker-compose/docker-compose.mssql.yaml down
+    ```
+
+### Oracle
+
+1. Bring up Docker composition.
+
+    ```console
+    docker-compose -f docker-compose/docker-compose.oracle.yaml up
+    ```
+
+1. xxx
+
+1. Bring down Docker composition.
+
+    ```console
+    docker-compose -f docker-compose/docker-compose.oracle.yaml down
     ```
 
 ## Archive instructions
@@ -456,5 +483,6 @@ in testing the `sz-sdk-go-core` packages.
 [localhost:9171]: http://localhost:9171
 [localhost:9173]: http://localhost:9173
 [localhost:9174]: http://localhost:9174
+[localhost:9177]: http://localhost:9177
 [make]: https://github.com/senzing-garage/knowledge-base/blob/main/WHATIS/make.md
 [testcoverage.yaml]: ../.github/coverage/testcoverage.yaml

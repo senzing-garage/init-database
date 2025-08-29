@@ -78,21 +78,21 @@ RUN apt-get update -qqq \
 # Stage: oracle
 # -----------------------------------------------------------------------------
 
-FROM ${IMAGE_FINAL} AS oracle
-ENV REFRESHED_AT=2024-08-01
+# FROM ${IMAGE_FINAL} AS oracle
+# ENV REFRESHED_AT=2024-08-01
 
-RUN apt-get update \
- && apt-get -y install \
-      curl \
-      unzip
+# RUN apt-get update \
+#  && apt-get -y install \
+#       curl \
+#       unzip
 
-RUN curl -X GET \
-        --output /tmp/instantclient-basiclite-linux.zip \
-        https://download.oracle.com/otn_software/linux/instantclient/2390000/instantclient-basiclite-linux.x64-23.9.0.25.07.zip
+# RUN curl -X GET \
+#         --output /tmp/instantclient-basiclite-linux.zip \
+#         https://download.oracle.com/otn_software/linux/instantclient/2390000/instantclient-basiclite-linux.x64-23.9.0.25.07.zip
 
-RUN mkdir /opt/oracle \
- && cd /opt/oracle \
- && unzip /tmp/instantclient-basiclite-linux.zip
+# RUN mkdir /opt/oracle \
+#  && cd /opt/oracle \
+#  && unzip /tmp/instantclient-basiclite-linux.zip
 
 # -----------------------------------------------------------------------------
 # Stage: final
@@ -108,17 +108,10 @@ USER root
 
 # Install packages via apt-get.
 
-RUN cd /tmp \
- && wget https://dev.mysql.com/get/mysql-apt-config_8_all.deb
-
 RUN apt-get update \
  && apt-get -y install \
-      libaio1 \
-      libmysqlclient21 \
       libsqlite3-dev \
-      mysql-client  \
-      unixodbc \
-      unixodbc-dev \
+      # libaio1 \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
@@ -130,7 +123,7 @@ COPY ./rootfs /
 
 COPY --from=builder /output/linux/init-database /app/init-database
 COPY --from=senzingsdk /opt/senzing/er/resources/schema /opt/senzing/er/resources/schema
-COPY --from=oracle /opt/oracle /opt/oracle
+# COPY --from=oracle /opt/oracle /opt/oracle
 
 # Run as non-root container
 
