@@ -181,45 +181,45 @@ services:
       - 9177:8080
     restart: always
 
-  # postgres-init:
-  #   container_name: senzing-postgres-init
-  #   depends_on:
-  #     - postgres
-  #   environment:
-  #     SENZING_TOOLS_DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/G2/?sslmode=disable"
-  #   image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INI_DATABASE:-latest}
-  #   networks:
-  #     - senzing
+  postgres-init:
+    container_name: senzing-postgres-init
+    depends_on:
+      - postgres
+    environment:
+      SENZING_TOOLS_DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/G2/?sslmode=disable"
+    image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INI_DATABASE:-latest}
+    networks:
+      - senzing
 
-  # mysql-init:
-  #   container_name: senzing-mysql-init
-  #   depends_on:
-  #     - mysql
-  #   environment:
-  #     SENZING_TOOLS_DATABASE_URL: "mysql://mysql:mysql@mysql:3306/G2"
-  #   image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INI_DATABASE:-latest}
-  #   networks:
-  #     - senzing
+  mysql-init:
+    container_name: senzing-mysql-init
+    depends_on:
+      - mysql
+    environment:
+      SENZING_TOOLS_DATABASE_URL: "mysql://mysql:mysql@mysql:3306/G2"
+    image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INI_DATABASE:-latest}
+    networks:
+      - senzing
 
-  # mssql-init:
-  #   container_name: senzing-mssql-init
-  #   depends_on:
-  #     - mssql
-  #   environment:
-  #     SENZING_TOOLS_DATABASE_URL: "mssql://sa:Passw0rd@mssql:1433/G2"
-  #   image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INI_DATABASE:-latest}
-  #   networks:
-  #     - senzing
+  mssql-init:
+    container_name: senzing-mssql-init
+    depends_on:
+      - mssql
+    environment:
+      SENZING_TOOLS_DATABASE_URL: "mssql://sa:Passw0rd@mssql:1433/G2"
+    image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INI_DATABASE:-latest}
+    networks:
+      - senzing
 
-  # oracle-init:
-  #   container_name: senzing-oracle-init
-  #   depends_on:
-  #     - oracle
-  #   environment:
-  #     SENZING_TOOLS_DATABASE_URL: "oci://sys:Passw0rd@oracle:1521/G2"
-  #   image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INI_DATABASE:-latest}
-  #   networks:
-  #     - senzing
+  oracle-init:
+    container_name: senzing-oracle-init
+    depends_on:
+      - oracle
+    environment:
+      SENZING_TOOLS_DATABASE_URL: "oci://pdbadmin:Passw0rd@oracle:1521/FREEPDB1"
+    image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INI_DATABASE:-latest}
+    networks:
+      - senzing
 
 networks:
   senzing:

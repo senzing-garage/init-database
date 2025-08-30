@@ -630,7 +630,7 @@ func (senzingConfig *BasicSenzingConfig) makeDefaultConfig(
 	configComment := fmt.Sprintf(
 		"Created by init-database at %s with datasources: %s ",
 		time.Now().Format(time.RFC3339),
-		strings.Join(senzingConfig.DataSources, ", "),
+		strings.Join(senzingConfig.DataSources, " "),
 	)
 
 	configDefinition, err := szConfig.Export(ctx)

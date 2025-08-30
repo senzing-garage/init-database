@@ -106,6 +106,7 @@ services:
     image: senzing/init-database
     networks:
       - senzing
+    restart: on-failure
 
 networks:
   senzing:

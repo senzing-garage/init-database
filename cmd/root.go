@@ -22,10 +22,11 @@ import (
 )
 
 const (
-	envarEngineConfigurationFile        = "SENZING_TOOLS_ENGINE_CONFIGURATION_FILE"
-	envarSQLFile                 string = "SENZING_TOOLS_SQL_FILE"
-	Short                        string = "Initialize a database with the Senzing schema and configuration"
-	Use                          string = "init-database"
+	envarEngineConfigurationFile            = "SENZING_TOOLS_ENGINE_CONFIGURATION_FILE"
+	envarSQLFile                     string = "SENZING_TOOLS_SQL_FILE"
+	envarInstallSenzingConfiguration string = "SENZING_TOOLS_INSTALL_SENZING_CONFIGURATION"
+	Short                            string = "Initialize a database with the Senzing schema and configuration"
+	Use                              string = "init-database"
 )
 
 var Long = getLong()
@@ -50,7 +51,16 @@ var OptionSQLFile = option.ContextVariable{
 	Type:    optiontype.String,
 }
 
+var OptionInstallSenzingConfiguration = option.ContextVariable{
+	Arg:     "install-senzing-configuration",
+	Default: option.OsLookupEnvBool(envarInstallSenzingConfiguration, false),
+	Envar:   envarInstallSenzingConfiguration,
+	Help:    "If true, install the template Senzing configuration in the database [%t]",
+	Type:    optiontype.Bool,
+}
+
 var ContextVariablesForMultiPlatform = []option.ContextVariable{
+	OptionInstallSenzingConfiguration,
 	option.Configuration,
 	option.CoreInstanceName,
 	option.CoreLogLevel,
@@ -114,16 +124,17 @@ func RunE(_ *cobra.Command, _ []string) error {
 	}
 
 	initializer := &initializer.BasicInitializer{
-		DataSources:           viper.GetStringSlice(option.Datasources.Arg),
-		DatabaseURLs:          databaseURLs,
-		ObserverOrigin:        viper.GetString(option.ObserverOrigin.Arg),
-		ObserverURL:           viper.GetString(option.ObserverURL.Arg),
-		SenzingInstanceName:   viper.GetString(option.CoreInstanceName.Arg),
-		SenzingLogLevel:       viper.GetString(option.LogLevel.Arg),
-		SenzingSettings:       senzingSettings,
-		SenzingSettingsFile:   viper.GetString(OptionEngineConfigurationFile.Arg),
-		SenzingVerboseLogging: viper.GetInt64(option.CoreLogLevel.Arg),
-		SQLFile:               viper.GetString(OptionSQLFile.Arg),
+		DataSources:                 viper.GetStringSlice(option.Datasources.Arg),
+		DatabaseURLs:                databaseURLs,
+		ObserverOrigin:              viper.GetString(option.ObserverOrigin.Arg),
+		ObserverURL:                 viper.GetString(option.ObserverURL.Arg),
+		SenzingInstanceName:         viper.GetString(option.CoreInstanceName.Arg),
+		SenzingLogLevel:             viper.GetString(option.LogLevel.Arg),
+		SenzingSettings:             senzingSettings,
+		SenzingSettingsFile:         viper.GetString(OptionEngineConfigurationFile.Arg),
+		SenzingVerboseLogging:       viper.GetInt64(option.CoreLogLevel.Arg),
+		SQLFile:                     viper.GetString(OptionSQLFile.Arg),
+		InstallSenzingConfiguration: viper.GetBool(OptionInstallSenzingConfiguration.Arg),
 	}
 
 	err = initializer.Initialize(ctx)
