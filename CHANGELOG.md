@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning].
 
 -
 
+## [0.7.20] - 2025-09-04
+
+### Changed in 0.7.20
+
+- Option `install-senzing-configuration` renamed to `install-senzing-er-configuration`
+
 ## [0.7.19] - 2025-08-28
 
 ### Changed in 0.7.19
