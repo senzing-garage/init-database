@@ -29,7 +29,7 @@ services:
       ACCEPT_EULA: Y
       MSSQL_PID: Developer
       MSSQL_SA_PASSWORD: Passw0rd
-    image: mcr.microsoft.com/mssql/server:2019-latest@sha256:f9e60a135a16e8ec2e4a2051310313a874532957f0b9725f2553f9ba80f02cf7
+    image: mcr.microsoft.com/mssql/server:2025-latest@sha256:2c80e548ef65fb65a8ca23c3a74ed60e0964ea709f46d07c97ccaf7c437e2cc6
     networks:
       - senzing
     ports:
