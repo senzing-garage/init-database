@@ -10,7 +10,7 @@ services:
       - sh
       - -c
       - mkdir /output/sqlite
-    image: busybox
+    image: busybox@sha256:d82f458899c9696cb26a7c02d5568f81c8c8223f8661bb2a7988b269c8b9051e
     networks:
       - senzing
     read_only: true
@@ -24,7 +24,7 @@ services:
       - makefile
     environment:
       SQLITE_DATABASE: "G2C.db"
-    image: coleifer/sqlite-web
+    image: coleifer/sqlite-web@sha256:1e5b86237968ed747554f951c6df2fc2fe4bf4ef070b8ca23d553d7f6c6426f7
     networks:
       - senzing
     ports:
@@ -41,7 +41,7 @@ services:
     environment:
       SENZING_TOOLS_DATABASE_URL: "sqlite3://na:na@/data/G2C.db"
       SENZING_TOOLS_DATASOURCES: "CUSTOMERS, REFERENCE, WATCHLIST"
-    image: senzing/init-database
+    image: senzing/init-database@sha256:4a7b6c887b9c012d4e2ce32517ea94023d41549ec852f4fa59b5bd2341e9aa54
     networks:
       - senzing
     volumes:

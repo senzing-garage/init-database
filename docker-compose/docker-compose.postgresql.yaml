@@ -35,7 +35,7 @@ services:
             }
           }
         }
-    image: busybox
+    image: busybox@sha256:d82f458899c9696cb26a7c02d5568f81c8c8223f8661bb2a7988b269c8b9051e
     networks:
       - senzing
     read_only: true
@@ -60,7 +60,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    image: bitnami/postgresql
+    image: bitnami/postgresql@sha256:42a8200d35971f931b869ef5252d996e137c6beb4b8f1b6d2181dc7d1b6f62e0
     networks:
       - senzing
     ports:
@@ -85,7 +85,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: postgres@postgres.com
       PGADMIN_DEFAULT_PASSWORD: password
       PGADMIN_SERVER_JSON_FILE: /var/lib/pgadmin/storage/postgres_postgres.com/servers.json
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4@sha256:d115bcd737940a6cfb61a54439d50de8b850e0782e2363102c9fa761f4022f49
     networks:
       - senzing
     ports:
@@ -103,7 +103,7 @@ services:
     environment:
       SENZING_TOOLS_DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/G2/?sslmode=disable"
       SENZING_TOOLS_DATASOURCES: "CUSTOMERS, REFERENCE, WATCHLIST"
-    image: senzing/init-database
+    image: senzing/init-database@sha256:4a7b6c887b9c012d4e2ce32517ea94023d41549ec852f4fa59b5bd2341e9aa54
     networks:
       - senzing
     restart: on-failure
