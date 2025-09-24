@@ -29,7 +29,7 @@ services:
       ACCEPT_EULA: Y
       MSSQL_PID: Developer
       MSSQL_SA_PASSWORD: Passw0rd
-    image: mcr.microsoft.com/mssql/server:2019-latest
+    image: mcr.microsoft.com/mssql/server:2019-latest@sha256:f9e60a135a16e8ec2e4a2051310313a874532957f0b9725f2553f9ba80f02cf7
     networks:
       - senzing
     ports:
@@ -51,7 +51,7 @@ services:
     container_name: senzing-mssql-create-database
     depends_on:
       - mssql
-    image: mcr.microsoft.com/mssql-tools
+    image: mcr.microsoft.com/mssql-tools@sha256:62556500522072535cb3df2bb5965333dded9be47000473e9e0f84118e248642
     networks:
       - senzing
     restart: on-failure
@@ -74,7 +74,7 @@ services:
       - mssql
     environment:
       SENZING_TOOLS_DATABASE_URL: "mssql://sa:Passw0rd@senzing-mssql:1433/G2"
-    image: senzing/init-database
+    image: senzing/init-database@sha256:4a7b6c887b9c012d4e2ce32517ea94023d41549ec852f4fa59b5bd2341e9aa54
     networks:
       - senzing
     restart: on-failure
