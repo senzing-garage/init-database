@@ -11,14 +11,15 @@ env:
   SENZING_LOG_LEVEL: TRACE
   SENZING_TOOLS_DATABASE_URL: "mysql://mysql:mysql@127.0.0.1:3306/G2"
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   go-test-linux:
     name: "Go test with Senzing: ${{ matrix.senzingsdk-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }} - mysql"
     outputs:
       status: ${{ job.status }}
+    permissions:
+      contents: read
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false

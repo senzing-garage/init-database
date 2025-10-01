@@ -11,14 +11,15 @@ env:
   SENZING_LOG_LEVEL: TRACE
   SENZING_TOOLS_DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/G2/?sslmode=disable"
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   go-test-linux:
     name: "Go test with Senzing: ${{ matrix.senzingsdk-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }} - postgres"
     outputs:
       status: ${{ job.status }}
+    permissions:
+      contents: read
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
