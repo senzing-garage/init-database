@@ -30,7 +30,7 @@ USER root
 # Install packages via apt-get.
 
 RUN apt-get update \
- && apt-get -y install \
+ && apt-get -y --no-install-recommends install \
       libsqlite3-dev \
       wget
 
@@ -71,8 +71,8 @@ ENV SENZING_APT_INSTALL_SETUP_PACKAGE=${SENZING_APT_INSTALL_SETUP_PACKAGE}
 
 # Install Senzing package.
 
-RUN apt-get update -qqq \
- && apt-get -yqqq install ${SENZING_APT_INSTALL_SETUP_PACKAGE}
+RUN apt-get update \
+ && apt-get -y --no-install-recommends install ${SENZING_APT_INSTALL_SETUP_PACKAGE}
 
 # -----------------------------------------------------------------------------
 # Stage: oracle
@@ -109,7 +109,7 @@ USER root
 # Install packages via apt-get.
 
 RUN apt-get update \
- && apt-get -y install \
+ && apt-get -y --no-install-recommends install \
       libsqlite3-dev \
       # libaio1 \
  && apt-get clean \
