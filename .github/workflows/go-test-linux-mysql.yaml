@@ -11,14 +11,15 @@ env:
   SENZING_LOG_LEVEL: TRACE
   SENZING_TOOLS_DATABASE_URL: "mysql://mysql:mysql@127.0.0.1:3306/G2"
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   go-test-linux:
     name: "Go test with Senzing: ${{ matrix.senzingsdk-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }} - mysql"
     outputs:
       status: ${{ job.status }}
+    permissions:
+      contents: read
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -29,13 +30,12 @@ jobs:
 
     services:
       mysql:
-        # https://hub.docker.com/r/bitnami/mysql
         env:
           MYSQL_DATABASE: G2
           MYSQL_PASSWORD: mysql
           MYSQL_ROOT_PASSWORD: root
           MYSQL_USER: mysql
-        image: bitnamilegacy/mysql
+        image: mysql:9.4.0
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=5
@@ -81,6 +81,6 @@ jobs:
     if: ${{ always() && contains(fromJSON('["failure", "cancelled"]'), needs.go-test-linux.outputs.status ) && (github.ref_name == github.event.repository.default_branch || github.event_name == 'schedule') }}
     secrets:
       SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-    uses: senzing-factory/build-resources/.github/workflows/build-failure-slack-notification.yaml@v2
+    uses: senzing-factory/build-resources/.github/workflows/build-failure-slack-notification.yaml@v3
     with:
       job-status: ${{ needs.go-test-linux.outputs.status }}
