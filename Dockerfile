@@ -2,7 +2,7 @@
 # Stages
 # -----------------------------------------------------------------------------
 
-ARG IMAGE_BUILDER=golang:1.25.2-bookworm@sha256:42d8e9dea06f23d0bfc908826455213ee7f3ed48c43e287a422064220c501be9
+ARG IMAGE_BUILDER=golang:1.25.3-bookworm@sha256:51b6b12427dc03451c24f7fc996c43a20e8a8e56f0849dd0db6ff6e9225cc892
 ARG IMAGE_FINAL=senzing/senzingsdk-runtime:4.0.0@sha256:332d2ff9f00091a6d57b5b469cc60fd7dc9d0265e83d0e8c9e5296541d32a4aa
 
 ARG SENZING_APT_INSTALL_SETUP_PACKAGE="senzingsdk-setup"
@@ -30,9 +30,11 @@ USER root
 # Install packages via apt-get.
 
 RUN apt-get update \
- && apt-get -y --no-install-recommends install \
+  && apt-get -y --no-install-recommends install \
       libsqlite3-dev \
-      wget
+      wget \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
 
 # Copy local files from the Git repository.
 
@@ -51,7 +53,8 @@ WORKDIR ${GOPATH}/src/init-database
 
 # Build go program.
 
-RUN make build
+RUN make build \
+  && go clean -cache -modcache -testcache
 
 # Copy binaries to /output.
 
@@ -72,7 +75,9 @@ ENV SENZING_APT_INSTALL_SETUP_PACKAGE=${SENZING_APT_INSTALL_SETUP_PACKAGE}
 # Install Senzing package.
 
 RUN apt-get update \
- && apt-get -y --no-install-recommends install ${SENZING_APT_INSTALL_SETUP_PACKAGE}
+  && apt-get -y --no-install-recommends install ${SENZING_APT_INSTALL_SETUP_PACKAGE} \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
 
 # -----------------------------------------------------------------------------
 # Stage: oracle
