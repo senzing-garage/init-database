@@ -30,9 +30,11 @@ USER root
 # Install packages via apt-get.
 
 RUN apt-get update \
- && apt-get -y --no-install-recommends install \
+  && apt-get -y --no-install-recommends install \
       libsqlite3-dev \
-      wget
+      wget \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
 
 # Copy local files from the Git repository.
 
@@ -51,7 +53,8 @@ WORKDIR ${GOPATH}/src/init-database
 
 # Build go program.
 
-RUN make build
+RUN make build \
+  && go clean -cache -modcache -testcache
 
 # Copy binaries to /output.
 
@@ -72,7 +75,9 @@ ENV SENZING_APT_INSTALL_SETUP_PACKAGE=${SENZING_APT_INSTALL_SETUP_PACKAGE}
 # Install Senzing package.
 
 RUN apt-get update \
- && apt-get -y --no-install-recommends install ${SENZING_APT_INSTALL_SETUP_PACKAGE}
+  && apt-get -y --no-install-recommends install ${SENZING_APT_INSTALL_SETUP_PACKAGE} \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
 
 # -----------------------------------------------------------------------------
 # Stage: oracle
