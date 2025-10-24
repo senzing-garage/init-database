@@ -26,7 +26,7 @@ jobs:
       matrix:
         go: ["1.24"]
         os: [ubuntu-latest]
-        senzingsdk-version: [production-v4, "4.1.1.25282", staging-v4]
+        senzingsdk-version: [production-v4, staging-v4]
 
     steps:
       - name: Checkout repository
