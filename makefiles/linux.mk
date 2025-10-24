@@ -69,7 +69,7 @@ run-osarch-specific:
 setup-osarch-specific:
 	@mkdir /tmp/sqlite
 	@touch /tmp/sqlite/G2C.db
-	docker-compose -f docker-compose.test.yaml up --detach
+	docker-compose -f docker-compose.test.yaml up --detach || true
 
 
 .PHONY: test-osarch-specific
