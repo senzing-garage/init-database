@@ -27,6 +27,7 @@ jobs:
         go: ["1.24"]
         os: [ubuntu-latest]
         senzingsdk-version: [production-v4, staging-v4]
+      max-parallel: 1
 
     services:
       mssql:
