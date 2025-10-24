@@ -194,7 +194,7 @@ and this project adheres to [Semantic Versioning].
 - Update `Dockerfile` to senzing/senzingapi-runtime:3.8.0
 - Update SQL files in `/opt/senzing/g2/resources/schema`
 - Update `/opt/senzing/g2/resources/templates/g2config.json`
-- GitHub action to push to DockerHub and ECR
+- GitHub Action to push to DockerHub and ECR
 - Update dependencies
 
 ## [0.4.2] - 2023-11-02
@@ -306,7 +306,7 @@ and this project adheres to [Semantic Versioning].
 ### Changed in 0.1.7
 
 - Update dependencies
-- If Sqlite file doesn't exist, create it
+- If SQLite file doesn't exist, create it
 
 ## [0.1.6] - 2023-03-14
 
