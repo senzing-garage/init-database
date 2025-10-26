@@ -15,7 +15,7 @@ services:
 
   oracle_client:
     container_name: senzing-oracle-client
-    image: ghcr.io/oracle/oraclelinux9-instantclient:23@sha256:d233ca938894b4986c54fc58c38705d584cfe3c2b778d516f6c717024b8da8b6
+    image: ghcr.io/oracle/oraclelinux9-instantclient:23@sha256:6bf42c555735b6f611de65535d6ee327d88491549058e440a8fd0a624c5c9fc3
     networks:
       - senzing
 
