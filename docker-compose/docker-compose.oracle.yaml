@@ -6,7 +6,7 @@ services:
     environment:
       # See https://container-registry.oracle.com/ords/ocr/ba/database/free
       ORACLE_PWD: Passw0rd
-    image: container-registry.oracle.com/database/free@sha256:cd2778b58358bb936015843d45fd277a199d055d5daae8a79b63f7b4073eeeb9
+    image: container-registry.oracle.com/database/free@sha256:ef56a6ad07e88719415ef472c976bcaafa81428f44c20bb79ecf1d76f3708731
     networks:
       - senzing
     ports:
