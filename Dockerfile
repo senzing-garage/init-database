@@ -115,6 +115,7 @@ USER root
 
 RUN apt-get update \
  && apt-get -y --no-install-recommends install \
+      libmysqlclient21 \
       libsqlite3-dev \
       # libaio1 \
  && apt-get clean \
