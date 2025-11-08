@@ -55,7 +55,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    image: bitnami/postgresql@sha256:72c84b3980dc0f90f5e5e4470554e8994d3d2a60f622318dd29ad23b3ebf5b44
+    image: bitnami/postgresql@sha256:14aa30df4c41d43590a0ae59b1963522f5e4344bedda67e1f2e423ea8267c115
     networks:
       - senzing
     ports:
