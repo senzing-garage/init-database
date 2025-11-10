@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   # makefile makes a metadata file for pgadmin.
 
@@ -34,7 +32,7 @@ services:
             }
           }
         }
-    image: busybox@sha256:2f590fc602ce325cbff2ccfc39499014d039546dc400ef8bbf5c6ffb860632e7
+    image: busybox:${SENZING_DOCKER_IMAGE_VERSION_BUSYBOX:-latest}
     networks:
       - senzing
     read_only: true
@@ -45,7 +43,7 @@ services:
   postgres:
     container_name: senzing-postgres
     environment:
-      # See https://github.com/bitnami/bitnami-docker-postgresql#configuration
+      # See https://hub.docker.com/_/postgres "Environment Variables"
       POSTGRESQL_DATABASE: G2
       POSTGRESQL_PASSWORD: senzing
       POSTGRESQL_POSTGRES_PASSWORD: postgres
@@ -55,7 +53,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    image: bitnami/postgresql@sha256:72c84b3980dc0f90f5e5e4470554e8994d3d2a60f622318dd29ad23b3ebf5b44
+    image: postgres:${SENZING_DOCKER_IMAGE_VERSION_POSTGRES:-latest}
     networks:
       - senzing
     ports:
@@ -80,7 +78,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: postgres@postgres.com
       PGADMIN_DEFAULT_PASSWORD: password
       PGADMIN_SERVER_JSON_FILE: /var/lib/pgadmin/storage/postgres_postgres.com/servers.json
-    image: dpage/pgadmin4@sha256:5d9624a93634d1c5e595619cc57b1d330758120d1baf445fa97300c0c1fc3c0a
+    image: dpage/pgadmin4:${SENZING_DOCKER_IMAGE_VERSION_DPAGE_PGADMIN4:-latest}
     networks:
       - senzing
     ports:
@@ -98,7 +96,7 @@ services:
     environment:
       SENZING_TOOLS_DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/G2/?sslmode=disable"
       SENZING_TOOLS_DATASOURCES: "CUSTOMERS, REFERENCE, WATCHLIST"
-    image: senzing/init-database@sha256:4a7b6c887b9c012d4e2ce32517ea94023d41549ec852f4fa59b5bd2341e9aa54
+    image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INIT_DATABASE:-latest}
     networks:
       - senzing
     restart: on-failure

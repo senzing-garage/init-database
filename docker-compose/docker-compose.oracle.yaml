@@ -1,12 +1,11 @@
-version: '3'
+version: "3"
 services:
-
   oracle:
     container_name: senzing-oracle
     environment:
       # See https://container-registry.oracle.com/ords/ocr/ba/database/free
       ORACLE_PWD: Passw0rd
-    image: container-registry.oracle.com/database/free@sha256:cd2778b58358bb936015843d45fd277a199d055d5daae8a79b63f7b4073eeeb9
+    image: container-registry.oracle.com/database/free:${SENZING_DOCKER_IMAGE_VERSION_ORACLE_FREE:-latest}
     networks:
       - senzing
     ports:
@@ -25,7 +24,7 @@ services:
       - oracle
     environment:
       SENZING_TOOLS_DATABASE_URL: "oci://pdbadmin:Passw0rd@oracle:1521/FREEPDB1"
-    image: senzing/init-database@sha256:4a7b6c887b9c012d4e2ce32517ea94023d41549ec852f4fa59b5bd2341e9aa54
+    image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INIT_DATABASE:-latest}
     networks:
       - senzing
     restart: on-failure

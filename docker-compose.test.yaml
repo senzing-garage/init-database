@@ -1,7 +1,6 @@
 version: "3"
 
 services:
-
   # makefile makes a metadata file for pgadmin.
 
   makefile:
@@ -43,21 +42,17 @@ services:
   postgres:
     container_name: senzing-postgres
     environment:
-      # See https://github.com/bitnami/bitnami-docker-postgresql#configuration
+      # See https://hub.docker.com/_/postgres "Environment Variables"
       POSTGRESQL_DATABASE: G2
       POSTGRESQL_PASSWORD: senzing
       POSTGRESQL_POSTGRES_PASSWORD: postgres
       POSTGRESQL_USERNAME: senzing
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "pg_isready -U ${POSTGRES_USERNAME:-postgres}"
-        ]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USERNAME:-postgres}"]
       interval: 10s
       timeout: 5s
       retries: 5
-    image: bitnami/postgresql:${SENZING_DOCKER_IMAGE_VERSION_BITNAMI_POSTGRESQL:-latest}
+    image: postgres:${SENZING_DOCKER_IMAGE_VERSION_POSTGRES:-latest}
     networks:
       - senzing
     ports:
@@ -73,7 +68,7 @@ services:
       MYSQL_PASSWORD: mysql
       MYSQL_ROOT_PASSWORD: root
       MYSQL_USER: mysql
-    image: bitnami/mysql:${SENZING_DOCKER_IMAGE_VERSION_BITNAMI_MYSQL:-latest}
+    image: mysql:${SENZING_DOCKER_IMAGE_VERSION_MYSQL:-latest}
     networks:
       - senzing
     ports:
@@ -87,7 +82,7 @@ services:
       ACCEPT_EULA: Y
       MSSQL_PID: Developer
       MSSQL_SA_PASSWORD: Passw0rd
-    image: mcr.microsoft.com/mssql/server:${SENZING_DOCKER_IMAGE_VERSION_MSSQL_SERVER:-latest}
+    image: mcr.microsoft.com/mssql/server:${SENZING_DOCKER_IMAGE_VERSION_MSSQL_SERVER:-2025-latest}
     networks:
       - senzing
     ports:
@@ -109,7 +104,7 @@ services:
     container_name: senzing-mssql-create-database
     depends_on:
       - mssql
-    image: mcr.microsoft.com/mssql/server:${SENZING_DOCKER_IMAGE_VERSION_MSSQL_SERVER:-latest}
+    image: mcr.microsoft.com/mssql/server:${SENZING_DOCKER_IMAGE_VERSION_MSSQL_SERVER:-2025-latest}
     networks:
       - senzing
     restart: on-failure
@@ -163,7 +158,7 @@ services:
       - mysql
     environment:
       DATABASE_HOST: mysql
-    image: bitnami/phpmyadmin:${SENZING_DOCKER_IMAGE_VERSION_BITNAMI_PHPMYADMIN:-latest}
+    image: phpmyadmin:${SENZING_DOCKER_IMAGE_VERSION_PHPMYADMIN:-latest}
     networks:
       - senzing
     ports:
@@ -187,7 +182,7 @@ services:
       - postgres
     environment:
       SENZING_TOOLS_DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/G2/?sslmode=disable"
-    image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INI_DATABASE:-latest}
+    image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INIT_DATABASE:-latest}
     networks:
       - senzing
 
@@ -197,7 +192,7 @@ services:
       - mysql
     environment:
       SENZING_TOOLS_DATABASE_URL: "mysql://mysql:mysql@mysql:3306/G2"
-    image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INI_DATABASE:-latest}
+    image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INIT_DATABASE:-latest}
     networks:
       - senzing
 
@@ -207,7 +202,7 @@ services:
       - mssql
     environment:
       SENZING_TOOLS_DATABASE_URL: "mssql://sa:Passw0rd@mssql:1433/G2"
-    image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INI_DATABASE:-latest}
+    image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INIT_DATABASE:-latest}
     networks:
       - senzing
 
@@ -217,7 +212,7 @@ services:
       - oracle
     environment:
       SENZING_TOOLS_DATABASE_URL: "oci://pdbadmin:Passw0rd@oracle:1521/FREEPDB1"
-    image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INI_DATABASE:-latest}
+    image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INIT_DATABASE:-latest}
     networks:
       - senzing
 

@@ -1,7 +1,6 @@
 version: "3"
 
 services:
-
   # makefile makes a directory.
 
   makefile:
@@ -10,7 +9,7 @@ services:
       - sh
       - -c
       - mkdir /output/sqlite
-    image: busybox@sha256:2f590fc602ce325cbff2ccfc39499014d039546dc400ef8bbf5c6ffb860632e7
+    image: busybox:${SENZING_DOCKER_IMAGE_VERSION_BUSYBOX:-latest}
     networks:
       - senzing
     read_only: true
@@ -41,7 +40,7 @@ services:
     environment:
       SENZING_TOOLS_DATABASE_URL: "sqlite3://na:na@/data/G2C.db"
       SENZING_TOOLS_DATASOURCES: "CUSTOMERS, REFERENCE, WATCHLIST"
-    image: senzing/init-database@sha256:4a7b6c887b9c012d4e2ce32517ea94023d41549ec852f4fa59b5bd2341e9aa54
+    image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INIT_DATABASE:-latest}
     networks:
       - senzing
     volumes:

@@ -1,7 +1,6 @@
 version: "3"
 
 services:
-
   mysql:
     container_name: senzing-mysql
     environment:
@@ -11,7 +10,7 @@ services:
       MYSQL_PASSWORD: mysql
       MYSQL_ROOT_PASSWORD: root
       MYSQL_USER: mysql
-    image: bitnami/mysql:${SENZING_DOCKER_IMAGE_VERSION_BITNAMI_MYSQL:-latest}
+    image: mysql:${SENZING_DOCKER_IMAGE_VERSION_MYSQL:-latest}
     networks:
       - senzing
     ports:
@@ -24,7 +23,7 @@ services:
       - mysql
     environment:
       DATABASE_HOST: mysql
-    image: bitnami/phpmyadmin:${SENZING_DOCKER_IMAGE_VERSION_BITNAMI_PHPMYADMIN:-latest}
+    image: phpmyadmin:${SENZING_DOCKER_IMAGE_VERSION_PHPMYADMIN:-latest}
     networks:
       - senzing
     ports:
@@ -37,7 +36,7 @@ services:
       - mysql
     environment:
       SENZING_TOOLS_DATABASE_URL: "mysql://mysql:mysql@mysql:3306/G2"
-    image: senzing/init-database@sha256:4a7b6c887b9c012d4e2ce32517ea94023d41549ec852f4fa59b5bd2341e9aa54
+    image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INIT_DATABASE:-latest}
     networks:
       - senzing
     restart: on-failure
