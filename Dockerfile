@@ -81,18 +81,6 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 # -----------------------------------------------------------------------------
-# Stage: mysql
-# -----------------------------------------------------------------------------
-
-# FROM ${IMAGE_FINAL} AS mysql
-# ENV REFRESHED_AT=2024-08-01
-
-# RUN mkdir /tmp/mysql \
-#  && cd /tmp/mysql \
-#  && wget https://cdn.mysql.com//Downloads/MySQL-9.5/mysql-server_9.5.0-1debian13_amd64.deb-bundle.tar \
-#  && tar -xf mysql-server_9.5.0-1debian13_amd64.deb-bundle.tar
-
-# -----------------------------------------------------------------------------
 # Stage: oracle
 # -----------------------------------------------------------------------------
 
@@ -130,13 +118,8 @@ RUN apt-get update \
  && apt-get -y --no-install-recommends install \
       libsqlite3-dev \
       default-libmysqlclient-dev \
-      # libssl3 \
-      # libaio1 \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
-
-#  && ln -s /usr/lib/x86_64-linux-gnu/libmysqlclient.so  /opt/senzing/er/lib/libmysqlclient.so.21
-
 
 # MySQL support
 
@@ -153,115 +136,6 @@ RUN wget https://dev.mysql.com/get/Downloads/Connector-ODBC/9.5/mysql-connector-
       ./mysql-common_9.5.0-1debian13_amd64.deb \
       ./libmysqlclient21_8.0.44-1_amd64.deb \
  && rm -rf /var/lib/apt/lists/*
-#  && dpkg -i --ignore-depends=libssl1.1 libmysqlclient21
-
-
-
-# Install libssl1.1, libmysqlclient21, and mysql-connector-odbc
-# RUN echo "deb http://deb.debian.org/debian-security/ bullseye-security main" |  tee /etc/apt/sources.list.d/bullseye-security.list
-# RUN apt-get update
-# RUN apt-get install libssl1.1
-# RUN apt-get install libmysqlclient21
-# RUN apt-get install mysql-connector-odbc
-
-
-# RUN wget https://dev.mysql.com/get/Downloads/Connector-ODBC/8.0/mysql-connector-odbc_8.0.20-1debian10_amd64.deb \
-#   && wget https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-common_8.0.20-1debian10_amd64.deb \
-#   && wget http://repo.mysql.com/apt/debian/pool/mysql-8.0/m/mysql-community/libmysqlclient21_8.0.20-1debian10_amd64.deb \
-#   && apt-get update \
-#   && apt-get -y install \
-#   ./mysql-connector-odbc_8.0.20-1debian10_amd64.deb \
-#   ./mysql-common_8.0.20-1debian10_amd64.deb \
-#   ./libmysqlclient21_8.0.20-1debian10_amd64.deb \
-#   && rm \
-#   ./mysql-connector-odbc_8.0.20-1debian10_amd64.deb \
-#   ./mysql-common_8.0.20-1debian10_amd64.deb \
-#   ./libmysqlclient21_8.0.20-1debian10_amd64.deb \
-#   && rm -rf /var/lib/apt/lists/*
-
-
-
-# COPY --from=mysql /tmp/mysql/libmysqlclient24_9.5.0-1debian13_amd64.deb /tmp/libmysqlclient24_9.5.0-1debian13_amd64.deb
-# COPY --from=mysql /tmp/mysql/mysql-common_9.5.0-1debian13_amd64.deb     /tmp/mysql-common_9.5.0-1debian13_amd64.deb
-
-# RUN wget https://dev.mysql.com/get/Downloads/Connector-ODBC/9.5/mysql-connector-odbc_9.5.0-1debian13_amd64.deb \
-#  && apt-get update \
-#  && apt-get -y install \
-#       ./mysql-connector-odbc_9.5.0-1debian13_amd64.deb \
-#       ./mysql-common_9.5.0-1debian13_amd64.deb \
-#       ./libmysqlclient24_8.4.7-1debian13_amd64.deb \
-#  && rm \
-#       ./mysql-connector-odbc_9.5.0-1debian13_amd64.deb \
-#       ./mysql-common_9.5.0-1debian13_amd64.deb \
-#       ./libmysqlclient24_8.4.7-1debian13_amd64.deb \
-#  && rm -rf /var/lib/apt/lists/*
-
-
-#  RUN wget http://archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.0g-2ubuntu4_amd64.deb \
-#   && dpkg -i ./libssl1.1_1.1.0g-2ubuntu4_amd64.deb \
-#   && rm -rf ./libssl1.1_1.1.0g-2ubuntu4_amd64.deb
-
-
-# RUN wget https://dev.mysql.com/get/mysql-apt-config_0.8.36-1_all.deb
-# RUN dpkg-deb -c mysql-apt-config_0.8.36-1_all.deb
-# RUN dpkg -i mysql-apt-config_0.8.36-1_all.deb
-# RUN apt-get update
-# RUN apt-get -y --no-install-recommends install mysql-client mysql-community-client
-# RUN mysql --version
-
-
-# RUN wget https://dev.mysql.com/get/Downloads/Connector-ODBC/9.5/mysql-connector-odbc_9.5.0-1debian13_amd64.deb \
-#  && wget https://dev.mysql.com/get/Downloads/MySQL-9.5/mysql-common_9.5.0-1debian13_amd64.deb \
-#  && wget https://repo.mysql.com/apt/debian/pool/mysql-9.5/m/mysql-community/libmysqlclient24_9.5.0-1debian13_amd64.deb \
-#  && apt-get update \
-#  && apt-get -y install \
-#       ./mysql-connector-odbc_9.5.0-1debian13_amd64.deb \
-#       ./mysql-common_9.5.0-1debian13_amd64.deb \
-#       ./libmysqlclient24_8.4.7-1debian13_amd64.deb \
-#  && rm \
-#       ./mysql-connector-odbc_9.5.0-1debian13_amd64.deb \
-#       ./mysql-common_9.5.0-1debian13_amd64.deb \
-#       ./libmysqlclient24_8.4.7-1debian13_amd64.deb \
-#  && rm -rf /var/lib/apt/lists/*
-
-# RUN wget https://dev.mysql.com/get/Downloads/Connector-ODBC/8.0/mysql-connector-odbc_8.0.20-1debian10_amd64.deb \
-#  && wget https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-common_8.0.20-1debian10_amd64.deb \
-#  && wget http://repo.mysql.com/apt/debian/pool/mysql-8.0/m/mysql-community/libmysqlclient21_8.0.20-1debian10_amd64.deb \
-#  && apt-get update \
-#  && apt-get -y install \
-#       ./mysql-connector-odbc_8.0.20-1debian10_amd64.deb \
-#       ./mysql-common_8.0.20-1debian10_amd64.deb \
-#       ./libmysqlclient21_8.0.20-1debian10_amd64.deb \
-#  && rm \
-#       ./mysql-connector-odbc_8.0.20-1debian10_amd64.deb \
-#       ./mysql-common_8.0.20-1debian10_amd64.deb \
-#       ./libmysqlclient21_8.0.20-1debian10_amd64.deb \
-# && rm -rf /var/lib/apt/lists/*
-
-# RUN wget https://cdn.mysql.com/Downloads/MySQL-9.5/mysql-community-client_9.5.0-1debian13_amd64.deb
-
-
-# RUN wget https://cdn.mysql.com//Downloads/MySQL-9.5/mysql-server_9.5.0-1debian13_amd64.deb-bundle.tar \
-#  && tar -xf mysql-server_9.5.0-1debian13_amd64.deb-bundle.tar \
-#  && apt-get -y install \
-#       ./libmysqlclient24_9.5.0-1debian13_amd64.deb \
-#       ./libmysqlclient-dev_9.5.0-1debian13_amd64.deb \
-#       ./mysql-client_9.5.0-1debian13_amd64.deb \
-#       ./mysql-common_9.5.0-1debian13_amd64.deb \
-#       ./mysql-community-client_9.5.0-1debian13_amd64.deb \
-#       ./mysql-community-client-core_9.5.0-1debian13_amd64.deb \
-#       ./mysql-community-client-plugins_9.5.0-1debian13_amd64.deb
-
-# RUN wget https://cdn.mysql.com//Downloads/MySQL-9.5/mysql-server_9.5.0-1debian13_amd64.deb-bundle.tar \
-#  && tar -xf mysql-server_9.5.0-1debian13_amd64.deb-bundle.tar \
-#  && apt-get -y install \
-#     ./libmysqlclient24_9.5.0-1debian13_amd64.deb
-
-      # ./mysql-connector-odbc_9.5.0-1debian13_amd64.deb \
-      # ./mysql-common_9.5.0-1debian13_amd64.deb \
-      # ./libmysqlclient24_9.5.0-1debian13_amd64.deb
-
-
 
 # Copy files from repository.
 
