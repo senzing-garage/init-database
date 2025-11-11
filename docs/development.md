@@ -309,7 +309,7 @@ Make documents visible at
 1. Bring down Docker composition.
 
     ```console
-    docker-compose -f docker-compose/docker-compose.sqlite.yaml down
+    docker-compose -f docker-compose/docker-compose.sqlite.yaml down --volumes
     ```
 
 ### PostgreSQL
@@ -329,7 +329,7 @@ Make documents visible at
 1. Bring down Docker composition.
 
     ```console
-    docker-compose -f docker-compose/docker-compose.postgresql.yaml down
+    docker-compose -f docker-compose/docker-compose.postgresql.yaml down --volumes
     ```
 
 ### MySQL
@@ -348,7 +348,7 @@ Make documents visible at
 1. Bring down Docker composition.
 
     ```console
-    docker-compose -f docker-compose/docker-compose.mysql.yaml down
+    docker-compose -f docker-compose/docker-compose.mysql.yaml down --volumes
     ```
 
 ### MS SQL
@@ -370,7 +370,7 @@ Make documents visible at
 1. Bring down Docker composition.
 
     ```console
-    docker-compose -f docker-compose/docker-compose.mssql.yaml down
+    docker-compose -f docker-compose/docker-compose.mssql.yaml down --volumes
     ```
 
 ### Oracle
@@ -386,7 +386,7 @@ Make documents visible at
 1. Bring down Docker composition.
 
     ```console
-    docker-compose -f docker-compose/docker-compose.oracle.yaml down
+    docker-compose -f docker-compose/docker-compose.oracle.yaml down --volumes
     ```
 
 ## Archive instructions
