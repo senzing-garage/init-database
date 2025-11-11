@@ -6,48 +6,46 @@ services:
     command:
       - sh
       - -c
-      - mkdir /output/postgres_postgres.com; echo $${FILE_CONTENTS} > /output/postgres_postgres.com/servers.json
+      - mkdir /output/postgres_postgres.com || true; echo $${FILE_CONTENTS} > /output/postgres_postgres.com/servers.json;
     environment:
       FILE_CONTENTS: >-
         {
-          "Servers": {
-            "1": {
-              "Name": "senzing",
-              "Group": "Servers",
-              "Host": "senzing-postgres",
-              "Port": 5432,
-              "MaintenanceDB": "postgres",
-              "Username": "postgres",
-              "UseSSHTunnel": 0,
-              "TunnelPort": "22",
-              "TunnelAuthentication": 0,
-              "KerberosAuthentication": false,
-              "ConnectionParameters": {
-                "sslmode": "prefer",
-                "connect_timeout": 10,
-                "sslcert": "<STORAGE_DIR>/.postgresql/postgresql.crt",
-                "sslkey": "<STORAGE_DIR>/.postgresql/postgresql.key"
-              },
-              "Tags": []
+            "Servers": {
+                "1": {
+                    "Name": "senzing",
+                    "Group": "Servers",
+                    "Host": "senzing-postgres",
+                    "Port": 5432,
+                    "MaintenanceDB": "postgres",
+                    "Username": "postgres",
+                    "UseSSHTunnel": 0,
+                    "TunnelPort": "22",
+                    "TunnelAuthentication": 0,
+                    "KerberosAuthentication": false,
+                    "ConnectionParameters": {
+                        "sslmode": "prefer",
+                        "connect_timeout": 10,
+                        "sslcert": "<STORAGE_DIR>/.postgresql/postgresql.crt",
+                        "sslkey": "<STORAGE_DIR>/.postgresql/postgresql.key"
+                    }
+                }
             }
-          }
         }
     image: busybox:${SENZING_DOCKER_IMAGE_VERSION_BUSYBOX:-latest}
     networks:
       - senzing
     read_only: true
-    user: ${SENZING_UID:-1001}:${SENZING_GID:-1001}
+    user: ${SENZING_UID:-0}:${SENZING_GID:-0}
     volumes:
-      - /tmp:/output
+      - pgadmin-volume:/output
 
   postgres:
     container_name: senzing-postgres
     environment:
       # See https://hub.docker.com/_/postgres "Environment Variables"
-      POSTGRESQL_DATABASE: G2
-      POSTGRESQL_PASSWORD: senzing
-      POSTGRESQL_POSTGRES_PASSWORD: postgres
-      POSTGRESQL_USERNAME: senzing
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_DB: ${POSTGRES_DB:-G2}
+      POSTGRES_PASSWORD: ${POSTGRESQL_POSTGRES_PASSWORD:-postgres}
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USERNAME:-postgres}"]
       interval: 10s
@@ -59,6 +57,9 @@ services:
     ports:
       - 5432:5432
     restart: always
+    user: ${SENZING_UID:-0}:${SENZING_GID:-0}
+    volumes:
+      - postgres-volume:/var/lib/postgresql/data/pgdata
 
   pgadmin:
     container_name: senzing-pgadmin
@@ -85,9 +86,9 @@ services:
       - 9171:80
       - 9172:443
     restart: always
-    user: "${SENZING_UID:-1001}:0"
+    user: ${SENZING_UID:-0}:${SENZING_GID:-0}
     volumes:
-      - /tmp:/var/lib/pgadmin/storage
+      - pgadmin-volume:/var/lib/pgadmin/storage
 
   postgres-init:
     container_name: senzing-postgres-init
@@ -104,3 +105,7 @@ services:
 networks:
   senzing:
     name: ${SENZING_DOCKER_NETWORK:-senzing}
+
+volumes:
+  pgadmin-volume:
+  postgres-volume:

@@ -4,7 +4,7 @@ services:
     command:
       - sh
       - -c
-      - mkdir -p /var/opt/senzing/mssql; echo "$${FILE_CONTENTS}" >> /var/opt/senzing/mssql/odbc.ini
+      - echo "$${FILE_CONTENTS}" >> /output/odbc.ini
     environment:
       FILE_CONTENTS: |
         [G2]
@@ -16,9 +16,9 @@ services:
     networks:
       - senzing
     read_only: true
-    user: ${SENZING_UID:-1001}:${SENZING_GID:-1001}
+    user: ${SENZING_UID:-0}:${SENZING_GID:-0}
     volumes:
-      - mssql-volume:/var/opt/senzing
+      - odbcini-volume:/output
 
   mssql:
     container_name: senzing-mssql
@@ -34,11 +34,12 @@ services:
       - 1433:1433
     restart: always
     volumes:
-      - mssql-volume:/var/opt/senzing
+      - odbcini-volume:/var/opt/senzing
 
   mssql-create-db:
     command:
-      - /opt/mssql-tools/bin/sqlcmd
+      - /opt/mssql-tools18/bin/sqlcmd
+      - -C
       - -P
       - Passw0rd
       - -Q
@@ -83,3 +84,4 @@ networks:
 
 volumes:
   mssql-volume:
+  odbcini-volume:
