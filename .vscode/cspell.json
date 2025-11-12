@@ -37,6 +37,7 @@
     "gotest",
     "gotestfmt",
     "gotesttools",
+    "GOTRACEBACK",
     "govulncheck",
     "healthcheck",
     "hostedtoolcache",
