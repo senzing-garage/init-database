@@ -307,6 +307,7 @@ Make documents visible at
 1. Visit database at [localhost:9174].
 
 1. Bring down Docker composition.
+   `--volumes` is an optional parameter to delete the contents of the volumes.
 
     ```console
     docker-compose -f docker-compose/docker-compose.sqlite.yaml down --volumes
@@ -327,6 +328,7 @@ Make documents visible at
         1. *Password:* postgres
 
 1. Bring down Docker composition.
+   `--volumes` is an optional parameter to delete the contents of the volumes.
 
     ```console
     docker-compose -f docker-compose/docker-compose.postgresql.yaml down --volumes
@@ -346,6 +348,7 @@ Make documents visible at
         1. *Password:* mysql
 
 1. Bring down Docker composition.
+   `--volumes` is an optional parameter to delete the contents of the volumes.
 
     ```console
     docker-compose -f docker-compose/docker-compose.mysql.yaml down --volumes
@@ -368,6 +371,7 @@ Make documents visible at
         1. *Database:* G2
 
 1. Bring down Docker composition.
+   `--volumes` is an optional parameter to delete the contents of the volumes.
 
     ```console
     docker-compose -f docker-compose/docker-compose.mssql.yaml down --volumes
@@ -384,6 +388,7 @@ Make documents visible at
 1. xxx
 
 1. Bring down Docker composition.
+   `--volumes` is an optional parameter to delete the contents of the volumes.
 
     ```console
     docker-compose -f docker-compose/docker-compose.oracle.yaml down --volumes

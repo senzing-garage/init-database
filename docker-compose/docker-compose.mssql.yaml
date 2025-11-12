@@ -1,4 +1,20 @@
 services:
+  mssql-driver:
+    command:
+      - -y
+      - install
+      - msodbcsql17
+    container_name: senzing-mssql-driver
+    environment:
+      ACCEPT_EULA: Y
+    image: senzing/apt:${SENZING_DOCKER_IMAGE_VERSION_APT:-latest}
+    networks:
+      - senzing
+    restart: on-failure
+    user: ${SENZING_UID:-0}:${SENZING_GID:-0}
+    volumes:
+      - mssql-driver-volume:/opt/microsoft
+
   makefile:
     container_name: senzing-makefile
     command:
@@ -38,6 +54,7 @@ services:
     user: ${SENZING_UID:-0}:${SENZING_GID:-0}
     volumes:
       - odbcini-volume:/var/opt/senzing
+      - mssql-volume:/var/opt/mssql
 
   mssql-create-db:
     command:
@@ -76,14 +93,19 @@ services:
       - mssql
     environment:
       SENZING_TOOLS_DATABASE_URL: "mssql://sa:Passw0rd@senzing-mssql:1433/G2"
+      SENZING_TOOLS_DATASOURCES: "CUSTOMERS, REFERENCE, WATCHLIST"
     image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INIT_DATABASE:-latest}
     networks:
       - senzing
     restart: on-failure
+    volumes:
+      - mssql-driver-volume:/opt/microsoft
 
 networks:
   senzing:
     name: ${SENZING_DOCKER_NETWORK:-senzing}
 
 volumes:
+  mssql-driver-volume:
+  mssql-volume:
   odbcini-volume:

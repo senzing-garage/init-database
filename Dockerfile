@@ -120,7 +120,7 @@ RUN apt-get update \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
-# MySQL support
+# MySQL support.
 
 RUN wget https://dev.mysql.com/get/Downloads/Connector-ODBC/9.5/mysql-connector-odbc_9.5.0-1debian13_amd64.deb \
  && wget https://dev.mysql.com/get/Downloads/MySQL-9.5/mysql-common_9.5.0-1debian13_amd64.deb \
@@ -136,6 +136,16 @@ RUN wget https://dev.mysql.com/get/Downloads/Connector-ODBC/9.5/mysql-connector-
       ./libmysqlclient21_8.0.44-1_amd64.deb \
  && rm -rf /var/lib/apt/lists/*
 
+# MS SQL support.
+
+RUN curl -sSL -O https://packages.microsoft.com/config/ubuntu/"$(grep VERSION_ID /etc/os-release | cut -d '"' -f 2)"/packages-microsoft-prod.deb \
+ && dpkg -i --force-confnew packages-microsoft-prod.deb /
+ && rm packages-microsoft-prod.deb \
+ && apt-get update \
+ && ACCEPT_EULA=Y apt-get install -y msodbcsql18 \
+ && ACCEPT_EULA=Y apt-get install -y mssql-tools18 \
+ && apt-get install -y unixodbc-dev
+
 # Copy files from repository.
 
 COPY ./rootfs /
@@ -146,7 +156,7 @@ COPY --from=builder /output/linux/init-database /app/init-database
 COPY --from=senzingsdk /opt/senzing/er/resources/schema /opt/senzing/er/resources/schema
 # COPY --from=oracle /opt/oracle /opt/oracle
 
-# Run as non-root container
+# Run as non-root container.
 
 USER 1001
 
