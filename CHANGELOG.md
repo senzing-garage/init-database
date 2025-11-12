@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning].
 
 -
 
+## [0.7.22] - 2025-11-13
+
+### Changed in 0.7.22
+
+- Update dependencies
+
 ## [0.7.21] - 2025-09-04
 
 ### Changed in 0.7.21
@@ -166,19 +172,12 @@ and this project adheres to [Semantic Versioning].
 
 - Update `Dockerfile` to senzing/senzingapi-runtime:3.9.0
 - Update dependencies
-  - github.com/senzing-garage/g2-sdk-go v0.10.1
-  - github.com/senzing-garage/go-sdk-abstract-factory v0.7.0
-  - github.com/stretchr/testify v1.9.0
-  - google.golang.org/grpc v1.62.1
 
 ## [0.5.1] - 2024-01-30
 
 ### Changed in 0.5.1
 
 - Update dependencies
-  - github.com/senzing-garage/g2-sdk-go v0.9.0
-  - github.com/senzing-garage/go-sdk-abstract-factory v0.6.0
-  - google.golang.org/grpc v1.61.0
 
 ## [0.5.0] - 2024-01-04
 
@@ -187,15 +186,6 @@ and this project adheres to [Semantic Versioning].
 - Renamed module to `github.com/senzing-garage/init-database`
 - Refactor to [template-go](https://github.com/senzing-garage/template-go)
 - Update dependencies
-  - github.com/senzing-garage/go-cmdhelping v0.2.0
-  - github.com/senzing-garage/go-common v0.4.0
-  - github.com/senzing-garage/go-databasing v0.4.0
-  - github.com/senzing-garage/go-logging v1.4.0
-  - github.com/senzing-garage/go-observing v0.3.0
-  - github.com/senzing/g2-sdk-go v0.8.0
-  - github.com/senzing/go-sdk-abstract-factory v0.5.0
-  - github.com/spf13/viper v1.18.2
-  - google.golang.org/grpc v1.60.1
 
 ## [0.4.3] - 2023-12-06
 
@@ -204,17 +194,14 @@ and this project adheres to [Semantic Versioning].
 - Update `Dockerfile` to senzing/senzingapi-runtime:3.8.0
 - Update SQL files in `/opt/senzing/g2/resources/schema`
 - Update `/opt/senzing/g2/resources/templates/g2config.json`
-- GitHub action to push to DockerHub and ECR
+- GitHub Action to push to DockerHub and ECR
 - Update dependencies
-  - github.com/spf13/cobra v1.8.0
 
 ## [0.4.2] - 2023-11-02
 
 ### Changed in 0.4.2
 
 - Update dependencies
-  - github.com/senzing-garage/go-common v0.3.2-0.20231018174900-c1895fb44c30
-  - github.com/senzing/go-sdk-abstract-factory v0.4.3
 
 ## [0.4.1] - 2023-10-25
 
@@ -222,15 +209,6 @@ and this project adheres to [Semantic Versioning].
 
 - Refactor to [template-go](https://github.com/senzing-garage/template-go)
 - Update dependencies
-  - github.com/senzing/g2-sdk-go v0.7.4
-  - github.com/senzing-garage/go-cmdhelping v0.1.9
-  - github.com/senzing-garage/go-common v0.3.1
-  - github.com/senzing-garage/go-databasing v0.3.1
-  - github.com/senzing-garage/go-logging v1.3.3
-  - github.com/senzing-garage/go-observing v0.2.8
-  - github.com/senzing/go-sdk-abstract-factory v0.4.2
-  - github.com/spf13/viper v1.17.0
-  - google.golang.org/grpc v1.59.0
 
 ## [0.4.0] - 2023-10-04
 
@@ -239,9 +217,6 @@ and this project adheres to [Semantic Versioning].
 - Supports SenzingAPI 3.8.0
 - Deprecated functions have been removed
 - Update dependencies
-  - github.com/senzing/g2-sdk-go v0.7.0
-  - github.com/senzing/go-sdk-abstract-factory v0.4.0
-  - google.golang.org/grpc v1.58.2
 
 ## [0.3.2] - 2023-09-01
 
@@ -255,14 +230,6 @@ and this project adheres to [Semantic Versioning].
 
 - Refactor to `template-go`
 - Update dependencies
-  - github.com/senzing/g2-sdk-go v0.6.8
-  - github.com/senzing-garage/go-cmdhelping v0.1.5
-  - github.com/senzing-garage/go-common v0.2.11
-  - github.com/senzing-garage/go-databasing v0.2.7
-  - github.com/senzing-garage/go-logging v1.3.2
-  - github.com/senzing-garage/go-observing v0.2.7
-  - github.com/senzing/go-sdk-abstract-factory v0.3.2
-  - google.golang.org/grpc v1.57.0
 
 ## [0.3.0] - 2023-07-21
 
@@ -277,27 +244,12 @@ and this project adheres to [Semantic Versioning].
 - Update `Dockerfile` to senzing/senzingapi-runtime:3.6.0
 - Begin work on multi-platform support
 - Update dependencies
-  - github.com/senzing/g2-sdk-go v0.6.7
-  - github.com/senzing-garage/go-common v0.2.4
-  - github.com/senzing-garage/go-databasing v0.2.6
-  - github.com/senzing-garage/go-logging v1.3.1
-  - github.com/senzing-garage/senzing-tools v0.3.1-0.20230713235126-9b84c4e632b4
-  - google.golang.org/grpc v1.56.2
 
 ## [0.2.6] - 2023-06-16
 
 ### Changed in 0.2.6
 
 - Update dependencies
-  - github.com/senzing/g2-sdk-go v0.6.6
-  - github.com/senzing-garage/go-common v0.1.4
-  - github.com/senzing-garage/go-databasing v0.2.5
-  - github.com/senzing-garage/go-logging v1.2.6
-  - github.com/senzing-garage/go-observing v0.2.6
-  - github.com/senzing/go-sdk-abstract-factory v0.3.1
-  - github.com/senzing-garage/senzing-tools v0.2.9-0.20230613173043-18f1bd4cafdb
-  - github.com/spf13/viper v1.16.0
-  - google.golang.org/grpc v1.56.0
 
 ## [0.2.5] - 2023-05-26
 
@@ -322,22 +274,12 @@ and this project adheres to [Semantic Versioning].
   - `golang:1.20.4@sha256:31a8f92b17829b3ccddf0add184f18203acfd79ccc1bcb5c43803ab1c4836cca`
   - `senzing/senzingapi-runtime:3.5.2`
 - Update dependencies
-  - github.com/senzing/g2-sdk-go v0.6.2
-  - github.com/senzing-garage/go-common v0.1.3
-  - github.com/senzing-garage/go-databasing v0.2.4
-  - github.com/senzing-garage/go-logging v1.2.3
-  - github.com/senzing-garage/go-observing v0.2.3
-  - github.com/senzing/go-sdk-abstract-factory v0.2.3
-  - github.com/senzing-garage/senzing-tools v0.2.4
-  - google.golang.org/grpc v1.55.0
 
 ## [0.2.2] - 2023-04-21
 
 ### Changed in 0.2.2
 
 - Update dependencies
-  - github.com/senzing/g2-sdk-go v0.6.1
-  - github.com/senzing/go-sdk-abstract-factory v0.2.2
 
 ## [0.2.1] - 2023-04-18
 
@@ -364,7 +306,7 @@ and this project adheres to [Semantic Versioning].
 ### Changed in 0.1.7
 
 - Update dependencies
-- If Sqlite file doesn't exist, create it
+- If SQLite file doesn't exist, create it
 
 ## [0.1.6] - 2023-03-14
 
