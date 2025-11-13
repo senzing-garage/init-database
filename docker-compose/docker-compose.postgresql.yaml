@@ -1,6 +1,6 @@
-services:
-  # makefile makes a metadata file for pgadmin.
+name: senzing-postgresql-demo
 
+services:
   makefile:
     container_name: senzing-makefile
     command:
@@ -61,6 +61,18 @@ services:
     volumes:
       - postgres-volume:/var/lib/postgresql/data/pgdata
 
+  postgres-init:
+    container_name: senzing-postgres-init
+    depends_on:
+      - postgres
+    environment:
+      SENZING_TOOLS_DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/G2/?sslmode=disable"
+      SENZING_TOOLS_DATASOURCES: "CUSTOMERS, REFERENCE, WATCHLIST"
+    image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INIT_DATABASE:-latest}
+    networks:
+      - senzing
+    restart: on-failure
+
   pgadmin:
     container_name: senzing-pgadmin
     depends_on:
@@ -89,18 +101,6 @@ services:
     user: ${SENZING_UID:-0}:${SENZING_GID:-0}
     volumes:
       - pgadmin-volume:/var/lib/pgadmin/storage
-
-  postgres-init:
-    container_name: senzing-postgres-init
-    depends_on:
-      - postgres
-    environment:
-      SENZING_TOOLS_DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/G2/?sslmode=disable"
-      SENZING_TOOLS_DATASOURCES: "CUSTOMERS, REFERENCE, WATCHLIST"
-    image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INIT_DATABASE:-latest}
-    networks:
-      - senzing
-    restart: on-failure
 
 networks:
   senzing:

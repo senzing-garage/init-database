@@ -1,24 +1,19 @@
-services:
-  # makefile makes a directory.
+name: senzing-sqlite-demo
 
-  makefile:
-    container_name: senzing-makefile
-    command:
-      - sh
-      - -c
-      - mkdir /output/sqlite
-    image: busybox:${SENZING_DOCKER_IMAGE_VERSION_BUSYBOX:-latest}
+services:
+  sqlite-init:
+    container_name: senzing-sqlite-init
+    environment:
+      SENZING_TOOLS_DATABASE_URL: "sqlite3://na:na@/data/G2C.db"
+      SENZING_TOOLS_DATASOURCES: "CUSTOMERS, REFERENCE, WATCHLIST"
+    image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INIT_DATABASE:-latest}
     networks:
       - senzing
-    read_only: true
-    user: ${SENZING_UID:-1001}:${SENZING_GID:-1001}
     volumes:
-      - /tmp:/output
+      - sqlite-volume:/data
 
   sqlite-web:
     container_name: senzing-sqlite-web
-    depends_on:
-      - makefile
     environment:
       SQLITE_DATABASE: "G2C.db"
     image: coleifer/sqlite-web:${SENZING_DOCKER_IMAGE_VERSION_COLEIFER_SQLITE_WEB:-latest}
@@ -29,21 +24,11 @@ services:
     restart: always
     user: "${SENZING_UID:-1001}:0"
     volumes:
-      - /tmp/sqlite:/data
-
-  sqlite-init:
-    container_name: senzing-postgres-init
-    depends_on:
-      - sqlite-web
-    environment:
-      SENZING_TOOLS_DATABASE_URL: "sqlite3://na:na@/data/G2C.db"
-      SENZING_TOOLS_DATASOURCES: "CUSTOMERS, REFERENCE, WATCHLIST"
-    image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INIT_DATABASE:-latest}
-    networks:
-      - senzing
-    volumes:
-      - /tmp/sqlite:/data
+      - sqlite-volume:/data
 
 networks:
   senzing:
     name: ${SENZING_DOCKER_NETWORK:-senzing}
+
+volumes:
+  sqlite-volume:

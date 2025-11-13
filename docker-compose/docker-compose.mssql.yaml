@@ -1,9 +1,11 @@
+name: senzing-mssql-demo
+
 services:
   mssql-driver:
     command:
       - -y
       - install
-      - msodbcsql17
+      - msodbcsql18
     container_name: senzing-mssql-driver
     environment:
       ACCEPT_EULA: Y
@@ -26,7 +28,7 @@ services:
         [G2]
         Database = G2
         Description = Senzing MS SQL database for G2
-        Driver = ODBC Driver 17 for SQL Server
+        Driver = ODBC Driver 18 for SQL Server
         Server = senzing-mssql,1433
     image: busybox:${SENZING_DOCKER_IMAGE_VERSION_BUSYBOX:-latest}
     networks:
@@ -34,7 +36,7 @@ services:
     read_only: true
     user: ${SENZING_UID:-0}:${SENZING_GID:-0}
     volumes:
-      - odbcini-volume:/output
+      - mssql-odbcini-volume:/output
 
   mssql:
     container_name: senzing-mssql
@@ -53,7 +55,6 @@ services:
     restart: always
     user: ${SENZING_UID:-0}:${SENZING_GID:-0}
     volumes:
-      - odbcini-volume:/var/opt/senzing
       - mssql-volume:/var/opt/mssql
 
   mssql-create-db:
@@ -76,6 +77,23 @@ services:
       - senzing
     restart: on-failure
 
+  mssql-init:
+    container_name: senzing-mssql-init
+    depends_on:
+      - mssql
+    environment:
+      SENZING_TOOLS_DATABASE_URL: "mssql://sa:Passw0rd@senzing-mssql:1433/G2?MultiSubnetFailover=False&TrustServerCertificate=yes"
+      SENZING_TOOLS_DATASOURCES: "CUSTOMERS, REFERENCE, WATCHLIST"
+      ODBCINI: /var/opt/senzing/odbc.ini
+      ODBCSYSINI: /opt/microsoft/msodbcsql18/etc
+    image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INIT_DATABASE:-latest}
+    networks:
+      - senzing
+    restart: on-failure
+    volumes:
+      - mssql-odbcini-volume:/var/opt/senzing
+      - mssql-driver-volume:/opt/microsoft
+
   adminer:
     container_name: senzing-adminer
     environment:
@@ -87,20 +105,6 @@ services:
       - 9177:8080
     restart: always
 
-  mssql-init:
-    container_name: senzing-mssql-init
-    depends_on:
-      - mssql
-    environment:
-      SENZING_TOOLS_DATABASE_URL: "mssql://sa:Passw0rd@senzing-mssql:1433/G2"
-      SENZING_TOOLS_DATASOURCES: "CUSTOMERS, REFERENCE, WATCHLIST"
-    image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INIT_DATABASE:-latest}
-    networks:
-      - senzing
-    restart: on-failure
-    volumes:
-      - mssql-driver-volume:/opt/microsoft
-
 networks:
   senzing:
     name: ${SENZING_DOCKER_NETWORK:-senzing}
@@ -108,4 +112,4 @@ networks:
 volumes:
   mssql-driver-volume:
   mssql-volume:
-  odbcini-volume:
+  mssql-odbcini-volume:

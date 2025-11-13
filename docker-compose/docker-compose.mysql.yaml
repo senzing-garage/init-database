@@ -1,3 +1,5 @@
+name: senzing-mysql-demo
+
 services:
   mysql:
     container_name: senzing-mysql
@@ -13,6 +15,20 @@ services:
     ports:
       - 3306:3306
     restart: always
+    volumes:
+      - mysql-volume:/var/opt/mssql
+
+  mysql-init:
+    container_name: senzing-mysql-init
+    depends_on:
+      - mysql
+    environment:
+      SENZING_TOOLS_DATABASE_URL: "mysql://mysql:mysql@mysql:3306/G2"
+      SENZING_TOOLS_DATASOURCES: "CUSTOMERS, REFERENCE, WATCHLIST"
+    image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INIT_DATABASE:-latest}
+    networks:
+      - senzing
+    restart: on-failure
 
   phpmyadmin:
     container_name: senzing-phpmyadmin
@@ -27,18 +43,9 @@ services:
       - 9173:80
     restart: always
 
-  mysql-init:
-    container_name: senzing-mysql-init
-    depends_on:
-      - mysql
-    environment:
-      SENZING_TOOLS_DATABASE_URL: "mysql://mysql:mysql@mysql:3306/G2"
-      SENZING_TOOLS_DATASOURCES: "CUSTOMERS, REFERENCE, WATCHLIST"
-    image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INIT_DATABASE:-latest}
-    networks:
-      - senzing
-    restart: on-failure
-
 networks:
   senzing:
     name: ${SENZING_DOCKER_NETWORK:-senzing-network}
+
+volumes:
+  mysql-volume:
