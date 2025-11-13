@@ -111,6 +111,9 @@ LABEL Name="senzing/init-database" \
 HEALTHCHECK CMD ["/app/healthcheck.sh"]
 USER root
 
+ENV ACCEPT_EULA=y \
+    DEBIAN_FRONTEND=noninteractive
+
 # Work-around for apt-get update error.
 
 RUN chmod 1777 /tmp
@@ -121,6 +124,7 @@ RUN apt-get update \
  && apt-get -y --no-install-recommends install \
       curl \
       gnupg \
+      apt-transport-https \
       libsqlite3-dev \
       lsb-release \
       default-libmysqlclient-dev \
@@ -145,6 +149,18 @@ RUN wget https://dev.mysql.com/get/Downloads/Connector-ODBC/9.5/mysql-connector-
 
 # MS SQL support.
 
+
+# Tricky code: this is installing the MS SQL driver for Debian 12 instead of 13, because MS
+# doesn't have Debian 13 builds yet, as of 2025-11-12.
+RUN curl -sSL -O https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb \
+ && dpkg -i packages-microsoft-prod.deb \
+ && rm packages-microsoft-prod.deb \
+ && apt-get update \
+ && apt-get install -y msodbcsql18 mssql-tools18 unixodbc-dev \
+ && rm -rf /var/lib/apt/lists/*
+
+
+
 # RUN curl -sSL -O https://packages.microsoft.com/config/ubuntu/"$(grep VERSION_ID /etc/os-release | cut -d '"' -f 2)"/packages-microsoft-prod.deb \
 #  && dpkg -i --force-confnew packages-microsoft-prod.deb \
 #  && rm packages-microsoft-prod.deb \
@@ -153,7 +169,7 @@ RUN wget https://dev.mysql.com/get/Downloads/Connector-ODBC/9.5/mysql-connector-
 #  && ACCEPT_EULA=Y apt-get install -y mssql-tools18 \
 #  && apt-get install -y unixodbc-dev
 
-ENV ACCEPT_EULA=Y
+# ENV ACCEPT_EULA=Y
 
 # RUN wget -qO - https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/microsoft.gpg
 # RUN wget -qO - https://packages.microsoft.com/config/debian/13/prod.list > /etc/apt/sources.list.d/mssql-release.list
@@ -163,16 +179,19 @@ ENV ACCEPT_EULA=Y
 # RUN rm -rf /var/lib/apt/lists/*
 
 # RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/microsoft.gpg
-RUN wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
-RUN install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
-RUN rm -f packages.microsoft.gpg
+# RUN wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+# RUN install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
+# # RUN echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list
+# RUN rm -f packages.microsoft.gpg
 
 
 # RUN curl https://packages.microsoft.com/config/debian/$(lsb_release -rs)/prod.list | tee /etc/apt/sources.list.d/mssql-release.list
-RUN curl https://packages.microsoft.com/config/debian/13/prod.list | tee /etc/apt/sources.list.d/mssql-release.list
-RUN apt-get update
-RUN ACCEPT_EULA=Y apt-get install -y msodbcsql18
-RUN ACCEPT_EULA=Y apt-get install -y mssql-tools18
+# RUN curl https://packages.microsoft.com/config/debian/13/prod.list | tee /etc/apt/sources.list.d/mssql-release.list
+
+#     curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /usr/share/keyrings/microsoft-prod.gpg > /dev/null
+# RUN apt-get update
+# RUN ACCEPT_EULA=Y apt-get install -y msodbcsql18
+# RUN ACCEPT_EULA=Y apt-get install -y mssql-tools18
 
 ENV PATH=$PATH:/opt/mssql-tools18/bin
 

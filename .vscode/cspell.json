@@ -54,6 +54,7 @@
     "msodbcsql",
     "MYPRIVATE",
     "mysqladmin",
+    "noninteractive",
     "ODBCINI",
     "ODBCSYSINI",
     "oraclelinux",
