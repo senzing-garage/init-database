@@ -33,7 +33,7 @@ jobs:
       oracle:
         env:
           ORACLE_PWD: Passw0rd
-        image: container-registry.oracle.com/database/free:23.9.0.0
+        image: container-registry.oracle.com/database/free:latest
         ports:
           - 1521:1521
 
@@ -69,7 +69,7 @@ jobs:
 
       - name: Install Oracle SDK
         run: |
-          curl --output /tmp/instantclient-basic-linux.zip https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-basic-linux.x64-23.5.0.24.07.zip
+          curl --output /tmp/instantclient-basic-linux.zip https://download.oracle.com/otn_software/linux/instantclient/2326000/instantclient-basic-linux.x64-23.26.0.0.0.zip
           sudo mkdir -p /opt/oracle
           sudo unzip -d /opt/oracle /tmp/instantclient-basic-linux.zip
           sudo ln -s /usr/lib/x86_64-linux-gnu/libaio.so.1t64 /usr/lib/libaio.so.1
@@ -87,7 +87,7 @@ jobs:
       - name: Set environment variables
         run: |
           SENZING_PATH="/opt/senzing"
-          ORACLE_HOME="/opt/oracle/instantclient_23_5"
+          ORACLE_HOME="/opt/oracle/instantclient_23_26"
           {
             echo "SENZING_PATH=${SENZING_PATH}"
             echo "ORACLE_HOME=${ORACLE_HOME}"
