@@ -33,7 +33,7 @@ jobs:
       oracle:
         env:
           ORACLE_PWD: Passw0rd
-        image: container-registry.oracle.com/database/free:latest
+        image: container-registry.oracle.com/database/free:@sha256:ef56a6ad07e88719415ef472c976bcaafa81428f44c20bb79ecf1d76f3708731
         ports:
           - 1521:1521
 
@@ -76,7 +76,7 @@ jobs:
 
       - name: Install Oracle SQL-plus
         run: |
-          curl --output /tmp/instantclient-sqlplus-linux.zip https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-sqlplus-linux.x64-23.5.0.24.07.zip
+          curl --output /tmp/instantclient-sqlplus-linux.zip https://download.oracle.com/otn_software/linux/instantclient/2326000/instantclient-sqlplus-linux.x64-23.26.0.0.0.zip
           sudo unzip -o -d /opt/oracle /tmp/instantclient-sqlplus-linux.zip
 
       - name: Copy rootfs files
