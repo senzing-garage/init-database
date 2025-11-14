@@ -35,7 +35,7 @@ jobs:
           ACCEPT_EULA: Y
           MSSQL_PID: Developer
           MSSQL_SA_PASSWORD: Passw0rd
-        image: mcr.microsoft.com/mssql/server:2019-latest
+        image: mcr.microsoft.com/mssql/server:2025-latest
         ports:
           - 1433:1433
 
