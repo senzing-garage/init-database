@@ -93,7 +93,7 @@ RUN apt-get update \
 
 # RUN curl -X GET \
 #         --output /tmp/instantclient-basiclite-linux.zip \
-#         https://download.oracle.com/otn_software/linux/instantclient/2326000/instantclient-basic-linux.x64-23.26.0.0.0.zip
+#         https://download.oracle.com/otn_software/linux/instantclient/2326000/instantclient-basiclite-linux.x64-23.26.0.0.0.zip
 
 # RUN mkdir /opt/oracle \
 #  && cd /opt/oracle \

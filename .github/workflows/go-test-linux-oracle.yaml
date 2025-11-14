@@ -75,9 +75,9 @@ jobs:
 
       - name: Install Oracle SDK
         run: |
-          curl --output /tmp/instantclient-basic-linux.zip https://download.oracle.com/otn_software/linux/instantclient/2326000/instantclient-basic-linux.x64-23.26.0.0.0.zip
+          curl --output /tmp/instantclient-basiclite-linux.zip https://download.oracle.com/otn_software/linux/instantclient/2326000/instantclient-basiclite-linux.x64-23.26.0.0.0.zip
           sudo mkdir -p /opt/oracle
-          sudo unzip -d /opt/oracle /tmp/instantclient-basic-linux.zip
+          sudo unzip -d /opt/oracle /tmp/instantclient-basiclite-linux.zip
           sudo ln -s /usr/lib/x86_64-linux-gnu/libaio.so.1t64 /usr/lib/libaio.so.1
 
       - name: Check disk usage - 3
