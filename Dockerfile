@@ -134,9 +134,30 @@ RUN apt-get update \
 
 # MySQL support.
 
-RUN wget https://dev.mysql.com/get/Downloads/Connector-ODBC/9.5/mysql-connector-odbc_9.5.0-1debian13_amd64.deb \
- && wget https://dev.mysql.com/get/Downloads/MySQL-9.5/mysql-common_9.5.0-1debian13_amd64.deb \
- && wget https://deb.debian.org/debian/pool/main/m/mysql-8.0/libmysqlclient21_8.0.44-1_amd64.deb
+RUN if [ "$(uname -m)" = "x86_64" ]; then \
+      echo "Installing x86_64 specific package"; \
+      wget https://dev.mysql.com/get/Downloads/Connector-ODBC/9.5/mysql-connector-odbc_9.5.0-1debian13_amd64.deb; \
+      wget https://dev.mysql.com/get/Downloads/MySQL-9.5/mysql-common_9.5.0-1debian13_amd64.deb; \
+      wget https://deb.debian.org/debian/pool/main/m/mysql-8.0/libmysqlclient21_8.0.44-1_amd64.deb; \
+      apt-get update; \
+      apt-get -y --no-install-recommends install \
+            ./mysql-connector-odbc_9.5.0-1debian13_amd64.deb \
+            ./mysql-common_9.5.0-1debian13_amd64.deb \
+            ./libmysqlclient21_8.0.44-1_amd64.deb; \
+      rm \
+            ./mysql-connector-odbc_9.5.0-1debian13_amd64.deb \
+            ./mysql-common_9.5.0-1debian13_amd64.deb \
+            ./libmysqlclient21_8.0.44-1_amd64.deb; \
+      rm -rf /var/lib/apt/lists/*; \
+    else \
+      echo "Installing ARM64 specific package"; \
+      echo "Not supported (yet)."; \
+    fi
+
+
+# RUN wget https://dev.mysql.com/get/Downloads/Connector-ODBC/9.5/mysql-connector-odbc_9.5.0-1debian13_amd64.deb \
+#  && wget https://dev.mysql.com/get/Downloads/MySQL-9.5/mysql-common_9.5.0-1debian13_amd64.deb \
+#  && wget https://deb.debian.org/debian/pool/main/m/mysql-8.0/libmysqlclient21_8.0.44-1_amd64.deb
 
 # RUN && apt-get update \
 #  && apt-get -y --no-install-recommends install \
@@ -150,10 +171,10 @@ RUN wget https://dev.mysql.com/get/Downloads/Connector-ODBC/9.5/mysql-connector-
 #  && rm -rf /var/lib/apt/lists/*
 
 
-RUN apt-get update
-RUN apt-get -y --no-install-recommends install ./mysql-connector-odbc_9.5.0-1debian13_amd64.deb
-RUN apt-get -y --no-install-recommends install ./mysql-common_9.5.0-1debian13_amd64.deb
-RUN apt-get -y --no-install-recommends install ./libmysqlclient21_8.0.44-1_amd64.deb
+# RUN apt-get update
+# RUN apt-get -y --no-install-recommends install ./mysql-connector-odbc_9.5.0-1debian13_amd64.deb
+# RUN apt-get -y --no-install-recommends install ./mysql-common_9.5.0-1debian13_amd64.deb
+# RUN apt-get -y --no-install-recommends install ./libmysqlclient21_8.0.44-1_amd64.deb
 
 
 
