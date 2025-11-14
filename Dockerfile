@@ -18,7 +18,7 @@ FROM ${IMAGE_FINAL} AS senzingsdk_runtime
 # -----------------------------------------------------------------------------
 
 FROM ${IMAGE_BUILDER} AS builder
-ENV REFRESHED_AT=2025-11-15
+ENV REFRESHED_AT=2025-11-14
 LABEL Name="senzing/go-builder" \
       Maintainer="support@senzing.com" \
       Version="0.1.0"
@@ -66,7 +66,7 @@ RUN mkdir -p /output \
 # -----------------------------------------------------------------------------
 
 FROM ${IMAGE_FINAL} AS senzingsdk
-ENV REFRESHED_AT=2025-11-15
+ENV REFRESHED_AT=2025-11-14
 
 ARG SENZING_APT_INSTALL_SETUP_PACKAGE
 
@@ -84,7 +84,7 @@ RUN apt-get update \
 # -----------------------------------------------------------------------------
 
 # FROM ${IMAGE_FINAL} AS oracle
-# ENV REFRESHED_AT=2025-11-15
+# ENV REFRESHED_AT=2025-11-14
 
 # RUN apt-get update \
 #  && apt-get -y install \
@@ -104,7 +104,7 @@ RUN apt-get update \
 # -----------------------------------------------------------------------------
 
 FROM ${IMAGE_FINAL} AS final
-ENV REFRESHED_AT=2025-11-15
+ENV REFRESHED_AT=2025-11-14
 LABEL Name="senzing/init-database" \
       Maintainer="support@senzing.com" \
       Version="0.7.19"
@@ -153,32 +153,6 @@ RUN if [ "$(uname -m)" = "x86_64" ]; then \
       echo "Installing ARM64 specific package"; \
       echo "WARNING: ARM64 not supported (yet)."; \
     fi
-
-
-# RUN wget https://dev.mysql.com/get/Downloads/Connector-ODBC/9.5/mysql-connector-odbc_9.5.0-1debian13_amd64.deb \
-#  && wget https://dev.mysql.com/get/Downloads/MySQL-9.5/mysql-common_9.5.0-1debian13_amd64.deb \
-#  && wget https://deb.debian.org/debian/pool/main/m/mysql-8.0/libmysqlclient21_8.0.44-1_amd64.deb
-
-# RUN && apt-get update \
-#  && apt-get -y --no-install-recommends install \
-#       ./mysql-connector-odbc_9.5.0-1debian13_amd64.deb \
-#       ./mysql-common_9.5.0-1debian13_amd64.deb \
-#       ./libmysqlclient21_8.0.44-1_amd64.deb \
-#  && rm \
-#       ./mysql-connector-odbc_9.5.0-1debian13_amd64.deb \
-#       ./mysql-common_9.5.0-1debian13_amd64.deb \
-#       ./libmysqlclient21_8.0.44-1_amd64.deb \
-#  && rm -rf /var/lib/apt/lists/*
-
-
-# RUN apt-get update
-# RUN apt-get -y --no-install-recommends install ./mysql-connector-odbc_9.5.0-1debian13_amd64.deb
-# RUN apt-get -y --no-install-recommends install ./mysql-common_9.5.0-1debian13_amd64.deb
-# RUN apt-get -y --no-install-recommends install ./libmysqlclient21_8.0.44-1_amd64.deb
-
-
-
-
 
 # MS SQL support.
 
