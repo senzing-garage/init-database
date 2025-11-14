@@ -1,4 +1,4 @@
-version: "3"
+name: senzing-mysql-demo
 
 services:
   mysql:
@@ -6,29 +6,17 @@ services:
     environment:
       # See https://hub.docker.com/_/mysql/ "Environment Variables"
       MYSQL_DATABASE: G2
-      MYSQL_NATIVE_PASSWORD: "ON"
       MYSQL_PASSWORD: mysql
       MYSQL_ROOT_PASSWORD: root
       MYSQL_USER: mysql
-    image: mysql:9.4.0
+    image: mysql:${SENZING_DOCKER_IMAGE_VERSION_MYSQL:-latest}
     networks:
       - senzing
     ports:
       - 3306:3306
     restart: always
-
-  phpmyadmin:
-    container_name: senzing-phpmyadmin
-    depends_on:
-      - mysql
-    environment:
-      DATABASE_HOST: mysql
-    image: phpmyadmin:5.2.3
-    networks:
-      - senzing
-    ports:
-      - 9173:8080
-    restart: always
+    volumes:
+      - mysql-volume:/var/lib/mysql
 
   mysql-init:
     container_name: senzing-mysql-init
@@ -36,11 +24,28 @@ services:
       - mysql
     environment:
       SENZING_TOOLS_DATABASE_URL: "mysql://mysql:mysql@mysql:3306/G2"
-    image: senzing/init-database@sha256:4a7b6c887b9c012d4e2ce32517ea94023d41549ec852f4fa59b5bd2341e9aa54
+      SENZING_TOOLS_DATASOURCES: "CUSTOMERS, REFERENCE, WATCHLIST"
+    image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INIT_DATABASE:-latest}
     networks:
       - senzing
     restart: on-failure
 
+  phpmyadmin:
+    container_name: senzing-phpmyadmin
+    depends_on:
+      - mysql
+    environment:
+      PMA_HOST: mysql
+    image: phpmyadmin:${SENZING_DOCKER_IMAGE_VERSION_PHPMYADMIN:-latest}
+    networks:
+      - senzing
+    ports:
+      - 9173:80
+    restart: always
+
 networks:
   senzing:
     name: ${SENZING_DOCKER_NETWORK:-senzing-network}
+
+volumes:
+  mysql-volume:
