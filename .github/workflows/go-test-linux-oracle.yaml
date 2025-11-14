@@ -61,11 +61,17 @@ jobs:
             libaio-dev \
             tree
 
+      - name: Check disk usage - 1
+        run: df -h
+
       - name: Install Senzing SDK
         uses: senzing-factory/github-action-install-senzing-sdk@v3
         with:
           packages-to-install: "senzingsdk-runtime senzingsdk-setup"
           senzingsdk-version: ${{ matrix.senzingsdk-version }}
+
+      - name: Check disk usage - 2
+        run: df -h
 
       - name: Install Oracle SDK
         run: |
@@ -74,10 +80,16 @@ jobs:
           sudo unzip -d /opt/oracle /tmp/instantclient-basic-linux.zip
           sudo ln -s /usr/lib/x86_64-linux-gnu/libaio.so.1t64 /usr/lib/libaio.so.1
 
+      - name: Check disk usage - 3
+        run: df -h
+
       - name: Install Oracle SQL-plus
         run: |
           curl --output /tmp/instantclient-sqlplus-linux.zip https://download.oracle.com/otn_software/linux/instantclient/2326000/instantclient-sqlplus-linux.x64-23.26.0.0.0.zip
           sudo unzip -o -d /opt/oracle /tmp/instantclient-sqlplus-linux.zip
+
+      - name: Check disk usage - 4
+        run: df -h
 
       - name: Copy rootfs files
         run: |

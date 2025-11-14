@@ -151,7 +151,7 @@ RUN if [ "$(uname -m)" = "x86_64" ]; then \
       rm -rf /var/lib/apt/lists/*; \
     else \
       echo "Installing ARM64 specific package"; \
-      echo "Not supported (yet)."; \
+      echo "WARNING: ARM64 not supported (yet)."; \
     fi
 
 
