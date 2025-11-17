@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"slices"
 	"time"
 
 	"github.com/senzing-garage/go-helpers/wraperror"
@@ -29,6 +30,8 @@ import (
 type BasicInitializer struct {
 	DatabaseURLs                []string `json:"databaseUrl,omitempty"`
 	DataSources                 []string `json:"dataSources,omitempty"`
+	InstallSenzingConfiguration bool     `json:"installSenzingConfiguration,omitempty"`
+	LoadTruthset                bool     `json:"loadTruthset,omitempty"`
 	ObserverOrigin              string   `json:"observerOrigin,omitempty"`
 	ObserverURL                 string   `json:"observerUrl,omitempty"`
 	SenzingInstanceName         string   `json:"senzingInstanceName,omitempty"`
@@ -37,12 +40,10 @@ type BasicInitializer struct {
 	SenzingSettingsFile         string   `json:"senzingSettingsFile,omitempty"`
 	SenzingVerboseLogging       int64    `json:"senzingVerboseLogging,omitempty"`
 	SQLFile                     string   `json:"sqlFile,omitempty"`
-	InstallSenzingConfiguration bool     `json:"installSenzingConfiguration,omitempty"`
-
-	logger                 logging.Logging
-	observers              subject.Subject
-	senzingConfigSingleton senzingconfig.SenzingConfig
-	senzingSchemaSingleton senzingschema.SenzingSchema
+	logger                      logging.Logging
+	observers                   subject.Subject
+	senzingConfigSingleton      senzingconfig.SenzingConfig
+	senzingSchemaSingleton      senzingschema.SenzingSchema
 }
 
 // ----------------------------------------------------------------------------
@@ -55,6 +56,18 @@ var debugOptions = []interface{}{
 
 var traceOptions = []interface{}{
 	&logging.OptionCallerSkip{Value: OptionCallerSkip5},
+}
+
+var truthsetDataSources = []string{
+	"CUSTOMERS",
+	"REFERENCE",
+	"WATCHLIST",
+}
+
+var truthsetURLs = []string{
+	"https://raw.githubusercontent.com/Senzing/truth-sets/refs/heads/main/truthsets/demo/customers.jsonl",
+	"https://raw.githubusercontent.com/Senzing/truth-sets/refs/heads/main/truthsets/demo/reference.jsonl",
+	"https://raw.githubusercontent.com/Senzing/truth-sets/refs/heads/main/truthsets/demo/watchlist.jsonl",
 }
 
 // ----------------------------------------------------------------------------
@@ -167,6 +180,16 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 		return wraperror.Errorf(err, "InitializeSenzing")
 	}
 
+	// Add Truth Set data sources.
+
+	if initializer.LoadTruthset {
+		for _, dataSource := range truthsetDataSources {
+			if !slices.Contains(initializer.DataSources, dataSource) {
+				initializer.DataSources = append(initializer.DataSources, dataSource)
+			}
+		}
+	}
+
 	// Determine if Senzing configuration should be installed
 
 	if initializer.InstallSenzingConfiguration || len(initializer.DataSources) > 0 {
@@ -192,6 +215,12 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 
 			return wraperror.Errorf(err, "InitializeSenzing")
 		}
+	}
+
+	// Load Truth Set.
+
+	if initializer.LoadTruthset {
+
 	}
 
 	// Notify observers.

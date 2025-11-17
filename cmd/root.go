@@ -23,8 +23,9 @@ import (
 
 const (
 	envarEngineConfigurationFile              = "SENZING_TOOLS_ENGINE_CONFIGURATION_FILE"
-	envarSQLFile                       string = "SENZING_TOOLS_SQL_FILE"
 	envarInstallSenzingErConfiguration string = "SENZING_TOOLS_INSTALL_SENZING_ER_CONFIGURATION"
+	envarLoadTruthset                  string = "SENZING_TOOLS_LOAD_TRUTHSET"
+	envarSQLFile                       string = "SENZING_TOOLS_SQL_FILE"
 	Short                              string = "Initialize a database with the Senzing schema and configuration"
 	Use                                string = "init-database"
 )
@@ -34,6 +35,14 @@ var Long = getLong()
 // ----------------------------------------------------------------------------
 // Context variables
 // ----------------------------------------------------------------------------
+
+var OptionLoadTruthset = option.ContextVariable{
+	Arg:     "load-truthset",
+	Default: option.OsLookupEnvBool(envarLoadTruthset, false),
+	Envar:   envarLoadTruthset,
+	Help:    "Path to file of JSON used to configure Senzing engine [%s]",
+	Type:    optiontype.Bool,
+}
 
 var OptionEngineConfigurationFile = option.ContextVariable{
 	Arg:     "engine-configuration-file",
@@ -60,7 +69,6 @@ var OptionInstallSenzingErConfiguration = option.ContextVariable{
 }
 
 var ContextVariablesForMultiPlatform = []option.ContextVariable{
-	OptionInstallSenzingErConfiguration,
 	option.Configuration,
 	option.CoreInstanceName,
 	option.CoreLogLevel,
@@ -71,6 +79,8 @@ var ContextVariablesForMultiPlatform = []option.ContextVariable{
 	option.LogLevel,
 	option.ObserverOrigin,
 	option.ObserverURL,
+	OptionInstallSenzingErConfiguration,
+	OptionLoadTruthset,
 }
 
 var ContextVariables = append(ContextVariablesForMultiPlatform, ContextVariablesForOsArch...)
@@ -124,8 +134,10 @@ func RunE(_ *cobra.Command, _ []string) error {
 	}
 
 	initializer := &initializer.BasicInitializer{
-		DataSources:                 viper.GetStringSlice(option.Datasources.Arg),
 		DatabaseURLs:                databaseURLs,
+		DataSources:                 viper.GetStringSlice(option.Datasources.Arg),
+		InstallSenzingConfiguration: viper.GetBool(OptionInstallSenzingErConfiguration.Arg),
+		LoadTruthset:                viper.GetBool(OptionLoadTruthset.Arg),
 		ObserverOrigin:              viper.GetString(option.ObserverOrigin.Arg),
 		ObserverURL:                 viper.GetString(option.ObserverURL.Arg),
 		SenzingInstanceName:         viper.GetString(option.CoreInstanceName.Arg),
@@ -134,7 +146,6 @@ func RunE(_ *cobra.Command, _ []string) error {
 		SenzingSettingsFile:         viper.GetString(OptionEngineConfigurationFile.Arg),
 		SenzingVerboseLogging:       viper.GetInt64(option.CoreLogLevel.Arg),
 		SQLFile:                     viper.GetString(OptionSQLFile.Arg),
-		InstallSenzingConfiguration: viper.GetBool(OptionInstallSenzingErConfiguration.Arg),
 	}
 
 	err = initializer.Initialize(ctx)
