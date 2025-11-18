@@ -678,6 +678,7 @@ func (initializer *BasicInitializer) getLogger() logging.Logging {
 	if initializer.logger == nil {
 		options := []interface{}{
 			logging.OptionCallerSkip{Value: OptionCallerSkip4},
+			logging.OptionMessageFields{Value: []string{"id", "text"}},
 		}
 		if len(initializer.SenzingLogLevel) > 0 {
 			options = append(options, logging.OptionLogLevel{Value: initializer.SenzingLogLevel})

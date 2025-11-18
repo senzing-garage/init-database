@@ -447,6 +447,7 @@ func (senzingSchema *BasicSenzingSchema) getLogger() logging.Logging {
 	if senzingSchema.logger == nil {
 		options := []interface{}{
 			&logging.OptionCallerSkip{Value: OptionCallerSkip4},
+			logging.OptionMessageFields{Value: []string{"id", "text"}},
 		}
 
 		senzingSchema.logger, err = logging.NewSenzingLogger(ComponentID, IDMessages, options...)

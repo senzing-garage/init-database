@@ -78,11 +78,7 @@ Input
 func (senzingLoad *BasicSenzingLoad) LoadURLs(ctx context.Context) error {
 	var err error
 
-	var configID int64
-
 	entryTime := time.Now()
-
-	fmt.Println(">>>>>> Enter LoadURLs")
 
 	// Prolog.
 
@@ -100,17 +96,15 @@ func (senzingLoad *BasicSenzingLoad) LoadURLs(ctx context.Context) error {
 		// If TRACE, Log on entry/exit.
 
 		if senzingLoad.getLogger().IsTrace() {
-			senzingLoad.traceEntry(10, configID)
+			senzingLoad.traceEntry(10)
 
-			defer func() { senzingLoad.traceExit(traceExitMessageNumber, configID, err, time.Since(entryTime)) }()
+			defer func() { senzingLoad.traceExit(traceExitMessageNumber, err, time.Since(entryTime)) }()
 		}
 
 		// If DEBUG, log input parameters. Must be done after establishing DEBUG and TRACE logging.
 
 		asJSON, err := json.Marshal(senzingLoad)
 		if err != nil {
-			traceExitMessageNumber, debugMessageNumber = 11, 1011
-
 			return wraperror.Errorf(err, "json.Marshal: %v", senzingLoad)
 		}
 
@@ -133,8 +127,6 @@ func (senzingLoad *BasicSenzingLoad) LoadURLs(ctx context.Context) error {
 	// Process each URL of JSON lines.
 
 	for _, jsonURL := range senzingLoad.JSONURLs {
-
-		fmt.Printf(">>>>>> Processing %s\n", jsonURL)
 
 		senzingLoad.log(2001, jsonURL)
 
@@ -161,8 +153,6 @@ func (senzingLoad *BasicSenzingLoad) LoadURLs(ctx context.Context) error {
 			jsonLineCount++
 			line := scanner.Bytes()
 
-			fmt.Printf(">>>>>> Line #%d: %s\n", jsonLineCount, string(line))
-
 			err := json.Unmarshal(line, &jsonRecord)
 			if err != err {
 				return wraperror.Errorf(err, fmt.Sprintf("Scanning '%s'", line))
@@ -184,7 +174,7 @@ func (senzingLoad *BasicSenzingLoad) LoadURLs(ctx context.Context) error {
 			return wraperror.Errorf(err, "Scanning")
 		}
 
-		senzingLoad.log(2002, jsonURL, jsonLineCount)
+		senzingLoad.log(2002, jsonLineCount, jsonURL)
 
 	}
 
@@ -200,8 +190,6 @@ func (senzingLoad *BasicSenzingLoad) LoadURLs(ctx context.Context) error {
 			break
 		}
 		redoRecordCount += 1
-
-		fmt.Printf(">>>>>> Redo #%d: %s", redoRecordCount, string(redoRecord))
 
 		_, err = szEngine.ProcessRedoRecord(ctx, redoRecord, senzing.SzNoFlags)
 		if err != err {
@@ -523,6 +511,7 @@ func (senzingLoad *BasicSenzingLoad) getLogger() logging.Logging {
 	if senzingLoad.logger == nil {
 		options := []interface{}{
 			&logging.OptionCallerSkip{Value: OptionCallerSkip4},
+			logging.OptionMessageFields{Value: []string{"id", "text"}},
 		}
 
 		senzingLoad.logger, err = logging.NewSenzingLogger(ComponentID, IDMessages, options...)
