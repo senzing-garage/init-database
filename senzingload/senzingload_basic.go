@@ -48,6 +48,8 @@ type Record struct {
 	ID         string `json:"RECORD_ID"`
 }
 
+const TimeoutInMinutes = 2
+
 // ----------------------------------------------------------------------------
 // Variables
 // ----------------------------------------------------------------------------
@@ -509,7 +511,6 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 	ctx context.Context,
 	szAbstractFactory senzing.SzAbstractFactory,
 ) error {
-
 	var (
 		jsonRecord Record
 		err        error
@@ -517,7 +518,7 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 
 	// Use timeout in ctx.
 
-	ctxTimeout, cancel := context.WithTimeout(ctx, 2*time.Minute)
+	ctxTimeout, cancel := context.WithTimeout(ctx, TimeoutInMinutes*time.Minute)
 	defer cancel() // Ensure the context is canceled when main exits
 
 	// Get an szEngine.
@@ -530,7 +531,7 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 	defer func() { assertNoError(szEngine.Destroy(ctx), "Error on szEngine.Destroy()") }()
 
 	httpClient := &http.Client{
-		Timeout: 2 * time.Minute,
+		Timeout: TimeoutInMinutes * time.Minute,
 	}
 
 	for _, jsonURL := range senzingLoad.JSONURLs {
@@ -568,7 +569,7 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 			if err != nil {
 				return wraperror.Errorf(
 					err,
-					fmt.Sprintf("Scanning:  %s", string(line)),
+					"Scanning:  "+string(line),
 				)
 			}
 
