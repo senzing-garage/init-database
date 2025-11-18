@@ -128,7 +128,7 @@ func (senzingLoad *BasicSenzingLoad) LoadURLs(ctx context.Context) error {
 
 	for _, jsonURL := range senzingLoad.JSONURLs {
 
-		senzingLoad.log(2001, jsonURL)
+		senzingLoad.log(3001, jsonURL)
 
 		// Download file from URL.
 

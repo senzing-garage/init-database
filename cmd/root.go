@@ -40,7 +40,7 @@ var OptionLoadTruthset = option.ContextVariable{
 	Arg:     "load-truthset",
 	Default: option.OsLookupEnvBool(envarLoadTruthset, false),
 	Envar:   envarLoadTruthset,
-	Help:    "Path to file of JSON used to configure Senzing engine [%s]",
+	Help:    "Load the Senzing TruthSet files [%s]",
 	Type:    optiontype.Bool,
 }
 
