@@ -17,6 +17,7 @@ import (
 	"github.com/senzing-garage/go-observing/observerpb"
 	"github.com/senzing-garage/go-observing/subject"
 	"github.com/senzing-garage/init-database/senzingconfig"
+	"github.com/senzing-garage/init-database/senzingload"
 	"github.com/senzing-garage/init-database/senzingschema"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -43,6 +44,7 @@ type BasicInitializer struct {
 	logger                      logging.Logging
 	observers                   subject.Subject
 	senzingConfigSingleton      senzingconfig.SenzingConfig
+	senzingLoadSingleton        senzingload.SenzingLoad
 	senzingSchemaSingleton      senzingschema.SenzingSchema
 }
 
@@ -220,7 +222,13 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 	// Load Truth Set.
 
 	if initializer.LoadTruthset {
+		senzingLoad := initializer.getSenzingLoad()
+		err := senzingLoad.LoadURLs(ctx)
+		if err != nil {
+			traceExitMessageNumber, debugMessageNumber = 99, 1999
 
+			return wraperror.Errorf(err, "getSenzingLoad")
+		}
 	}
 
 	// Notify observers.
@@ -829,6 +837,20 @@ func (initializer *BasicInitializer) getSenzingConfig() senzingconfig.SenzingCon
 	}
 
 	return initializer.senzingConfigSingleton
+}
+
+func (initializer *BasicInitializer) getSenzingLoad() senzingload.SenzingLoad {
+	if initializer.senzingLoadSingleton == nil {
+		initializer.senzingLoadSingleton = &senzingload.BasicSenzingLoad{
+			JSONURLs:              truthsetURLs,
+			SenzingConfigJSONFile: initializer.SenzingSettingsFile,
+			SenzingInstanceName:   initializer.SenzingInstanceName,
+			SenzingSettings:       initializer.SenzingSettings,
+			SenzingVerboseLogging: initializer.SenzingVerboseLogging,
+		}
+	}
+
+	return initializer.senzingLoadSingleton
 }
 
 func (initializer *BasicInitializer) getSenzingSchema() senzingschema.SenzingSchema {

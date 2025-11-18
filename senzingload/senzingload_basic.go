@@ -82,6 +82,8 @@ func (senzingLoad *BasicSenzingLoad) LoadURLs(ctx context.Context) error {
 
 	entryTime := time.Now()
 
+	fmt.Println(">>>>>> Enter LoadURLs")
+
 	// Prolog.
 
 	debugMessageNumber := 0
@@ -132,6 +134,8 @@ func (senzingLoad *BasicSenzingLoad) LoadURLs(ctx context.Context) error {
 
 	for _, jsonURL := range senzingLoad.JSONURLs {
 
+		fmt.Printf(">>>>>> Processing %s\n", jsonURL)
+
 		senzingLoad.log(2001, jsonURL)
 
 		// Download file from URL.
@@ -156,6 +160,8 @@ func (senzingLoad *BasicSenzingLoad) LoadURLs(ctx context.Context) error {
 		for scanner.Scan() {
 			jsonLineCount++
 			line := scanner.Bytes()
+
+			fmt.Printf(">>>>>> Line #%d: %s\n", jsonLineCount, string(line))
 
 			err := json.Unmarshal(line, &jsonRecord)
 			if err != err {
@@ -194,6 +200,8 @@ func (senzingLoad *BasicSenzingLoad) LoadURLs(ctx context.Context) error {
 			break
 		}
 		redoRecordCount += 1
+
+		fmt.Printf(">>>>>> Redo #%d: %s", redoRecordCount, string(redoRecord))
 
 		_, err = szEngine.ProcessRedoRecord(ctx, redoRecord, senzing.SzNoFlags)
 		if err != err {

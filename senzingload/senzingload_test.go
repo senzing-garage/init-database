@@ -27,6 +27,12 @@ var (
 	}
 )
 
+var truthsetURLs = []string{
+	"https://raw.githubusercontent.com/Senzing/truth-sets/refs/heads/main/truthsets/demo/customers.jsonl",
+	"https://raw.githubusercontent.com/Senzing/truth-sets/refs/heads/main/truthsets/demo/reference.jsonl",
+	"https://raw.githubusercontent.com/Senzing/truth-sets/refs/heads/main/truthsets/demo/watchlist.jsonl",
+}
+
 // ----------------------------------------------------------------------------
 // Test interface functions
 // ----------------------------------------------------------------------------
@@ -34,6 +40,7 @@ var (
 func TestSenzingLoadBasic_LoadURLs(test *testing.T) {
 	ctx := test.Context()
 	senzingLoad := getTestObject(ctx, test)
+	senzingLoad.JSONURLs = truthsetURLs
 	err := senzingLoad.SetLogLevel(ctx, logging.LevelInfoName)
 	require.NoError(test, err)
 	err = senzingLoad.LoadURLs(ctx)
