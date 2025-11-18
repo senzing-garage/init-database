@@ -26,7 +26,7 @@ import (
 
 // BasicSenzingLoad is the default implementation of the SenzingLoad interface.
 type BasicSenzingLoad struct {
-	JSONURLs              []string          `json:"dataSources,omitempty"`
+	JSONURLs              []string          `json:"jsonUrls,omitempty"`
 	GrpcDialOptions       []grpc.DialOption `json:"grpcDialOptions,omitempty"`
 	GrpcTarget            string            `json:"grpcTarget,omitempty"`
 	SenzingInstanceName   string            `json:"senzingInstanceName,omitempty"`
@@ -132,7 +132,7 @@ func (senzingLoad *BasicSenzingLoad) LoadURLs(ctx context.Context) error {
 	if senzingLoad.observers != nil {
 		go func() {
 			details := map[string]string{}
-			notifier.Notify(ctx, senzingLoad.observers, senzingLoad.observerOrigin, ComponentID, 8002, err, details)
+			notifier.Notify(ctx, senzingLoad.observers, senzingLoad.observerOrigin, ComponentID, 8002, nil, details)
 		}()
 	}
 
@@ -517,7 +517,7 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 
 	// Use timeout in ctx.
 
-	ctxTimeout, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctxTimeout, cancel := context.WithTimeout(ctx, 2*time.Minute)
 	defer cancel() // Ensure the context is canceled when main exits
 
 	// Get an szEngine.
@@ -529,7 +529,9 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 
 	defer func() { assertNoError(szEngine.Destroy(ctx), "Error on szEngine.Destroy()") }()
 
-	httpClient := &http.Client{}
+	httpClient := &http.Client{
+		Timeout: 2 * time.Minute,
+	}
 
 	for _, jsonURL := range senzingLoad.JSONURLs {
 		senzingLoad.log(3001, jsonURL)
@@ -545,8 +547,6 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 		if err != nil {
 			return wraperror.Errorf(err, "httpClient.Do")
 		}
-
-		defer func() { assertNoError(httpResponse.Body.Close(), "Error on httpResponse.Body.Close()") }()
 
 		if httpResponse.StatusCode != http.StatusOK {
 			return wraperror.Errorf(
@@ -566,7 +566,10 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 
 			err := json.Unmarshal(line, &jsonRecord)
 			if err != nil {
-				return wraperror.Errorf(err, fmt.Sprintf("Scanning '%s'", line))
+				return wraperror.Errorf(
+					err,
+					fmt.Sprintf("Scanning:  %s", string(line)),
+				)
 			}
 
 			_, err = szEngine.AddRecord(
@@ -577,12 +580,24 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 				senzing.SzNoFlags,
 			)
 			if err != nil {
-				return wraperror.Errorf(err, fmt.Sprintf("szEngine.AddRecord: %s", line))
+				return wraperror.Errorf(
+					err,
+					fmt.Sprintf(
+						"szEngine.AddRecord DataSource: %s; RecordID: %s",
+						jsonRecord.DataSource,
+						jsonRecord.ID,
+					),
+				)
 			}
 		}
 
 		if err := scanner.Err(); err != nil {
 			return wraperror.Errorf(err, "Scanning")
+		}
+
+		err = httpResponse.Body.Close()
+		if err != nil {
+			return wraperror.Errorf(err, "httpResponse.Body.Close()")
 		}
 
 		senzingLoad.log(2002, jsonLineCount, jsonURL)

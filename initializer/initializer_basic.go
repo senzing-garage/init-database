@@ -186,6 +186,9 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 
 	if initializer.LoadTruthset {
 		for _, dataSource := range truthsetDataSources {
+
+			// Avoid duplicate DataSource names.
+
 			if !slices.Contains(initializer.DataSources, dataSource) {
 				initializer.DataSources = append(initializer.DataSources, dataSource)
 			}
