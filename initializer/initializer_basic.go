@@ -223,6 +223,7 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 
 	if initializer.LoadTruthset {
 		senzingLoad := initializer.getSenzingLoad()
+
 		err := senzingLoad.LoadURLs(ctx)
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 99, 1999

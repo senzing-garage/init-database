@@ -44,8 +44,8 @@ type BasicSenzingLoad struct {
 }
 
 type Record struct {
-	Data_Source string
-	Record_ID   string
+	DataSource string `json:"DATA_SOURCE"`
+	ID         string `json:"RECORD_ID"`
 }
 
 // ----------------------------------------------------------------------------
@@ -60,9 +60,7 @@ var traceOptions = []interface{}{
 	&logging.OptionCallerSkip{Value: OptionCallerSkip5},
 }
 
-var (
-	jsonRecord Record
-)
+var jsonRecord Record
 
 // ----------------------------------------------------------------------------
 // Interface methods
@@ -117,86 +115,19 @@ func (senzingLoad *BasicSenzingLoad) LoadURLs(ctx context.Context) error {
 
 	defer func() { assertNoError(szAbstractFactory.Close(ctx), "Error on szAbstractFactory.Close()") }()
 
-	szEngine, err := szAbstractFactory.CreateEngine(ctx)
-	if err != nil {
-		return wraperror.Errorf(err, "CreateEngine")
-	}
-
-	defer func() { assertNoError(szEngine.Destroy(ctx), "szEngine.Destroy(ctx)") }()
-
 	// Process each URL of JSON lines.
 
-	for _, jsonURL := range senzingLoad.JSONURLs {
-
-		senzingLoad.log(3001, jsonURL)
-
-		// Download file from URL.
-
-		httpResponse, err := http.Get(jsonURL)
-		if err != err {
-			return wraperror.Errorf(err, "Fetching URL")
-		}
-		defer func() { assertNoError(httpResponse.Body.Close(), "Error on httpResponse.Body.Close()") }()
-
-		if httpResponse.StatusCode != http.StatusOK {
-			return wraperror.Errorf(
-				errForPackage,
-				fmt.Sprintf("Received non-OK HTTP status: %d", httpResponse.StatusCode),
-			)
-		}
-
-		// Process in-memory file.
-
-		jsonLineCount := 0
-		scanner := bufio.NewScanner(httpResponse.Body)
-		for scanner.Scan() {
-			jsonLineCount++
-			line := scanner.Bytes()
-
-			err := json.Unmarshal(line, &jsonRecord)
-			if err != err {
-				return wraperror.Errorf(err, fmt.Sprintf("Scanning '%s'", line))
-			}
-
-			_, err = szEngine.AddRecord(
-				ctx,
-				jsonRecord.Data_Source,
-				jsonRecord.Record_ID,
-				string(line),
-				senzing.SzNoFlags,
-			)
-			if err != err {
-				return wraperror.Errorf(err, fmt.Sprintf("szEngine.AddRecord: %s", line))
-			}
-		}
-
-		if err := scanner.Err(); err != nil {
-			return wraperror.Errorf(err, "Scanning")
-		}
-
-		senzingLoad.log(2002, jsonLineCount, jsonURL)
-
+	err = senzingLoad.processRecords(ctx, szAbstractFactory)
+	if err != nil {
+		return wraperror.Errorf(err, "senzingLoad.processRecords")
 	}
 
 	// Process redo records.
 
-	redoRecordCount := 0
-	for {
-		redoRecord, err := szEngine.GetRedoRecord(ctx)
-		if err != err {
-			return wraperror.Errorf(err, "szEngine.GetRedoRecord()")
-		}
-		if len(redoRecord) == 0 {
-			break
-		}
-		redoRecordCount += 1
-
-		_, err = szEngine.ProcessRedoRecord(ctx, redoRecord, senzing.SzNoFlags)
-		if err != err {
-			return wraperror.Errorf(err, "szEngine.ProcessRedoRecord()")
-		}
+	err = senzingLoad.processRedoRecords(ctx, szAbstractFactory)
+	if err != nil {
+		return wraperror.Errorf(err, "senzingLoad.processRedoRecords")
 	}
-	senzingLoad.log(2003, redoRecordCount)
 
 	// Notify observers.
 
@@ -574,6 +505,125 @@ func (senzingLoad *BasicSenzingLoad) getAbstractFactory(ctx context.Context) sen
 	})
 
 	return senzingLoad.szAbstractFactorySingleton
+}
+
+func (senzingLoad *BasicSenzingLoad) processRecords(
+	ctx context.Context,
+	szAbstractFactory senzing.SzAbstractFactory,
+) error {
+	var err error
+
+	// Get an szEngine.
+
+	szEngine, err := szAbstractFactory.CreateEngine(ctx)
+	if err != nil {
+		return wraperror.Errorf(err, "CreateEngine")
+	}
+
+	defer func() { assertNoError(szEngine.Destroy(ctx), "Error on szEngine.Destroy()") }()
+
+	for _, jsonURL := range senzingLoad.JSONURLs {
+		senzingLoad.log(3001, jsonURL)
+
+		// Download file from URL.
+
+		httpRequest, err := http.NewRequestWithContext(ctx, http.MethodGet, jsonURL, nil) // #nosec:G107
+		if err != nil {
+			return wraperror.Errorf(err, "http.NewRequestWithContext")
+		}
+
+		httpClient := &http.Client{}
+
+		httpResponse, err := httpClient.Do(httpRequest)
+		if err != nil {
+			return wraperror.Errorf(err, "httpClient.Do")
+		}
+
+		defer func() { assertNoError(httpResponse.Body.Close(), "Error on httpResponse.Body.Close()") }()
+
+		if httpResponse.StatusCode != http.StatusOK {
+			return wraperror.Errorf(
+				errForPackage,
+				fmt.Sprintf("Received non-OK HTTP status: %d", httpResponse.StatusCode),
+			)
+		}
+
+		// Process in-memory file.
+
+		jsonLineCount := 0
+
+		scanner := bufio.NewScanner(httpResponse.Body)
+		for scanner.Scan() {
+			jsonLineCount++
+			line := scanner.Bytes()
+
+			err := json.Unmarshal(line, &jsonRecord)
+			if err != nil {
+				return wraperror.Errorf(err, fmt.Sprintf("Scanning '%s'", line))
+			}
+
+			_, err = szEngine.AddRecord(
+				ctx,
+				jsonRecord.DataSource,
+				jsonRecord.ID,
+				string(line),
+				senzing.SzNoFlags,
+			)
+			if err != nil {
+				return wraperror.Errorf(err, fmt.Sprintf("szEngine.AddRecord: %s", line))
+			}
+		}
+
+		if err := scanner.Err(); err != nil {
+			return wraperror.Errorf(err, "Scanning")
+		}
+
+		senzingLoad.log(2002, jsonLineCount, jsonURL)
+	}
+
+	return wraperror.Errorf(err, wraperror.NoMessage)
+}
+
+func (senzingLoad *BasicSenzingLoad) processRedoRecords(
+	ctx context.Context,
+	szAbstractFactory senzing.SzAbstractFactory,
+) error {
+	var err error
+
+	// Get an szEngine.
+
+	szEngine, err := szAbstractFactory.CreateEngine(ctx)
+	if err != nil {
+		return wraperror.Errorf(err, "CreateEngine")
+	}
+
+	defer func() { assertNoError(szEngine.Destroy(ctx), "Error on szEngine.Destroy()") }()
+
+	// Process Senzing Redo Records.
+
+	redoRecordCount := 0
+
+	for {
+		redoRecord, err := szEngine.GetRedoRecord(ctx)
+		if err != nil {
+			return wraperror.Errorf(err, "szEngine.GetRedoRecord()")
+		}
+
+		if len(redoRecord) == 0 {
+			break
+		}
+
+		redoRecordCount++
+
+		_, err = szEngine.ProcessRedoRecord(ctx, redoRecord, senzing.SzNoFlags)
+		if err != nil {
+			return wraperror.Errorf(err, "szEngine.ProcessRedoRecord()")
+		}
+	}
+
+	senzingLoad.log(2003, redoRecordCount)
+
+	return wraperror.Errorf(err, wraperror.NoMessage)
 }
 
 // --- Misc -------------------------------------------------------------------
