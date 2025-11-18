@@ -228,7 +228,7 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 		if err != nil {
 			traceExitMessageNumber, debugMessageNumber = 99, 1999
 
-			return wraperror.Errorf(err, "getSenzingLoad")
+			return wraperror.Errorf(err, "LoadURLs")
 		}
 	}
 

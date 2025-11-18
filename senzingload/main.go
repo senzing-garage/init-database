@@ -32,7 +32,7 @@ const (
 // Variables
 // ----------------------------------------------------------------------------
 
-// Message templates for sqlfiler implementation.
+// Message templates for senzingload implementation.
 var IDMessages = map[int]string{
 	10:   "Enter " + Prefix + "LoadURLs().",
 	29:   "Exit  " + Prefix + "LoadURLs(); copyFile when replacing template/szConfig.json failed; returned (%v).",

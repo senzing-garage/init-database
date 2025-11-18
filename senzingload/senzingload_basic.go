@@ -24,7 +24,7 @@ import (
 // Types
 // ----------------------------------------------------------------------------
 
-// BasicSenzingLoad is the default implementation of the SenzingConfig interface.
+// BasicSenzingLoad is the default implementation of the SenzingLoad interface.
 type BasicSenzingLoad struct {
 	JSONURLs              []string          `json:"dataSources,omitempty"`
 	GrpcDialOptions       []grpc.DialOption `json:"grpcDialOptions,omitempty"`
@@ -60,14 +60,12 @@ var traceOptions = []interface{}{
 	&logging.OptionCallerSkip{Value: OptionCallerSkip5},
 }
 
-var jsonRecord Record
-
 // ----------------------------------------------------------------------------
 // Interface methods
 // ----------------------------------------------------------------------------
 
 /*
-The LoadURLs method add records from URLs to files of JSON lines.
+The LoadURLs method adds records from URLs to files of JSON lines.
 It also process redo records before returning.
 
 Input
@@ -511,7 +509,16 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 	ctx context.Context,
 	szAbstractFactory senzing.SzAbstractFactory,
 ) error {
-	var err error
+
+	var (
+		jsonRecord Record
+		err        error
+	)
+
+	// Use timeout in ctx.
+
+	ctxTimeout, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel() // Ensure the context is canceled when main exits
 
 	// Get an szEngine.
 
@@ -522,17 +529,17 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 
 	defer func() { assertNoError(szEngine.Destroy(ctx), "Error on szEngine.Destroy()") }()
 
+	httpClient := &http.Client{}
+
 	for _, jsonURL := range senzingLoad.JSONURLs {
 		senzingLoad.log(3001, jsonURL)
 
 		// Download file from URL.
 
-		httpRequest, err := http.NewRequestWithContext(ctx, http.MethodGet, jsonURL, nil) // #nosec:G107
+		httpRequest, err := http.NewRequestWithContext(ctxTimeout, http.MethodGet, jsonURL, nil) // #nosec:G107
 		if err != nil {
 			return wraperror.Errorf(err, "http.NewRequestWithContext")
 		}
-
-		httpClient := &http.Client{}
 
 		httpResponse, err := httpClient.Do(httpRequest)
 		if err != nil {

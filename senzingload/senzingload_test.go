@@ -47,7 +47,7 @@ func TestSenzingLoadBasic_LoadURLs(test *testing.T) {
 	require.NoError(test, err)
 }
 
-func TestSenzingConfigImpl_RegisterObserver(test *testing.T) {
+func TestSenzingLoadBasic_RegisterObserver(test *testing.T) {
 	ctx := test.Context()
 	senzingConfig := getTestObject(ctx, test)
 	anObserver := &observer.NullObserver{
@@ -58,20 +58,20 @@ func TestSenzingConfigImpl_RegisterObserver(test *testing.T) {
 	require.NoError(test, err)
 }
 
-func TestSenzingConfigImpl_SetLogLevel(test *testing.T) {
+func TestSenzingLoadBasic_SetLogLevel(test *testing.T) {
 	ctx := test.Context()
 	senzingConfig := getTestObject(ctx, test)
 	err := senzingConfig.SetLogLevel(ctx, logging.LevelInfoName)
 	require.NoError(test, err)
 }
 
-func TestSenzingConfigImpl_SetObserverOrigin(test *testing.T) {
+func TestSenzingLoadBasic_SetObserverOrigin(test *testing.T) {
 	ctx := test.Context()
 	senzingConfig := getTestObject(ctx, test)
 	senzingConfig.SetObserverOrigin(ctx, "TestObserver")
 }
 
-func TestSenzingConfigImpl_UnregisterObserver(test *testing.T) {
+func TestSenzingLoadBasic_UnregisterObserver(test *testing.T) {
 	ctx := test.Context()
 	senzingConfig := getTestObject(ctx, test)
 	anObserver := &observer.NullObserver{
