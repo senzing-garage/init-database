@@ -48,7 +48,7 @@ type Record struct {
 	ID         string `json:"RECORD_ID"`
 }
 
-const TimeoutInMinutes = 2 // Two minutes is just a guess.
+const TimeoutInMinutes = 5 // Five minutes is just a guess.
 
 // ----------------------------------------------------------------------------
 // Variables
@@ -535,70 +535,76 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 	}
 
 	for _, jsonURL := range senzingLoad.JSONURLs {
-		senzingLoad.log(3001, jsonURL)
 
-		// Download file from URL.
+		select {
+		case <-ctxTimeout.Done():
+			return wraperror.Errorf(err, "HTTP Timeout")
+		default:
+			senzingLoad.log(3001, jsonURL)
 
-		httpRequest, err := http.NewRequestWithContext(ctxTimeout, http.MethodGet, jsonURL, nil)
-		if err != nil {
-			return wraperror.Errorf(err, "http.NewRequestWithContext")
-		}
+			// Download file from URL.
 
-		httpResponse, err := httpClient.Do(httpRequest)
-		if err != nil {
-			return wraperror.Errorf(err, "httpClient.Do")
-		}
-
-		defer httpResponse.Body.Close()
-
-		if httpResponse.StatusCode != http.StatusOK {
-			return wraperror.Errorf(
-				errForPackage,
-				fmt.Sprintf("Received non-OK HTTP status: %d", httpResponse.StatusCode),
-			)
-		}
-
-		// Process in-memory file.
-
-		jsonLineCount := 0
-
-		scanner := bufio.NewScanner(httpResponse.Body)
-		for scanner.Scan() {
-			jsonLineCount++
-			line := scanner.Bytes()
-
-			err = json.Unmarshal(line, &jsonRecord)
+			httpRequest, err := http.NewRequestWithContext(ctxTimeout, http.MethodGet, jsonURL, nil)
 			if err != nil {
+				return wraperror.Errorf(err, "http.NewRequestWithContext")
+			}
+
+			httpResponse, err := httpClient.Do(httpRequest)
+			if err != nil {
+				return wraperror.Errorf(err, "httpClient.Do")
+			}
+
+			defer func() { assertNoError(httpResponse.Body.Close(), "Error on httpResponse.Body.Close()") }()
+
+			if httpResponse.StatusCode != http.StatusOK {
 				return wraperror.Errorf(
-					err,
-					"Scanning:  "+string(line),
+					errForPackage,
+					fmt.Sprintf("Received non-OK HTTP status: %d", httpResponse.StatusCode),
 				)
 			}
 
-			_, err = szEngine.AddRecord(
-				ctx,
-				jsonRecord.DataSource,
-				jsonRecord.ID,
-				string(line),
-				senzing.SzNoFlags,
-			)
-			if err != nil {
-				return wraperror.Errorf(
-					err,
-					fmt.Sprintf(
-						"szEngine.AddRecord DataSource: %s; RecordID: %s",
-						jsonRecord.DataSource,
-						jsonRecord.ID,
-					),
+			// Process in-memory file.
+
+			jsonLineCount := 0
+
+			scanner := bufio.NewScanner(httpResponse.Body)
+			for scanner.Scan() {
+				jsonLineCount++
+				line := scanner.Bytes()
+
+				err = json.Unmarshal(line, &jsonRecord)
+				if err != nil {
+					return wraperror.Errorf(
+						err,
+						"Scanning:  "+string(line),
+					)
+				}
+
+				_, err = szEngine.AddRecord(
+					ctx,
+					jsonRecord.DataSource,
+					jsonRecord.ID,
+					string(line),
+					senzing.SzNoFlags,
 				)
+				if err != nil {
+					return wraperror.Errorf(
+						err,
+						fmt.Sprintf(
+							"szEngine.AddRecord DataSource: %s; RecordID: %s",
+							jsonRecord.DataSource,
+							jsonRecord.ID,
+						),
+					)
+				}
 			}
-		}
 
-		if err := scanner.Err(); err != nil {
-			return wraperror.Errorf(err, "Scanning")
-		}
+			if err := scanner.Err(); err != nil {
+				return wraperror.Errorf(err, "Scanning")
+			}
 
-		senzingLoad.log(2002, jsonLineCount, jsonURL)
+			senzingLoad.log(2002, jsonLineCount, jsonURL)
+		}
 	}
 
 	return wraperror.Errorf(err, wraperror.NoMessage)

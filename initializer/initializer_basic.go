@@ -74,7 +74,11 @@ var truthsetURLs = []string{
 	"https://raw.githubusercontent.com/Senzing/truth-sets/refs/heads/main/truthsets/demo/watchlist.jsonl",
 }
 
-var mutex sync.Mutex
+var (
+	mutexConfigSingleton sync.Mutex
+	mutexLoadSingleton   sync.Mutex
+	mutexSchemaSingleton sync.Mutex
+)
 
 // ----------------------------------------------------------------------------
 // Interface methods
@@ -833,7 +837,8 @@ func (initializer *BasicInitializer) registerObserverSenzingSchema(
 // --- Dependent services -----------------------------------------------------
 
 func (initializer *BasicInitializer) getSenzingConfig() senzingconfig.SenzingConfig {
-	mutex.Lock()
+	mutexConfigSingleton.Lock()
+	defer mutexConfigSingleton.Unlock()
 
 	if initializer.senzingConfigSingleton == nil {
 		initializer.senzingConfigSingleton = &senzingconfig.BasicSenzingConfig{
@@ -845,13 +850,12 @@ func (initializer *BasicInitializer) getSenzingConfig() senzingconfig.SenzingCon
 		}
 	}
 
-	mutex.Unlock()
-
 	return initializer.senzingConfigSingleton
 }
 
 func (initializer *BasicInitializer) getSenzingLoad() senzingload.SenzingLoad {
-	mutex.Lock()
+	mutexLoadSingleton.Lock()
+	defer mutexLoadSingleton.Unlock()
 
 	if initializer.senzingLoadSingleton == nil {
 		initializer.senzingLoadSingleton = &senzingload.BasicSenzingLoad{
@@ -863,13 +867,12 @@ func (initializer *BasicInitializer) getSenzingLoad() senzingload.SenzingLoad {
 		}
 	}
 
-	mutex.Unlock()
-
 	return initializer.senzingLoadSingleton
 }
 
 func (initializer *BasicInitializer) getSenzingSchema() senzingschema.SenzingSchema {
-	mutex.Lock()
+	mutexSchemaSingleton.Lock()
+	defer mutexSchemaSingleton.Unlock()
 
 	if initializer.senzingSchemaSingleton == nil {
 		initializer.senzingSchemaSingleton = &senzingschema.BasicSenzingSchema{
@@ -878,8 +881,6 @@ func (initializer *BasicInitializer) getSenzingSchema() senzingschema.SenzingSch
 			SQLFile:         initializer.SQLFile,
 		}
 	}
-
-	mutex.Unlock()
 
 	return initializer.senzingSchemaSingleton
 }
