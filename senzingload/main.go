@@ -17,7 +17,7 @@ type SenzingLoad interface {
 // Constants
 // ----------------------------------------------------------------------------
 
-// Identifier of the  package found messages having the format "senzing-6502xxxx".
+// Identifier of the  package found messages having the format "senzing-6504xxxx".
 const ComponentID = 6504
 
 // Log message prefix.

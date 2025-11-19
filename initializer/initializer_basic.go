@@ -67,7 +67,7 @@ var truthsetDataSources = []string{
 	"WATCHLIST",
 }
 
-// Location of "raw" TruthSet JSON lines files.
+// Hard-coded location of "raw" TruthSet JSON lines files.
 var truthsetURLs = []string{
 	"https://raw.githubusercontent.com/Senzing/truth-sets/refs/heads/main/truthsets/demo/customers.jsonl",
 	"https://raw.githubusercontent.com/Senzing/truth-sets/refs/heads/main/truthsets/demo/reference.jsonl",

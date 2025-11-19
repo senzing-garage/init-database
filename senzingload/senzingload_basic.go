@@ -48,7 +48,7 @@ type Record struct {
 	ID         string `json:"RECORD_ID"`
 }
 
-const TimeoutInMinutes = 5 // Five minutes is just a guess.
+const TimeoutInMinutes = 15 // Fifteen minutes is just a guess.
 
 // ----------------------------------------------------------------------------
 // Variables
@@ -543,14 +543,19 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 
 			// Download file from URL.
 
-			httpRequest, err := http.NewRequestWithContext(ctxTimeout, http.MethodGet, jsonURL, nil)
-			if err != nil {
-				return wraperror.Errorf(err, "http.NewRequestWithContext")
+			httpRequest, errNewRequestWithContext := http.NewRequestWithContext(
+				ctxTimeout,
+				http.MethodGet,
+				jsonURL,
+				nil,
+			)
+			if errNewRequestWithContext != nil {
+				return wraperror.Errorf(errNewRequestWithContext, "http.NewRequestWithContext")
 			}
 
-			httpResponse, err := httpClient.Do(httpRequest)
-			if err != nil {
-				return wraperror.Errorf(err, "httpClient.Do")
+			httpResponse, errDo := httpClient.Do(httpRequest)
+			if errDo != nil {
+				return wraperror.Errorf(errDo, "httpClient.Do")
 			}
 
 			defer func() { assertNoError(httpResponse.Body.Close(), "Error on httpResponse.Body.Close()") }()
@@ -562,7 +567,7 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 				)
 			}
 
-			// Process in-memory file.
+			// Process HTTP response body in-memory. That is, do not write to file.
 
 			jsonLineCount := 0
 
@@ -570,6 +575,8 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 			for scanner.Scan() {
 				jsonLineCount++
 				line := scanner.Bytes()
+
+				// Tricky code: The following code assumes that the JSON contains "DATA_SOURCE" and "RECORD_ID" JSON keys.
 
 				err = json.Unmarshal(line, &jsonRecord)
 				if err != nil {

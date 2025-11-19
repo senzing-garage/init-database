@@ -664,9 +664,3 @@ func fileToString(ctx context.Context, filePath string) (string, error) {
 
 	return string(content), err
 }
-
-// func assertNoError(err error) {
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// }
