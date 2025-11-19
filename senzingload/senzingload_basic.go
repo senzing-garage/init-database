@@ -265,7 +265,7 @@ func (senzingLoad *BasicSenzingLoad) SetLogLevel(ctx context.Context, logLevelNa
 		return wraperror.Errorf(errForPackage, "invalid error level: %s", logLevelName)
 	}
 
-	// Set senzingConfig log level.
+	// Set senzingLoad log level.
 
 	senzingLoad.logLevel = logLevelName
 
@@ -523,12 +523,12 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 
 	// Get an szEngine.
 
-	szEngine, err := szAbstractFactory.CreateEngine(ctx)
+	szEngine, err := szAbstractFactory.CreateEngine(ctxTimeout)
 	if err != nil {
 		return wraperror.Errorf(err, "CreateEngine")
 	}
 
-	defer func() { assertNoError(szEngine.Destroy(ctx), "Error on szEngine.Destroy()") }()
+	defer func() { assertNoError(szEngine.Destroy(ctxTimeout), "Error on szEngine.Destroy()") }()
 
 	httpClient := &http.Client{
 		Timeout: TimeoutInMinutes * time.Minute,
@@ -558,12 +558,18 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 				return wraperror.Errorf(errDo, "httpClient.Do")
 			}
 
-			defer func() { assertNoError(httpResponse.Body.Close(), "Error on httpResponse.Body.Close()") }()
+			// defer func() { assertNoError(httpResponse.Body.Close(), "Error on httpResponse.Body.Close()") }()
 
 			if httpResponse.StatusCode != http.StatusOK {
+				errBodyClose := httpResponse.Body.Close()
+
 				return wraperror.Errorf(
 					errForPackage,
-					fmt.Sprintf("Received non-OK HTTP status: %d", httpResponse.StatusCode),
+					fmt.Sprintf(
+						"Received non-OK HTTP status: %d; Error for httpResponse.Body.Close: %v",
+						httpResponse.StatusCode,
+						errBodyClose,
+					),
 				)
 			}
 
@@ -580,26 +586,31 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 
 				err = json.Unmarshal(line, &jsonRecord)
 				if err != nil {
+					errBodyClose := httpResponse.Body.Close()
+
 					return wraperror.Errorf(
 						err,
-						"Scanning:  "+string(line),
+						fmt.Sprintf("Scanning:  %s; Error for httpResponse.Body.Close: %v", string(line), errBodyClose),
 					)
 				}
 
 				_, err = szEngine.AddRecord(
-					ctx,
+					ctxTimeout,
 					jsonRecord.DataSource,
 					jsonRecord.ID,
 					string(line),
 					senzing.SzNoFlags,
 				)
 				if err != nil {
+					errBodyClose := httpResponse.Body.Close()
+
 					return wraperror.Errorf(
 						err,
 						fmt.Sprintf(
-							"szEngine.AddRecord DataSource: %s; RecordID: %s",
+							"szEngine.AddRecord DataSource: %s; RecordID: %s; Error for httpResponse.Body.Close: %v",
 							jsonRecord.DataSource,
 							jsonRecord.ID,
+							errBodyClose,
 						),
 					)
 				}
@@ -607,6 +618,11 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 
 			if err := scanner.Err(); err != nil {
 				return wraperror.Errorf(err, "Scanning")
+			}
+
+			err = httpResponse.Body.Close()
+			if err != nil {
+				return wraperror.Errorf(err, "Error for httpResponse.Body.Close")
 			}
 
 			senzingLoad.log(2002, jsonLineCount, jsonURL)
