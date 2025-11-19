@@ -136,7 +136,7 @@ func (senzingConfig *BasicSenzingConfig) InitializeSenzing(ctx context.Context) 
 		}
 
 		configID, err = senzingConfig.makeDefaultConfig(ctx, szAbstractFactory, szConfig)
-		senzingConfig.log(2999, configID)
+		senzingConfig.log(2006, configID)
 
 		traceExitMessageNumber, debugMessageNumber = 99, 999
 
@@ -197,7 +197,7 @@ func (senzingConfig *BasicSenzingConfig) InitializeSenzing(ctx context.Context) 
 		}
 
 		configID, err = senzingConfig.makeDefaultConfig(ctx, szAbstractFactory, szConfig)
-		senzingConfig.log(2999, configID)
+		senzingConfig.log(2006, configID)
 
 		traceExitMessageNumber, debugMessageNumber = 999, 999
 
@@ -519,6 +519,7 @@ func (senzingConfig *BasicSenzingConfig) getLogger() logging.Logging {
 	if senzingConfig.logger == nil {
 		options := []interface{}{
 			&logging.OptionCallerSkip{Value: OptionCallerSkip4},
+			logging.OptionMessageFields{Value: []string{"id", "text"}},
 		}
 
 		senzingConfig.logger, err = logging.NewSenzingLogger(ComponentID, IDMessages, options...)
@@ -663,9 +664,3 @@ func fileToString(ctx context.Context, filePath string) (string, error) {
 
 	return string(content), err
 }
-
-// func assertNoError(err error) {
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// }

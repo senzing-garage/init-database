@@ -123,6 +123,7 @@ This usage shows how to initialize a database with a Docker container.
 - **[SENZING_TOOLS_ENGINE_LOG_LEVEL]**
 - **[SENZING_TOOLS_ENGINE_MODULE_NAME]**
 - **[SENZING_TOOLS_LICENSE_STRING_BASE64]**
+- **[SENZING_TOOLS_LOAD_TRUTHSET]**
 - **[SENZING_TOOLS_LOG_LEVEL]**
 - **[SENZING_TOOLS_OBSERVER_ORIGIN]**
 - **[SENZING_TOOLS_OBSERVER_URL]**
@@ -171,6 +172,7 @@ This usage shows how to initialize a database with a Docker container.
 [SENZING_TOOLS_ENGINE_LOG_LEVEL]: https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_engine_log_level
 [SENZING_TOOLS_ENGINE_MODULE_NAME]: https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_engine_module_name
 [SENZING_TOOLS_LICENSE_STRING_BASE64]: https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_license_string_base64
+[SENZING_TOOLS_LOAD_TRUTHSET]: https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_load_truthset
 [SENZING_TOOLS_LOG_LEVEL]: https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_log_level
 [SENZING_TOOLS_OBSERVER_ORIGIN]: https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_observer_origin
 [SENZING_TOOLS_OBSERVER_URL]: https://github.com/senzing-garage/knowledge-base/blob/main/lists/environment-variables.md#senzing_tools_observer_url

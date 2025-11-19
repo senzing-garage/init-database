@@ -125,7 +125,7 @@ linters:
       - examples$
   settings:
     cyclop:
-      max-complexity: 20
+      max-complexity: 25
     depguard:
       rules:
         prevent_unmaintained_packages:
@@ -138,13 +138,17 @@ linters:
     exhaustruct:
       exclude:
         - '.+/cobra\.Command$'
+        - '.+/http\.Client$'
         - '.+/initializer\.BasicInitializer$'
         - '.+/senzingconfig\.BasicSenzingConfig$'
+        - '.+/senzingload\.BasicSenzingLoad$'
         - '.+/senzingschema\.BasicSenzingSchema$'
         - '.+/subject\.SimpleSubject$'
     funlen:
-      lines: 140
-      statements: 75
+      lines: 150
+      statements: 80
+    gocognit:
+      min-complexity: 40
     ireturn:
       allow:
         - anon
@@ -154,6 +158,7 @@ linters:
         - observer.Observer
         - senzing.SzAbstractFactory
         - senzingconfig.SenzingConfig
+        - senzingload.SenzingLoad
         - senzingschema.SenzingSchema
         - settingsparser.SettingsParser
         - stdlib
@@ -165,8 +170,17 @@ linters:
         - '^notifier\.Notify$'
         - '^senzingConfig\.log$'
         - '^senzingConfig\.traceEntry$'
+        - '^senzingLoad\.log$'
+        - '^senzingLoad\.traceEntry$'
         - '^senzingSchema\.log$'
         - '^senzingSchema\.traceEntry$'
+    tagliatelle:
+      case:
+        rules:
+          json: camel
+        overrides:
+          - pkg: senzingload
+            ignore: true
 formatters:
   enable:
     - gci

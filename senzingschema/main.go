@@ -23,7 +23,7 @@ type SenzingSchema interface {
 // Constants
 // ----------------------------------------------------------------------------
 
-// Identfier of the  package found messages having the format "senzing-6503xxxx".
+// Identifier of the  package found messages having the format "senzing-6503xxxx".
 const ComponentID = 6503
 
 // Log message prefix.

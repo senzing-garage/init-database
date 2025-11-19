@@ -9,7 +9,7 @@ services:
     container_name: senzing-mssql-driver
     environment:
       ACCEPT_EULA: Y
-    image: senzing/apt:${SENZING_DOCKER_IMAGE_VERSION_APT:-latest}
+    image: senzing/apt:${SENZING_DOCKER_IMAGE_VERSION_SENZING_APT:-latest}
     networks:
       - senzing
     restart: on-failure
@@ -86,7 +86,7 @@ services:
       SENZING_TOOLS_DATASOURCES: "CUSTOMERS, REFERENCE, WATCHLIST"
       ODBCINI: /var/opt/senzing/odbc.ini
       ODBCSYSINI: /opt/microsoft/msodbcsql18/etc
-    image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_INIT_DATABASE:-latest}
+    image: senzing/init-database:${SENZING_DOCKER_IMAGE_VERSION_SENZING_INIT_DATABASE:-latest}
     networks:
       - senzing
     restart: on-failure
@@ -98,7 +98,7 @@ services:
     container_name: senzing-adminer
     environment:
       ADMINER_DEFAULT_SERVER: senzing-mssql
-    image: senzing/adminer:${SENZING_DOCKER_IMAGE_VERSION_ADMINER:-latest}
+    image: senzing/adminer:${SENZING_DOCKER_IMAGE_VERSION_SENZING_ADMINER:-latest}
     networks:
       - senzing
     ports:

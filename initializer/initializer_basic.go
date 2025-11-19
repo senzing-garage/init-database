@@ -7,6 +7,8 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"slices"
+	"sync"
 	"time"
 
 	"github.com/senzing-garage/go-helpers/wraperror"
@@ -16,6 +18,7 @@ import (
 	"github.com/senzing-garage/go-observing/observerpb"
 	"github.com/senzing-garage/go-observing/subject"
 	"github.com/senzing-garage/init-database/senzingconfig"
+	"github.com/senzing-garage/init-database/senzingload"
 	"github.com/senzing-garage/init-database/senzingschema"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -29,20 +32,24 @@ import (
 type BasicInitializer struct {
 	DatabaseURLs                []string `json:"databaseUrl,omitempty"`
 	DataSources                 []string `json:"dataSources,omitempty"`
-	ObserverOrigin              string   `json:"observerOrigin,omitempty"`
-	ObserverURL                 string   `json:"observerUrl,omitempty"`
-	SenzingInstanceName         string   `json:"senzingInstanceName,omitempty"`
-	SenzingLogLevel             string   `json:"senzingLogLevel,omitempty"`
-	SenzingSettings             string   `json:"senzingSettings,omitempty"`
-	SenzingSettingsFile         string   `json:"senzingSettingsFile,omitempty"`
-	SenzingVerboseLogging       int64    `json:"senzingVerboseLogging,omitempty"`
-	SQLFile                     string   `json:"sqlFile,omitempty"`
 	InstallSenzingConfiguration bool     `json:"installSenzingConfiguration,omitempty"`
-
-	logger                 logging.Logging
-	observers              subject.Subject
-	senzingConfigSingleton senzingconfig.SenzingConfig
-	senzingSchemaSingleton senzingschema.SenzingSchema
+	LoadTruthset                bool     `json:"loadTruthset,omitempty"`
+	logger                      logging.Logging
+	mutexConfigSingleton        sync.Mutex
+	mutexLoadSingleton          sync.Mutex
+	mutexSchemaSingleton        sync.Mutex
+	ObserverOrigin              string `json:"observerOrigin,omitempty"`
+	observers                   subject.Subject
+	ObserverURL                 string `json:"observerUrl,omitempty"`
+	senzingConfigSingleton      senzingconfig.SenzingConfig
+	SenzingInstanceName         string `json:"senzingInstanceName,omitempty"`
+	senzingLoadSingleton        senzingload.SenzingLoad
+	SenzingLogLevel             string `json:"senzingLogLevel,omitempty"`
+	senzingSchemaSingleton      senzingschema.SenzingSchema
+	SenzingSettings             string `json:"senzingSettings,omitempty"`
+	SenzingSettingsFile         string `json:"senzingSettingsFile,omitempty"`
+	SenzingVerboseLogging       int64  `json:"senzingVerboseLogging,omitempty"`
+	SQLFile                     string `json:"sqlFile,omitempty"`
 }
 
 // ----------------------------------------------------------------------------
@@ -55,6 +62,19 @@ var debugOptions = []interface{}{
 
 var traceOptions = []interface{}{
 	&logging.OptionCallerSkip{Value: OptionCallerSkip5},
+}
+
+var truthsetDataSources = []string{
+	"CUSTOMERS",
+	"REFERENCE",
+	"WATCHLIST",
+}
+
+// Hard-coded location of "raw" TruthSet JSON lines files.
+var truthsetURLs = []string{
+	"https://raw.githubusercontent.com/Senzing/truth-sets/refs/heads/main/truthsets/demo/customers.jsonl",
+	"https://raw.githubusercontent.com/Senzing/truth-sets/refs/heads/main/truthsets/demo/reference.jsonl",
+	"https://raw.githubusercontent.com/Senzing/truth-sets/refs/heads/main/truthsets/demo/watchlist.jsonl",
 }
 
 // ----------------------------------------------------------------------------
@@ -167,6 +187,17 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 		return wraperror.Errorf(err, "InitializeSenzing")
 	}
 
+	// Add Truth Set data sources.
+
+	if initializer.LoadTruthset {
+		for _, dataSource := range truthsetDataSources {
+			// Avoid duplicate DataSource names.
+			if !slices.Contains(initializer.DataSources, dataSource) {
+				initializer.DataSources = append(initializer.DataSources, dataSource)
+			}
+		}
+	}
+
 	// Determine if Senzing configuration should be installed
 
 	if initializer.InstallSenzingConfiguration || len(initializer.DataSources) > 0 {
@@ -191,6 +222,19 @@ func (initializer *BasicInitializer) Initialize(ctx context.Context) error {
 			traceExitMessageNumber, debugMessageNumber = 16, 1016
 
 			return wraperror.Errorf(err, "InitializeSenzing")
+		}
+	}
+
+	// Load Truth Set.
+
+	if initializer.LoadTruthset {
+		senzingLoad := initializer.getSenzingLoad()
+
+		err := senzingLoad.LoadURLs(ctx)
+		if err != nil {
+			traceExitMessageNumber, debugMessageNumber = 99, 1999
+
+			return wraperror.Errorf(err, "LoadURLs")
 		}
 	}
 
@@ -641,6 +685,7 @@ func (initializer *BasicInitializer) getLogger() logging.Logging {
 	if initializer.logger == nil {
 		options := []interface{}{
 			logging.OptionCallerSkip{Value: OptionCallerSkip4},
+			logging.OptionMessageFields{Value: []string{"id", "text"}},
 		}
 		if len(initializer.SenzingLogLevel) > 0 {
 			options = append(options, logging.OptionLogLevel{Value: initializer.SenzingLogLevel})
@@ -789,6 +834,9 @@ func (initializer *BasicInitializer) registerObserverSenzingSchema(
 // --- Dependent services -----------------------------------------------------
 
 func (initializer *BasicInitializer) getSenzingConfig() senzingconfig.SenzingConfig {
+	initializer.mutexConfigSingleton.Lock()
+	defer initializer.mutexConfigSingleton.Unlock()
+
 	if initializer.senzingConfigSingleton == nil {
 		initializer.senzingConfigSingleton = &senzingconfig.BasicSenzingConfig{
 			DataSources:           initializer.DataSources,
@@ -802,7 +850,26 @@ func (initializer *BasicInitializer) getSenzingConfig() senzingconfig.SenzingCon
 	return initializer.senzingConfigSingleton
 }
 
+func (initializer *BasicInitializer) getSenzingLoad() senzingload.SenzingLoad {
+	initializer.mutexLoadSingleton.Lock()
+	defer initializer.mutexLoadSingleton.Unlock()
+
+	if initializer.senzingLoadSingleton == nil {
+		initializer.senzingLoadSingleton = &senzingload.BasicSenzingLoad{
+			JSONURLs:              truthsetURLs,
+			SenzingInstanceName:   initializer.SenzingInstanceName,
+			SenzingSettings:       initializer.SenzingSettings,
+			SenzingVerboseLogging: initializer.SenzingVerboseLogging,
+		}
+	}
+
+	return initializer.senzingLoadSingleton
+}
+
 func (initializer *BasicInitializer) getSenzingSchema() senzingschema.SenzingSchema {
+	initializer.mutexSchemaSingleton.Lock()
+	defer initializer.mutexSchemaSingleton.Unlock()
+
 	if initializer.senzingSchemaSingleton == nil {
 		initializer.senzingSchemaSingleton = &senzingschema.BasicSenzingSchema{
 			DatabaseURLs:    initializer.DatabaseURLs,
