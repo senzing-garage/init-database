@@ -34,19 +34,22 @@ type BasicInitializer struct {
 	DataSources                 []string `json:"dataSources,omitempty"`
 	InstallSenzingConfiguration bool     `json:"installSenzingConfiguration,omitempty"`
 	LoadTruthset                bool     `json:"loadTruthset,omitempty"`
-	ObserverOrigin              string   `json:"observerOrigin,omitempty"`
-	ObserverURL                 string   `json:"observerUrl,omitempty"`
-	SenzingInstanceName         string   `json:"senzingInstanceName,omitempty"`
-	SenzingLogLevel             string   `json:"senzingLogLevel,omitempty"`
-	SenzingSettings             string   `json:"senzingSettings,omitempty"`
-	SenzingSettingsFile         string   `json:"senzingSettingsFile,omitempty"`
-	SenzingVerboseLogging       int64    `json:"senzingVerboseLogging,omitempty"`
-	SQLFile                     string   `json:"sqlFile,omitempty"`
 	logger                      logging.Logging
+	mutexConfigSingleton        sync.Mutex
+	mutexLoadSingleton          sync.Mutex
+	mutexSchemaSingleton        sync.Mutex
+	ObserverOrigin              string `json:"observerOrigin,omitempty"`
 	observers                   subject.Subject
+	ObserverURL                 string `json:"observerUrl,omitempty"`
 	senzingConfigSingleton      senzingconfig.SenzingConfig
+	SenzingInstanceName         string `json:"senzingInstanceName,omitempty"`
 	senzingLoadSingleton        senzingload.SenzingLoad
+	SenzingLogLevel             string `json:"senzingLogLevel,omitempty"`
 	senzingSchemaSingleton      senzingschema.SenzingSchema
+	SenzingSettings             string `json:"senzingSettings,omitempty"`
+	SenzingSettingsFile         string `json:"senzingSettingsFile,omitempty"`
+	SenzingVerboseLogging       int64  `json:"senzingVerboseLogging,omitempty"`
+	SQLFile                     string `json:"sqlFile,omitempty"`
 }
 
 // ----------------------------------------------------------------------------
@@ -73,12 +76,6 @@ var truthsetURLs = []string{
 	"https://raw.githubusercontent.com/Senzing/truth-sets/refs/heads/main/truthsets/demo/reference.jsonl",
 	"https://raw.githubusercontent.com/Senzing/truth-sets/refs/heads/main/truthsets/demo/watchlist.jsonl",
 }
-
-var (
-	mutexConfigSingleton sync.Mutex
-	mutexLoadSingleton   sync.Mutex
-	mutexSchemaSingleton sync.Mutex
-)
 
 // ----------------------------------------------------------------------------
 // Interface methods
@@ -837,8 +834,8 @@ func (initializer *BasicInitializer) registerObserverSenzingSchema(
 // --- Dependent services -----------------------------------------------------
 
 func (initializer *BasicInitializer) getSenzingConfig() senzingconfig.SenzingConfig {
-	mutexConfigSingleton.Lock()
-	defer mutexConfigSingleton.Unlock()
+	initializer.mutexConfigSingleton.Lock()
+	defer initializer.mutexConfigSingleton.Unlock()
 
 	if initializer.senzingConfigSingleton == nil {
 		initializer.senzingConfigSingleton = &senzingconfig.BasicSenzingConfig{
@@ -854,8 +851,8 @@ func (initializer *BasicInitializer) getSenzingConfig() senzingconfig.SenzingCon
 }
 
 func (initializer *BasicInitializer) getSenzingLoad() senzingload.SenzingLoad {
-	mutexLoadSingleton.Lock()
-	defer mutexLoadSingleton.Unlock()
+	initializer.mutexLoadSingleton.Lock()
+	defer initializer.mutexLoadSingleton.Unlock()
 
 	if initializer.senzingLoadSingleton == nil {
 		initializer.senzingLoadSingleton = &senzingload.BasicSenzingLoad{
@@ -870,8 +867,8 @@ func (initializer *BasicInitializer) getSenzingLoad() senzingload.SenzingLoad {
 }
 
 func (initializer *BasicInitializer) getSenzingSchema() senzingschema.SenzingSchema {
-	mutexSchemaSingleton.Lock()
-	defer mutexSchemaSingleton.Unlock()
+	initializer.mutexSchemaSingleton.Lock()
+	defer initializer.mutexSchemaSingleton.Unlock()
 
 	if initializer.senzingSchemaSingleton == nil {
 		initializer.senzingSchemaSingleton = &senzingschema.BasicSenzingSchema{

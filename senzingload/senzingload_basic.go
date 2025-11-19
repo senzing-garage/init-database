@@ -42,6 +42,7 @@ type BasicSenzingLoad struct {
 	szAbstractFactorySyncOnce  sync.Once
 }
 
+// record is used to extract DATA_SOURCE and RECORD_ID from source record.
 type record struct {
 	DataSource string `json:"DATA_SOURCE"`
 	ID         string `json:"RECORD_ID"`
@@ -66,7 +67,7 @@ var traceOptions = []interface{}{
 // ----------------------------------------------------------------------------
 
 /*
-The LoadURLs method adds records from URLs to files of JSON lines.
+The LoadURLs method loads records from URLs of JSON lines into Senzing.
 It also process redo records before returning.
 
 Input
@@ -191,20 +192,15 @@ func (senzingLoad *BasicSenzingLoad) RegisterObserver(ctx context.Context, obser
 		senzingLoad.log(1002, senzingLoad, string(asJSON))
 	}
 
-	// Create empty list of observers.
-
-	if senzingLoad.observers == nil {
-		senzingLoad.observers = &subject.SimpleSubject{}
-	}
-
 	// Notify observers.
-
-	go func() {
-		details := map[string]string{
-			"observerID": observer.GetObserverID(ctx),
-		}
-		notifier.Notify(ctx, senzingLoad.observers, senzingLoad.observerOrigin, ComponentID, 8003, err, details)
-	}()
+	if senzingLoad.observers != nil {
+		go func() {
+			details := map[string]string{
+				"observerID": observer.GetObserverID(ctx),
+			}
+			notifier.Notify(ctx, senzingLoad.observers, senzingLoad.observerOrigin, ComponentID, 8003, err, details)
+		}()
+	}
 
 	return wraperror.Errorf(err, wraperror.NoMessage)
 }
@@ -536,7 +532,7 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 	for _, jsonURL := range senzingLoad.JSONURLs {
 		select {
 		case <-ctxTimeout.Done():
-			return wraperror.Errorf(ctx.Err(), "HTTP Timeout")
+			return wraperror.Errorf(ctxTimeout.Err(), "HTTP Timeout")
 		default:
 			senzingLoad.log(3001, jsonURL)
 
@@ -563,8 +559,9 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 				return wraperror.Errorf(
 					errForPackage,
 					fmt.Sprintf(
-						"Received non-OK HTTP status: %d; Error for httpResponse.Body.Close: %v",
+						"Received non-OK HTTP status: %d; URL: %s; Error for httpResponse.Body.Close: %v",
 						httpResponse.StatusCode,
+						jsonURL,
 						errBodyClose,
 					),
 				)
@@ -574,6 +571,10 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 
 			jsonLineCount := 0
 
+			errScannerMessage := ""
+
+			var errScanner error
+
 			scanner := bufio.NewScanner(httpResponse.Body)
 			for scanner.Scan() {
 				jsonLineCount++
@@ -581,45 +582,41 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 
 				// Tricky code: The following code assumes that the JSON contains "DATA_SOURCE" and "RECORD_ID" JSON keys.
 
-				err = json.Unmarshal(line, &jsonRecord)
-				if err != nil {
-					errBodyClose := httpResponse.Body.Close()
+				errScanner = json.Unmarshal(line, &jsonRecord)
+				if errScanner != nil {
+					errScannerMessage = "Scanning:  " + string(line)
 
-					return wraperror.Errorf(
-						err,
-						fmt.Sprintf("Scanning:  %s; Error for httpResponse.Body.Close: %v", string(line), errBodyClose),
-					)
+					break
 				}
 
-				_, err = szEngine.AddRecord(
+				_, errScanner = szEngine.AddRecord(
 					ctxTimeout,
 					jsonRecord.DataSource,
 					jsonRecord.ID,
 					string(line),
 					senzing.SzNoFlags,
 				)
-				if err != nil {
-					errBodyClose := httpResponse.Body.Close()
-
-					return wraperror.Errorf(
-						err,
-						fmt.Sprintf(
-							"szEngine.AddRecord DataSource: %s; RecordID: %s; Error for httpResponse.Body.Close: %v",
-							jsonRecord.DataSource,
-							jsonRecord.ID,
-							errBodyClose,
-						),
+				if errScanner != nil {
+					errScannerMessage = fmt.Sprintf(
+						"szEngine.AddRecord DataSource: %s; RecordID: %s",
+						jsonRecord.DataSource,
+						jsonRecord.ID,
 					)
+
+					break
 				}
 			}
 
-			if err := scanner.Err(); err != nil {
-				return wraperror.Errorf(err, "Scanning")
+			if err = httpResponse.Body.Close(); err != nil {
+				return wraperror.Errorf(err, "Error for httpResponse.Body.Close")
 			}
 
-			err = httpResponse.Body.Close()
-			if err != nil {
-				return wraperror.Errorf(err, "Error for httpResponse.Body.Close")
+			if errScanner != nil {
+				return wraperror.Errorf(errScanner, errScannerMessage)
+			}
+
+			if err = scanner.Err(); err != nil {
+				return wraperror.Errorf(err, "Scanning")
 			}
 
 			senzingLoad.log(2002, jsonLineCount, jsonURL)
