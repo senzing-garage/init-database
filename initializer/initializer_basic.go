@@ -860,7 +860,6 @@ func (initializer *BasicInitializer) getSenzingLoad() senzingload.SenzingLoad {
 	if initializer.senzingLoadSingleton == nil {
 		initializer.senzingLoadSingleton = &senzingload.BasicSenzingLoad{
 			JSONURLs:              truthsetURLs,
-			SenzingConfigJSONFile: initializer.SenzingSettingsFile,
 			SenzingInstanceName:   initializer.SenzingInstanceName,
 			SenzingSettings:       initializer.SenzingSettings,
 			SenzingVerboseLogging: initializer.SenzingVerboseLogging,

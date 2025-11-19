@@ -31,7 +31,6 @@ type BasicSenzingLoad struct {
 	GrpcTarget            string            `json:"grpcTarget,omitempty"`
 	SenzingInstanceName   string            `json:"senzingInstanceName,omitempty"`
 	SenzingSettings       string            `json:"senzingSettings,omitempty"`
-	SenzingConfigJSONFile string            `json:"senzingConfigJsonFile,omitempty"`
 	SenzingVerboseLogging int64             `json:"senzingVerboseLogging,omitempty"`
 
 	isTrace                    bool
@@ -43,12 +42,12 @@ type BasicSenzingLoad struct {
 	szAbstractFactorySyncOnce  sync.Once
 }
 
-type Record struct {
+type record struct {
 	DataSource string `json:"DATA_SOURCE"`
 	ID         string `json:"RECORD_ID"`
 }
 
-const TimeoutInMinutes = 15 // Fifteen minutes is just a guess.
+const timeoutInMinutes = 15 // Fifteen minutes is just a guess.
 
 // ----------------------------------------------------------------------------
 // Variables
@@ -483,7 +482,7 @@ func (senzingLoad *BasicSenzingLoad) traceExit(messageNumber int, details ...int
 func (senzingLoad *BasicSenzingLoad) getAbstractFactory(ctx context.Context) senzing.SzAbstractFactory {
 	var err error
 
-	_ = ctx
+	_ = ctx // ctx not used, yet.
 
 	senzingLoad.szAbstractFactorySyncOnce.Do(func() {
 		if len(senzingLoad.GrpcTarget) == 0 {
@@ -512,32 +511,32 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 	szAbstractFactory senzing.SzAbstractFactory,
 ) error {
 	var (
-		jsonRecord Record
+		jsonRecord record
 		err        error
 	)
 
 	// Use timeout in ctx.
 
-	ctxTimeout, cancel := context.WithTimeout(ctx, TimeoutInMinutes*time.Minute)
-	defer cancel() // Ensure the context is canceled when main exits
-
 	// Get an szEngine.
 
-	szEngine, err := szAbstractFactory.CreateEngine(ctxTimeout)
+	szEngine, err := szAbstractFactory.CreateEngine(ctx)
 	if err != nil {
 		return wraperror.Errorf(err, "CreateEngine")
 	}
 
-	defer func() { assertNoError(szEngine.Destroy(ctxTimeout), "Error on szEngine.Destroy()") }()
+	defer func() { assertNoError(szEngine.Destroy(ctx), "Error on szEngine.Destroy()") }()
 
 	httpClient := &http.Client{
-		Timeout: TimeoutInMinutes * time.Minute,
+		Timeout: timeoutInMinutes * time.Minute,
 	}
+
+	ctxTimeout, cancel := context.WithTimeout(ctx, timeoutInMinutes*time.Minute)
+	defer cancel() // Ensure the context is canceled when main exits
 
 	for _, jsonURL := range senzingLoad.JSONURLs {
 		select {
 		case <-ctxTimeout.Done():
-			return wraperror.Errorf(err, "HTTP Timeout")
+			return wraperror.Errorf(ctx.Err(), "HTTP Timeout")
 		default:
 			senzingLoad.log(3001, jsonURL)
 
@@ -557,8 +556,6 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 			if errDo != nil {
 				return wraperror.Errorf(errDo, "httpClient.Do")
 			}
-
-			// defer func() { assertNoError(httpResponse.Body.Close(), "Error on httpResponse.Body.Close()") }()
 
 			if httpResponse.StatusCode != http.StatusOK {
 				errBodyClose := httpResponse.Body.Close()
