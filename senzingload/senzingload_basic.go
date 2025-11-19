@@ -48,7 +48,7 @@ type Record struct {
 	ID         string `json:"RECORD_ID"`
 }
 
-const TimeoutInMinutes = 2
+const TimeoutInMinutes = 2 // Two minutes is just a guess.
 
 // ----------------------------------------------------------------------------
 // Variables
@@ -539,7 +539,7 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 
 		// Download file from URL.
 
-		httpRequest, err := http.NewRequestWithContext(ctxTimeout, http.MethodGet, jsonURL, nil) // #nosec:G107
+		httpRequest, err := http.NewRequestWithContext(ctxTimeout, http.MethodGet, jsonURL, nil)
 		if err != nil {
 			return wraperror.Errorf(err, "http.NewRequestWithContext")
 		}
@@ -548,6 +548,8 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 		if err != nil {
 			return wraperror.Errorf(err, "httpClient.Do")
 		}
+
+		defer httpResponse.Body.Close()
 
 		if httpResponse.StatusCode != http.StatusOK {
 			return wraperror.Errorf(
@@ -565,7 +567,7 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 			jsonLineCount++
 			line := scanner.Bytes()
 
-			err := json.Unmarshal(line, &jsonRecord)
+			err = json.Unmarshal(line, &jsonRecord)
 			if err != nil {
 				return wraperror.Errorf(
 					err,
@@ -594,11 +596,6 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 
 		if err := scanner.Err(); err != nil {
 			return wraperror.Errorf(err, "Scanning")
-		}
-
-		err = httpResponse.Body.Close()
-		if err != nil {
-			return wraperror.Errorf(err, "httpResponse.Body.Close()")
 		}
 
 		senzingLoad.log(2002, jsonLineCount, jsonURL)

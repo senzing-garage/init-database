@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
+	"sync"
 	"time"
 
 	"github.com/senzing-garage/go-helpers/wraperror"
@@ -66,11 +67,14 @@ var truthsetDataSources = []string{
 	"WATCHLIST",
 }
 
+// Location of "raw" TruthSet JSON lines files.
 var truthsetURLs = []string{
 	"https://raw.githubusercontent.com/Senzing/truth-sets/refs/heads/main/truthsets/demo/customers.jsonl",
 	"https://raw.githubusercontent.com/Senzing/truth-sets/refs/heads/main/truthsets/demo/reference.jsonl",
 	"https://raw.githubusercontent.com/Senzing/truth-sets/refs/heads/main/truthsets/demo/watchlist.jsonl",
 }
+
+var mutex sync.Mutex
 
 // ----------------------------------------------------------------------------
 // Interface methods
@@ -829,6 +833,8 @@ func (initializer *BasicInitializer) registerObserverSenzingSchema(
 // --- Dependent services -----------------------------------------------------
 
 func (initializer *BasicInitializer) getSenzingConfig() senzingconfig.SenzingConfig {
+	mutex.Lock()
+
 	if initializer.senzingConfigSingleton == nil {
 		initializer.senzingConfigSingleton = &senzingconfig.BasicSenzingConfig{
 			DataSources:           initializer.DataSources,
@@ -839,10 +845,14 @@ func (initializer *BasicInitializer) getSenzingConfig() senzingconfig.SenzingCon
 		}
 	}
 
+	mutex.Unlock()
+
 	return initializer.senzingConfigSingleton
 }
 
 func (initializer *BasicInitializer) getSenzingLoad() senzingload.SenzingLoad {
+	mutex.Lock()
+
 	if initializer.senzingLoadSingleton == nil {
 		initializer.senzingLoadSingleton = &senzingload.BasicSenzingLoad{
 			JSONURLs:              truthsetURLs,
@@ -853,10 +863,14 @@ func (initializer *BasicInitializer) getSenzingLoad() senzingload.SenzingLoad {
 		}
 	}
 
+	mutex.Unlock()
+
 	return initializer.senzingLoadSingleton
 }
 
 func (initializer *BasicInitializer) getSenzingSchema() senzingschema.SenzingSchema {
+	mutex.Lock()
+
 	if initializer.senzingSchemaSingleton == nil {
 		initializer.senzingSchemaSingleton = &senzingschema.BasicSenzingSchema{
 			DatabaseURLs:    initializer.DatabaseURLs,
@@ -864,6 +878,8 @@ func (initializer *BasicInitializer) getSenzingSchema() senzingschema.SenzingSch
 			SQLFile:         initializer.SQLFile,
 		}
 	}
+
+	mutex.Unlock()
 
 	return initializer.senzingSchemaSingleton
 }

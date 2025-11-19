@@ -36,6 +36,7 @@ var Long = getLong()
 // Context variables
 // ----------------------------------------------------------------------------
 
+// Load the TruthSet data found at https://github.com/Senzing/truth-sets.
 var OptionLoadTruthset = option.ContextVariable{
 	Arg:     "load-truthset",
 	Default: option.OsLookupEnvBool(envarLoadTruthset, false),
