@@ -535,7 +535,6 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 	}
 
 	for _, jsonURL := range senzingLoad.JSONURLs {
-
 		select {
 		case <-ctxTimeout.Done():
 			return wraperror.Errorf(err, "HTTP Timeout")
