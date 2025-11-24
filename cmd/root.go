@@ -195,6 +195,8 @@ func getDatabaseURLs(ctx context.Context, senzingSettings string) ([]string, err
 		}
 	}
 
+	fmt.Printf(">>>>>> getDatabaseURLs: %+v\n", result)
+
 	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }
 
