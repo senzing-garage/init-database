@@ -27,7 +27,7 @@ type SenzingSchema interface {
 const ComponentID = 6503
 
 // Log message prefix.
-const Prefix = "init-database.senzingconfig."
+const Prefix = "init-database.senzingschema."
 
 const (
 	OptionCallerSkip4 = 4
