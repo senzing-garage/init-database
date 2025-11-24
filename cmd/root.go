@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"slices"
 	"strings"
 
 	"github.com/senzing-garage/go-cmdhelping/cmdhelper"
@@ -165,37 +166,46 @@ func Version() string {
 
 // Get a slice of database URL strings.
 func getDatabaseURLs(ctx context.Context, senzingSettings string) ([]string, error) {
-	var err error
+	var (
+		err    error
+		result []string
+	)
 
-	result := []string{}
+	candidateDatabaseURLs := []string{}
 
 	databaseURL := viper.GetString(option.DatabaseURL.Arg)
 	if len(databaseURL) > 0 {
-		result = append(result, databaseURL)
+		candidateDatabaseURLs = append(candidateDatabaseURLs, databaseURL)
 	}
 
-	if len(result) == 0 {
+	if len(candidateDatabaseURLs) == 0 {
 		settingsParser, err := settingsparser.New(senzingSettings)
 		if err != nil {
-			return result, wraperror.Errorf(err, "getDatabaseURLs")
+			return candidateDatabaseURLs, wraperror.Errorf(err, "getDatabaseURLs")
 		}
 
 		databaseURIs, err := settingsParser.GetDatabaseURIs(ctx)
 		if err != nil {
-			return result, wraperror.Errorf(err, "GetDatabaseURIs")
+			return candidateDatabaseURLs, wraperror.Errorf(err, "GetDatabaseURIs")
 		}
 
 		for _, databaseURI := range databaseURIs {
 			databaseURL, err := helpersettings.BuildSenzingDatabaseURL(databaseURI)
 			if err != nil {
-				return result, wraperror.Errorf(err, "BuildSenzingDatabaseURL: %s", databaseURI)
+				return candidateDatabaseURLs, wraperror.Errorf(err, "BuildSenzingDatabaseURL: %s", databaseURI)
 			}
 
-			result = append(result, databaseURL)
+			candidateDatabaseURLs = append(candidateDatabaseURLs, databaseURL)
 		}
 	}
 
-	fmt.Printf(">>>>>> getDatabaseURLs: %+v\n", result)
+	// Delete duplicates.
+
+	for _, databaseURL := range candidateDatabaseURLs {
+		if !slices.Contains(result, databaseURL) {
+			result = append(result, databaseURL)
+		}
+	}
 
 	return result, wraperror.Errorf(err, wraperror.NoMessage)
 }

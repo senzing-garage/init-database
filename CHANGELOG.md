@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning].
 
 -
 
+## [0.8.1] - 2025-11-25
+
+### Added in 0.8.1
+
+- Deduplicate database URLs
+
 ## [0.8.0] - 2025-11-18
 
 ### Added in 0.8.0
