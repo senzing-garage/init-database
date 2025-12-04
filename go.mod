@@ -10,7 +10,7 @@ require (
 	github.com/senzing-garage/go-observing v0.3.6
 	github.com/senzing-garage/go-sdk-abstract-factory v0.9.16
 	github.com/senzing-garage/sz-sdk-go v0.15.11
-	github.com/spf13/cobra v1.10.1
+	github.com/spf13/cobra v1.10.2
 	github.com/spf13/viper v1.21.0
 	github.com/stretchr/testify v1.11.1
 	google.golang.org/grpc v1.77.0
