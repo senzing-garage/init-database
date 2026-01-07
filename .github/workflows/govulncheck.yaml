@@ -19,6 +19,7 @@ jobs:
       fail-fast: false
       matrix:
         go: ["1.24"]
+        senzingsdk-version: [staging-v4]
     timeout-minutes: 10
 
     steps:
