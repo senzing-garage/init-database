@@ -70,21 +70,9 @@ jobs:
         run: |
           sudo apt-get install mysql-server
 
-      - name: /usr/lib
-        run: |
-          ls -la /usr/lib/x86_64-linux-gnu/* | grep libmysql
-
-      - name: /lib
-        run: |
-          ls -la     /lib/x86_64-linux-gnu/* | grep libmysql
-
       - name: Link to libmysqlclient
         run: |
-          sudo ln -s /lib/x86_64-linux-gnu/libmysqlclient.so.21 /lib/x86_64-linux-gnu/libmysqlclient.so.22
-          sudo ln -s /usr/lib/x86_64-linux-gnu/libmysqlclient.so.21 /usr/lib/x86_64-linux-gnu/libmysqlclient.so.22
-          # sudo ln -s /usr/lib/x86_64-linux-gnu/libmysqlclient.so.21 /usr/lib/x86_64-linux-gnu/libmysqlclient.so.22
-          # sudo ln -s /usr/lib/x86_64-linux-gnu/libmysqlclient.so.21 /lib/x86_64-linux-gnu/libmysqlclient.so.22
-          # sudo ln -s /lib/x86_64-linux-gnu/libmysqlclient.so.21 /lib/x86_64-linux-gnu/libmysqlclient.so.22
+          sudo ln -s /lib/x86_64-linux-gnu/libmysqlclient.so.21 /opt/senzing/er/lib/libmysqlclient.so.22
 
       - name: Run go test
         run: |
