@@ -80,7 +80,8 @@ jobs:
 
       - name: Link to libmysqlclient
         run: |
-          sudo ln -s /usr/lib/x86_64-linux-gnu/libmysqlclient.so.22 /lib/x86_64-linux-gnu/libmysqlclient.so.22
+          sudo ln -s /lib/x86_64-linux-gnu/libmysqlclient.so.21 /lib/x86_64-linux-gnu/libmysqlclient.so.22
+          sudo ln -s /usr/lib/x86_64-linux-gnu/libmysqlclient.so.21 /usr/lib/x86_64-linux-gnu/libmysqlclient.so.22
           # sudo ln -s /usr/lib/x86_64-linux-gnu/libmysqlclient.so.21 /usr/lib/x86_64-linux-gnu/libmysqlclient.so.22
           # sudo ln -s /usr/lib/x86_64-linux-gnu/libmysqlclient.so.21 /lib/x86_64-linux-gnu/libmysqlclient.so.22
           # sudo ln -s /lib/x86_64-linux-gnu/libmysqlclient.so.21 /lib/x86_64-linux-gnu/libmysqlclient.so.22
