@@ -60,15 +60,18 @@ jobs:
         run: |
           sudo cp --verbose --recursive rootfs/* /
 
+      - name: Install dependencies
+        run: |
+          wget https://dev.mysql.com/get/mysql-apt-config_0.8.32-1_all.deb
+          sudo dpkg -i mysql-apt-config_0.8.32-1_all.deb
+          sudo apt update
+          sudo apt install libmysqlclient22
+
       - name: Install Senzing SDK
         uses: senzing-factory/github-action-install-senzing-sdk@v3
         with:
           packages-to-install: "senzingsdk-runtime senzingsdk-setup"
           senzingsdk-version: ${{ matrix.senzingsdk-version }}
-
-      - name: Install dependencies
-        run: |
-          sudo apt-get install mysql-server
 
       - name: Run go test
         run: |
