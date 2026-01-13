@@ -56,7 +56,6 @@
     "LDFLAGS",
     "libaio",
     "libgssapi",
-    "libmysql",
     "libmysqlclient",
     "libsqlite",
     "modcache",

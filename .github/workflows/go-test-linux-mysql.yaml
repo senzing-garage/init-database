@@ -70,10 +70,6 @@ jobs:
         run: |
           sudo apt-get install mysql-server
 
-      - name: Link to libmysqlclient
-        run: |
-          sudo ln -s /lib/x86_64-linux-gnu/libmysqlclient.so.21 /opt/senzing/er/lib/libmysqlclient.so.22
-
       - name: Run go test
         run: |
           export SENZING_PATH="/opt/senzing"
