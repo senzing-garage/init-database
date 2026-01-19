@@ -68,7 +68,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt-get install mysql-server
+          wget https://dev.mysql.com/get/mysql-apt-config_0.8.36-1_all.deb
+          echo mysql-apt-config mysql-apt-config/select-product select "MySQL Server & Cluster" | sudo debconf-set-selections
+          echo mysql-apt-config mysql-apt-config/select-server  select "mysql-innovation"       | sudo debconf-set-selections
+          DEBIAN_FRONTEND=noninteractive sudo dpkg -i mysql-apt-config_0.8.36-1_all.deb
+          sudo apt-get update
+          sudo apt-get -y install libmysqlclient24
 
       - name: Run go test
         run: |
