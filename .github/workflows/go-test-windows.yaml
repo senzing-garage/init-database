@@ -89,7 +89,7 @@ jobs:
       contents: read
     uses: senzing-factory/build-resources/.github/workflows/go-coverage.yaml@v3
     with:
-      coverage-config: ./.github/coverage/testcoverage.yaml
+      coverage-config: ./.github/coverage/testcoverage-windows.yaml
       profile: "cover-production-v4.out,cover-staging-v4.out"
 
   slack-notification:
