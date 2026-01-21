@@ -2,10 +2,16 @@ name: Go test linux - mssql
 
 on:
   push:
+    branches: [main]
   pull_request:
     branches: [main]
   schedule:
     - cron: "15 7 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
 
 env:
   SENZING_LOG_LEVEL: TRACE
@@ -16,8 +22,6 @@ permissions: {}
 jobs:
   go-test-linux:
     name: "Go test with Senzing: ${{ matrix.senzingsdk-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }} - mssql"
-    outputs:
-      status: ${{ job.status }}
     permissions:
       contents: read
     runs-on: ${{ matrix.os }}
@@ -27,6 +31,7 @@ jobs:
         go: ["1.24"]
         os: [ubuntu-latest]
         senzingsdk-version: [production-v4, staging-v4]
+    timeout-minutes: 30
 
     services:
       mssql:
@@ -55,17 +60,22 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Copy rootfs files
-        run: |
-          sudo cp --verbose --recursive rootfs/* /
-          sudo cp --verbose --recursive testdata/mssql/rootfs/* /
-
       - name: Install dependencies
         run: |
           sudo apt-get install -y \
             unixodbc \
             libgssapi-krb5-2
-          sudo apt list
+
+      - name: Copy rootfs files
+        run: |
+          sudo cp --verbose --recursive rootfs/* /
+          sudo cp --verbose --recursive testdata/mssql/rootfs/* /
+
+      - name: Install Senzing SDK
+        uses: senzing-factory/github-action-install-senzing-sdk@v3
+        with:
+          packages-to-install: "senzingsdk-runtime senzingsdk-setup"
+          senzingsdk-version: ${{ matrix.senzingsdk-version }}
 
       - name: Install MS SQL libraries
         run: |
@@ -76,12 +86,6 @@ jobs:
           sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18
           sudo ACCEPT_EULA=Y apt-get install -y mssql-tools18
           sudo apt-get install -y unixodbc-dev
-
-      - name: Install Senzing SDK
-        uses: senzing-factory/github-action-install-senzing-sdk@v3
-        with:
-          packages-to-install: "senzingsdk-runtime senzingsdk-setup"
-          senzingsdk-version: ${{ matrix.senzingsdk-version }}
 
       - name: Create database
         run: |
@@ -97,9 +101,9 @@ jobs:
 
   slack-notification:
     needs: [go-test-linux]
-    if: ${{ always() && contains(fromJSON('["failure", "cancelled"]'), needs.go-test-linux.outputs.status ) && (github.ref_name == github.event.repository.default_branch || github.event_name == 'schedule') }}
+    if: ${{ always() && contains(fromJSON('["failure", "cancelled"]'), needs.go-test-linux.result ) && (github.ref_name == github.event.repository.default_branch || github.event_name == 'schedule') }}
     secrets:
       SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
     uses: senzing-factory/build-resources/.github/workflows/build-failure-slack-notification.yaml@v3
     with:
-      job-status: ${{ needs.go-test-linux.outputs.status }}
+      job-status: ${{ needs.go-test-linux.result }}
