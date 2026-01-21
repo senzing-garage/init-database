@@ -2,10 +2,16 @@ name: Go test linux - mysql
 
 on:
   push:
+    branches: [main]
   pull_request:
     branches: [main]
   schedule:
     - cron: "15 7 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
 
 env:
   SENZING_LOG_LEVEL: TRACE
@@ -16,8 +22,6 @@ permissions: {}
 jobs:
   go-test-linux:
     name: "Go test with Senzing: ${{ matrix.senzingsdk-version }}; OS: ${{ matrix.os }}; Go: ${{ matrix.go }} - mysql"
-    outputs:
-      status: ${{ job.status }}
     permissions:
       contents: read
     runs-on: ${{ matrix.os }}
@@ -27,6 +31,7 @@ jobs:
         go: ["1.24"]
         os: [ubuntu-latest]
         senzingsdk-version: [production-v4, staging-v4]
+    timeout-minutes: 30
 
     services:
       mysql:
@@ -56,6 +61,15 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Install dependencies
+        run: |
+          wget https://dev.mysql.com/get/mysql-apt-config_0.8.36-1_all.deb
+          echo mysql-apt-config mysql-apt-config/select-product select "MySQL Server & Cluster" | sudo debconf-set-selections
+          echo mysql-apt-config mysql-apt-config/select-server  select "mysql-innovation"       | sudo debconf-set-selections
+          DEBIAN_FRONTEND=noninteractive sudo dpkg -i mysql-apt-config_0.8.36-1_all.deb
+          sudo apt-get update
+          sudo apt-get -y install libmysqlclient24
+
       - name: Copy rootfs files
         run: |
           sudo cp --verbose --recursive rootfs/* /
@@ -66,15 +80,6 @@ jobs:
           packages-to-install: "senzingsdk-runtime senzingsdk-setup"
           senzingsdk-version: ${{ matrix.senzingsdk-version }}
 
-      - name: Install dependencies
-        run: |
-          wget https://dev.mysql.com/get/mysql-apt-config_0.8.36-1_all.deb
-          echo mysql-apt-config mysql-apt-config/select-product select "MySQL Server & Cluster" | sudo debconf-set-selections
-          echo mysql-apt-config mysql-apt-config/select-server  select "mysql-innovation"       | sudo debconf-set-selections
-          DEBIAN_FRONTEND=noninteractive sudo dpkg -i mysql-apt-config_0.8.36-1_all.deb
-          sudo apt-get update
-          sudo apt-get -y install libmysqlclient24
-
       - name: Run go test
         run: |
           export SENZING_PATH="/opt/senzing"
@@ -83,9 +88,9 @@ jobs:
 
   slack-notification:
     needs: [go-test-linux]
-    if: ${{ always() && contains(fromJSON('["failure", "cancelled"]'), needs.go-test-linux.outputs.status ) && (github.ref_name == github.event.repository.default_branch || github.event_name == 'schedule') }}
+    if: ${{ always() && contains(fromJSON('["failure", "cancelled"]'), needs.go-test-linux.result ) && (github.ref_name == github.event.repository.default_branch || github.event_name == 'schedule') }}
     secrets:
       SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
     uses: senzing-factory/build-resources/.github/workflows/build-failure-slack-notification.yaml@v3
     with:
-      job-status: ${{ needs.go-test-linux.outputs.status }}
+      job-status: ${{ needs.go-test-linux.result }}
