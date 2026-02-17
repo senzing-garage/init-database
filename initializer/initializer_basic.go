@@ -919,9 +919,8 @@ func (initializer *BasicInitializer) initializeSpecificDatabaseSqlite(ctx contex
 
 	// If file exists, no more to do.
 
-	filename := parsedURL.Path
-	filename = filepath.Clean(filename) // See https://securego.io/docs/rules/g304.html
-	filename = cleanFilename(filename)
+	filename := cleanFilename(parsedURL.Path)
+	filename = filepath.Clean(filename)
 
 	_, err = os.Stat(filename)
 	if err == nil {
@@ -932,7 +931,7 @@ func (initializer *BasicInitializer) initializeSpecificDatabaseSqlite(ctx contex
 
 	// File doesn't exist, create it.
 
-	path := filepath.Dir(filename)
+	path := filepath.Clean(filepath.Dir(filename))
 
 	err = os.MkdirAll(path, os.ModePerm)
 	if err != nil {
@@ -941,7 +940,7 @@ func (initializer *BasicInitializer) initializeSpecificDatabaseSqlite(ctx contex
 		return wraperror.Errorf(err, "os.MkdirAll: %s", path)
 	}
 
-	_, err = os.Create(filename)
+	_, err = os.Create(filepath.Clean(filename))
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 103, 1103
 
