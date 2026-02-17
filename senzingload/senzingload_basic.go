@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"net/url"
 	"sync"
 	"time"
 
@@ -539,22 +538,17 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 
 			// Download file from URL.
 
-			parsedURL, errParse := url.Parse(jsonURL)
-			if errParse != nil {
-				return wraperror.Errorf(errParse, "url.Parse: %s", jsonURL)
-			}
-
 			httpRequest, errNewRequestWithContext := http.NewRequestWithContext(
 				ctxTimeout,
 				http.MethodGet,
-				parsedURL.String(),
+				jsonURL,
 				nil,
 			)
 			if errNewRequestWithContext != nil {
 				return wraperror.Errorf(errNewRequestWithContext, "http.NewRequestWithContext")
 			}
 
-			httpResponse, errDo := httpClient.Do(httpRequest) //nolint:gosec // G704: URL is from user-configured jsonURL.
+			httpResponse, errDo := httpClient.Do(httpRequest)
 			if errDo != nil {
 				return wraperror.Errorf(errDo, "httpClient.Do")
 			}
