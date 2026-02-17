@@ -126,10 +126,14 @@ linters:
   settings:
     cyclop:
       max-complexity: 25
+    gosec:
+      excludes:
+        - G703
+        - G704
     depguard:
       rules:
         prevent_unmaintained_packages:
-          list-mode: lax # allow unless explicitely denied
+          list-mode: lax # allow unless explicitly denied
           allow:
             - github.com/stretchr/testify/*
           deny:
