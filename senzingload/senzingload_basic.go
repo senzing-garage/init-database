@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"sync"
 	"time"
 
@@ -538,10 +539,15 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 
 			// Download file from URL.
 
+			parsedURL, errParse := url.Parse(jsonURL)
+			if errParse != nil {
+				return wraperror.Errorf(errParse, "url.Parse: %s", jsonURL)
+			}
+
 			httpRequest, errNewRequestWithContext := http.NewRequestWithContext(
 				ctxTimeout,
 				http.MethodGet,
-				jsonURL,
+				parsedURL.String(),
 				nil,
 			)
 			if errNewRequestWithContext != nil {
