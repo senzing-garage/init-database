@@ -12,7 +12,7 @@ linters:
     - contextcheck
     - copyloopvar
     - cyclop
-    - decorder
+    - decoder
     - depguard
     - dogsled
     - dupl
@@ -133,7 +133,7 @@ linters:
     depguard:
       rules:
         prevent_unmaintained_packages:
-          list-mode: lax # allow unless explicitely denied
+          list-mode: lax # allow unless explicitly denied
           allow:
             - github.com/stretchr/testify/*
           deny:
