@@ -554,7 +554,7 @@ func (senzingLoad *BasicSenzingLoad) processRecords(
 				return wraperror.Errorf(errNewRequestWithContext, "http.NewRequestWithContext")
 			}
 
-			httpResponse, errDo := httpClient.Do(httpRequest)
+			httpResponse, errDo := httpClient.Do(httpRequest) //nolint:gosec // G704: URL is from user-configured jsonURL.
 			if errDo != nil {
 				return wraperror.Errorf(errDo, "httpClient.Do")
 			}

@@ -922,7 +922,7 @@ func (initializer *BasicInitializer) initializeSpecificDatabaseSqlite(ctx contex
 	filename := cleanFilename(parsedURL.Path)
 	filename = filepath.Clean(filename)
 
-	_, err = os.Stat(filename)
+	_, err = os.Stat(filename) //nolint:gosec // G703: path is from user-configured database URL.
 	if err == nil {
 		traceExitMessageNumber, debugMessageNumber = 101, 0 // debugMessageNumber=0 because it's not an error.
 
@@ -933,14 +933,14 @@ func (initializer *BasicInitializer) initializeSpecificDatabaseSqlite(ctx contex
 
 	path := filepath.Clean(filepath.Dir(filename))
 
-	err = os.MkdirAll(path, os.ModePerm)
+	err = os.MkdirAll(path, os.ModePerm) //nolint:gosec // G703: path is from user-configured database URL.
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 102, 1102
 
 		return wraperror.Errorf(err, "os.MkdirAll: %s", path)
 	}
 
-	_, err = os.Create(filepath.Clean(filename))
+	_, err = os.Create(filepath.Clean(filename)) //nolint:gosec // G703: path is from user-configured database URL.
 	if err != nil {
 		traceExitMessageNumber, debugMessageNumber = 103, 1103
 
