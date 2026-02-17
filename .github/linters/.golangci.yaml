@@ -12,7 +12,7 @@ linters:
     - contextcheck
     - copyloopvar
     - cyclop
-    - decoder
+    - decorder
     - depguard
     - dogsled
     - dupl
