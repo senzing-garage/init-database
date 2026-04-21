@@ -72,12 +72,14 @@ jobs:
 
       - name: Install dependencies
         run: |
-          wget https://dev.mysql.com/get/mysql-apt-config_0.8.36-1_all.deb
-          echo mysql-apt-config mysql-apt-config/select-product select "MySQL Server & Cluster" | sudo debconf-set-selections
-          echo mysql-apt-config mysql-apt-config/select-server  select "mysql-innovation"       | sudo debconf-set-selections
-          DEBIAN_FRONTEND=noninteractive sudo dpkg -i mysql-apt-config_0.8.36-1_all.deb
-          sudo apt-get update
-          sudo apt-get -y install libmysqlclient24
+          MYSQL_POOL="https://repo.mysql.com/apt/ubuntu/pool/mysql-innovation/m/mysql-community"
+          wget -q "${MYSQL_POOL}/mysql-common_9.5.0-1ubuntu24.04_amd64.deb"
+          wget -q "${MYSQL_POOL}/mysql-community-client-plugins_9.5.0-1ubuntu24.04_amd64.deb"
+          wget -q "${MYSQL_POOL}/libmysqlclient24_9.5.0-1ubuntu24.04_amd64.deb"
+          sudo apt-get -y install \
+            ./mysql-common_9.5.0-1ubuntu24.04_amd64.deb \
+            ./mysql-community-client-plugins_9.5.0-1ubuntu24.04_amd64.deb \
+            ./libmysqlclient24_9.5.0-1ubuntu24.04_amd64.deb
 
       - name: Copy rootfs files
         run: |
