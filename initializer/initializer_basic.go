@@ -407,7 +407,7 @@ func (initializer *BasicInitializer) RegisterObserver(ctx context.Context, obser
 
 	go func() {
 		details := map[string]string{
-			"observerID": observer.GetObserverID(ctx),
+			observerIDKey: observer.GetObserverID(ctx),
 		}
 		notifier.Notify(ctx, initializer.observers, initializer.ObserverOrigin, ComponentID, 8003, err, details)
 	}()
@@ -653,7 +653,7 @@ func (initializer *BasicInitializer) UnregisterObserver(ctx context.Context, obs
 		// In client.notify, each observer will get notified in a goroutine.
 		// Then client.observers may be set to nil, but observer goroutines will be OK.
 		details := map[string]string{
-			"observerID": observer.GetObserverID(ctx),
+			observerIDKey: observer.GetObserverID(ctx),
 		}
 		notifier.Notify(ctx, initializer.observers, initializer.ObserverOrigin, ComponentID, 8006, err, details)
 
@@ -757,7 +757,7 @@ func (initializer *BasicInitializer) getObserver(
 
 		go func() {
 			details := map[string]string{
-				"observerID": result.GetObserverID(ctx),
+				observerIDKey: result.GetObserverID(ctx),
 			}
 			notifier.Notify(ctx, initializer.observers, initializer.ObserverOrigin, ComponentID, 8001, err, details)
 		}()

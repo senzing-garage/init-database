@@ -13,13 +13,14 @@ import (
 )
 
 const (
+	observerID     = "Observer 1"
 	observerOrigin = "init-database observer"
 )
 
 var (
 	logLevel          = env.GetEnv("SENZING_LOG_LEVEL", "INFO")
 	observerSingleton = &observer.NullObserver{
-		ID:       "Observer 1",
+		ID:       observerID,
 		IsSilent: true,
 	}
 )
@@ -40,7 +41,7 @@ func TestBasicInitializer_Initialize(test *testing.T) {
 func TestBasicInitializer_RegisterObserver(test *testing.T) {
 	ctx := test.Context()
 	observer1 := &observer.NullObserver{
-		ID:       "Observer 1",
+		ID:       observerID,
 		IsSilent: true,
 	}
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
@@ -71,7 +72,7 @@ func TestBasicInitializer_SetObserverOrigin(test *testing.T) {
 func TestBasicInitializer_UnregisterObserver(test *testing.T) {
 	ctx := test.Context()
 	observer1 := &observer.NullObserver{
-		ID:       "Observer 1",
+		ID:       observerID,
 		IsSilent: true,
 	}
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()

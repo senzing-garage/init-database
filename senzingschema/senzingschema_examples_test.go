@@ -45,7 +45,7 @@ func ExampleBasicSenzingSchema_RegisterObserver() {
 	// For more information, visit https://github.com/senzing-garage/init-database/blob/main/senzingschema/senzingschema_examples_test.go
 	ctx := context.TODO()
 	anObserver := &observer.NullObserver{
-		ID:       "Observer 1",
+		ID:       observerID,
 		IsSilent: true,
 	}
 
@@ -105,7 +105,7 @@ func ExampleBasicSenzingSchema_UnregisterObserver() {
 	// For more information, visit https://github.com/senzing-garage/init-database/blob/main/senzingschema/senzingschema_examples_test.go
 	ctx := context.TODO()
 	anObserver := &observer.NullObserver{
-		ID:       "Observer 1",
+		ID:       observerID,
 		IsSilent: true,
 	}
 
