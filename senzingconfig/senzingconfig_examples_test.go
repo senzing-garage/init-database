@@ -68,7 +68,7 @@ func ExampleBasicSenzingConfig_RegisterObserver() {
 	// For more information, visit https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig_examples_test.go
 	ctx := context.TODO()
 	anObserver := &observer.NullObserver{
-		ID:       "Observer 1",
+		ID:       observerID,
 		IsSilent: true,
 	}
 
@@ -128,7 +128,7 @@ func ExampleBasicSenzingConfig_UnregisterObserver() {
 	// For more information, visit https://github.com/senzing-garage/init-database/blob/main/senzingconfig/senzingconfig_examples_test.go
 	ctx := context.TODO()
 	anObserver := &observer.NullObserver{
-		ID:       "Observer 1",
+		ID:       observerID,
 		IsSilent: true,
 	}
 
