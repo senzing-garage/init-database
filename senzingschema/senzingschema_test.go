@@ -10,6 +10,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const observerID = "Observer 1"
+
 // ----------------------------------------------------------------------------
 // Test interface functions
 // ----------------------------------------------------------------------------
@@ -31,7 +33,7 @@ func TestSenzingSchemaImpl_InitializeSenzing(test *testing.T) {
 func TestSenzingSchemaImpl_RegisterObserver(test *testing.T) {
 	ctx := test.Context()
 	observer1 := &observer.NullObserver{
-		ID:       "Observer 1",
+		ID:       observerID,
 		IsSilent: true,
 	}
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()
@@ -62,7 +64,7 @@ func TestSenzingSchemaImpl_SetObserverOrigin(test *testing.T) {
 func TestSenzingSchemaImpl_UnregisterObserver(test *testing.T) {
 	ctx := test.Context()
 	observer1 := &observer.NullObserver{
-		ID:       "Observer 1",
+		ID:       observerID,
 		IsSilent: true,
 	}
 	senzingSettings, err := settings.BuildSimpleSettingsUsingEnvVars()

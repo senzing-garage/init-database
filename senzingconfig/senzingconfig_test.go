@@ -15,13 +15,14 @@ import (
 )
 
 const (
+	observerID     = "Observer 1"
 	observerOrigin = "init-database observer"
 )
 
 var (
 	logLevel          = env.GetEnv("SENZING_LOG_LEVEL", "INFO")
 	observerSingleton = &observer.NullObserver{
-		ID:       "Observer 1",
+		ID:       observerID,
 		IsSilent: true,
 	}
 )
@@ -51,7 +52,7 @@ func TestSenzingConfigImpl_RegisterObserver(test *testing.T) {
 	ctx := test.Context()
 	senzingConfig := getTestObject(ctx, test)
 	anObserver := &observer.NullObserver{
-		ID:       "Observer 1",
+		ID:       observerID,
 		IsSilent: true,
 	}
 	err := senzingConfig.RegisterObserver(ctx, anObserver)
@@ -75,7 +76,7 @@ func TestSenzingConfigImpl_UnregisterObserver(test *testing.T) {
 	ctx := test.Context()
 	senzingConfig := getTestObject(ctx, test)
 	anObserver := &observer.NullObserver{
-		ID:       "Observer 1",
+		ID:       observerID,
 		IsSilent: true,
 	}
 	err := senzingConfig.RegisterObserver(ctx, anObserver)
