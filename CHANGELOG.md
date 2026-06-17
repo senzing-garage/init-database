@@ -9,6 +9,12 @@ This project adheres to [Semantic Versioning].
 
 -
 
+## [0.8.4] - 2026-06-17
+
+### Fixed in 0.8.4
+
+- Update go-helpers to v0.6.16 to accept the standard `host:port/database` connection-URL form
+
 ## [0.8.3] - 2026-03-27
 
 ### Changed in 0.8.3
