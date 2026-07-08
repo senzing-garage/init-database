@@ -1,0 +1,5 @@
+# GO-2026-5932: golang.org/x/crypto/openpgp is unmaintained and unsafe by design.
+# init-database does not use the openpgp package; golang.org/x/crypto is an
+# indirect dependency pulled in transitively (via go-databasing, go-mssqldb, and
+# golang.org/x/net). No fixed version is available upstream.
+GO-2026-5932
