@@ -84,7 +84,7 @@ RUN apt-get update \
 # -----------------------------------------------------------------------------
 
 # FROM ${IMAGE_FINAL} AS oracle
-# ENV REFRESHED_AT=2026-05-04
+# ENV REFRESHED_AT=2026-07-15
 
 # RUN apt-get update \
 #  && apt-get -y install \
