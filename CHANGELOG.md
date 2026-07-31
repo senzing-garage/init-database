@@ -9,6 +9,12 @@ This project adheres to [Semantic Versioning].
 
 -
 
+## [0.8.6] - 2026-07-31
+
+### Changed in 0.8.6
+
+- Update to Senzing 4.3.4
+
 ## [0.8.5] - 2026-07-15
 
 ### Changed in 0.8.5
