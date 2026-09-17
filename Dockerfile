@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 
 ARG IMAGE_BUILDER=golang:1.26.0-bookworm@sha256:2a0ba12e116687098780d3ce700f9ce3cb340783779646aafbabed748fa6677c
-ARG IMAGE_FINAL=senzing/senzingsdk-runtime:4.4.0@sha256:8f0987d67eedfc3ee2b93f19483a8c1cac1429f7020f98c405745d5b91d78d38
+ARG IMAGE_FINAL=senzing/senzingsdk-runtime:4.4.1@sha256:bdc8cd2cf4799a25092d3ec8ed23d916b9d28a3b5e3271973c1ebfac6e3d993c
 
 ARG SENZING_APT_INSTALL_SETUP_PACKAGE="senzingsdk-setup"
 
@@ -18,7 +18,7 @@ FROM ${IMAGE_FINAL} AS senzingsdk_runtime
 # -----------------------------------------------------------------------------
 
 FROM ${IMAGE_BUILDER} AS builder
-ENV REFRESHED_AT=2026-09-16
+ENV REFRESHED_AT=2026-09-17
 LABEL Name="senzing/go-builder" \
       Maintainer="support@senzing.com" \
       Version="0.1.0"
@@ -66,7 +66,7 @@ RUN mkdir -p /output \
 # -----------------------------------------------------------------------------
 
 FROM ${IMAGE_FINAL} AS senzingsdk
-ENV REFRESHED_AT=2026-09-16
+ENV REFRESHED_AT=2026-09-17
 
 ARG SENZING_APT_INSTALL_SETUP_PACKAGE
 
@@ -84,7 +84,7 @@ RUN apt-get update \
 # -----------------------------------------------------------------------------
 
 # FROM ${IMAGE_FINAL} AS oracle
-# ENV REFRESHED_AT=2026-09-16
+# ENV REFRESHED_AT=2026-09-17
 
 # RUN apt-get update \
 #  && apt-get -y install \
@@ -104,7 +104,7 @@ RUN apt-get update \
 # -----------------------------------------------------------------------------
 
 FROM ${IMAGE_FINAL} AS final
-ENV REFRESHED_AT=2026-09-16
+ENV REFRESHED_AT=2026-09-17
 LABEL Name="senzing/init-database" \
       Maintainer="support@senzing.com" \
       Version="0.8.3"
