@@ -5,7 +5,7 @@ go 1.26.0
 require (
 	github.com/senzing-garage/go-cmdhelping v0.3.8
 	github.com/senzing-garage/go-databasing v0.5.9
-	github.com/senzing-garage/go-helpers v0.6.16
+	github.com/senzing-garage/go-helpers v0.6.17
 	github.com/senzing-garage/go-logging v1.5.4
 	github.com/senzing-garage/go-observing v0.3.7
 	github.com/senzing-garage/go-sdk-abstract-factory v0.9.17
@@ -48,7 +48,7 @@ require (
 	github.com/subosito/gotenv v1.6.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	golang.org/x/crypto v0.55.0 // indirect
-	golang.org/x/exp v0.0.0-20260611194520-c48552f49976 // indirect
+	golang.org/x/exp v0.0.0-20260709172345-9ea1abe57597 // indirect
 	golang.org/x/net v0.58.0 // indirect
 	golang.org/x/sys v0.47.0 // indirect
 	golang.org/x/text v0.41.0 // indirect
