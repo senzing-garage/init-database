@@ -15,6 +15,7 @@ This project adheres to [Semantic Versioning].
 
 - Update to Senzing 4.4.1
 - Update `package.Dockerfile` to Senzing 4.4.1 (was left at 4.2.4)
+- Update `go-helpers` to 0.6.17 to fix `staging-v4` tests
 
 ## [0.8.7] - 2026-09-16
 
