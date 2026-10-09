@@ -9,6 +9,15 @@ This project adheres to [Semantic Versioning].
 
 -
 
+## [0.9.0] - 2026-10-09
+
+### Changed in 0.9.0
+
+- Update to Go 1.27.1
+- Sync repository setup files with [template-go] `v0.5.0`
+- Pin GitHub Actions to commit SHAs and golangci-lint to a fixed version
+- Update dependencies
+
 ## [0.8.9] - 2026-10-01
 
 ### Changed in 0.8.9
@@ -417,3 +426,4 @@ This project adheres to [Semantic Versioning].
 [CommonMark]: https://commonmark.org/
 [Keep a Changelog]: https://keepachangelog.com/
 [Semantic Versioning]: https://semver.org/
+[template-go]: https://github.com/senzing-garage/template-go

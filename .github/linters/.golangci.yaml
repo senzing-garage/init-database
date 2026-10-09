@@ -24,7 +24,7 @@ linters:
     - errname
     - errorlint
     - exhaustive
-    - exhaustruct
+    - exhaustruct_v5
     - exptostd
     - fatcontext
     - forbidigo
@@ -44,7 +44,7 @@ linters:
     - godox
     - goheader
     - gomoddirectives
-    - gomodguard
+    - gomodguard_v2
     - goprintffuncname
     - gosec
     - gosmopolitan
@@ -139,8 +139,8 @@ linters:
           deny:
             - pkg: io/ioutil
               desc: "replaced by io and os packages since Go 1.16: https://tip.golang.org/doc/go1.16#ioutil"
-    exhaustruct:
-      exclude:
+    exhaustruct_v5:
+      ignore-patterns:
         - '.+/cobra\.Command$'
         - '.+/http\.Client$'
         - '.+/initializer\.BasicInitializer$'
