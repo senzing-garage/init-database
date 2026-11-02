@@ -7,7 +7,8 @@ This project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
--
+- Update to Senzing 4.4.3
+- Update `package.Dockerfile` to Senzing 4.4.3
 
 ## [0.9.0] - 2026-10-09
 
