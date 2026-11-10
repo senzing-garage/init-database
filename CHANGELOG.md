@@ -7,6 +7,20 @@ This project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
+-
+
+## [0.9.2] - 2026-11-10
+
+### Changed in 0.9.2
+
+- Update `go-helpers` to 0.8.0 to fix `staging-v4` tests (`cfgVariant.json` no longer installed in Senzing 4.5.0)
+- Create the database schema in `senzingconfig` test setup instead of relying on `cmd` tests running first
+- Update dependencies
+
+## [0.9.1] - 2026-10-28
+
+### Changed in 0.9.1
+
 - Update to Senzing 4.4.3
 - Update `package.Dockerfile` to Senzing 4.4.3
 

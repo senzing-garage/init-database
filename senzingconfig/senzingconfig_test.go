@@ -133,7 +133,16 @@ func setup() {
 		panic(err)
 	}
 
+	// Create the schema here so this package does not depend on another
+	// package's tests having created it first.
+
+	databaseURLs := []string{}
+	if databaseURL := env.GetEnv("SENZING_TOOLS_DATABASE_URL", ""); databaseURL != "" {
+		databaseURLs = append(databaseURLs, databaseURL)
+	}
+
 	senzingSchema := &senzingschema.BasicSenzingSchema{
+		DatabaseURLs:    databaseURLs,
 		SenzingSettings: senzingSettings,
 	}
 
