@@ -2,7 +2,7 @@
 # Stages
 # -----------------------------------------------------------------------------
 
-ARG IMAGE_BUILDER=golang:1.27.1-bookworm@sha256:648f440f42a0958804efb24df176f806f9d353b41f1c0627f666428e40310f6b
+ARG IMAGE_BUILDER=golang:1.27.2-bookworm@sha256:5cf287a799e6b94384bad13d16b14904c531f51ba65792237e122ce42b392f61
 ARG IMAGE_FINAL=senzing/senzingsdk-runtime:4.4.4@sha256:0c6dcf3c05f86bcf13aa4e444ef22cefb8753e0b42b69e7b3666eebc11b17885
 
 ARG SENZING_APT_INSTALL_SETUP_PACKAGE="senzingsdk-setup"
