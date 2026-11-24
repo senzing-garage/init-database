@@ -107,7 +107,7 @@ FROM ${IMAGE_FINAL} AS final
 ENV REFRESHED_AT=2026-11-24
 LABEL Name="senzing/init-database" \
       Maintainer="support@senzing.com" \
-      Version="0.8.3"
+      Version="0.9.4"
 HEALTHCHECK CMD ["/app/healthcheck.sh"]
 USER root
 
